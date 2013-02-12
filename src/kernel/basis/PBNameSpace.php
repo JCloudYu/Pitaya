@@ -1,19 +1,15 @@
 <?php
-/**
- * Created by JetBrains PhpStorm.
- * User: Cloud
- * Date: 13/1/19
- * Time: PM1:38
+/*
+ * File: PBNameSpace.php
+ * Created by JCloudYu.
+ * DateTime: 13/2/9 PM3:45
  */
-
-require_once 'ObjectCore.php';
 
 //	 We should provide some methods to get constants or static variable using string accessor such as...
 //	 $Class = SPACE("TEST_NAME_SPACE")->NSClass("TEST_CLASS");
 //	 $Val = $Class::TEST_CONSTANT;
 
-
-class NameSpaceCore extends ObjectCore
+class PBNameSpace extends PBObject
 {
 	private static $namespaces = array();
 	public static function SPACE($namespace)
@@ -44,5 +40,5 @@ class NameSpaceCore extends ObjectCore
 
 function SPACE($namespace)
 {
-	return NameSpaceCore::SPACE($namespace);
+	return PBNameSpace::SPACE($namespace);
 }

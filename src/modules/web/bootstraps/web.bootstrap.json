@@ -1,0 +1,23 @@
+{
+	"version":"1.0",
+	"sequences":[
+		{"module":"module_B", "attr":{"reuse":true}},
+		{"module":"module_C"},
+		{"module":"module_E", "attr":{"reuse":true}},
+		{"module":"module_F"},
+		{"module":"module_B", "attr":{"reuse":true}}
+	],
+	"tools":[
+		{"module":"module_A"},
+		{"module":"module_D", "attr":{"request":"A/B/C/D"}},
+		{"module":"module_F", "attr":{"request":"C/D/E/F"}},
+		{"module":"module_G"},
+		{"module":"module_H"}
+	],
+	"data":{
+
+	},
+	"text":{
+
+	}
+}
