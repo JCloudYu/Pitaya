@@ -5,13 +5,20 @@
  * DateTime: 13/2/9 PM4:01
  */
 
+if (stristr(PHP_OS, 'WIN')) define('__OS__', 'WIN');
+else define('__OS__', 'UNIX');
+
 // Constant path declaration
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 
 srand(time());
 
 $GLOBALS['randomCert'] = md5(rand());
-$GLOBALS['kernelPath'] = '/Volumes/Personal/001.jcloudyu/001.dev/0008.web.service.php.core/src/';
+
+if(__OS__ == 'WIN')
+    $GLOBALS['kernelPath'] = 'E:/001.dev/0008.web.service.php.core/src';
+else
+    $GLOBALS['kernelPath'] = '/Volumes/Personal/001.jcloudyu/001.dev/0008.web.service.php.core/src';
 
 /**
  * An alternative file inclusion call
