@@ -5,7 +5,7 @@
  * DateTime: 13/2/9 PM4:01
  */
 
-if (stristr(PHP_OS, 'WIN')) define('__OS__', 'WIN');
+if(preg_match('/^win/', PHP_OS) === 1) define('__OS__', 'WIN');
 else define('__OS__', 'UNIX');
 
 // Constant path declaration
