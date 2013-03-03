@@ -19,6 +19,10 @@ class PBModule extends PBObject
 
 	}
 
+	public function exec($param) {
+
+	}
+
 	public function __get_id() {
 
 		return $this->_moduleId;
@@ -64,8 +68,8 @@ class PBModule extends PBObject
 		return $this->_bootstrap ? $this->_bootstrap->tools : NULL;
 	}
 
-	public function __get_sequences() {
-
+	public function __get_bootSequence() {
+		// NOTE: The bootSequence should left empty and provide a way letting a module to fill in the required bootSequence
 		if(!$this->friend('SYS', 'PBProcess', get_class($this)))
 			throw(new Exception("Setting value to an undefined property __bootstrap."));
 

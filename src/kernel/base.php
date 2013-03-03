@@ -115,16 +115,16 @@ function backtrace() {
 function encode($appendInfo = NULL, $referenceBase = NULL) {
 
 	static $cacheServer = NULL;
-	static $cacheGet = NULL;
+	static $cacheRawRequest = NULL;
 	static $baseEncoding = NULL;
 	static $mergeDelegate = NULL;
 
 	if(is_null($cacheServer)) $cacheServer = $_SERVER;
-	if(is_null($cacheGet)) $cacheGet = $_GET;
+	if(is_null($cacheRawRequest)) $cacheRawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', $_SERVER['REQUEST_URI']));
 	if(is_null($baseEncoding))
 	{
-		$baseEncoding = "#{$cacheServer['HTTP_USER_AGENT']}#{$cacheServer['REMOTE_ADDR']}#{$cacheServer['REMOTE_PORT']}#".
-						"{$cacheGet['__src_request']}#{$cacheServer['REQUEST_TIME']}#".uniqid("", TRUE)."#";
+		$baseEncoding = "#|#{$cacheServer['HTTP_USER_AGENT']}#|#{$cacheServer['REMOTE_ADDR']}#|#{$cacheServer['REMOTE_PORT']}#|#".
+						"{$cacheRawRequest}#|#{$cacheServer['REQUEST_TIME']}#|#".uniqid("", TRUE)."#|#";
 		$baseEncoding = hash('sha512', $baseEncoding);
 	}
 

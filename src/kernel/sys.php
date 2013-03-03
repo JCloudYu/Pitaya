@@ -14,57 +14,26 @@ class SYS extends PBObject implements ISYS
 		// INFO: Avoid repeated initialization
 		if(self::$_SYS_INSTANCE) return;
 
-		$requestItem = explode('/', $_GET['__src_request']);
-
-		// INFO: Process Request Resource Module
-		// VAR: $targetModule | $moduleRequest
-		$targetModule = strtoupper(array_shift($requestItem));
-
-		// INFO: http://SERVER_HOST/
-		if($targetModule == '')
-		{
-			$targetModule = 'web';
-			$moduleRequest = $requestItem;
-		}
-		else
-		// INFO: http://SERVER_HOST/RC/
-		// INFO: http://SERVER_HOST/RC/REQUESTS
-		if(count($requestItem) > 0)
-		{
-			$moduleRequest = $requestItem[0] == '' ? array_shift($requestItem) : $requestItem;
-		}
-		else
-		// INFO: http://SERVER_HOST/RC
-		{
-			$moduleRequest = array();
-		}
-
-		self::$_SYS_INSTANCE = new SYS($targetModule, $moduleRequest);
+		self::$_SYS_INSTANCE = new SYS();
+		self::$_SYS_INSTANCE->__jobDaemonRun();
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Instance//////////////////////////////////////////////////////////////////////////////////////////////////
-	private $_inputRequest = NULL;
 	private $_entryModule = NULL;
-
 	private $_systemId = NULL;
 
 	// INFO: Constructor declared as a private function is to maintain the singleness of the SYS object
-	private function __construct($targetModule, $moduleRequest) {
-
-		// INFO: Generate the unique system execution Id
-		$temp = array($targetModule);
-		foreach($moduleRequest as $req) $temp[] = $req;
-		$this->_systemId = encode($temp);
+	private function __construct() {
 
 		try
 		{
 			$this->__arrangeVariables();
 
-			$this->_inputRequest = $moduleRequest;
-			$this->_entryModule = $targetModule;
-
-			$this->__forkProcess($targetModule, $moduleRequest);
-			$this->__jobDaemonRun();
+			// INFO: Generate the unique system execution Id
+			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
+			$this->_entryModule = $this->_incomingRecord['module'];
+			$this->__forkProcess($this->_entryModule, $this->_incomingRecord['request']);
 		}
 		catch(PBException $e)
 		{
@@ -80,43 +49,85 @@ class SYS extends PBObject implements ISYS
 
 		return $this->_systemId;
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Variable Manager//////////////////////////////////////////////////////////////////////////////////////////
-	private $_varRawRequest = NULL;
-	private $_varPost = NULL;
-	private $_varGet = NULL;
-	private $_varFiles = NULL;
-	private $_varEnv = NULL;
-	private $_varServer = NULL;
+	private $_incomingRecord = NULL;
 
 	private function __arrangeVariables() {
 
+		// ISSUE: We still need to deal with other HTTP methods such as DELETE, UPDATE, .....etc
+
 		// INFO: This function will unify the means accessing arguments passed into the system
-		// INFO: After unifying the arguments, all other means such as $_GET, $_POST will be disabled...
 		// INFO: In this version, only $_COOKIE and $_SESSION will be kept
 
-		$this->_varRawRequest = $_GET['__src_request'];
-		unset($_GET['__src_request']);
+		$this->_incomingRecord = array();
 
-		$this->_varGet = $_GET;
-		unset($_GET); unset($HTTP_GET_VARS);
+		//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
+		// INFO: Purge redundant separators from the REQUEST_URI
+		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
+		// INFO: 		  will be purged into
+		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
+		$this->_incomingRecord['rawRequest'] = preg_replace('/\/+/',
+															'/',
+															preg_replace('/^\/*|\/*$/', '', $_SERVER['REQUEST_URI'])
+														   );
+		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		$this->_varPost = $_POST;
-		unset($_POST); unset($HTTP_POST_VARS);
+		$this->_incomingRecord['post'] = $_POST;
+		$this->_incomingRecord['files'] = $_FILES;
+		$this->_incomingRecord['env'] = $_ENV;
+		$this->_incomingRecord['server'] = $_SERVER;
 
-		$this->_varFiles = $_FILES;
-		unset($_FILES); unset($HTTP_POST_FILES);
 
-		$this->_varEnv = $_ENV;
-		unset($_ENV); unset($HTTP_ENV_VARS);
+		// INFO: GET information is not kept since it may contains error parsed parameters
+		// INFO: This means that the main module have to parse its own parameters from request
+		unset($_GET);
+		unset($HTTP_GET_VARS);
 
-		$this->_varServer = $_SERVER;
-		unset($_SERVER); unset($HTTP_SERVER_VARS);
+		unset($_POST);
+		unset($HTTP_POST_VARS);
 
-		// NOTE: We still need to solve the session and cookie problem
+		unset($_FILES);
+		unset($HTTP_POST_FILES);
+
+		unset($_ENV);
+		unset($HTTP_ENV_VARS);
+
+		unset($_SERVER);
+		unset($HTTP_SERVER_VARS);
 
 		unset($_REQUEST);
+
+		// NOTE: We still need to solve the session and cookie problem
+		//$this->_incomingRecord['session'] = $_SESSION;
+		//$this->_incomingRecord['cookie'] = $_COOKIE;
+		//unset($_COOKIE); unset($HTTP_COOKIE_VARS);
+		//unset($_SESSION); unset($HTTP_SESSION_VARS);
+
+		// INFO: Extract the requested module from request string
+		// DECLARE($requestItems)
+		$requestItems = explode('/', $this->_incomingRecord['rawRequest']);
+
+		// INFO: http://SERVER_HOST/
+		// INFO: http://SERVER_HOST/RC
+		// DECLARE($module, $moduleRequest)
+		if(count($requestItems) == 1)
+		{
+			$module = $requestItems[0] === '' ? 'WEB' : strtoupper($requestItems[0]);
+			$moduleRequest = '';
+		}
+		else
+		// INFO: http://SERVER_HOST/RC/REQUEST
+		{
+			$module = strtoupper(array_shift($requestItems));
+			$moduleRequest = implode('/', $requestItems);
+		}
+
+		$this->_incomingRecord['module'] = $module;
+		$this->_incomingRecord['request'] = $moduleRequest;
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Execution API/////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -131,7 +142,7 @@ class SYS extends PBObject implements ISYS
 
 		$process->__processId = $processId;
 		$process->__sysAPI = $this;
-		$process->attachModule($module, $moduleRequest);
+		$process->attachMainModule($module, $moduleRequest);
 
 		$this->_processQueue[$processId] = $process;
 	}
@@ -165,6 +176,7 @@ class SYS extends PBObject implements ISYS
 			}
 		}
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Response//////////////////////////////////////////////////////////////////////////////////////////////////
 	// NOTE: We need to figure out a way to response error according to request module media type
@@ -183,10 +195,11 @@ class SYS extends PBObject implements ISYS
 
 		preg_replace('/\n/', '<br \>', preg_replace('/\ /', '&nbsp;', print_r(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT), TRUE)));
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: ISYS
-	public function acquireModule($moduleName)
-	{
+	public function acquireModule($moduleName) {
+
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
 			throw(new Exception("Calling an inaccessible function SYS::acquireModule()."));
@@ -205,11 +218,12 @@ class SYS extends PBObject implements ISYS
 		return $module;
 	}
 
-	public function validateChild($childrenId)
-	{
+	public function validateChild($childrenId) {
+
 		$childrenId = divide($childrenId);
 		$selfId = $this->id;
 
 		return $selfId['base'] === $childrenId['extended'];
 	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }
