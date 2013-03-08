@@ -5,7 +5,7 @@
  * DateTime: 13/2/9 PM4:05
  */
 
-class SYS extends PBObject implements ISYS
+class SYS extends PBObject
 {
 //SEC: System Boot Loader///////////////////////////////////////////////////////////////////////////////////////////////
 	private static $_SYS_INSTANCE = NULL;
@@ -16,6 +16,8 @@ class SYS extends PBObject implements ISYS
 
 		self::$_SYS_INSTANCE = new SYS();
 		self::$_SYS_INSTANCE->__jobDaemonRun();
+
+		die();
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -74,11 +76,41 @@ class SYS extends PBObject implements ISYS
 														   );
 		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		$this->_incomingRecord['post'] = $_POST;
 		$this->_incomingRecord['files'] = $_FILES;
 		$this->_incomingRecord['env'] = $_ENV;
 		$this->_incomingRecord['server'] = $_SERVER;
 
+		// NOTE: We need to deal with php://input for methods other than post....
+		$this->_incomingRecord['post'] = $_POST;
+
+		// NOTE: We still need to solve the session and cookie problem
+		//$this->_incomingRecord['session'] = $_SESSION;
+		//$this->_incomingRecord['cookie'] = $_COOKIE;
+
+		// INFO: Extract the requested module from request string
+		// DECLARE($requestItems)
+		$requestItems = explode('/', $this->_incomingRecord['rawRequest']);
+
+		// INFO: http://SERVER_HOST/
+		// INFO: http://SERVER_HOST/RC
+		// DECLARE($module, $moduleRequest)
+		if(count($requestItems) == 1)
+		{
+			// ISSUE: We need to check the existence of the initial module
+			// ISSUE: And display the corresponding message when initial module doesn't exist
+			$module = $requestItems[0] === '' ? 'WEB' : strtoupper($requestItems[0]);
+			$moduleRequest = '';
+		}
+		else
+		// INFO: http://SERVER_HOST/RC/REQUEST
+		{
+			$module = strtoupper(array_shift($requestItems));
+			$moduleRequest = implode('/', $requestItems);
+		}
+
+		$this->_incomingRecord['module'] = $module;
+		$this->_incomingRecord['request'] = $moduleRequest;
+		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
 
 		// INFO: GET information is not kept since it may contains error parsed parameters
 		// INFO: This means that the main module have to parse its own parameters from request
@@ -100,32 +132,8 @@ class SYS extends PBObject implements ISYS
 		unset($_REQUEST);
 
 		// NOTE: We still need to solve the session and cookie problem
-		//$this->_incomingRecord['session'] = $_SESSION;
-		//$this->_incomingRecord['cookie'] = $_COOKIE;
 		//unset($_COOKIE); unset($HTTP_COOKIE_VARS);
 		//unset($_SESSION); unset($HTTP_SESSION_VARS);
-
-		// INFO: Extract the requested module from request string
-		// DECLARE($requestItems)
-		$requestItems = explode('/', $this->_incomingRecord['rawRequest']);
-
-		// INFO: http://SERVER_HOST/
-		// INFO: http://SERVER_HOST/RC
-		// DECLARE($module, $moduleRequest)
-		if(count($requestItems) == 1)
-		{
-			$module = $requestItems[0] === '' ? 'WEB' : strtoupper($requestItems[0]);
-			$moduleRequest = '';
-		}
-		else
-		// INFO: http://SERVER_HOST/RC/REQUEST
-		{
-			$module = strtoupper(array_shift($requestItems));
-			$moduleRequest = implode('/', $requestItems);
-		}
-
-		$this->_incomingRecord['module'] = $module;
-		$this->_incomingRecord['request'] = $moduleRequest;
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -193,7 +201,8 @@ class SYS extends PBObject implements ISYS
 
 	private function dump() {
 
-		preg_replace('/\n/', '<br \>', preg_replace('/\ /', '&nbsp;', print_r(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT), TRUE)));
+		preg_replace('/\n/', '<br \>', preg_replace('/\ /', '&nbsp;',
+													print_r(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT), TRUE)));
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -224,6 +233,38 @@ class SYS extends PBObject implements ISYS
 		$selfId = $this->id;
 
 		return $selfId['base'] === $childrenId['extended'];
+	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//SEC: Global APIs//////////////////////////////////////////////////////////////////////////////////////////////////////
+	// INFO: The info function will return an object that contains information about current runtime environment
+	// NOTE: The information provided by the system still have to be considered
+	public static function Info()
+	{
+		if(is_null(self::$_SYS_INSTANCE)) return NULL;
+
+		$runTimeInstance = self::$_SYS_INSTANCE;
+
+		$infoStorage = new PBStorage();
+
+		$infoStorage->request->method = $runTimeInstance->_incomingRecord['method'];
+		$infoStorage->request->raw = $runTimeInstance->_incomingRecord['request'];
+		$infoStorage->request->module = $runTimeInstance->_incomingRecord['module'];
+		$infoStorage->request->time = $runTimeInstance->_incomingRecord['server']['REQUEST_TIME'];
+		$infoStorage->request->contentType = $runTimeInstance->_incomingRecord['server']['CONTENT_TYPE'];
+
+		$infoStorage->client->accept->encoding = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_ENCODING'];
+		$infoStorage->client->accept->format = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT'];
+		$infoStorage->client->accept->language = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_LANGUAGE'];
+		$infoStorage->client->accept->charset = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_CHARSET'];
+		$infoStorage->client->agent = $runTimeInstance->_incomingRecord['server']['HTTP_USER_AGENT'];
+		$infoStorage->client->addr = $runTimeInstance->_incomingRecord['server']['REMOTE_ADDR'];
+
+		$infoStorage->incoming->files = $runTimeInstance->_incomingRecord['files'];
+		$infoStorage->incoming->args = $runTimeInstance->_incomingRecord['post'];
+
+
+		return $infoStorage;
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

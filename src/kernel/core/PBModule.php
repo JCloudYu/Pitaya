@@ -47,9 +47,7 @@ class PBModule extends PBObject
 		// NOTE: load tools here...
 		$requiredModules = $this->_bootstrap->tools;
 		foreach($requiredModules as $module)
-		{
-
-		}
+			$this->_process->attachModule($module['module'], $module['request'], FALSE);
 	}
 
 //SEC: Getters/Setters that are provided for internal usage
