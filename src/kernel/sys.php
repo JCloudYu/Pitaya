@@ -70,7 +70,7 @@ class SYS extends PBObject
 		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
 		// INFO: 		  will be purged into
 		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-		$this->_incomingRecord['rawRequest'] = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI']));
+		$this->_incomingRecord['rawRequest'] = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI'])));
 		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$this->_incomingRecord['files'] = $_FILES;
