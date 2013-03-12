@@ -5,10 +5,9 @@
  * DateTime: 13/2/9 PM4:01
  */
 
-require_once('config.php');
-
 // Constant path declaration
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+require_once(__ROOT__.'/config.php');
 
 srand(time());
 
