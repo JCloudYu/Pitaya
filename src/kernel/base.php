@@ -6,14 +6,8 @@
  */
  
 // Constant path declaration
-if(preg_match('/^win|^WIN/', PHP_OS) === 1)
-{
-	define('__OS__', 'WIN');
-}
-else
-{
-	define('__OS__', 'UNIX');
-}
+if(preg_match('/^win|^WIN/', PHP_OS) === 1)	define('__OS__', 'WIN');
+else define('__OS__', 'UNIX');
 
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
 
