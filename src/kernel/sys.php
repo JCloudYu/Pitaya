@@ -248,7 +248,7 @@ class SYS extends PBObject
 		$infoStorage->request->raw = $runTimeInstance->_incomingRecord['request'];
 		$infoStorage->request->module = $runTimeInstance->_incomingRecord['module'];
 		$infoStorage->request->time = $runTimeInstance->_incomingRecord['server']['REQUEST_TIME'];
-		$infoStorage->request->contentType = $runTimeInstance->_incomingRecord['server']['CONTENT_TYPE'];
+		$infoStorage->request->contentType = array_key_exists('CONTENT_TYPE', $runTimeInstance->_incomingRecord['server']) ? $runTimeInstance->_incomingRecord['server']['CONTENT_TYPE'] : '';
 
 		$infoStorage->client->accept->encoding = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_ENCODING'];
 		$infoStorage->client->accept->format = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT'];
