@@ -6,7 +6,17 @@
  */
 
 // Constant path declaration
+if(preg_match('/^win/', PHP_OS) === 1)
+{
+	define('__OS__', 'WIN');
+}
+else
+{
+	define('__OS__', 'UNIX');
+}
+
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+
 require_once(__ROOT__.'/config.php');
 
 srand(time());
@@ -23,7 +33,9 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 	static $registeredInclusions = array();
 	static $_cachedKernelPath = NULL;
+	static $_cachedServicePath = NULL;
 	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
+	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
 	if($output === TRUE)
 	{
@@ -37,7 +49,22 @@ function using($referencingContext = '', $important = true, $output = false) {
 	{
 		array_shift($tokens);
 		$tokens = array_reverse($tokens);
-		$completePath = $tokens[0] == 'kernel' ? $_cachedKernelPath : __ROOT__ ;
+
+		switch($tokens[0])
+		{
+			case 'kernel':
+				array_shift($tokens);
+				$completePath = $_cachedKernelPath;
+				break;
+			case 'services':
+				array_shift($tokens);
+				$completePath = $_cachedServicePath;
+				break;
+			default:
+				$completePath = __ROOT__;
+				break;
+		}
+
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
 		$completePath .= '/';
@@ -68,7 +95,20 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 		$tokens = array_reverse($tokens);
 
-		$completePath = $tokens[0] == 'kernel' ? $_cachedKernelPath : __ROOT__ ;
+		switch($tokens[0])
+		{
+			case 'kernel':
+				array_shift($tokens);
+				$completePath = $_cachedKernelPath;
+				break;
+			case 'services':
+				array_shift($tokens);
+				$completePath = $_cachedServicePath;
+				break;
+			default:
+				$completePath = __ROOT__;
+				break;
+		}
 
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
@@ -80,6 +120,41 @@ function using($referencingContext = '', $important = true, $output = false) {
 		if($important) require($completePath);
 		else include($completePath);
 	}
+}
+function available($referencingContext = '') {
+	static $registeredInclusions = array();
+	static $_cachedKernelPath = NULL;
+	static $_cachedServicePath = NULL;
+	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
+	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
+
+	$tokens = explode('.', $referencingContext);
+
+	if(isset($registeredInclusions[$referencingContext])) return $registeredInclusions[$referencingContext];
+
+	switch($tokens[0])
+	{
+		case 'kernel':
+			array_shift($tokens);
+			$completePath = $_cachedKernelPath;
+			break;
+		case 'services':
+			array_shift($tokens);
+			$completePath = $_cachedServicePath;
+			break;
+		default:
+			$completePath = __ROOT__;
+			break;
+	}
+
+	foreach( $tokens as $token)
+		$completePath .= "/{$token}";
+
+	$completePath .= '.php';
+
+	$registeredInclusions[$referencingContext] = file_exists($completePath);
+
+	return $registeredInclusions[$referencingContext];
 }
 function acquiring($referencingContext = '', $param = NULL) {
 
@@ -99,11 +174,6 @@ function acquiring($referencingContext = '', $param = NULL) {
 function caller() {
 	$backtrace = debug_backtrace(0);
 	return $backtrace[2]['class'];
-}
-function backtrace() {
-	$backtrace = debug_backtrace(0);
-
-	//echo preg_replace('/\n/', '<br \>', preg_replace('/\ /', '&nbsp;', print_r($backtrace, TRUE)));
 }
 function encode($appendInfo = NULL, $referenceBase = NULL) {
 
@@ -183,6 +253,9 @@ function divide($sys_hash)
 $reg = encode('');
 divide($reg);
 
+// Trigger the functions to cache the paths
+available('');
+
 // Inclusion of the core libraries
 using('kernel.basis.PBObject');
 using('kernel.basis.*');
@@ -190,4 +263,5 @@ using('kernel.core.*');
 
 unset($GLOBALS['randomCert']);
 unset($GLOBALS['kernelPath']);
+unset($GLOBALS['servicePath']);
 unset($reg);

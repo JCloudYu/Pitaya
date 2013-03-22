@@ -239,8 +239,10 @@ class SYS extends PBObject
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
-		if(file_exists(__ROOT__."/services/{$this->_entryService}/$moduleName.php"))
-			using("services.{$this->_entryService}.$moduleName");
+		$targetPath = "services.{$this->_entryService}.$moduleName";
+
+		if(available($targetPath))
+			using($targetPath);
 		else
 			throw(new Exception("Module doesn't exist!"));
 
