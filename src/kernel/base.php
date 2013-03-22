@@ -4,9 +4,9 @@
  * Created by JCloudYu.
  * DateTime: 13/2/9 PM4:01
  */
-
+ 
 // Constant path declaration
-if(preg_match('/^win/', PHP_OS) === 1)
+if(preg_match('/^win|^WIN/', PHP_OS) === 1)
 {
 	define('__OS__', 'WIN');
 }
