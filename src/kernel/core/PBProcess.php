@@ -48,13 +48,13 @@ class PBProcess extends PBObject
 		return $this->_processId;
 	}
 
-	public function attachMainModule($moduleName, $moduleRequest) {
+	public function attachMainService($moduleName, $moduleRequest) {
 
 		if(!$this->friend('SYS')) throw(new Exception("Calling an inaccessible function PBProcess::attachMainModule()."));
 
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
-		$module = $this->_system->acquireModule($moduleName);
+		$module = $this->_system->acquireServiceModule($moduleName);
 		$module->__processInst = $this;
 
 		// INFO: Preparing the module will force the module to it's corresponding bootstrap
