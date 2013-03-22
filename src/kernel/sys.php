@@ -22,7 +22,7 @@ class SYS extends PBObject
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Instance//////////////////////////////////////////////////////////////////////////////////////////////////
-	private $_entryModule = NULL;
+	private $_entryService = NULL;
 	private $_systemId = NULL;
 
 	// INFO: Constructor declared as a private function is to maintain the singleness of the SYS object
@@ -34,8 +34,8 @@ class SYS extends PBObject
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
-			$this->_entryModule = $this->_incomingRecord['module'];
-			$this->__forkProcess($this->_entryModule, $this->_incomingRecord['request']);
+			$this->_entryService = $this->_incomingRecord['service'];
+			$this->__forkProcess($this->_entryService, $this->_incomingRecord['request']);
 		}
 		catch(PBException $e)
 		{
@@ -71,6 +71,7 @@ class SYS extends PBObject
 		// INFO: 		  will be purged into
 		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
 		$this->_incomingRecord['rawRequest'] = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI'])));
+
 		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		$this->_incomingRecord['files'] = $_FILES;
@@ -88,24 +89,48 @@ class SYS extends PBObject
 		// DECLARE($requestItems)
 		$requestItems = explode('/', $this->_incomingRecord['rawRequest']);
 
-		// INFO: http://SERVER_HOST/
-		// INFO: http://SERVER_HOST/RC
 		// DECLARE($module, $moduleRequest)
 		if(count($requestItems) == 1)
 		{
-			// ISSUE: We need to check the existence of the initial module
-			// ISSUE: And display the corresponding message when initial module doesn't exist
-			$module = $requestItems[0] === '' ? 'WEB' : strtoupper($requestItems[0]);
-			$moduleRequest = '';
+			// INFO: http://SERVER_HOST/
+			if($requestItems[0] == '')
+			{
+				$service = 'index';
+				$moduleRequest = '';
+			}
+			else
+			{
+				$tmpBuf = explode('?', $requestItems[0]);
+				// INFO: http://SERVER_HOST/RC
+				if(count($tmpBuf) == 1)
+				{
+					$service = $requestItems[0];
+					$moduleRequest = '';
+				}
+				else
+				// INFO:http://SERVER_HOST/?REQUEST_ATTR
+				if($tmpBuf[0] == '')
+				{
+					$service = 'index';
+					$moduleRequest = $requestItems[0];
+				}
+				else
+				// INFO: http://SERVER_HOST/RC?REQUEST_ATTR
+				{
+					$service = strtoupper(array_shift($tmpBuf));
+					$moduleRequest = "?".implode('?', $tmpBuf);
+				}
+
+			}
 		}
 		else
 		// INFO: http://SERVER_HOST/RC/REQUEST
 		{
-			$module = strtoupper(array_shift($requestItems));
+			$service = strtoupper(array_shift($requestItems));
 			$moduleRequest = implode('/', $requestItems);
 		}
 
-		$this->_incomingRecord['module'] = $module;
+		$this->_incomingRecord['service'] = $service;
 		$this->_incomingRecord['request'] = $moduleRequest;
 		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
 
@@ -139,15 +164,15 @@ class SYS extends PBObject
 	// INFO: In this version of system, there will be only one process instance in the system (main process)
 	private $_processQueue = array();
 
-	private function __forkProcess($module, $moduleRequest) {
+	private function __forkProcess($service, $moduleRequest) {
 
 		$systemIds = divide($this->_systemId);
-		$processId = encode(array($module, uniqid("", TRUE)), $systemIds['extended']);
+		$processId = encode(array($service, uniqid("", TRUE)), $systemIds['extended']);
 		$process = new PBProcess();
 
 		$process->__processId = $processId;
 		$process->__sysAPI = $this;
-		$process->attachMainModule($module, $moduleRequest);
+		$process->attachMainService($service, $moduleRequest);
 
 		$this->_processQueue[$processId] = $process;
 	}
@@ -204,20 +229,21 @@ class SYS extends PBObject
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: ISYS
-	public function acquireModule($moduleName) {
+	public function acquireServiceModule($moduleName) {
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
-			throw(new Exception("Calling an inaccessible function SYS::acquireModule()."));
-
-		if(!file_exists(__ROOT__."/modules/$moduleName/$moduleName.php"))
-			throw(new Exception("Module doesn't exist!"));
+			throw(new Exception("Calling an inaccessible function SYS::acquireServiceModule()."));
 
 		$processId = $caller['object']->id;
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
-		using("modules.$moduleName.$moduleName");
+		if(file_exists(__ROOT__."/services/{$this->_entryService}/$moduleName.php"))
+			using("services.{$this->_entryService}.$moduleName");
+		else
+			throw(new Exception("Module doesn't exist!"));
+
 		$module = new $moduleName();
 		$module->__moduleId = $moduleId;
 
