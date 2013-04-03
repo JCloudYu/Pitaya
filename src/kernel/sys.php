@@ -15,6 +15,7 @@ class SYS extends PBObject
 		if(self::$_SYS_INSTANCE) return;
 
 		self::$_SYS_INSTANCE = new SYS();
+		self::$_SYS_INSTANCE->__initialize();
 		self::$_SYS_INSTANCE->__jobDaemonRun();
 
 		die();
@@ -26,12 +27,28 @@ class SYS extends PBObject
 	private $_systemId = NULL;
 
 	// INFO: Constructor declared as a private function is to maintain the singleness of the SYS object
+	// INFO: Environmental initialization
 	private function __construct() {
 
 		try
 		{
 			$this->__arrangeVariables();
+		}
+		catch(PBException $e)
+		{
+			print_r($e);
+		}
+		catch(Exception $e)
+		{
+			print_r($e);
+		}
+	}
 
+	// INFO: System workflow initialization
+	private function __initialize() {
+
+		try
+		{
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
 			$this->_entryService = $this->_incomingRecord['service'];
@@ -45,6 +62,7 @@ class SYS extends PBObject
 		{
 			print_r($e);
 		}
+
 	}
 
 	public function __get_id() {
@@ -229,7 +247,7 @@ class SYS extends PBObject
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: ISYS
-	public function acquireServiceModule($moduleName) {
+	public function acquireModule($moduleName) {
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
@@ -239,14 +257,21 @@ class SYS extends PBObject
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
-		$targetPath = "services.{$this->_entryService}.$moduleName";
+		$servicePath = "services.{$this->_entryService}.$moduleName";
+		$modulePath = "modules.{$this->_entryService}.$moduleName";
 
-		if(available($targetPath))
-			using($targetPath);
+		if(available($servicePath))
+			using($servicePath);
+		else
+		if(available($modulePath))
+			using($modulePath);
 		else
 			throw(new Exception("Module doesn't exist!"));
 
 		$module = new $moduleName();
+		if(!is_subclass_of($module, 'PBModule'))
+			throw(new Exception("Requested service is not a valid module"));
+
 		$module->__moduleId = $moduleId;
 
 		return $module;
@@ -274,7 +299,7 @@ class SYS extends PBObject
 
 		$infoStorage->request->method = $runTimeInstance->_incomingRecord['method'];
 		$infoStorage->request->raw = $runTimeInstance->_incomingRecord['request'];
-		$infoStorage->request->module = $runTimeInstance->_incomingRecord['module'];
+		$infoStorage->request->module = $runTimeInstance->_incomingRecord['service'];
 		$infoStorage->request->time = $runTimeInstance->_incomingRecord['server']['REQUEST_TIME'];
 		$infoStorage->request->contentType = array_key_exists('CONTENT_TYPE', $runTimeInstance->_incomingRecord['server']) ? $runTimeInstance->_incomingRecord['server']['CONTENT_TYPE'] : '';
 

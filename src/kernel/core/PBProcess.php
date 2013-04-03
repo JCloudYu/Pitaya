@@ -27,7 +27,34 @@ class PBProcess extends PBObject
 
 	}
 
-	// ISSUE: Execute the module sequences
+//SEC: Process API//////////////////////////////////////////////////////////////////////////////////////////////////////
+	public function __get_id() {
+
+		return $this->_processId;
+	}
+
+	public function attachModule($moduleName, $moduleRequest, $allowDuplicate = FALSE) {
+
+		$duplicated = FALSE;
+		if(array_key_exists($moduleName, $this->_attachedModules))
+		{
+			if(!$allowDuplicate) return FALSE;
+			$duplicated = TRUE;
+		}
+
+		$module = $this->_system->acquireModule($moduleName);
+		$module->__processInst = $this;
+		$module->prepare($moduleRequest);
+		$moduleId = $module->id;
+
+		$this->_attachedModules[$moduleId] = $module;
+		if(!$duplicated) $this->_attachedModules[$moduleName] = $module;
+
+		return $moduleId;
+	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	// MARK: Friend(SYS)
 	public function run() {
 
 		if(!$this->friend('SYS'))
@@ -43,18 +70,14 @@ class PBProcess extends PBObject
 		return 'terminated';
 	}
 
-	public function __get_id() {
-
-		return $this->_processId;
-	}
-
+	// MARK: Friend(SYS)
 	public function attachMainService($moduleName, $moduleRequest) {
 
 		if(!$this->friend('SYS')) throw(new Exception("Calling an inaccessible function PBProcess::attachMainModule()."));
 
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
-		$module = $this->_system->acquireServiceModule($moduleName);
+		$module = $this->_system->acquireModule($moduleName);
 		$module->__processInst = $this;
 
 		// INFO: Preparing the module will force the module to it's corresponding bootstrap
@@ -68,43 +91,13 @@ class PBProcess extends PBObject
 		$this->_bootSequence = array();
 		$this->_bootSequence[] = $moduleId;
 
-		$this->__bootSequence = $module->bootSequence;
+		$this->__bootSequence = $module->__bootSequence;
 
 		$this->_attachedModules[$moduleName] = $module;
 		$this->_attachedModules[$moduleId] = $module;
 	}
 
-	public function attachModule($moduleName, $moduleRequest, $forceDuplicate = FALSE) {
-
-		$duplicated = FALSE;
-		if(array_key_exists($moduleName, $this->_attachedModules))
-		{
-			if(!$forceDuplicate) return FALSE;
-			$duplicated = TRUE;
-		}
-
-		$module = $this->_system->acquireModule($moduleName);
-		$module->__processInst = $this;
-		$module->prepare($moduleRequest);
-		$moduleId = $module->id;
-
-		$this->_attachedModules[$moduleId] = $module;
-		if(!$duplicated) $this->_attachedModules[$moduleName] = $module;
-
-		return $moduleId;
-	}
-
-	// ISSUE: Invoking a module...
-	public function Invoke()
-	{
-		$args = func_get_args();
-		$moduleName = array_shift($args);
-		$moduleFunc = array_shift($args);
-
-
-	}
-
-//SEC: Private functions or friend functions
+	// MARK: Friend(SYS)
 	public function __set___processId($value) {
 
 		if(!$this->friend('SYS'))
@@ -113,6 +106,7 @@ class PBProcess extends PBObject
 		$this->_processId = $value;
 	}
 
+	// MARK: Friend(SYS)
 	public function __set___sysAPI($value) {
 
 		if(!$this->friend('SYS'))

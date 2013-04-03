@@ -5,14 +5,13 @@
  * DateTime: 13/2/10 PM6:51
  */
 
-using('kernel.core.PBBootstrap');
-
 class PBModule extends PBObject
 {
 	private $_moduleId = NULL;
 	private $_process = NULL;
 
-	private $_bootstrap = NULL;
+	protected $_bootstrap = NULL;
+
 
 	public function prepare($moduleRequest) {
 
@@ -33,23 +32,6 @@ class PBModule extends PBObject
 		return $this->_process->id;
 	}
 
-	protected function loadBootStrap($bootstrapName) {
-
-		$self = get_class($this);
-		$requiredFile = __ROOT__."/modules/{$self}/bootstraps/$bootstrapName.bootstrap.json";
-		if(!file_exists($requiredFile))
-			throw(new Exception("Unable to locate the target bootstrap descriptor $bootstrapName"));
-
-		$this->_bootstrap = PBBootstrap::parseBootstrap(json_decode(file_get_contents($requiredFile), TRUE));
-		if($this->_bootstrap === NULL)
-			throw(new Exception("Unable to decode the target bootstrap descriptor $bootstrapName"));
-
-		// NOTE: load tools here...
-		$requiredModules = $this->_bootstrap->tools;
-		foreach($requiredModules as $module)
-			$this->_process->attachModule($module['module'], $module['request'], FALSE);
-	}
-
 //SEC: Getters/Setters that are provided for internal usage
 	protected function __get_process() {
 
@@ -58,20 +40,11 @@ class PBModule extends PBObject
 
 //SEC: Friend functions
 
-	public function __get_tools() {
-
+	public function __get___bootSequence() {
 		if(!$this->friend('SYS', 'PBProcess', get_class($this)))
 			throw(new Exception("Setting value to an undefined property __bootstrap."));
 
-		return $this->_bootstrap ? $this->_bootstrap->tools : NULL;
-	}
-
-	public function __get_bootSequence() {
-		// NOTE: The bootSequence should left empty and provide a way letting a module to fill in the required bootSequence
-		if(!$this->friend('SYS', 'PBProcess', get_class($this)))
-			throw(new Exception("Setting value to an undefined property __bootstrap."));
-
-		return $this->_bootstrap ? $this->_bootstrap->sequences : NULL;
+		return is_array($this->_bootstrap) ? $this->_bootstrap : array();
 	}
 
 	public function __set___moduleId($value) {

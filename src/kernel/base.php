@@ -32,9 +32,7 @@ function using($referencingContext = '', $important = true, $output = false) {
 	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
 	if($output === TRUE)
-	{
-		echo preg_replace('/\n|\r/', '<br />', print_r($registeredInclusions, TRUE));
-	}
+		return preg_replace('/\n|\r/', '<br />', var_export($registeredInclusions, TRUE));
 
 	$tokens = explode('.', $referencingContext);
 	$tokens = array_reverse($tokens);
