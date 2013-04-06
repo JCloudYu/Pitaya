@@ -12,13 +12,36 @@ class SYS extends PBObject
 	public static function boot($argc = 0, $argv = NULL) {
 
 		// INFO: Avoid repeated initialization
-		if(self::$_SYS_INSTANCE) return;
+		if(SYS::$_SYS_INSTANCE) return;
 
-		self::$_SYS_INSTANCE = new SYS();
-		self::$_SYS_INSTANCE->__initialize();
-		self::$_SYS_INSTANCE->__jobDaemonRun();
+		SYS::$_SYS_INSTANCE = new SYS();
+		SYS::$_SYS_INSTANCE->__initialize();
+		SYS::$_SYS_INSTANCE->__registerConstants();
+		SYS::$_SYS_INSTANCE->__jobDaemonRun();
 
 		die();
+	}
+//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//SEC: Global Path Control ///////////////////////////////////////////////////////////////////////////////////////////////
+	private static $_cacheServicePath = NULL;
+	private static $_cacheKernelPath = NULL;
+	private static $_cacheRandomCert = NULL;
+
+	public static function __imprint_constants() {
+
+		static $initialized = FALSE;
+
+		if($initialized) return;
+
+		SYS::$_cacheServicePath = $GLOBALS['servicePath'];
+		SYS::$_cacheKernelPath = $GLOBALS['kernelPath'];
+		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
+	}
+
+	private function __registerConstants() {
+
+		define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -148,8 +171,21 @@ class SYS extends PBObject
 			$moduleRequest = implode('/', $requestItems);
 		}
 
-		$this->_incomingRecord['service'] = $service;
-		$this->_incomingRecord['request'] = $moduleRequest;
+		$state = FALSE;
+		$state = $state || available("services.{$service}.{$service}");
+		$state = $state || available("modules.{$service}.{$service}");
+
+		if($state)
+		{
+			$this->_incomingRecord['service'] = $service;
+			$this->_incomingRecord['request'] = $moduleRequest;
+		}
+		else
+		{
+			$this->_incomingRecord['service'] = 'req';
+			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+		}
+
 		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
 
 		// INFO: GET information is not kept since it may contains error parsed parameters
@@ -257,14 +293,17 @@ class SYS extends PBObject
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
-		$servicePath = "services.{$this->_entryService}.$moduleName";
-		$modulePath = "modules.{$this->_entryService}.$moduleName";
+		$servicePath = "services.{$this->_entryService}.{$moduleName}";
+		$modulePath = "modules.{$moduleName}.{$moduleName}";
 
-		if(available($servicePath))
-			using($servicePath);
-		else
+
+		// INFO: If the requested module is existed in system core and services,
+		// INFO: system core will be chosen first
 		if(available($modulePath))
 			using($modulePath);
+		else
+		if(available($servicePath))
+			using($servicePath);
 		else
 			throw(new Exception("Module doesn't exist!"));
 
@@ -291,9 +330,9 @@ class SYS extends PBObject
 	// NOTE: The information provided by the system still have to be considered
 	public static function Info()
 	{
-		if(is_null(self::$_SYS_INSTANCE)) return NULL;
+		if(is_null(SYS::$_SYS_INSTANCE)) return NULL;
 
-		$runTimeInstance = self::$_SYS_INSTANCE;
+		$runTimeInstance = SYS::$_SYS_INSTANCE;
 
 		$infoStorage = new PBStorage();
 
