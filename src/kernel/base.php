@@ -6,10 +6,10 @@
  */
  
 // Constant path declaration
-if(preg_match('/^win|^WIN/', PHP_OS) === 1)	define('__OS__', 'WIN');
-else define('__OS__', 'UNIX');
+if(preg_match('/^win|^WIN/', PHP_OS) === 1)	define('__OS__', 'WIN', TRUE);
+else define('__OS__', 'UNIX', TRUE);
 
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT']);
+define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
 
 require_once(__ROOT__.'/config.php');
 
@@ -70,11 +70,11 @@ function using($referencingContext = '', $important = true, $output = false) {
 				$givenContainer = substr($referencingContext, 0, -2);
 				$validEntry = substr($entry, 0, -4);
 
-				if(isset($registeredInclusions["$givenContainer.$validEntry"])) continue;
+				if(isset($registeredInclusions[strtoupper("$givenContainer.$validEntry")])) continue;
 
 				$targetPath = "$completePath/$entry";
 
-				$registeredInclusions["$givenContainer.$validEntry"] = TRUE;
+				$registeredInclusions[strtoupper("$givenContainer.$validEntry")] = TRUE;
 
 				if($important) require($targetPath);
 				else include($targetPath);
@@ -83,7 +83,8 @@ function using($referencingContext = '', $important = true, $output = false) {
 	}
 	else
 	{
-		if(isset($registeredInclusions[$referencingContext])) return;
+		if(isset($registeredInclusions[strtoupper($referencingContext)]))
+			return $registeredInclusions[strtoupper($referencingContext)];
 
 		$tokens = array_reverse($tokens);
 
@@ -107,12 +108,13 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 		$completePath .= '.php';
 
-		if(file_exists($completePath)) $registeredInclusions[$referencingContext] = TRUE;
+		if(file_exists($completePath)) $registeredInclusions[strtoupper($referencingContext)] = TRUE;
 
 		if($important) require($completePath);
 		else include($completePath);
 	}
 }
+
 function available($referencingContext = '') {
 	static $registeredInclusions = array();
 	static $_cachedKernelPath = NULL;
@@ -120,9 +122,9 @@ function available($referencingContext = '') {
 	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
 	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
-	$tokens = explode('.', $referencingContext);
+	if(isset($registeredInclusions[strtoupper($referencingContext)])) return $registeredInclusions[strtoupper($referencingContext)];
 
-	if(isset($registeredInclusions[$referencingContext])) return $registeredInclusions[$referencingContext];
+	$tokens = explode('.', $referencingContext);
 
 	switch($tokens[0])
 	{
@@ -144,10 +146,11 @@ function available($referencingContext = '') {
 
 	$completePath .= '.php';
 
-	$registeredInclusions[$referencingContext] = file_exists($completePath);
+	$registeredInclusions[strtoupper($referencingContext)] = file_exists($completePath);
 
-	return $registeredInclusions[$referencingContext];
+	return $registeredInclusions[strtoupper($referencingContext)];
 }
+
 function acquiring($referencingContext = '', $param = NULL) {
 
 	static $_cachedKernelPath = NULL;
@@ -163,10 +166,12 @@ function acquiring($referencingContext = '', $param = NULL) {
 
 	require($completePath);
 }
+
 function caller() {
 	$backtrace = debug_backtrace(0);
 	return $backtrace[2]['class'];
 }
+
 function encode($appendInfo = NULL, $referenceBase = NULL) {
 
 	static $cacheServer = NULL;
@@ -252,6 +257,9 @@ available('');
 using('kernel.basis.PBObject');
 using('kernel.basis.*');
 using('kernel.core.*');
+using('kernel.sys');
+
+SYS::__imprint_constants();
 
 unset($GLOBALS['randomCert']);
 unset($GLOBALS['kernelPath']);
