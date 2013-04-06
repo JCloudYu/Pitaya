@@ -7,7 +7,6 @@
  * To change this template use File | Settings | File Templates.
  */
 
-// ISSUE: We need to define the APIs exposed to the module
 class PBProcess extends PBObject
 {
 	private $_processId = NULL;
