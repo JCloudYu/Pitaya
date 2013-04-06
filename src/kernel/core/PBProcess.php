@@ -19,7 +19,7 @@ class PBProcess extends PBObject
 
 	public function __construct() {
 
-
+		$this->_bootSequence = PBLList::GENERATE();
 	}
 
 	public function __destruct() {
@@ -38,8 +38,10 @@ class PBProcess extends PBObject
 		$duplicated = FALSE;
 		if(array_key_exists($moduleName, $this->_attachedModules))
 		{
-			if(!$allowDuplicate) return FALSE;
-			$duplicated = TRUE;
+			if(!$allowDuplicate)
+				return $this->_attachedModules[$moduleName]->id;
+			else
+				$duplicated = TRUE;
 		}
 
 		$module = $this->_system->acquireModule($moduleName);
@@ -51,6 +53,43 @@ class PBProcess extends PBObject
 		if(!$duplicated) $this->_attachedModules[$moduleName] = $module;
 
 		return $moduleId;
+	}
+
+	public function assignNextModule($moduleHandle) {
+
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+
+		PBLList::AFTER($this->_bootSequence, $moduleHandle, $moduleHandle);
+
+		return TRUE;
+	}
+
+	public function cancelNextModule() {
+
+		$status = PBLList::NEXT($this->_bootSequence);
+		$status = $status && PBLList::REMOVE($this->_bootSequence);
+
+		return $status;
+	}
+
+	public function replaceNextModule($moduleHandle) {
+
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+
+		$status = PBLList::NEXT($this->_bootSequence);
+		$status = $status && PBLList::SET($this->_bootSequence, $moduleHandle, $moduleHandle);
+		$status = $status && PBLList::PREV($this->_bootSequence);
+
+		return $status;
+	}
+
+	public function pushModule($moduleHandle) {
+
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+
+		$status = PBLList::PUSH($this->_bootSequence, $moduleHandle, $moduleHandle);
+
+		return $status;
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -64,8 +103,13 @@ class PBProcess extends PBObject
 			throw(new Exception("The process has no module to execute!."));
 
 		$dataInput = NULL;
-		foreach($this->_bootSequence as $moduleHandle)
+		PBLList::HEAD($this->_bootSequence);
+		do
+		{
+			$moduleHandle = $this->_bootSequence->data;
 			$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
+		}
+		while(PBLList::NEXT($this->_bootSequence));
 
 		return 'terminated';
 	}
@@ -81,15 +125,14 @@ class PBProcess extends PBObject
 		$module->__processInst = $this;
 
 		// INFO: Preparing the module will force the module to it's corresponding bootstrap
-		$module->prepare($moduleRequest);
-
 		$moduleId = $module->id;
 		$this->_mainModuleId = $moduleId;
 
-		// INFO: Get the boot sequence from bootstrap
+		PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
 
-		$this->_bootSequence = array();
-		$this->_bootSequence[] = $moduleId;
+		$module->prepare($moduleRequest);
+
+		// INFO: Get default boot sequence from boot module
 
 		$this->__bootSequence = $module->__bootSequence;
 
@@ -147,7 +190,7 @@ class PBProcess extends PBObject
 
 			$moduleId = $this->attachModule($moduleName, $request, $reuse);
 
-			$this->_bootSequence[] = $moduleId;
+			PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
 		}
 	}
 }
