@@ -10,7 +10,7 @@ class PBModule extends PBObject
 	private $_moduleId = NULL;
 	private $_process = NULL;
 
-	protected $_bootstrap = NULL;
+	private $_bootstrap = NULL;
 
 
 	public function prepare($moduleRequest) {
@@ -37,6 +37,20 @@ class PBModule extends PBObject
 
 		return $this->_process;
 	}
+
+	protected function __set_bootStrap($value){
+
+		if(!is_array($value))
+			$this->_bootstrap = NULL;
+		else
+			$this->_bootstrap = $value;
+	}
+
+	protected function __get_bootStrap(){
+
+		return $this->_bootstrap;
+	}
+
 
 //SEC: Friend functions
 

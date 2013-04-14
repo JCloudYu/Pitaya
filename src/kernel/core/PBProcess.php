@@ -32,16 +32,18 @@ class PBProcess extends PBObject
 		return $this->_processId;
 	}
 
-	public function attachModule($moduleName, $moduleRequest, $allowDuplicate = FALSE) {
+	public function getModule($moduleName) {
 
-		$duplicated = FALSE;
 		if(array_key_exists($moduleName, $this->_attachedModules))
-		{
-			if(!$allowDuplicate)
-				return $this->_attachedModules[$moduleName]->id;
-			else
-				$duplicated = TRUE;
-		}
+			return $this->_attachedModules[$moduleName];
+
+		return NULL;
+	}
+
+	public function attachModule($moduleName, $moduleRequest, $reusable = TRUE) {
+
+		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
+			return $this->_attachedModules[$moduleName]->id;
 
 		$module = $this->_system->acquireModule($moduleName);
 		$module->__processInst = $this;
@@ -49,7 +51,7 @@ class PBProcess extends PBObject
 		$moduleId = $module->id;
 
 		$this->_attachedModules[$moduleId] = $module;
-		if(!$duplicated) $this->_attachedModules[$moduleName] = $module;
+		if($reusable) $this->_attachedModules[$moduleName] = $module;
 
 		return $moduleId;
 	}
@@ -66,8 +68,9 @@ class PBProcess extends PBObject
 	public function cancelNextModule() {
 
 		$status = PBLList::NEXT($this->_bootSequence);
-		$status = $status && PBLList::REMOVE($this->_bootSequence);
+		if(!$status) return $status;
 
+		$status = $status && PBLList::REMOVE($this->_bootSequence);
 		return $status;
 	}
 

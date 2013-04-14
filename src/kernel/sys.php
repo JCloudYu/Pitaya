@@ -283,7 +283,7 @@ class SYS extends PBObject
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: ISYS
-	public function acquireModule($moduleName) {
+	public function acquireModule($moduleName, $exception = TRUE) {
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
@@ -305,7 +305,12 @@ class SYS extends PBObject
 		if(available($servicePath))
 			using($servicePath);
 		else
-			throw(new Exception("Module doesn't exist!"));
+		{
+			if($exception)
+				throw(new Exception("Module doesn't exist!"));
+			else
+				return NULL;
+		}
 
 		$module = new $moduleName();
 		if(!is_subclass_of($module, 'PBModule'))
