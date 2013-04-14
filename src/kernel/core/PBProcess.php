@@ -123,7 +123,11 @@ class PBProcess extends PBObject
 
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
-		$module = $this->_system->acquireModule($moduleName);
+		// INFO: System will first look for [ main ] module in the service folder
+		$module = $this->_system->acquireModule("main", FALSE);
+		// INFO: If the main module doesn't exist, look for module with the service name instead
+		if($module === NULL) $module = $this->_system->acquireModule($moduleName, TRUE);
+
 		$module->__processInst = $this;
 
 		// INFO: Preparing the module will force the module to it's corresponding bootstrap
