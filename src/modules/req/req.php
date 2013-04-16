@@ -20,8 +20,8 @@ class req extends PBModule
 	}
 
 	public function exec($param) {
-
-		if($this->_request['req'][0] === 'favicon.ico')
+	
+		if($this->_request['resource'][0] === 'favicon.ico')
 		{
 			header('Content-Type: image/vnd.microsoft.icon');
 			readfile(__ROOT__.'/favicon.ico');
