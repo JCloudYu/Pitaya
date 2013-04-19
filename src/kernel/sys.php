@@ -173,7 +173,9 @@ class SYS extends PBObject
 
 		$state = FALSE;
 		$state = $state || available("services.{$service}.{$service}");
+		$state = $state || available("services.{$service}.main");
 		$state = $state || available("modules.{$service}.{$service}");
+		$state = $state || available("modules.{$service}.main");
 
 		if($state)
 		{
