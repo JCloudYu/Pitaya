@@ -10,3 +10,5 @@ else
 	$GLOBALS['kernelPath'] = '/Volumes/Personal/001.jcloudyu/001.dev/0008.web.service.php.core/src/kernel';
 	$GLOBALS['servicePath'] =  '/Volumes/Personal/001.jcloudyu/001.dev/0009.php.web.services';
 }
+
+define("__DEBUG_MODE__", FALSE);
