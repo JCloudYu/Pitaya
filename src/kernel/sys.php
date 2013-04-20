@@ -172,10 +172,11 @@ class SYS extends PBObject
 		}
 
 		$state = FALSE;
-		$state = $state || available("services.{$service}.{$service}");
 		$state = $state || available("services.{$service}.main");
-		$state = $state || available("modules.{$service}.{$service}");
+		$state = $state || available("services.{$service}.{$service}");
+
 		$state = $state || available("modules.{$service}.main");
+		$state = $state || available("modules.{$service}.{$service}");
 
 		if($state)
 		{
@@ -184,7 +185,7 @@ class SYS extends PBObject
 		}
 		else
 		{
-			$this->_incomingRecord['service'] = 'req';
+			$this->_incomingRecord['service'] = 'index';
 			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
 		}
 

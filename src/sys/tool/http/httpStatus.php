@@ -1,10 +1,8 @@
 <?php
 /*
- * File: PBHTTPReply.php
+ * File: httpStatus.php
  * Created by Cloud.
- * DateTime: 13/2/9 PM11:58
- * 
- * Enter the file information here...
+ * DateTime: 13/4/20 PM11:26
  */
 
 class PBHTTPStatus {
@@ -177,26 +175,4 @@ class PBHTTPStatus {
 	);
 }
 
-class PBHTTPReply {
-
-//SEC: Header Reply/////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static function ReplyStatus($status) {
-
-		$statusMsg = PBHTTPStatus::$StatusString[$status];
-		if(is_null($statusMsg)) {throw new Exception("Unsupported HTTP Status Code");}
-		header("HTTP/1.1 $status $statusMsg");
-		header("Status: $status $statusMsg");
-		header("Version: HTTP/1.1");
-	}
-
-
-	public static function ReplyJSON()
-	{
-
-	}
-
-	public static function ReplyHTML($blueprint, $param)
-	{
-		acquiring("sys.blueprint.$blueprint", $param);
-	}
-}
+class_alias('PBHTTPStatus', 'HTTPStatus');

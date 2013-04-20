@@ -37,6 +37,9 @@ function using($referencingContext = '', $important = true, $output = false) {
 	$tokens = explode('.', $referencingContext);
 	$tokens = array_reverse($tokens);
 
+	if(isset($registeredInclusions[strtoupper($referencingContext)]))
+		return $registeredInclusions[strtoupper($referencingContext)];
+
 	if($tokens[0] == '*')
 	{
 		array_shift($tokens);
@@ -80,12 +83,11 @@ function using($referencingContext = '', $important = true, $output = false) {
 				else include($targetPath);
 			}
 		}
+
+		$registeredInclusions[strtoupper($referencingContext)] = TRUE;
 	}
 	else
 	{
-		if(isset($registeredInclusions[strtoupper($referencingContext)]))
-			return $registeredInclusions[strtoupper($referencingContext)];
-
 		$tokens = array_reverse($tokens);
 
 		switch($tokens[0])
