@@ -16,7 +16,6 @@ class SYS extends PBObject
 
 		SYS::$_SYS_INSTANCE = new SYS();
 		SYS::$_SYS_INSTANCE->__initialize();
-		SYS::$_SYS_INSTANCE->__registerConstants();
 		SYS::$_SYS_INSTANCE->__jobDaemonRun();
 
 		die();
@@ -75,6 +74,10 @@ class SYS extends PBObject
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
 			$this->_entryService = $this->_incomingRecord['service'];
+
+			$this->__registerConstants();
+			$this->__judgeMainService();
+
 			$this->__forkProcess($this->_entryService, $this->_incomingRecord['request']);
 		}
 		catch(PBException $e)
@@ -86,6 +89,30 @@ class SYS extends PBObject
 			print_r($e);
 		}
 
+	}
+
+	public function __judgeMainService() {
+
+		$service = $this->_incomingRecord['service'];
+		$moduleRequest = $this->_incomingRecord['request'];
+
+		$state = FALSE;
+		$state = $state || available("service.main");
+		$state = $state || available("service.{$service}");
+
+		$state = $state || available("modules.{$service}.main");
+		$state = $state || available("modules.{$service}.{$service}");
+
+		if($state)
+		{
+			$this->_incomingRecord['service'] = $service;
+			$this->_incomingRecord['request'] = $moduleRequest;
+		}
+		else
+		{
+			$this->_incomingRecord['service'] = 'index';
+			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+		}
 	}
 
 	public function __get_id() {
@@ -171,24 +198,8 @@ class SYS extends PBObject
 			$moduleRequest = implode('/', $requestItems);
 		}
 
-		$state = FALSE;
-		$state = $state || available("services.{$service}.main");
-		$state = $state || available("services.{$service}.{$service}");
-
-		$state = $state || available("modules.{$service}.main");
-		$state = $state || available("modules.{$service}.{$service}");
-
-		if($state)
-		{
-			$this->_incomingRecord['service'] = $service;
-			$this->_incomingRecord['request'] = $moduleRequest;
-		}
-		else
-		{
-			$this->_incomingRecord['service'] = 'index';
-			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
-		}
-
+		$this->_incomingRecord['service'] = $service;
+		$this->_incomingRecord['request'] = $moduleRequest;
 		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
 
 		// INFO: GET information is not kept since it may contains error parsed parameters
@@ -296,17 +307,33 @@ class SYS extends PBObject
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
-		$servicePath = "services.{$this->_entryService}.{$moduleName}";
+		$servicePath = "service.{$moduleName}";
+		$serviceMainPath = "service.main";
 		$modulePath = "modules.{$moduleName}.{$moduleName}";
+		$moduleMainPath = "modules.{$moduleName}.main";
 
+		$invokeModule = $moduleName;
 
 		// INFO: If the requested module is existed in system core and services,
 		// INFO: system core will be chosen first
-		if(available($modulePath))
-			using($modulePath);
+
+		if(available($serviceMainPath))
+		{
+			using($serviceMainPath);
+			$invokeModule = "main";
+		}
 		else
 		if(available($servicePath))
 			using($servicePath);
+		else
+		if(available($moduleMainPath))
+		{
+			using($moduleMainPath);
+			$invokeModule = "main";
+		}
+		else
+		if(available($modulePath))
+			using($modulePath);
 		else
 		{
 			if($exception)
@@ -315,7 +342,7 @@ class SYS extends PBObject
 				return NULL;
 		}
 
-		$module = new $moduleName();
+		$module = new $invokeModule();
 		if(!is_subclass_of($module, 'PBModule'))
 			throw(new Exception("Requested service is not a valid module"));
 

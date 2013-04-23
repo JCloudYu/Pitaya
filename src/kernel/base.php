@@ -51,9 +51,12 @@ function using($referencingContext = '', $important = true, $output = false) {
 				array_shift($tokens);
 				$completePath = $_cachedKernelPath;
 				break;
-			case 'services':
+			case 'service':
 				array_shift($tokens);
-				$completePath = $_cachedServicePath;
+				if(defined('__WORKING_ROOT__'))
+					$completePath = __WORKING_ROOT__;
+				else
+					$completePath = $_cachedServicePath;
 				break;
 			default:
 				$completePath = __ROOT__;
@@ -96,9 +99,13 @@ function using($referencingContext = '', $important = true, $output = false) {
 				array_shift($tokens);
 				$completePath = $_cachedKernelPath;
 				break;
-			case 'services':
+			case 'service':
 				array_shift($tokens);
-				$completePath = $_cachedServicePath;
+
+				if(defined('__WORKING_ROOT__'))
+					$completePath = __WORKING_ROOT__;
+				else
+					$completePath = $_cachedServicePath;
 				break;
 			default:
 				$completePath = __ROOT__;
@@ -134,9 +141,12 @@ function available($referencingContext = '') {
 			array_shift($tokens);
 			$completePath = $_cachedKernelPath;
 			break;
-		case 'services':
+		case 'service':
 			array_shift($tokens);
-			$completePath = $_cachedServicePath;
+			if(defined('__WORKING_ROOT__'))
+				$completePath = __WORKING_ROOT__;
+			else
+				$completePath = $_cachedServicePath;
 			break;
 		default:
 			$completePath = __ROOT__;
@@ -260,6 +270,8 @@ using('kernel.basis.PBObject');
 using('kernel.basis.*');
 using('kernel.core.*');
 using('kernel.sys');
+
+if(__DEBUG_MODE__) using('sys.tool.debug.*');
 
 SYS::__imprint_constants();
 

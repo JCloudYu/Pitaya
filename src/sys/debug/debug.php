@@ -1,6 +1,6 @@
 <?php
 /*
- * File: db.php
+ * File: debug.php
  * Created by Cloud.
  * DateTime: 13/4/19 PM5:41
  */
@@ -129,5 +129,4 @@ class PBDebug
 	}
 }
 
-class_alias('PBDebug', 'DB');
 class_alias('PBDebug', 'DEBUG');
