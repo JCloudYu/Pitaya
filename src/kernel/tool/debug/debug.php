@@ -9,19 +9,29 @@ class PBDebug
 {
 	private static $IS_DEBUG = __DEBUG_MODE__;
 
-	public static function VDumpHTML() {
+	public static function VarDumpParent() {
+
+		echo self::VDump(func_get_args(), TRUE, TRUE);
+	}
+
+	public static function VarDump() {
 
 		echo self::VDump(func_get_args(), TRUE);
 	}
 
-	public static function VDumpFILE() {
+	public static function VarDumpParentString() {
+
+		return self::VDump(func_get_args(), FALSE, TRUE);
+	}
+
+	public static function VarDumpString() {
 
 		return self::VDump(func_get_args(), FALSE);
 	}
 
-	public static function VDump($args = array(), $forHTML = TRUE) {
+	public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
-		if(!DEBUG::$IS_DEBUG) return '';
+		if(!PBDebug::$IS_DEBUG) return '';
 
 		$out = '';
 		if($forHTML)
@@ -42,10 +52,21 @@ class PBDebug
 
 		$info = self::BackTrace();
 
-		if($info[1]['class'] == "PBDebug" && ($info[1]['function'] == "VDumpHTML" || $info[1]['function'] == "VDumpFILE"))
-			$info = $info[2];
+		if((array_key_exists('class', $info[1]) && $info[1]['class'] == "PBDebug") && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
+			$locator = 2;
 		else
-			$info = $info[1];
+			$locator = 1;
+
+		if($getParentPos)
+			$locator += 1;
+
+		$info = @$info[$locator];
+
+		if($locator >= count($info))
+		{
+			$info['file'] = 'PHP System Call';
+			$info['line'] = 'Unavailable';
+		}
 
 		if($forHTML) $out .= '<div>';
 		$out .= "{$info['file']} : {$info['line']}";
@@ -77,7 +98,7 @@ class PBDebug
 				}
 				else
 				{
-					if(preg_match('/^.*\).*/', $chunk))
+					if(preg_match('/^\).*/', $chunk))
 						$indent--;
 
 					for($i=0; $i<$indent; $i++) $out .= $indentSpace;
@@ -119,10 +140,11 @@ class PBDebug
 			$adjusted[$i-1]['line'] = $info[$i-1]['line'];
 
 			$adjusted[$i-1]['function'] = $tmp['function'];
-			$adjusted[$i-1]['class'] = $tmp['class'];
+
+			if(array_key_exists('class',  $tmp)) $adjusted[$i-1]['class']  = $tmp['class'];
 			if(array_key_exists('object', $tmp)) $adjusted[$i-1]['object'] = $tmp['object'];
-			$adjusted[$i-1]['type'] = $tmp['type'];
-			if(array_key_exists('args', $tmp)) $adjusted[$i-1]['args'] = $tmp['args'];
+			if(array_key_exists('type',	  $tmp)) $adjusted[$i-1]['type']   = $tmp['type'];
+			if(array_key_exists('args',	  $tmp)) $adjusted[$i-1]['args']   = $tmp['args'];
 		}
 
 		return $adjusted;

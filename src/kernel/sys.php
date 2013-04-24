@@ -71,12 +71,11 @@ class SYS extends PBObject
 
 		try
 		{
+			$this->__judgeMainService();
+			$this->__registerConstants();
+
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
-			$this->_entryService = $this->_incomingRecord['service'];
-
-			$this->__registerConstants();
-			$this->__judgeMainService();
 
 			$this->__forkProcess($this->_entryService, $this->_incomingRecord['request']);
 		}
@@ -97,20 +96,20 @@ class SYS extends PBObject
 		$moduleRequest = $this->_incomingRecord['request'];
 
 		$state = FALSE;
-		$state = $state || available("service.main");
-		$state = $state || available("service.{$service}");
+		$state = $state || available("service.{$service}.main");
+		$state = $state || available("service.{$service}.{$service}");
 
 		$state = $state || available("modules.{$service}.main");
 		$state = $state || available("modules.{$service}.{$service}");
 
 		if($state)
 		{
-			$this->_incomingRecord['service'] = $service;
+			$this->_entryService = $this->_incomingRecord['service'] = $service;
 			$this->_incomingRecord['request'] = $moduleRequest;
 		}
 		else
 		{
-			$this->_incomingRecord['service'] = 'index';
+			$this->_entryService = $this->_incomingRecord['service'] = 'index';
 			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
 		}
 	}

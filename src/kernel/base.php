@@ -67,7 +67,12 @@ function using($referencingContext = '', $important = true, $output = false) {
 			$completePath .= "/{$token}";
 		$completePath .= '/';
 
-		$dirHandle = opendir($completePath);
+		$dirHandle = file_exists($completePath) ? opendir($completePath) : NULL;
+
+		if($dirHandle === NULL && $important)
+			throw(new Exception("Cannot locate package: {$completePath}"));
+
+		if($dirHandle !== NULL)
 		while(($entry = readdir($dirHandle)) !== FALSE)
 		{
 			if($entry == '.' || $entry == '..') continue;
@@ -87,7 +92,7 @@ function using($referencingContext = '', $important = true, $output = false) {
 			}
 		}
 
-		$registeredInclusions[strtoupper($referencingContext)] = TRUE;
+		$registeredInclusions[strtoupper($referencingContext)] = $dirHandle !== NULL;
 	}
 	else
 	{
@@ -118,11 +123,14 @@ function using($referencingContext = '', $important = true, $output = false) {
 		$completePath .= '.php';
 
 		if(file_exists($completePath)) $registeredInclusions[strtoupper($referencingContext)] = TRUE;
+		else $registeredInclusions[strtoupper($referencingContext)] = FALSE;
 
 		if($important) require($completePath);
 		else include($completePath);
 	}
 }
+
+if(__DEBUG_MODE__) using('kernel.tool.debug.*');
 
 function available($referencingContext = '') {
 	static $registeredInclusions = array();
@@ -270,8 +278,6 @@ using('kernel.basis.PBObject');
 using('kernel.basis.*');
 using('kernel.core.*');
 using('kernel.sys');
-
-if(__DEBUG_MODE__) using('sys.tool.debug.*');
 
 SYS::__imprint_constants();
 
