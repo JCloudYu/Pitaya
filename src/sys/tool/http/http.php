@@ -11,10 +11,12 @@ class PBHTTP
 	{
 		$rawRequest = explode('?', $rawRequest);
 
-		$request = array('resource' => $rawRequest[0], 'attribute' => '');
+		$request = array('resource' => $rawRequest[0], 'attribute' => NULL);
 		if(count($rawRequest) > 1) $request['attribute'] = $rawRequest[1];
 
 		$request['resource'] = explode('/', $request['resource']);
+		if($request['resource'][0] === '') $request['resource'] = array();
+
 		$attributes = explode('&', $request['attribute']);
 
 		$attributeContainer = array('unnamed' => array(), 'named' => array());

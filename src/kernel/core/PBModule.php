@@ -10,7 +10,7 @@ class PBModule extends PBObject
 	private $_moduleId = NULL;
 	private $_process = NULL;
 
-	private $_bootstrap = NULL;
+	private $_bootstrap = array();
 
 
 	public function prepare($moduleRequest) {
@@ -41,7 +41,7 @@ class PBModule extends PBObject
 	protected function __set_bootStrap($value){
 
 		if(!is_array($value))
-			$this->_bootstrap = NULL;
+			$this->_bootstrap = array();
 		else
 			$this->_bootstrap = $value;
 	}
@@ -58,7 +58,7 @@ class PBModule extends PBObject
 		if(!$this->friend('SYS', 'PBProcess', get_class($this)))
 			throw(new Exception("Setting value to an undefined property __bootstrap."));
 
-		return is_array($this->_bootstrap) ? $this->_bootstrap : array();
+		return $this->_bootstrap;
 	}
 
 	public function __set___moduleId($value) {
