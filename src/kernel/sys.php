@@ -308,8 +308,14 @@ class SYS extends PBObject
 
 		$servicePath = "service.{$moduleName}";
 		$serviceMainPath = "service.main";
+
 		$modulePath = "modules.{$moduleName}.{$moduleName}";
 		$moduleMainPath = "modules.{$moduleName}.main";
+		$moduleStoragePath = "modules.{$moduleName}";
+
+		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}" : NULL;
+		$custServiceNestedMainPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}.main" : NULL;
+		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}.{$moduleName}" : NULL;
 
 		$invokeModule = $moduleName;
 
@@ -325,6 +331,18 @@ class SYS extends PBObject
 		if(available($servicePath))
 			using($servicePath);
 		else
+		if($custServicePath !== NULL && available($custServicePath))
+			using($custServicePath);
+		else
+		if($custServiceNestedMainPath !== NULL && available($custServiceNestedMainPath))
+		{
+			using($custServiceNestedMainPath);
+			$invokeModule = "main";
+		}
+		else
+		if($custServiceNestedPath !== NULL && available($custServiceNestedPath))
+			using($custServiceNestedPath);
+		else
 		if(available($moduleMainPath))
 		{
 			using($moduleMainPath);
@@ -333,6 +351,9 @@ class SYS extends PBObject
 		else
 		if(available($modulePath))
 			using($modulePath);
+		else
+		if(available($moduleStoragePath))
+			using($moduleStoragePath);
 		else
 		{
 			if($exception)

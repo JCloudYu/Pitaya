@@ -43,7 +43,10 @@ class PBProcess extends PBObject
 	public function attachModule($moduleName, $moduleRequest, $reusable = TRUE) {
 
 		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
+		{
+			$this->_attachedModules[$moduleName]->prepare($moduleRequest);
 			return $this->_attachedModules[$moduleName]->id;
+		}
 
 		$module = $this->_system->acquireModule($moduleName);
 		$module->__processInst = $this;
@@ -127,6 +130,9 @@ class PBProcess extends PBObject
 		// INFO: If the main module doesn't exist, look for module with the service name instead
 		$module = $this->_system->acquireModule($moduleName, TRUE);
 
+		// INFO: Reference the definition file comes along with the service
+		if(available("service.env")) using("service.env");
+
 		$module->__processInst = $this;
 
 		// INFO: Preparing the module will force the module to it's corresponding bootstrap
@@ -177,11 +183,9 @@ class PBProcess extends PBObject
 				throw(new Exception("Error bootSequence structure definition"));
 
 			$moduleName = $illustrator['module'];
-			$reuse = FALSE;
 
-			if(!array_key_exists('reuse', $illustrator))
-				$reuse = $reuse || FALSE;
-			else
+			$reuse = FALSE;
+			if(array_key_exists('reuse', $illustrator))
 			{
 				if(!is_bool($illustrator['reuse']))
 					throw(new Exception("Error bootSequence structure definition"));

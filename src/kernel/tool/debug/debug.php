@@ -35,7 +35,7 @@ class PBDebug
 
 		$out = '';
 		if($forHTML)
-			$out .= '<div class="debugOpt" style="background-color: #fefe00; z-index: 9999; border: solid red; padding: 5px; word-break: break-all; width: 200px;">';
+			$out .= '<div class="debugOpt" style="background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: 200px;">';
 
 		if(!is_array($args)) $args = array($args);
 
