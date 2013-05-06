@@ -1,7 +1,7 @@
 <HTML>
 <HEAD>
 	<?php echo $meta;?>
-
+	<?php echo $css; ?>
 	<?php echo $preJS; ?>
 </HEAD>
 <BODY>

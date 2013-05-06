@@ -10,7 +10,7 @@ class JS
 	private static $pre  = array('js' => array(), 'lib' => array());
 	private static $post = array('js' => array(), 'lib' => array());
 
-	public static function Add($content, $previous = FALSE) {
+	public static function AddScript($content, $previous = FALSE) {
 
 		if($previous) 	$base = &self::$pre['js'];
 		else			$base = &self::$post['js'];

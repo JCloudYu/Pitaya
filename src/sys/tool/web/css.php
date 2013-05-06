@@ -23,13 +23,14 @@ class CSS
 
 		$content = '';
 		foreach(self::$lib as $lib)
-			$content .= "<link href=\"{$lib}\" type=\"text/css\" rel=\"stylesheet\" />\n";
+			$content .= "<link href=\"{$lib}\" type=\"text/css\" rel=\"stylesheet\">\n";
 
-		$content .= "<style type=\"text/css\">\n";
-		foreach(self::$raw as $raw)
-			$content .= "{$raw};\n";
-
-		$content .= "</style>\n";
+		if(count(self::$raw) > 0)
+		{
+			$content .= "<style type=\"text/css\">\n";
+			foreach(self::$raw as $raw) $content .= "{$raw};\n";
+			$content .= "</style>\n";
+		}
 
 		return $content;
 	}

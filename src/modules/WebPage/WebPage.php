@@ -19,24 +19,34 @@ class PBWebPage extends PBModule
 
 	protected $_pageOrg = NULL;
 
+	protected $_mainLogic = 'web';
+
 	public function prepare($moduleRequest) {
 
 		$this->_pageRequest = is_string($moduleRequest) ? HTTP::ParseRequest($moduleRequest) : array();
-		$this->_targetPage = count($this->_pageRequest['resource']) > 0 ? array_shift($this->_pageRequest['resource']) : 'index';
 
-		$this->_pageOrg = layout($this->_targetPage);
+		if(strtoupper(@$this->_pageRequest['resource'][0]) == 'RC')
+		{
+			$this->_mainLogic = "File";
 
-		$this->bootStrap = $this->__prepareModules();
+			$this->_pageRequest['resource'] = array_slice($this->_pageRequest['resource'], 1);
+			$this->bootStrap = array(array('module' => 'req', 'request' => $this->_pageRequest, 'reuse' => FALSE));
+		}
+		else
+		{
+			$this->_targetPage = count($this->_pageRequest['resource']) > 0 ? array_shift($this->_pageRequest['resource']) : 'index';
+
+			$this->_pageOrg = layout($this->_targetPage);
+			$this->bootStrap = $this->__prepareModules();
+		}
 	}
 
 	public function exec($param) {
 
-		if(@$this->_pageRequest['resource'][0] === 'favicon.ico')
-		{
-			header('Content-Type: image/vnd.microsoft.icon');
-			readfile(__WORKING_ROOT__.'/favicon.ico');
-			exit();
-		}
+		return $this->{"process{$this->_mainLogic}"}($param);
+	}
+
+	private function processWeb($param) {
 
 		$pageStruct = array();
 		foreach(array_keys($this->_pageOrg['regions']) as $region)
@@ -44,6 +54,11 @@ class PBWebPage extends PBModule
 
 
 		return array('pageTpl' => $this->_targetPage, 'page' => $pageStruct);
+	}
+
+	private function processFile($param) {
+
+		return NULL;
 	}
 
 	protected function __prepareModules() {

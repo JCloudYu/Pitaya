@@ -33,7 +33,7 @@ class html extends PBModule
 		tpl("html", $vars);
 	}
 
-	public static function render($item, $retOpt = FALSE) {
+	public static function render($item, $retOpt = TRUE) {
 
 		@$template = $item['template'];
 		unset($item['template']);
