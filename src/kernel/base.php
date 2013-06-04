@@ -10,6 +10,7 @@ if(preg_match('/^win|^WIN/', PHP_OS) === 1)	define('__OS__', 'WIN', TRUE);
 else define('__OS__', 'UNIX', TRUE);
 
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
+define('SERVER_ROOT', $_SERVER['DOCUMENT_ROOT'], TRUE);
 
 require_once(__ROOT__.'/config.php');
 

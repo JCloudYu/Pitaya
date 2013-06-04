@@ -41,6 +41,7 @@ class SYS extends PBObject
 	private function __registerConstants() {
 
 		define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+		chdir(__WORKING_ROOT__);
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
