@@ -4,8 +4,11 @@ class ExtPDO extends PDO
 {
 	const VARIABLE_TABLE = '__extpdo_syswide_variables';
 
-	private $__use_Variable = FALSE;
+	public static function DSN($host, $db, $port = 3306, $driver = 'mysql') {
+		return "$driver:host=$host;port=$port;dbname=$db;";
+	}
 
+	private $__use_Variable = FALSE;
 	public function __construct($dsn, $username, $userpass, $option = array()) {
 
 		$forceVar = ($option['CREATE_VAR']) ? TRUE : FALSE;
