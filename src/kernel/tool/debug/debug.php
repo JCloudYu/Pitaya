@@ -5,7 +5,7 @@
  * DateTime: 13/4/19 PM5:41
  */
 
-class PBDebug
+class Debug
 {
 	private static $IS_DEBUG = __DEBUG_MODE__;
 
@@ -31,7 +31,7 @@ class PBDebug
 
 	public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
-		if(!PBDebug::$IS_DEBUG) return '';
+		if(!Debug::$IS_DEBUG) return '';
 
 		$out = '';
 		if($forHTML)
@@ -150,5 +150,3 @@ class PBDebug
 		return $adjusted;
 	}
 }
-
-class_alias('PBDebug', 'DEBUG');
