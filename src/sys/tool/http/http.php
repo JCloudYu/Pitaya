@@ -53,15 +53,10 @@ class PBHTTP
 	}
 
 
-	public static function ReplyJSON()
+	public static function ReplyJSON($obj)
 	{
-
-	}
-
-	public static function ReplyHTML($blueprint, $param)
-	{
-		acquiring("sys.blueprint.$blueprint", $param);
+		header("Content-type: " . MIME::JSON);
+		$obj = json_encode($obj);
+		echo "$obj";
 	}
 }
-
-class_alias('PBHTTP', 'HTTP');

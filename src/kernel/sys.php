@@ -37,12 +37,6 @@ class SYS extends PBObject
 		SYS::$_cacheKernelPath = $GLOBALS['kernelPath'];
 		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
 	}
-
-	private function __registerConstants() {
-
-		define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-		chdir(__WORKING_ROOT__);
-	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //SEC: System Instance//////////////////////////////////////////////////////////////////////////////////////////////////
@@ -73,7 +67,9 @@ class SYS extends PBObject
 		try
 		{
 			$this->__judgeMainService();
-			$this->__registerConstants();
+
+			// INFO: Define runtime constants
+			define('SERVICE', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
@@ -97,22 +93,62 @@ class SYS extends PBObject
 		$moduleRequest = $this->_incomingRecord['request'];
 
 		$state = FALSE;
-		$state = $state || available("service.{$service}.main");
 		$state = $state || available("service.{$service}.{$service}");
 
-		$state = $state || available("modules.{$service}.main");
+		if ($state)
+		{
+			$this->_entryService = $this->_incomingRecord['service'] = $service;
+			$this->_incomingRecord['request'] = $moduleRequest;
+
+			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+			chdir(__WORKING_ROOT__);
+
+			return;
+		}
+
 		$state = $state || available("modules.{$service}.{$service}");
 
 		if($state)
 		{
 			$this->_entryService = $this->_incomingRecord['service'] = $service;
 			$this->_incomingRecord['request'] = $moduleRequest;
+
+			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
+			chdir(__WORKING_ROOT__);
+
+			return;
 		}
-		else
+
+		$service = 'index';
+
+
+		$state = $state || available("service.{$service}.{$service}");
+
+		if ($state)
 		{
-			$this->_entryService = $this->_incomingRecord['service'] = 'index';
+			$this->_entryService = $this->_incomingRecord['service'] = $service;
 			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+
+			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+			chdir(__WORKING_ROOT__);
+
+			return;
 		}
+
+		$state = $state || available("modules.{$service}.{$service}");
+
+		if ($state)
+		{
+			$this->_entryService = $this->_incomingRecord['service'] = $service;
+			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+
+			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
+			chdir(__WORKING_ROOT__);
+
+			return;
+		}
+
+		throw(new Exception("Cannot locate the target entry module!"));
 	}
 
 	public function __get_id() {
@@ -308,14 +344,11 @@ class SYS extends PBObject
 		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
 
 		$servicePath = "service.{$moduleName}";
-		$serviceMainPath = "service.main";
 
 		$modulePath = "modules.{$moduleName}.{$moduleName}";
-		$moduleMainPath = "modules.{$moduleName}.main";
 		$moduleStoragePath = "modules.{$moduleName}";
 
 		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}" : NULL;
-		$custServiceNestedMainPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}.main" : NULL;
 		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}.{$moduleName}" : NULL;
 
 		$invokeModule = $moduleName;
@@ -323,32 +356,14 @@ class SYS extends PBObject
 		// INFO: If the requested module is existed in system core and services,
 		// INFO: system core will be chosen first
 
-		if(available($serviceMainPath))
-		{
-			using($serviceMainPath);
-			$invokeModule = "main";
-		}
-		else
 		if(available($servicePath))
 			using($servicePath);
 		else
 		if($custServicePath !== NULL && available($custServicePath))
 			using($custServicePath);
 		else
-		if($custServiceNestedMainPath !== NULL && available($custServiceNestedMainPath))
-		{
-			using($custServiceNestedMainPath);
-			$invokeModule = "main";
-		}
-		else
 		if($custServiceNestedPath !== NULL && available($custServiceNestedPath))
 			using($custServiceNestedPath);
-		else
-		if(available($moduleMainPath))
-		{
-			using($moduleMainPath);
-			$invokeModule = "main";
-		}
 		else
 		if(available($modulePath))
 			using($modulePath);
