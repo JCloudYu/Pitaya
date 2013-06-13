@@ -126,12 +126,12 @@ class PBProcess extends PBObject
 
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
+		// INFO: Reference the definition file comes along with the service
+		if(available("service.env")) using("service.env");
+
 		// INFO: System will first look for [ main ] module in the service folder
 		// INFO: If the main module doesn't exist, look for module with the service name instead
 		$module = $this->_system->acquireModule($moduleName, TRUE);
-
-		// INFO: Reference the definition file comes along with the service
-		if(available("service.env")) using("service.env");
 
 		$module->__processInst = $this;
 
