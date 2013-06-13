@@ -221,7 +221,7 @@ class SYS extends PBObject
 				else
 				// INFO: http://SERVER_HOST/RC?REQUEST_ATTR
 				{
-					$service = strtoupper(array_shift($tmpBuf));
+					$service = array_shift($tmpBuf);
 					$moduleRequest = "?".implode('?', $tmpBuf);
 				}
 
@@ -230,7 +230,7 @@ class SYS extends PBObject
 		else
 		// INFO: http://SERVER_HOST/RC/REQUEST
 		{
-			$service = strtoupper(array_shift($requestItems));
+			$service = array_shift($requestItems);
 			$moduleRequest = implode('/', $requestItems);
 		}
 

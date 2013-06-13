@@ -38,8 +38,8 @@ function using($referencingContext = '', $important = true, $output = false) {
 	$tokens = explode('.', $referencingContext);
 	$tokens = array_reverse($tokens);
 
-	if(isset($registeredInclusions[strtoupper($referencingContext)]))
-		return $registeredInclusions[strtoupper($referencingContext)];
+	if(isset($registeredInclusions[($referencingContext)]))
+		return $registeredInclusions[($referencingContext)];
 
 	if($tokens[0] == '*')
 	{
@@ -82,18 +82,18 @@ function using($referencingContext = '', $important = true, $output = false) {
 				$givenContainer = substr($referencingContext, 0, -2);
 				$validEntry = substr($entry, 0, -4);
 
-				if(isset($registeredInclusions[strtoupper("$givenContainer.$validEntry")])) continue;
+				if(isset($registeredInclusions[("$givenContainer.$validEntry")])) continue;
 
 				$targetPath = "$completePath/$entry";
 
-				$registeredInclusions[strtoupper("$givenContainer.$validEntry")] = TRUE;
+				$registeredInclusions[("$givenContainer.$validEntry")] = TRUE;
 
 				if($important) require($targetPath);
 				else include($targetPath);
 			}
 		}
 
-		$registeredInclusions[strtoupper($referencingContext)] = $dirHandle !== NULL;
+		$registeredInclusions[($referencingContext)] = $dirHandle !== NULL;
 	}
 	else
 	{
@@ -123,8 +123,8 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 		$completePath .= '.php';
 
-		if(file_exists($completePath)) $registeredInclusions[strtoupper($referencingContext)] = TRUE;
-		else $registeredInclusions[strtoupper($referencingContext)] = FALSE;
+		if(file_exists($completePath)) $registeredInclusions[($referencingContext)] = TRUE;
+		else $registeredInclusions[($referencingContext)] = FALSE;
 
 		if($important) require($completePath);
 		else include($completePath);
@@ -140,7 +140,7 @@ function available($referencingContext = '') {
 	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
 	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
-	if(isset($registeredInclusions[strtoupper($referencingContext)])) return $registeredInclusions[strtoupper($referencingContext)];
+	if(isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
 
 	$tokens = explode('.', $referencingContext);
 
@@ -167,9 +167,9 @@ function available($referencingContext = '') {
 
 	$completePath .= '.php';
 
-	$registeredInclusions[strtoupper($referencingContext)] = file_exists($completePath);
+	$registeredInclusions[($referencingContext)] = file_exists($completePath);
 
-	return $registeredInclusions[strtoupper($referencingContext)];
+	return $registeredInclusions[($referencingContext)];
 }
 
 function acquiring($referencingContext = '', $param = NULL) {
