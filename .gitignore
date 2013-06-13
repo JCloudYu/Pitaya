@@ -2,3 +2,4 @@
 thumb.db
 .DS_Store
 config.php
+*.log
