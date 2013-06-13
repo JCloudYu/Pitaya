@@ -286,3 +286,6 @@ unset($GLOBALS['randomCert']);
 unset($GLOBALS['kernelPath']);
 unset($GLOBALS['servicePath']);
 unset($reg);
+
+// INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6
+if (!defined('DEBUG_BACKTRACE_PROVIDE_OBJECT')) define('DEBUG_BACKTRACE_PROVIDE_OBJECT', TRUE, TRUE);
