@@ -1,8 +1,8 @@
 <?php
-
+using ('sys.tool.db.*');
 class ExtPDO extends PDO
 {
-	const VARIABLE_TABLE = '__extpdo_syswide_variables';
+	const VARIABLE_TABLE = '__ext_pdo_sys_wide_variables';
 
 	public static function DSN($host, $db, $port = 3306, $driver = 'mysql') {
 		return "$driver:host=$host;port=$port;dbname=$db;";
