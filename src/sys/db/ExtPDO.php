@@ -1,35 +1,19 @@
 <?php
-	using ('sys.tool.db.*');
 
-	class DB extends PDO
+	class ExtPDO extends PDO
 	{
 		const VARIABLE_TABLE = '__ext_pdo_sys_wide_variables';
 
-		public static function DSN($host, $db, $port = 3306, $driver = 'mysql') {
+		public static function DSN($host, $db, $port = 3306, $driver = 'mysql')
+		{
 			return "$driver:host=$host;port=$port;dbname=$db;";
 		}
 
-		private static $__db_singleton = NULL;
-		public static function Link($dsn, $username, $userpass, $option = array()) {
-
-			// INFO: Check singleton
-			$singleton = (defined('__SINGLETON_DB__')) ? __SINGLETON_DB__ : FALSE;
-			if (!$singleton) return new DB($dsn, $username, $userpass, $option);
-
-			// INFO: None singleton mode
-			if (self::$__db_singleton !== NULL) return self::$__db_singleton;
-
-			// INFO: Singleton mode
-			self::$__db_singleton = new DB($dsn, $username, $userpass, $option);
-			return self::$__db_singleton;
-		}
-
-
 		private $__use_Variable = FALSE;
-		private function __construct($dsn, $username, $userpass, $option) {
-
-			$forceVar = ($option['CREATE_VAR']) ? TRUE : FALSE;
-			unset($option['CREATE_VAR']);
+		public function __construct($dsn, $username, $userpass, $option)
+		{
+			@$forceVar = (($key = array_search('CREATE_VAR', $option)) !== FALSE ) ? TRUE : FALSE;
+			unset($option[$key]);
 
 			if (count($option) > 0)
 				parent::__construct($dsn, $username, $userpass, $option);

@@ -69,7 +69,7 @@ class SYS extends PBObject
 			$this->__judgeMainService();
 
 			// INFO: Define runtime constants
-			define('SERVICE', $this->_entryService, TRUE);
+			define('__SERVICE__', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
