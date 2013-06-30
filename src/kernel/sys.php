@@ -355,7 +355,6 @@ class SYS extends PBObject
 
 		// INFO: If the requested module is existed in system core and services,
 		// INFO: system core will be chosen first
-
 		if(available($servicePath))
 			using($servicePath);
 		else
