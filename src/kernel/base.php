@@ -6,11 +6,18 @@
  */
  
 // Constant path declaration
-if(preg_match('/^win|^WIN/', PHP_OS) === 1)	define('__OS__', 'WIN', TRUE);
-else define('__OS__', 'UNIX', TRUE);
+if(preg_match('/^win|^WIN/', PHP_OS) === 1)
+{
+	define('__OS__', 'WIN', TRUE);
+	require_once('win.config.php');
+}
+else
+{
+	define('__OS__', 'UNIX', TRUE);
+	require_once('unix.config.php');
+}
 
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
-define('SERVER_ROOT', $_SERVER['DOCUMENT_ROOT'], TRUE);
 
 require_once(__ROOT__.'/config.php');
 
@@ -131,7 +138,8 @@ function using($referencingContext = '', $important = true, $output = false) {
 	}
 }
 
-if(__DEBUG_MODE__) using('kernel.tool.debug.*');
+using('kernel.tool.debug.*');
+using('kernel.tool.log.*');
 
 function available($referencingContext = '') {
 	static $registeredInclusions = array();
