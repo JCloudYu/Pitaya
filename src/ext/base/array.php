@@ -41,3 +41,42 @@
 
 		return $ary1;
 	}
+
+	function ary_set_recursiv($ary1, $ary2, $forceKeep = FALSE)
+	{
+		$buff = NULL;
+		if (!is_array($ary1)) {
+			if ($forceKeep) {
+				if (!is_array($ary2))
+					return array($ary1, $ary2);
+				else {
+					$ary2[] = $ary1;
+
+					return $ary2;
+				}
+			}
+			else
+				return $ary2;
+		}
+		else {
+			if (!is_array($ary2)) {
+				if ($forceKeep) {
+					$ary1[] = $ary2;
+
+					return $ary1;
+				}
+				else
+					return $ary2;
+			}
+			else {
+				foreach ($ary2 as $key => $value) {
+					if (!array_key_exists($key, $ary1))
+						$ary1[$key] = $value;
+					else
+						$ary1[$key] = array_merge($ary1[$key], $ary2[$key]);
+				}
+
+				return $ary1;
+			}
+		}
+	}
