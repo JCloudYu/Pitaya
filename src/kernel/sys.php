@@ -7,7 +7,7 @@
 
 class SYS extends PBObject
 {
-//SEC: System Boot Loader///////////////////////////////////////////////////////////////////////////////////////////////
+// region [ System Boot Loader ]
 	private static $_SYS_INSTANCE = NULL;
 	public static function boot($argc = 0, $argv = NULL) {
 
@@ -20,9 +20,9 @@ class SYS extends PBObject
 
 		die();
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: Global Path Control ///////////////////////////////////////////////////////////////////////////////////////////////
+// region [ Path Control ]
 	private static $_cacheServicePath = NULL;
 	private static $_cacheKernelPath = NULL;
 	private static $_cacheRandomCert = NULL;
@@ -37,9 +37,9 @@ class SYS extends PBObject
 		SYS::$_cacheKernelPath = $GLOBALS['kernelPath'];
 		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: System Instance//////////////////////////////////////////////////////////////////////////////////////////////////
+// region [ System Instance ]
 	private $_entryService = NULL;
 	private $_systemId = NULL;
 
@@ -155,9 +155,9 @@ class SYS extends PBObject
 
 		return $this->_systemId;
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: System Variable Manager//////////////////////////////////////////////////////////////////////////////////////////
+// region [ System Variable Manager ]
 	private $_incomingRecord = NULL;
 
 	private function __arrangeVariables() {
@@ -238,6 +238,8 @@ class SYS extends PBObject
 		$this->_incomingRecord['request'] = $moduleRequest;
 		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
 
+
+
 		// INFO: GET information is not kept since it may contains error parsed parameters
 		// INFO: This means that the main module have to parse its own parameters from request
 		unset($_GET);
@@ -261,10 +263,9 @@ class SYS extends PBObject
 		//unset($_COOKIE); unset($HTTP_COOKIE_VARS);
 		//unset($_SESSION); unset($HTTP_SESSION_VARS);
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: System Execution API/////////////////////////////////////////////////////////////////////////////////////////////
-
+// region [ System Workflow Control ]
 	// INFO: In this version of system, there will be only one process instance in the system (main process)
 	private $_processQueue = array();
 
@@ -310,29 +311,9 @@ class SYS extends PBObject
 			}
 		}
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: System Response//////////////////////////////////////////////////////////////////////////////////////////////////
-	// NOTE: We need to figure out a way to response error according to request module media type
-	private function __responseError() {
-
-		using('sys.http.PBHTTPReply');
-
-		PBHTTPReply::ReplyStatus(PBHTTPStatus::STATUS_404_NOT_FOUND);
-		PBHTTPReply::ReplyHTML('error', array('responseId' 	=> PBHTTPStatus::STATUS_404_NOT_FOUND,
-											  'errMsg'		=> 'Service not found!',
-											  'errId'		=> 10));
-		die();
-	}
-
-	private function dump() {
-
-		preg_replace('/\n/', '<br \>', preg_replace('/\ /', '&nbsp;',
-													print_r(debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT), TRUE)));
-	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//SEC: ISYS
+// region [ Module Control ]
 	public function acquireModule($moduleName, $exception = TRUE) {
 
 		$caller = $this->caller;
@@ -393,9 +374,9 @@ class SYS extends PBObject
 
 		return $selfId['base'] === $childrenId['extended'];
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 
-//SEC: Global APIs//////////////////////////////////////////////////////////////////////////////////////////////////////
+// region [ Global APIs ]
 	// INFO: The info function will return an object that contains information about current runtime environment
 	// NOTE: The information provided by the system still have to be considered
 	public static function Info()
@@ -425,5 +406,5 @@ class SYS extends PBObject
 
 		return $infoStorage;
 	}
-//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// endregion
 }
