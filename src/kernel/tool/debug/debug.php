@@ -52,7 +52,7 @@ class Debug
 
 		$info = self::BackTrace();
 
-		if((array_key_exists('class', $info[1]) && $info[1]['class'] == "PBDebug") && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
+		if((array_key_exists('class', $info[1]) && $info[1]['class'] == __CLASS__) && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
 			$locator = 2;
 		else
 			$locator = 1;
