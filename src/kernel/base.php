@@ -1,28 +1,18 @@
 <?php
-/*
- * File: base.php
- * Created by JCloudYu.
- * DateTime: 13/2/9 PM4:01
- */
- 
-// Constant path declaration
-if(preg_match('/^win|^WIN/', PHP_OS) === 1)
-{
-	define('__OS__', 'WIN', TRUE);
-	require_once('win.config.php');
-}
-else
-{
-	define('__OS__', 'UNIX', TRUE);
-	require_once('unix.config.php');
-}
 
+// INFO: Super Global Constants...
 define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
+(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 
-require_once(__ROOT__.'/config.php');
+require_once (__ROOT__.'/config.php');
+require_once (__ROOT__.'/cmd.config.php');
+
+define("__DEBUG_MODE__", TRUE, TRUE);
+
+if (!defined('__DEFAULT_SERVICE__')) define('__DEFAULT_SERVICE__', 'index', TRUE);
+
 
 srand(time());
-
 $GLOBALS['randomCert'] = md5(rand());
 
 /**

@@ -147,6 +147,13 @@ class Debug
 			if(array_key_exists('args',	  $tmp)) $adjusted[$i-1]['args']   = $tmp['args'];
 		}
 
+		$item = array_pop($info);
+		unset($item['class']);
+		unset($item['object']);
+		unset($item['type']);
+		unset($item['args']);
+		array_push($adjusted,$item);
+
 		return $adjusted;
 	}
 }

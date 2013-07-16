@@ -43,23 +43,8 @@ class SYS extends PBObject
 	private $_entryService = NULL;
 	private $_systemId = NULL;
 
-	// INFO: Constructor declared as a private function is to maintain the singleness of the SYS object
-	// INFO: Environmental initialization
-	private function __construct() {
-
-		try
-		{
-			$this->__arrangeVariables();
-		}
-		catch(PBException $e)
-		{
-			print_r($e);
-		}
-		catch(Exception $e)
-		{
-			print_r($e);
-		}
-	}
+	// INFO: Singleton declaration
+	private function __construct() { }
 
 	// INFO: System workflow initialization
 	private function __initialize() {
@@ -67,14 +52,15 @@ class SYS extends PBObject
 		try
 		{
 			$this->__judgeMainService();
+			PBRequest::Request();
 
 			// INFO: Define runtime constants
 			define('__SERVICE__', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
-			$this->_systemId = encode($this->_incomingRecord['rawRequest']);
+			$this->_systemId = encode(PBRequest::Request()->raw);
 
-			$this->__forkProcess($this->_entryService, $this->_incomingRecord['request']);
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->request);
 		}
 		catch(PBException $e)
 		{
@@ -89,20 +75,74 @@ class SYS extends PBObject
 
 	public function __judgeMainService() {
 
-		$service = $this->_incomingRecord['service'];
-		$moduleRequest = $this->_incomingRecord['request'];
+		// INFO: Parse URL
 
+		//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
+		// INFO: Purge redundant separators from the REQUEST_URI
+		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
+		// INFO: 		  will be purged into
+		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
+		$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI'])));
+		$GLOBALS['rawRequest'] = $rawRequest;
+		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		// INFO: Extract the requested module from request string
+		$requestItems = explode('/', $rawRequest);
+
+		if(count($requestItems) == 1)
+		{
+			// http://SERVER_HOST/
+			if($requestItems[0] == '')
+			{
+				$service = 'index';
+				$moduleRequest = '';
+			}
+			else
+			{
+				$tmpBuf = explode('?', $requestItems[0]);
+				// http://SERVER_HOST/RC
+				if(count($tmpBuf) == 1)
+				{
+					$service = $requestItems[0];
+					$moduleRequest = '';
+				}
+				else
+				// http://SERVER_HOST/?REQUEST_ATTR
+				if($tmpBuf[0] == '')
+				{
+					$service = 'index';
+					$moduleRequest = $requestItems[0];
+				}
+				else
+				// http://SERVER_HOST/RC?REQUEST_ATTR
+				{
+					$service = array_shift($tmpBuf);
+					$moduleRequest = "?".implode('?', $tmpBuf);
+				}
+
+			}
+		}
+		else
+		// http://SERVER_HOST/RC/REQUEST
+		{
+			$service = array_shift($requestItems);
+			$moduleRequest = implode('/', $requestItems);
+		}
+
+
+		// INFO: Detect Main Service
 		$state = FALSE;
 		$state = $state || available("service.{$service}.{$service}");
 
 		if ($state)
 		{
-			$this->_entryService = $this->_incomingRecord['service'] = $service;
-			$this->_incomingRecord['request'] = $moduleRequest;
+			$this->_entryService = $service;
 
 			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = $moduleRequest;
 			return;
 		}
 
@@ -110,28 +150,29 @@ class SYS extends PBObject
 
 		if($state)
 		{
-			$this->_entryService = $this->_incomingRecord['service'] = $service;
-			$this->_incomingRecord['request'] = $moduleRequest;
+			$this->_entryService = $service;
 
 			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = $moduleRequest;
 			return;
 		}
 
 		$service = 'index';
-
-
 		$state = $state || available("service.{$service}.{$service}");
 
 		if ($state)
 		{
-			$this->_entryService = $this->_incomingRecord['service'] = $service;
-			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+			$this->_entryService = $service;
+			$moduleRequest = "{$service}/{$moduleRequest}";
 
 			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = $moduleRequest;
 			return;
 		}
 
@@ -139,12 +180,14 @@ class SYS extends PBObject
 
 		if ($state)
 		{
-			$this->_entryService = $this->_incomingRecord['service'] = $service;
-			$this->_incomingRecord['request'] = "{$service}/{$moduleRequest}";
+			$this->_entryService = $service;
+			$moduleRequest = "{$service}/{$moduleRequest}";
 
 			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = $moduleRequest;
 			return;
 		}
 
@@ -154,114 +197,6 @@ class SYS extends PBObject
 	public function __get_id() {
 
 		return $this->_systemId;
-	}
-// endregion
-
-// region [ System Variable Manager ]
-	private $_incomingRecord = NULL;
-
-	private function __arrangeVariables() {
-
-		// ISSUE: We still need to deal with other HTTP methods such as DELETE, UPDATE, .....etc
-
-		// INFO: This function will unify the means accessing arguments passed into the system
-		// INFO: In this version, only $_COOKIE and $_SESSION will be kept
-
-		$this->_incomingRecord = array();
-
-		//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
-		// INFO: Purge redundant separators from the REQUEST_URI
-		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
-		// INFO: 		  will be purged into
-		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-		$this->_incomingRecord['rawRequest'] = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI'])));
-
-		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		$this->_incomingRecord['files'] = $_FILES;
-		$this->_incomingRecord['env'] = $_ENV;
-		$this->_incomingRecord['server'] = $_SERVER;
-
-		// NOTE: We need to deal with php://input for methods other than post....
-		$this->_incomingRecord['post'] = $_POST;
-
-		// NOTE: We still need to solve the session and cookie problem
-		//$this->_incomingRecord['session'] = $_SESSION;
-		//$this->_incomingRecord['cookie'] = $_COOKIE;
-
-		// INFO: Extract the requested module from request string
-		// DECLARE($requestItems)
-		$requestItems = explode('/', $this->_incomingRecord['rawRequest']);
-
-		// DECLARE($module, $moduleRequest)
-		if(count($requestItems) == 1)
-		{
-			// INFO: http://SERVER_HOST/
-			if($requestItems[0] == '')
-			{
-				$service = 'index';
-				$moduleRequest = '';
-			}
-			else
-			{
-				$tmpBuf = explode('?', $requestItems[0]);
-				// INFO: http://SERVER_HOST/RC
-				if(count($tmpBuf) == 1)
-				{
-					$service = $requestItems[0];
-					$moduleRequest = '';
-				}
-				else
-				// INFO:http://SERVER_HOST/?REQUEST_ATTR
-				if($tmpBuf[0] == '')
-				{
-					$service = 'index';
-					$moduleRequest = $requestItems[0];
-				}
-				else
-				// INFO: http://SERVER_HOST/RC?REQUEST_ATTR
-				{
-					$service = array_shift($tmpBuf);
-					$moduleRequest = "?".implode('?', $tmpBuf);
-				}
-
-			}
-		}
-		else
-		// INFO: http://SERVER_HOST/RC/REQUEST
-		{
-			$service = array_shift($requestItems);
-			$moduleRequest = implode('/', $requestItems);
-		}
-
-		$this->_incomingRecord['service'] = $service;
-		$this->_incomingRecord['request'] = $moduleRequest;
-		$this->_incomingRecord['method'] = $_SERVER['REQUEST_METHOD'];
-
-
-
-		// INFO: GET information is not kept since it may contains error parsed parameters
-		// INFO: This means that the main module have to parse its own parameters from request
-		unset($_GET);
-		unset($HTTP_GET_VARS);
-
-		unset($_POST);
-		unset($HTTP_POST_VARS);
-
-		unset($_FILES);
-		unset($HTTP_POST_FILES);
-
-		unset($_ENV);
-		unset($HTTP_ENV_VARS);
-
-		unset($_SERVER);
-		unset($HTTP_SERVER_VARS);
-
-		unset($_REQUEST);
-
-		// NOTE: We still need to solve the session and cookie problem
-		//unset($_COOKIE); unset($HTTP_COOKIE_VARS);
-		//unset($_SESSION); unset($HTTP_SESSION_VARS);
 	}
 // endregion
 
