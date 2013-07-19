@@ -30,12 +30,14 @@
 			// NOTE: Now the only allows POST method to accept file input
 			if ($_SERVER['REQUEST_METHOD'] == 'POST')
 			{
+				$this->_incomingRecord['rawData'] = file_get_contents('php://input');
 				$this->_incomingRecord['data'] = $_POST;
 				$this->_incomingRecord['files'] = $_FILES;
 			}
 			else
 			{
-				parse_str(file_get_contents('php://input'), $this->_incomingRecord['data']);
+				$this->_incomingRecord['rawData'] = file_get_contents('php://input');
+				parse_str($this->_incomingRecord['rawData'], $this->_incomingRecord['data']);
 			}
 
 			// NOTE: We still need to solve the session and cookie problem
@@ -76,10 +78,12 @@
 		}
 
 		public function __get_service() { return $this->_incomingRecord['service']; }
-
 		public function __get_request() { return $this->_incomingRecord['request']; }
+		public function __get_data() { return $this->_incomingRecord['data']; }
+		
 
-		public function __get_raw() { return $this->_incomingRecord['rawRequest']; }
+		public function __get_rawRequest() { return $this->_incomingRecord['rawRequest']; }
+		public function __get_rawData() { return $this->_incomingRecord['rawData']; }
 	}
 
 	class_alias('PBRequest', 'Req');
