@@ -58,9 +58,9 @@ class SYS extends PBObject
 			define('__SERVICE__', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
-			$this->_systemId = encode(PBRequest::Request()->raw);
+			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->request);
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
 		}
 		catch(PBException $e)
 		{

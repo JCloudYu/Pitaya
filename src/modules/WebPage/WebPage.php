@@ -23,7 +23,8 @@ class PBWebPage extends PBModule
 
 	public function prepare($moduleRequest) {
 
-		$this->_pageRequest = is_string($moduleRequest) ? PBHTTP::ParseRequest($moduleRequest) : array();
+		$this->_pageRequest = is_string($moduleRequest) ? PBHTTP::ParseRequest($moduleRequest) :
+														  array('resource' => NULL, 'attribute' => NULL);
 
 		if(strtoupper(@$this->_pageRequest['resource'][0]) == 'RC')
 		{
