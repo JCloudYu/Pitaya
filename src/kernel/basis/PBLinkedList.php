@@ -365,4 +365,4 @@ class PBLinkedList extends PBObject
 	}
 }
 
-class_alias('PBLinkedList', 'PBLList', FALSE);
+class_alias('PBLinkedList', 'PBLList');
