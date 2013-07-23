@@ -1,5 +1,5 @@
 <?php
-	
+
 	if (__OS__ == 'WIN')
 	{
 		// INFO: Windows environmental constants
