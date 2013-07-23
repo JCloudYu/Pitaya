@@ -7,8 +7,6 @@
 
 class Debug
 {
-	private static $IS_DEBUG = __DEBUG_MODE__;
-
 	public static function VarDumpParent() {
 
 		echo self::VDump(func_get_args(), TRUE, TRUE);
@@ -31,11 +29,12 @@ class Debug
 
 	public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
-		if(!Debug::$IS_DEBUG) return '';
+		if (__DEBUG_MODE__ !== TRUE) return '';
+		$width = intval(__DEBUG_CONSOLE_WIDTH__);
 
 		$out = '';
 		if($forHTML)
-			$out .= '<div class="debugOpt" style="background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: 200px;">';
+			$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px;'>";
 
 		if(!is_array($args)) $args = array($args);
 
@@ -114,7 +113,7 @@ class Debug
 
 	public static function JSLog($outStr) {
 
-		if(!self::$IS_DEBUG) return;
+		if (__DEBUG_MODE__ !== TRUE) return;
 
 		if(!is_string($outStr))
 			throw(new Exception('Input variable must be a string'));
@@ -124,7 +123,7 @@ class Debug
 
 	public static function BackTrace($args = 0) {
 
-		if(!self::$IS_DEBUG) return NULL;
+		if (__DEBUG_MODE__ !== TRUE) return NULL;
 
 		$info = debug_backtrace($args);
 		$depth = count($info);
@@ -155,5 +154,10 @@ class Debug
 		array_push($adjusted,$item);
 
 		return $adjusted;
+	}
+
+	public static function IS_DEBUG_MODE() {
+
+		return __DEBUG_MODE__ === TRUE;
 	}
 }

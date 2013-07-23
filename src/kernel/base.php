@@ -7,11 +7,6 @@ define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
 require_once (__ROOT__.'/config.php');
 require_once (__ROOT__.'/cmd.config.php');
 
-define("__DEBUG_MODE__", TRUE, TRUE);
-
-if (!defined('__DEFAULT_SERVICE__')) define('__DEFAULT_SERVICE__', 'index', TRUE);
-
-
 srand(time());
 $GLOBALS['randomCert'] = md5(rand());
 
@@ -128,6 +123,7 @@ function using($referencingContext = '', $important = true, $output = false) {
 	}
 }
 
+using('kernel.const');
 using('kernel.tool.debug.*');
 using('kernel.tool.log.*');
 
