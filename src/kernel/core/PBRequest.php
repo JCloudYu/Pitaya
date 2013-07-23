@@ -50,10 +50,8 @@
 			unset($GLOBALS['request']);
 		}
 
-		public function getAll()
-		{
-			return $this->_incomingRecord;
-		}
+		// region [ Getters / Setters ]
+		public function __get_all() { return $this->_incomingRecord; }
 
 		public function __get_request()	{ return $this->_incomingRecord['request']; }
 		public function __get_service() { return $this->_incomingRecord['request']['service']; }

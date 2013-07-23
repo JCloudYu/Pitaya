@@ -37,7 +37,7 @@
 			}
 
 			$now = '[' . date("Y-m-d g:i:s") . "]{$position}";
-			$msg = "$now $message \n";
+			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
 		}
@@ -91,7 +91,7 @@
 			}
 
 			$now = '[' . date("Y-m-d g:i:s") . "]{$position}";
-			$msg = "$now $message \n";
+			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
 		}
