@@ -70,13 +70,21 @@
 		// endregion
 
 		// region [ Built In Data Preprocessing Functions ]
+		/**
+		 * Parse the system's incoming data using the given function.
+		 * If there's no function given, system will parse the data using system built-in parsing function
+		 *
+		 * @param callable $dataFunction the function that will be used to parse system's incoming data
+		 *
+		 * @return $this the PBRequest instance itself
+		 */
 		private $_parsedData = NULL;
 		public function parseData(Closure $dataFunction = NULL)
 		{
 			if ($this->_parsedData !== NULL) return $this;
 
 			$func = ($dataFunction === NULL) ? function($targetData) {
-				$data = PBHTTP::ParseAttribute($targetData);
+				$data = PBRequest::ParseAttribute($targetData);
 				return $data;
 			} : $dataFunction;
 
@@ -85,13 +93,21 @@
 			return $this;
 		}
 
+		/**
+		 * Parse the system's incoming query using the given function.
+		 * If there's no function given, system will parse the query using system built-in parsing function
+		 *
+		 * @param callable $queryFunction the function that will be used to parse system's incoming query
+		 *
+		 * @return $this the PBRequest instance itself
+		 */
 		private $_parseQuery = NULL;
 		public function parseQuery(Closure $queryFunction = NULL)
 		{
 			if ($this->_parseQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
-				$data = PBHTTP::ParseRequest($targetData);
+				$data = PBRequest::ParseRequest($targetData);
 				return $data;
 			} : $dataFunction;
 
@@ -116,6 +132,49 @@
 			}
 
 			return $this->_incomingRecord[$name];
+		}
+		// endregion
+
+		// region [ Data Processing API ]
+		public static function ParseRequest($rawRequest)
+		{
+			$rawRequest = explode('?', $rawRequest);
+
+			$request = array('resource' => $rawRequest[0], 'attribute' => NULL);
+			if(count($rawRequest) > 1) $request['attribute'] = $rawRequest[1];
+
+			$request['resource'] = explode('/', $request['resource']);
+			if($request['resource'][0] === '') $request['resource'] = array();
+
+			$request['attribute'] = PBRequest::ParseAttribute($request['attribute']);
+
+			return $request;
+		}
+
+		public static function ParseAttribute($rawAttribute)
+		{
+			$attributes = explode('&', $rawAttribute);
+
+			if (empty($attributes)) return array();
+			$attributeContainer = array('flag' => array(), 'variable' => array());
+			foreach($attributes as $attr)
+			{
+				$buffer = preg_split('/[=:]/', $attr);
+
+				if(count($buffer) <= 1)
+				{
+					if($buffer[0] !== '') $attributeContainer['flag'][] = $buffer[0];
+				}
+				else
+				{
+					if($buffer[0] !== '')
+						$attributeContainer['variable'][$buffer[0]] = $buffer[1];
+					else
+						$attributeContainer['flag'][] = $buffer[1];
+				}
+			}
+
+			return $attributeContainer;
 		}
 		// endregion
 	}

@@ -9,43 +9,7 @@ class PBHTTP
 {
 	public static function ParseRequest($rawRequest)
 	{
-		$rawRequest = explode('?', $rawRequest);
-
-		$request = array('resource' => $rawRequest[0], 'attribute' => NULL);
-		if(count($rawRequest) > 1) $request['attribute'] = $rawRequest[1];
-
-		$request['resource'] = explode('/', $request['resource']);
-		if($request['resource'][0] === '') $request['resource'] = array();
-
-		$request['attribute'] = PBHTTP::ParseAttribute($request['attribute']);
-
-		return $request;
-	}
-
-	public static function ParseAttribute($rawAttribute)
-	{
-		$attributes = explode('&', $rawAttribute);
-
-		if (empty($attributes)) return array();
-		$attributeContainer = array('flag' => array(), 'variable' => array());
-		foreach($attributes as $attr)
-		{
-			$buffer = preg_split('/[=:]/', $attr);
-
-			if(count($buffer) <= 1)
-			{
-				if($buffer[0] !== '') $attributeContainer['flag'][] = $buffer[0];
-			}
-			else
-			{
-				if($buffer[0] !== '')
-					$attributeContainer['variable'][$buffer[0]] = $buffer[1];
-				else
-					$attributeContainer['flag'][] = $buffer[1];
-			}
-		}
-
-		return $attributeContainer;
+		return PBRequest::ParseRequest($rawRequest);
 	}
 
 	//SEC: Header Reply/////////////////////////////////////////////////////////////////////////////////////////////////////
