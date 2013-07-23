@@ -17,29 +17,35 @@ class PBHTTP
 		$request['resource'] = explode('/', $request['resource']);
 		if($request['resource'][0] === '') $request['resource'] = array();
 
-		$attributes = explode('&', $request['attribute']);
+		$request['attribute'] = PBHTTP::ParseAttribute($request['attribute']);
 
-		$attributeContainer = array('unnamed' => array(), 'named' => array());
+		return $request;
+	}
+
+	public static function ParseAttribute($rawAttribute)
+	{
+		$attributes = explode('&', $rawAttribute);
+
+		if (empty($attributes)) return array();
+		$attributeContainer = array('flag' => array(), 'variable' => array());
 		foreach($attributes as $attr)
 		{
 			$buffer = preg_split('/[=:]/', $attr);
 
 			if(count($buffer) <= 1)
 			{
-				if($buffer[0] !== '') $attributeContainer['unnamed'][] = $buffer[0];
+				if($buffer[0] !== '') $attributeContainer['flag'][] = $buffer[0];
 			}
 			else
 			{
 				if($buffer[0] !== '')
-					$attributeContainer['named'][$buffer[0]] = $buffer[1];
+					$attributeContainer['variable'][$buffer[0]] = $buffer[1];
 				else
-					$attributeContainer['unnamed'][] = $buffer[1];
+					$attributeContainer['flag'][] = $buffer[1];
 			}
 		}
 
-		$request['attribute'] = $attributeContainer;
-
-		return $request;
+		return $attributeContainer;
 	}
 
 	//SEC: Header Reply/////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -12,8 +12,6 @@
 			return self::$_reqInstance;
 		}
 
-
-
 		private $_incomingRecord = array();
 		private function __construct()
 		{
@@ -53,19 +51,71 @@
 		// region [ Getters / Setters ]
 		public function __get_all() { return $this->_incomingRecord; }
 
-		public function __get_request()	{ return $this->_incomingRecord['request']; }
-		public function __get_service() { return $this->_incomingRecord['request']['service']; }
-		public function __get_query() 	{ return $this->_incomingRecord['request']['query']; }
-		public function __get_data() 	{ return $this->_incomingRecord['request']['data']; }
-		public function __get_files()	{ return $this->_incomingRecord['request']['files']; }
-		public function __get_method()	{ return $this->_incomingRecord['request']['method']; }
+		public function __get_request()		{ return $this->_incomingRecord['request']; }
+		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
+		public function __get_query() 		{ return $this->_parseQuery ? $this->_parseQuery : $this->_incomingRecord['request']['query']; }
+		public function __get_data() 		{ return $this->_parsedData ? $this->_parsedData : $this->_incomingRecord['request']['data']; }
+		public function __get_files()		{ return $this->_incomingRecord['request']['files']; }
+		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
 
-		public function __get_env()		{ return $this->_incomingRecord['environment']['env']; }
-		public function __get_attr()	{ return $this->_incomingRecord['environment']['attr']; }
-		public function __get_server()	{ return $this->_incomingRecord['environment']['server']; }
-		public function __get_cookie()	{ return $this->_incomingRecord['environment']['cookie']; }
-		public function __get_session()	{ return $this->_incomingRecord['environment']['session']; }
+		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
+		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
+		public function __get_server()		{ return $this->_incomingRecord['environment']['server']; }
+		public function __get_cookie()		{ return $this->_incomingRecord['environment']['cookie']; }
+		public function __get_session()		{ return $this->_incomingRecord['environment']['session']; }
 
-		public function __get_rawQuery(){ return $this->_incomingRecord['rawQuery']; }
-		public function __get_rawData()	{ return $this->_incomingRecord['rawData']; }
+		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
+		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
+		public function __get_rawData()		{ return $this->_incomingRecord['rawData']; }
+		// endregion
+
+		// region [ Built In Data Preprocessing Functions ]
+		private $_parsedData = NULL;
+		public function parseData(Closure $dataFunction = NULL)
+		{
+			if ($this->_parsedData !== NULL) return $this;
+
+			$func = ($dataFunction === NULL) ? function($targetData) {
+				$data = PBHTTP::ParseAttribute($targetData);
+				return $data;
+			} : $dataFunction;
+
+			$this->_parsedData = $func($this->_incomingRecord['request']['data']);
+
+			return $this;
+		}
+
+		private $_parseQuery = NULL;
+		public function parseQuery(Closure $queryFunction = NULL)
+		{
+			if ($this->_parseQuery !== NULL) return $this;
+
+			$func = ($queryFunction === NULL) ? function($targetData) {
+				$data = PBHTTP::ParseRequest($targetData);
+				return $data;
+			} : $dataFunction;
+
+			$this->_parseQuery = $func($this->_incomingRecord['request']['query']);
+
+			return $this;
+		}
+
+		public function data($name, $type = 'raw', $default = NULL)
+		{
+			if ($this->_parsedData === NULL) return NULL;
+			if (!array_key_exists($name, $this->_incomingRecord)) return $default;
+
+			switch ($type)
+			{
+				case 'int':		return intval($this->_incomingRecord[$name]);
+				case 'float':	return floatval($this->_incomingRecord[$name]);
+				case 'string':	return trim($this->_incomingRecord[$name]);
+				case 'raw':
+				default:
+					break;
+			}
+
+			return $this->_incomingRecord[$name];
+		}
+		// endregion
 	}
