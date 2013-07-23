@@ -83,18 +83,20 @@
 		 */
 		private $_parsedData = NULL;
 		private $_dataVariable = NULL;
+		private $_dataFlag = NULL;
 		public function parseData(Closure $dataFunction = NULL)
 		{
 			if ($this->_parsedData !== NULL) return $this;
 
 			$func = ($dataFunction === NULL) ? function($targetData) {
 				$data = PBRequest::ParseAttribute($targetData);
-				return array('data' => $data, 'variable' => $data['variable']);
+				return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
 			} : $dataFunction;
 
 			$result = $func($this->_incomingRecord['request']['data']);
 			$this->_parsedData = @$result['data'];
 			$this->_dataVariable = @$result['variable'];
+			$this->_dataFlag = @$result['flag'];
 
 			return $this;
 		}
@@ -111,19 +113,21 @@
 		 * @return $this the PBRequest instance itself
 		 */
 		private $_parsedQuery = NULL;
-		private $_queryVariable = array();
+		private $_queryVariable = NULL;
+		private $_queryFlag = NULL;
 		public function parseQuery(Closure $queryFunction = NULL)
 		{
 			if ($this->_parsedQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
 				$data = PBRequest::ParseRequest($targetData);
-				return array('data' => $data, 'variable' => $data['attribute']['variable']);
+				return array('data' => $data, 'variable' => $data['attribute']['variable'], 'flag' => $data['attribute']['flag']);
 			} : $dataFunction;
 
 			$result = $func($this->_incomingRecord['request']['query']);
 			$this->_parsedQuery = @$result['data'];
 			$this->_queryVariable = @$result['variable'];
+			$this->_queryFlag = @$result['flag'];
 
 			return $this;
 		}
@@ -146,6 +150,15 @@
 			}
 
 			return @$vars[$name];
+		}
+
+		public function flag($name)
+		{
+			$flags = array_merge(is_array($this->_queryFlag) ? $this->_queryFlag : array(),
+								 is_array($this->_dataFlag)  ? $this->_dataFlag  : array());
+
+			$flags = array_unique($flags);
+			return in_array($name, $flags) ? TRUE : FALSE;
 		}
 		// endregion
 
