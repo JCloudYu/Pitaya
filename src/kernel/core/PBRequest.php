@@ -53,8 +53,8 @@
 
 		public function __get_request()		{ return $this->_incomingRecord['request']; }
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
-		public function __get_query() 		{ return $this->_parseQuery ? $this->_parseQuery : $this->_incomingRecord['request']['query']; }
-		public function __get_data() 		{ return $this->_parsedData ? $this->_parsedData : $this->_incomingRecord['request']['data']; }
+		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
+		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
 		public function __get_files()		{ return $this->_incomingRecord['request']['files']; }
 		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
 
@@ -69,69 +69,83 @@
 		public function __get_rawData()		{ return $this->_incomingRecord['rawData']; }
 		// endregion
 
-		// region [ Built In Data Preprocessing Functions ]
+		// region [ Data Preprocessing Methods ]
 		/**
 		 * Parse the system's incoming data using the given function.
 		 * If there's no function given, system will parse the data using system built-in parsing function
+		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
+		 * 'data' represets the result structure and variable indicates the vairables that are stored in the
+		 * incoming data, which will be used by function PBRequest::data
 		 *
 		 * @param callable $dataFunction the function that will be used to parse system's incoming data
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
 		private $_parsedData = NULL;
+		private $_dataVariable = NULL;
 		public function parseData(Closure $dataFunction = NULL)
 		{
 			if ($this->_parsedData !== NULL) return $this;
 
 			$func = ($dataFunction === NULL) ? function($targetData) {
 				$data = PBRequest::ParseAttribute($targetData);
-				return $data;
+				return array('data' => $data, 'variable' => $data['variable']);
 			} : $dataFunction;
 
-			$this->_parsedData = $func($this->_incomingRecord['request']['data']);
+			$result = $func($this->_incomingRecord['request']['data']);
+			$this->_parsedData = @$result['data'];
+			$this->_dataVariable = @$result['variable'];
 
 			return $this;
 		}
 
 		/**
 		 * Parse the system's incoming query using the given function.
-		 * If there's no function given, system will parse the query using system built-in parsing function
+		 * If there's no function given, system will parse the query using system built-in parsing function.
+		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
+		 * 'data' represets the result query structure and variable indicates the vairables that are stored in the
+		 * incoming query, which will be used by function PBRequest::data
 		 *
 		 * @param callable $queryFunction the function that will be used to parse system's incoming query
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		private $_parseQuery = NULL;
+		private $_parsedQuery = NULL;
+		private $_queryVariable = array();
 		public function parseQuery(Closure $queryFunction = NULL)
 		{
-			if ($this->_parseQuery !== NULL) return $this;
+			if ($this->_parsedQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
 				$data = PBRequest::ParseRequest($targetData);
-				return $data;
+				return array('data' => $data, 'variable' => $data['attribute']['variable']);
 			} : $dataFunction;
 
-			$this->_parseQuery = $func($this->_incomingRecord['request']['query']);
+			$result = $func($this->_incomingRecord['request']['query']);
+			$this->_parsedQuery = @$result['data'];
+			$this->_queryVariable = @$result['variable'];
 
 			return $this;
 		}
 
 		public function data($name, $type = 'raw', $default = NULL)
 		{
-			if ($this->_parsedData === NULL) return NULL;
-			if (!array_key_exists($name, $this->_incomingRecord)) return $default;
+			$vars = array_merge(is_array($this->_queryVariable) ? $this->_queryVariable : array(),
+							    is_array($this->_dataVariable)  ? $this->_dataVariable  : array());
+
+			if (!array_key_exists($name, $vars)) return $default;
 
 			switch ($type)
 			{
-				case 'int':		return intval($this->_incomingRecord[$name]);
-				case 'float':	return floatval($this->_incomingRecord[$name]);
-				case 'string':	return trim($this->_incomingRecord[$name]);
+				case 'int':		return intval($vars[$name]);
+				case 'float':	return floatval($vars[$name]);
+				case 'string':	return trim($vars[$name]);
 				case 'raw':
 				default:
 					break;
 			}
 
-			return $this->_incomingRecord[$name];
+			return @$vars[$name];
 		}
 		// endregion
 
