@@ -1,8 +1,11 @@
 <?php
 	using('kernel.basis.PBObject');
+	using('ext.base.time');
+	using('ext.base.misc');
 
 	final class PBRequest extends PBObject
 	{
+		// region [ Singleton Controller ]
 		private static $_reqInstance = NULL;
 		public static function Request()
 		{
@@ -27,8 +30,6 @@
 
 			$this->_incomingRecord['environment']['attr']	 = $_ENV;
 			$this->_incomingRecord['environment']['server']	 = $_SERVER;
-			$this->_incomingRecord['environment']['cookie']  = @$_COOKIE;
-			$this->_incomingRecord['environment']['session'] = @$_SESSION;
 
 			// INFO: GET information is not kept since it may contains error parsed parameters
 			// INFO: This means that the main module have to parse its own parameters from request
@@ -38,15 +39,12 @@
 			unset($_ENV); 		unset($HTTP_ENV_VARS);
 			unset($_SERVER);	unset($HTTP_SERVER_VARS);
 
-			// NOTE: Check whether the unsetting of cookie and session will influence the returning value~
-			unset($_COOKIE); 	unset($HTTP_COOKIE_VARS);
-			unset($_SESSION); 	unset($HTTP_SESSION_VARS);
-
 			unset($_REQUEST);
 			unset($GLOBALS['rawRequest']);
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
 		}
+		// endregion
 
 		// region [ Getters / Setters ]
 		public function __get_all() { return $this->_incomingRecord; }
@@ -139,17 +137,7 @@
 
 			if (!array_key_exists($name, $vars)) return $default;
 
-			switch ($type)
-			{
-				case 'int':		return intval($vars[$name]);
-				case 'float':	return floatval($vars[$name]);
-				case 'string':	return trim($vars[$name]);
-				case 'raw':
-				default:
-					break;
-			}
-
-			return @$vars[$name];
+			return IS($vars[$name], $type);
 		}
 
 		public function flag($name)
