@@ -29,6 +29,11 @@
 			case 'null':
 				return NULL;
 
+			// INFO: Experimental Conversions
+			case 'uint':
+				if (!is_numeric($value)) return 0;
+				return (float)sprintf('%u', $value);
+
 			case 'raw':
 			default:
 				return $value;
