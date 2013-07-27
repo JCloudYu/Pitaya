@@ -34,18 +34,15 @@ class PBProcess extends PBObject
 
 	public function getModule($moduleName) {
 
-		if(array_key_exists($moduleName, $this->_attachedModules))
-			return $this->_attachedModules[$moduleName];
-
-		return NULL;
+		return $this->attachModule($moduleName, NULL, TRUE);
 	}
 
-	public function attachModule($moduleName, $moduleRequest, $reusable = TRUE) {
+	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
 
 		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
 		{
 			$this->_attachedModules[$moduleName]->prepare($moduleRequest);
-			return $this->_attachedModules[$moduleName]->id;
+			return $this->_attachedModules[$moduleName];
 		}
 
 		$module = $this->_system->acquireModule($moduleName);
@@ -56,7 +53,7 @@ class PBProcess extends PBObject
 		$this->_attachedModules[$moduleId] = $module;
 		if($reusable) $this->_attachedModules[$moduleName] = $module;
 
-		return $moduleId;
+		return $module;
 	}
 
 	public function assignNextModule($moduleHandle) {
@@ -197,7 +194,7 @@ class PBProcess extends PBObject
 			if(array_key_exists('request', $illustrator))
 				$request = $illustrator['request'];
 
-			$moduleId = $this->attachModule($moduleName, $request, $reuse);
+			$moduleId = $this->attachModule($moduleName, $request, $reuse)->id;
 
 			PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
 		}
