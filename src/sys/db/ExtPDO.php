@@ -146,6 +146,6 @@
 
 		public function setAttribute($name, $value) {
 
-			return $this->setAttribute($name, $value);
+			return parent::setAttribute($name, $value);
 		}
 	}
