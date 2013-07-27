@@ -143,4 +143,9 @@
 								 array(':name' => $name,
 									   ':value' => $value));
 		}
+
+		public function setAttribute($name, $value) {
+
+			return $this->setAttribute($name, $value);
+		}
 	}
