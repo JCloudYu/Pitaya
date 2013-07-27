@@ -310,36 +310,4 @@ class SYS extends PBObject
 		return $selfId['base'] === $childrenId['extended'];
 	}
 // endregion
-
-// region [ Global APIs ]
-	// INFO: The info function will return an object that contains information about current runtime environment
-	// NOTE: The information provided by the system still have to be considered
-	public static function Info()
-	{
-		if(is_null(SYS::$_SYS_INSTANCE)) return NULL;
-
-		$runTimeInstance = SYS::$_SYS_INSTANCE;
-
-		$infoStorage = new PBStorage();
-
-		$infoStorage->request->method = $runTimeInstance->_incomingRecord['method'];
-		$infoStorage->request->raw = $runTimeInstance->_incomingRecord['request'];
-		$infoStorage->request->module = $runTimeInstance->_incomingRecord['service'];
-		$infoStorage->request->time = $runTimeInstance->_incomingRecord['server']['REQUEST_TIME'];
-		$infoStorage->request->contentType = array_key_exists('CONTENT_TYPE', $runTimeInstance->_incomingRecord['server']) ? $runTimeInstance->_incomingRecord['server']['CONTENT_TYPE'] : '';
-
-		$infoStorage->client->accept->encoding = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_ENCODING'];
-		$infoStorage->client->accept->format = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT'];
-		$infoStorage->client->accept->language = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_LANGUAGE'];
-		$infoStorage->client->accept->charset = $runTimeInstance->_incomingRecord['server']['HTTP_ACCEPT_CHARSET'];
-		$infoStorage->client->agent = $runTimeInstance->_incomingRecord['server']['HTTP_USER_AGENT'];
-		$infoStorage->client->addr = $runTimeInstance->_incomingRecord['server']['REMOTE_ADDR'];
-
-		$infoStorage->incoming->files = $runTimeInstance->_incomingRecord['files'];
-		$infoStorage->incoming->args = $runTimeInstance->_incomingRecord['post'];
-
-
-		return $infoStorage;
-	}
-// endregion
 }
