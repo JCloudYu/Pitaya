@@ -37,7 +37,15 @@
 
 		public function __set($name, $value)
 		{
-			if (!headers_sent()) setcookie($name, $value, 0, '/' . __SERVICE__, $this->_domain);
+			if (headers_sent()) return;
+
+			if (is_array($value))
+			{
+				foreach ($value as $key => $value)
+					setcookie("{$name}[$key]", $value, 0, '/'.__SERVICE__, $this->_domain);
+			}
+			else
+				setcookie($name, $value, 0, '/' . __SERVICE__, $this->_domain);
 		}
 
 		public function set($name, $value, $time = 0)
@@ -50,7 +58,13 @@
 				+ TO(@$time['second'], 'int')
 				: time() + TO($time, 'int');
 
-			setcookie($name, $value, $time, '/' . __SERVICE__, $this->_domain);
+			if (is_array($value))
+			{
+				foreach ($value as $key => $value)
+					setcookie("{$name}[$key]", $value, $time, '/'.__SERVICE__, $this->_domain);
+			}
+			else
+				setcookie($name, $value, $time, '/' . __SERVICE__, $this->_domain);
 		}
 
 		public function get($name, $type, $default)
