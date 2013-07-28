@@ -249,23 +249,32 @@ class SYS extends PBObject
 // endregion
 
 // region [ Module Control ]
-	public function acquireModule($moduleName, $exception = TRUE) {
+	public function acquireModule($chiefModule, $moduleName = '', $exception = TRUE) {
+
+		static $allocCounter = 0;
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
 			throw(new Exception("Calling an inaccessible function SYS::acquireServiceModule()."));
 
+		$moduleName = (is_string($moduleName) && !empty($moduleName)) ? $moduleName : $chiefModule;
+
 		$processId = $caller['object']->id;
 		$processIds = divide($processId);
-		$moduleId = encode(array($processId, $moduleName), $processIds['extended']);
+		$moduleId = encode(array($processId, $chiefModule, $moduleName, ++$allocCounter), $processIds['extended']);
 
-		$servicePath = "service.{$moduleName}";
 
-		$modulePath = "modules.{$moduleName}.{$moduleName}";
-		$moduleStoragePath = "modules.{$moduleName}";
 
-		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}" : NULL;
-		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$moduleName}.{$moduleName}" : NULL;
+		$modulePath = "modules.{$chiefModule}.{$moduleName}";
+		$chiefModulePath = "modules.{$chiefModule}.{$chiefModule}";
+		$moduleStoragePath = "modules.{$chiefModule}";
+
+
+
+		$servicePath = "service.{$chiefModule}";
+		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
+		$custServiceSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
+		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
 
 		$invokeModule = $moduleName;
 
@@ -277,11 +286,17 @@ class SYS extends PBObject
 		if($custServicePath !== NULL && available($custServicePath))
 			using($custServicePath);
 		else
+		if($custServiceSubModulePath !== NULL && available($custServiceSubModulePath))
+			using($custServiceSubModulePath);
+		else
 		if($custServiceNestedPath !== NULL && available($custServiceNestedPath))
 			using($custServiceNestedPath);
 		else
 		if(available($modulePath))
 			using($modulePath);
+		else
+		if(available($chiefModulePath))
+			using($chiefModulePath);
 		else
 		if(available($moduleStoragePath))
 			using($moduleStoragePath);

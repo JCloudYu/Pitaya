@@ -39,28 +39,42 @@ class PBProcess extends PBObject
 
 	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
 
+		$reqModuleNames = explode('.', $moduleName);
+
+		if (count($reqModuleNames) <= 1)
+			$reqModuleNames = array($moduleName, $moduleName);
+		else
+			$reqModuleNames = array(array_shift($reqModuleNames), ($moduleName = implode('', $reqModuleNames)));
+
 		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
 		{
 			$this->_attachedModules[$moduleName]->prepare($moduleRequest);
 			return $this->_attachedModules[$moduleName];
 		}
 
-		$module = $this->_system->acquireModule($moduleName);
+		$module = $this->_system->acquireModule($reqModuleNames[0], $reqModuleNames[1]);
 		$module->__processInst = $this;
 		$module->prepare($moduleRequest);
 		$moduleId = $module->id;
 
 		$this->_attachedModules[$moduleId] = $module;
-		if($reusable) $this->_attachedModules[$moduleName] = $module;
+		if($reusable)
+		{
+			$this->_attachedModules[$moduleName] = $module;
+			$this->_attachedModules[$moduleName] = $module;
+		}
 
 		return $module;
 	}
 
-	public function assignNextModule($moduleHandle) {
+	public function assignNextModule($moduleHandle)
+	{
+		$handle = explode('.', $moduleHandle); array_shift($handle);
+		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
-		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
-		PBLList::AFTER($this->_bootSequence, $moduleHandle, $moduleHandle);
+		PBLList::AFTER($this->_bootSequence, $handle, $handle);
 
 		return TRUE;
 	}
@@ -74,22 +88,28 @@ class PBProcess extends PBObject
 		return $status;
 	}
 
-	public function replaceNextModule($moduleHandle) {
+	public function replaceNextModule($moduleHandle)
+	{
+		$handle = explode('.', $moduleHandle); array_shift($handle);
+		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
-		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
 		$status = PBLList::NEXT($this->_bootSequence);
-		$status = $status && PBLList::SET($this->_bootSequence, $moduleHandle, $moduleHandle);
+		$status = $status && PBLList::SET($this->_bootSequence, $handle, $handle);
 		$status = $status && PBLList::PREV($this->_bootSequence);
 
 		return $status;
 	}
 
-	public function pushModule($moduleHandle) {
+	public function pushModule($moduleHandle)
+	{
+		$handle = explode('.', $moduleHandle); array_shift($handle);
+		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
-		if(!array_key_exists($moduleHandle, $this->_attachedModules)) return FALSE;
+		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
-		$status = PBLList::PUSH($this->_bootSequence, $moduleHandle, $moduleHandle);
+		$status = PBLList::PUSH($this->_bootSequence, $handle, $handle);
 
 		return $status;
 	}
@@ -128,7 +148,7 @@ class PBProcess extends PBObject
 
 		// INFO: System will first look for [ main ] module in the service folder
 		// INFO: If the main module doesn't exist, look for module with the service name instead
-		$module = $this->_system->acquireModule($moduleName, TRUE);
+		$module = $this->_system->acquireModule($moduleName, $moduleName, TRUE);
 
 		$module->__processInst = $this;
 
