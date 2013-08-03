@@ -20,8 +20,8 @@
 			}
 			else
 			{
-				$ajaxReturn = (is_int(!@$param['status'])) ? intval($param['status']) : self::AJAX_STATUS_NORMAL;
-				$ajaxReturn = (@$param['msg']) ? $param['msg'] : '';
+				$ajaxReturn['status'] = (is_int(@$param['status'])) ? intval($param['status']) : self::AJAX_STATUS_NORMAL;
+				$ajaxReturn['msg'] = (@$param['msg']) ? $param['msg'] : '';
 
 				unset($param['status']); unset($param['msg']);
 
