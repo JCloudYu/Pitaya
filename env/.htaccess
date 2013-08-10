@@ -4,7 +4,7 @@ RewriteBase /
 
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*) portal.php?__src_request=$1 [QSA,L]
+RewriteRule ^(.*) pitaya/portal.php?__src_request=$1 [QSA,L]
 
 <FilesMatch "\.(inc)$">
 	Order allow,deny
@@ -18,4 +18,4 @@ RewriteRule ^(.*) portal.php?__src_request=$1 [QSA,L]
 </FilesMatch>
 
 php_flag magic_quotes_gpc Off
-php_value auto_prepend_file kernel/base.php
+php_value auto_prepend_file pitaya/kernel/base.php
