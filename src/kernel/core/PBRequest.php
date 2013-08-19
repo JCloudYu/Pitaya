@@ -139,7 +139,6 @@
 
 			return IS($vars[$name], $type);
 		}
-
 		public function flag($name)
 		{
 			$flags = array_merge(is_array($this->_queryFlag) ? $this->_queryFlag : array(),
@@ -165,7 +164,6 @@
 
 			return $request;
 		}
-
 		public static function ParseAttribute($rawAttribute)
 		{
 			$attributes = explode('&', $rawAttribute);

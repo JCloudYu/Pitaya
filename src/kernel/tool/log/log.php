@@ -2,12 +2,13 @@
 
 	final class PBLog
 	{
+		const LOG_DIR = '/Log';
 		public static function SYSLog($message, $logPos = FALSE)
 		{
 			static $_FILE = NULL;
 			if ($_FILE === NULL)
 			{
-				$logPath = __ROOT__ . '/log';
+				$logPath = __WEB_ROOT__ . self::LOG_DIR;
 				if (!is_dir($logPath)) mkdir($logPath);
 
 				$logPath .= '/core_log';
@@ -25,7 +26,7 @@
 
 				$_FILE = fopen($logPath, 'a+b');
 			}
-			else
+
 			// INFO: Unexpected error
 			if ($_FILE === FALSE) return;
 
@@ -50,7 +51,7 @@
 			{
 				if (defined('__WORKING_ROOT__'))
 				{
-					$logPath = __WORKING_ROOT__ . '/log';
+					$logPath = __WORKING_ROOT__ . self::LOG_DIR;
 					if (!is_dir($logPath)) mkdir($logPath);
 
 					$_srvLogPath = $logPath .= '/service_log';
@@ -59,7 +60,7 @@
 				}
 				else
 				{
-					$logPath = __ROOT__ . '/log';
+					$logPath = __WEB_ROOT__ . self::LOG_DIR;
 					if (!is_dir($logPath)) mkdir($logPath);
 
 					$logPath .= '/core_log';
@@ -79,7 +80,7 @@
 
 				$_FILE = fopen($logPath, 'a+b');
 			}
-			else
+
 			// INFO: Unexpected error
 			if ($_FILE === FALSE) return;
 
