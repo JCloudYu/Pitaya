@@ -270,6 +270,7 @@ class SYS extends PBObject
 
 
 		$servicePath = "service.{$chiefModule}";
+		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
 		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
 		$custServiceSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
 		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
@@ -280,6 +281,9 @@ class SYS extends PBObject
 		// INFO: system core will be chosen first
 		if(available($servicePath))
 			using($servicePath);
+		else
+		if(available($serviceDefaultPath))
+			using($serviceDefaultPath);
 		else
 		if($custServicePath !== NULL && available($custServicePath))
 			using($custServicePath);
