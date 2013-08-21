@@ -68,6 +68,9 @@
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
+		private $_parsedData = NULL;
+		private $_dataVariable = NULL;
+		private $_dataFlag = NULL;
 		/**
 		 * Parse the system's incoming data using the given function.
 		 * If there's no function given, system will parse the data using system built-in parsing function
@@ -79,9 +82,6 @@
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		private $_parsedData = NULL;
-		private $_dataVariable = NULL;
-		private $_dataFlag = NULL;
 		public function parseData(Closure $dataFunction = NULL)
 		{
 			if ($this->_parsedData !== NULL) return $this;
@@ -100,6 +100,27 @@
 		}
 
 		/**
+		 * Parse the system's incoming data according to json format
+		 *
+		 * @param int $jsonDepth the maximum parsing depth
+		 *
+		 * @return $this
+		 */
+		public function parseJSONData($jsonDepth = 512)
+		{
+			if ($this->_parsedData !== NULL) return $this;
+
+			$this->_parsedData = $this->_dataVariable = json_decode($this->_incomingRecord['request']['data'], TRUE, $jsonDepth);
+			$this->_dataFlag = NULL;
+
+			return $this;
+		}
+
+
+		private $_parsedQuery = NULL;
+		private $_queryVariable = NULL;
+		private $_queryFlag = NULL;
+		/**
 		 * Parse the system's incoming query using the given function.
 		 * If there's no function given, system will parse the query using system built-in parsing function.
 		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
@@ -110,9 +131,6 @@
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		private $_parsedQuery = NULL;
-		private $_queryVariable = NULL;
-		private $_queryFlag = NULL;
 		public function parseQuery(Closure $queryFunction = NULL)
 		{
 			if ($this->_parsedQuery !== NULL) return $this;
@@ -139,6 +157,7 @@
 
 			return IS($vars[$name], $type);
 		}
+
 		public function flag($name)
 		{
 			$flags = array_merge(is_array($this->_queryFlag) ? $this->_queryFlag : array(),
@@ -164,6 +183,7 @@
 
 			return $request;
 		}
+
 		public static function ParseAttribute($rawAttribute)
 		{
 			$attributes = explode('&', $rawAttribute);
