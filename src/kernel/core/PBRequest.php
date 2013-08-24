@@ -155,7 +155,7 @@
 
 			if (!array_key_exists($name, $vars)) return $default;
 
-			return IS($vars[$name], $type);
+			return TO($vars[$name], $type);
 		}
 
 		public function flag($name)

@@ -1,5 +1,6 @@
 <?php
 	using('kernel.core.PBModule');
+	using('sys.tool.http.mime');
 
 	class ajax extends PBModule
 	{
@@ -28,10 +29,10 @@
 				$ajaxReturn = array_merge($ajaxReturn, $param);
 			}
 
-			self::respondJSON($ajaxReturn);
+			$this->respondJSON($ajaxReturn);
 		}
 
-		public static function respondJSON($jsonData)
+		public function respondJSON($jsonData)
 		{
 			header("Content-type: " . MIME::JSON);
 			$response = json_encode($jsonData);
