@@ -6,6 +6,6 @@
 
 	interface PBModuleDelegate
 	{
-		public function prepare($moduleRequest);
-		public function exec($param);
+		public function prepare($moduleRequest = NULL);
+		public function exec($param = NULL);
 	}
