@@ -4,7 +4,7 @@ RewriteBase /
 
 #RewriteCond %{REQUEST_FILENAME} !-f
 #RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*) pitaya/portal.php?__src_request=$1 [QSA,L]
+RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 
 <FilesMatch "\.(inc)$">
 	Order allow,deny
