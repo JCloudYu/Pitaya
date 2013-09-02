@@ -91,6 +91,8 @@
 		{
 			if ($this->_parsedData !== NULL) return $this;
 
+			$func = NULL;
+
 			switch (strtolower($type))
 			{
 				case 'json':
@@ -102,11 +104,13 @@
 					break;
 
 				case 'cust':
+					$func = $dataFunction;
+				case 'raw':
 				default:
-					$func = ($dataFunction === NULL) ? function($targetData) {
+					if($func === NULL) $func =  function($targetData) {
 						$data = PBRequest::ParseAttribute($targetData);
 						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
-					} : $dataFunction;
+					};
 					break;
 			}
 
