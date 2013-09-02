@@ -7,14 +7,16 @@
 
 	class html extends PBModule
 	{
-		protected $_basePath = '';
+		private $_baseRCPath = '';
 
 		private $_js = array('prepend' => array(), 'append' => array());
 		private $_css = array();
 		private $_cssFiles = array();
 		private $_jsFiles = array();
 
-		private $_prop = array('title' => '');
+		private $_header = array();
+
+		private $_prop = array();
 
 		public function exec($param)
 		{
@@ -40,16 +42,18 @@
 			foreach ($this->_cssFiles as $filePath)
 				$css['file'] .= "<link href='{$filePath}' rel='stylesheet' />\r\n";
 
+			$this->_header = implode("\r\n", $this->_header);
 
 			echo <<<HTML
 				<HTML>
-					<HEAD>
-						<TITLE>{$this->_prop['title']}</TITLE>
+					<head>
+						{$this->_header}
+
 						{$js['file']}
 						{$js['prepend']}
 						{$css['file']}
 						{$css['inline']}
-					</HEAD>
+					</head>
 					<BODY>
 						{$param}
 						{$js['append']}
@@ -92,5 +96,23 @@ HTML;
 		public function __set_cssFiles($value) { $this->addFile($value, 'css'); }
 
 
-		public function property($name, $value) { $this->_prop[$name] = $value; }
+		public function __get_rcPath() { return $this->_baseRCPath; }
+		public function __set_rcPath($value) { $this->_baseRCPath = (is_string($value)) ? $value : ''; }
+
+		public function property($name, $value)
+		{
+			$serviceName = __SERVICE__;
+
+			switch (strtolower($name))
+			{
+				case 'title':
+					$this->_header[] = "<title>{$value}</title>";
+					break;
+				case 'favicon':
+					$this->_header[] = "<link rel='shortcut icon' href='/{$serviceName}/{$this->_baseRCPath}{$value}' />";
+					break;
+				default:
+					$this->_prop[$name] = $value;
+			}
+		}
 	}
