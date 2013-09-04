@@ -201,13 +201,13 @@ class PBProcess extends PBObject
 
 			$moduleName = $illustrator['module'];
 
-			$reuse = FALSE;
+			$reuse = TRUE;
 			if(array_key_exists('reuse', $illustrator))
 			{
 				if(!is_bool($illustrator['reuse']))
 					throw(new Exception("Error bootSequence structure definition"));
 
-				$reuse = $reuse || $illustrator['reuse'];
+				$reuse = $reuse && $illustrator['reuse'];
 			}
 
 			$request = NULL;
