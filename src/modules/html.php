@@ -22,6 +22,7 @@
 		{
 			$js = array('prepend' => '', 'append' => '', 'file' => '');
 			$css = array('inline' => '', 'file' => '');
+			$header = '';
 
 
 			// INFO: Process JS
@@ -42,12 +43,12 @@
 			foreach ($this->_cssFiles as $filePath)
 				$css['file'] .= "<link href='{$filePath}' rel='stylesheet' />\r\n";
 
-			$this->_header = implode("\r\n", $this->_header);
+			$header = implode("\r\n", $this->_header);
 
 			echo <<<HTML
 				<HTML>
 					<head>
-						{$this->_header}
+						{$header}
 
 						{$js['file']}
 						{$js['prepend']}
@@ -115,6 +116,7 @@ HTML;
 					break;
 				default:
 					$this->_prop[$name] = $value;
+					break;
 			}
 		}
 	}
