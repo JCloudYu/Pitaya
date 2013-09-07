@@ -16,6 +16,15 @@ class PBProcess extends PBObject
 
 	private $_bootSequence = NULL;
 
+	/**
+	 * Get the process with specified process id
+	 *
+	 * @param string|null $id the specified process id
+	 *
+	 * @return PBProcess | null the specified PBProcess object
+	 */
+	public static function Process($id = NULL) { return SYS::Process($id); }
+
 	public function __construct() {
 
 		$this->_bootSequence = PBLList::GENERATE();

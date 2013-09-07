@@ -210,9 +210,10 @@ class SYS extends PBObject
 
 		$process->__processId = $processId;
 		$process->__sysAPI = $this;
-		$process->attachMainService($service, $moduleRequest);
 
 		$this->_processQueue[$processId] = $process;
+
+		$process->attachMainService($service, $moduleRequest);
 	}
 
 	private function __killProcess($processId) {
@@ -325,6 +326,20 @@ class SYS extends PBObject
 		$selfId = $this->id;
 
 		return $selfId['base'] === $childrenId['extended'];
+	}
+// endregion
+
+// region [ Process Management API ]
+	/**
+	 * Get the process with specified process id
+	 *
+	 * @param string|null $id the specified process id
+	 *
+	 * @return PBProcess | null the specified PBProcess object
+	 */
+	public static function Process($id = NULL)
+	{
+		return ($id === NULL) ? reset(self::$_SYS_INSTANCE->_processQueue) : @self::$_SYS_INSTANCE->_processQueue[$id];
 	}
 // endregion
 }
