@@ -2,6 +2,7 @@
 	using('kernel.basis.PBObject');
 	using('ext.base.time');
 	using('ext.base.misc');
+	using('ext.base.array');
 
 	final class PBRequest extends PBObject
 	{
@@ -114,12 +115,53 @@
 					break;
 			}
 
-			$result = $func($this->_incomingRecord['request']['data'], $param);
+
+			$filteredData = $this->decodeData($this->_incomingRecord['request']['data'], $this->server['CONTENT_TYPE']);
+
+			$result = $func($filteredData, $param);
 			$this->_parsedData = @$result['data'];
 			$this->_dataVariable = @$result['variable'];
 			$this->_dataFlag = @$result['flag'];
 
 			return $this;
+		}
+
+		private function decodeData($data, $encType)
+		{
+			$dataInfo = array();
+
+			$encType = explode(';', $encType);
+			foreach ($encType as $token)
+			{
+				$token = strtolower(trim($token));
+
+				// content-type
+				if (preg_match('/^.*\/.*$/', $token))
+					$dataInfo['type'] = $token;
+				else
+				if (preg_match('/^charset=.*/', $token))
+					$dataInfo['charset'] = $token;
+			}
+
+			if (array_key_exists('charset', $dataInfo))
+			{
+				// ISSUE: There convert charset here....
+			}
+
+			if (array_key_exists('type', $dataInfo))
+			{
+				switch ($dataInfo['type'])
+				{
+					case 'application/x-www-form-urlencoded':
+						$data = iTrans($data, 'urlencoded');
+						break;
+					case 'application/base64':
+						$data = iTrans($data, 'base64');
+						break;
+				}
+			}
+
+			return $data;
 		}
 
 
@@ -170,7 +212,7 @@
 								 is_array($this->_dataFlag)  ? $this->_dataFlag  : array());
 
 			$flags = array_unique($flags);
-			return in_array($name, $flags) ? TRUE : FALSE;
+			return in_ary($name, $flags) ? TRUE : FALSE;
 		}
 		// endregion
 
