@@ -72,9 +72,9 @@
 		 */
 		public function parseQuery(Closure $queryFunction = NULL) { return $this; }
 
-		public function data($name, $type = 'raw', $default = NULL) {}
+		public function data($name, $type = 'raw', $default = NULL) { return 'data'; }
 
-		public function flag($name) {}
+		public function flag($name) { return TRUE; }
 		// endregion
 
 		// region [ Data Processing API ]
