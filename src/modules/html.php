@@ -45,6 +45,8 @@
 
 			$header = implode("\r\n", $this->_header);
 
+			$wrapper = empty($this->_prop['page']) ? '' : "class='{$this->_prop['page']}'";
+
 			echo <<<HTML
 				<HTML>
 					<head>
@@ -56,8 +58,10 @@
 						{$css['inline']}
 					</head>
 					<body>
+						<div {$wrapper}>
 						{$param}
 						{$js['append']}
+						</div>
 					</body>
 				</HTML>
 HTML;
@@ -114,6 +118,10 @@ HTML;
 				case 'favicon':
 					$this->_header[] = "<link rel='shortcut icon' href='/{$serviceName}/{$this->_baseRCPath}{$value}' />";
 					break;
+				case 'charset':
+					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
+					break;
+				case 'page':
 				default:
 					$this->_prop[$name] = $value;
 					break;
