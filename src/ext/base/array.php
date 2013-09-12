@@ -84,7 +84,7 @@
 
 	define('IN_ARY_MODE_AND', 		1 << 0, TRUE);
 	define('IN_ARY_MODE_STRICT', 	1 << 1, TRUE);
-	function in_ary($needle, $candidates, $mode = IN_ARY_MODE_AND)
+	function in_ary($needle, $candidates, $mode = 0)
 	{
 		if (!is_array($needle)) $needle = array($needle);
 
@@ -99,7 +99,7 @@
 			if ($andMode)
 				$state = $state && in_array($content, $candidates, $strictMode);
 			else
-				$state = $state && in_array($content, $candidates, $strictMode);
+				$state = $state || in_array($content, $candidates, $strictMode);
 		}
 
 		return $state;
