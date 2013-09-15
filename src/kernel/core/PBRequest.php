@@ -115,32 +115,53 @@
 					break;
 			}
 
+			$result = $func($this->_incomingRecord['request']['data'], $param);
 
-			$filteredData = $this->decodeData($this->_incomingRecord['request']['data'], $this->server['CONTENT_TYPE']);
+			$buff = $this->recursiveDecode($result);
 
-			$result = $func($filteredData, $param);
-			$this->_parsedData = @$result['data'];
-			$this->_dataVariable = @$result['variable'];
-			$this->_dataFlag = @$result['flag'];
+			$this->_parsedData = @$buff['data'];
+			$this->_dataVariable = @$buff['variable'];
+			$this->_dataFlag = @$buff['flag'];
 
 			return $this;
 		}
 
+		private function recursiveDecode($content)
+		{
+			if (!is_array($content))
+				return $this->decodeData($content, $this->server['CONTENT_TYPE']);
+
+			$buff = array();
+			foreach ($content as $idx => $value)
+			{
+				if (is_array($value))
+					$buff[$idx] = $this->recursiveDecode($value);
+				else
+					$buff[$idx] = $this->decodeData($value, $this->server['CONTENT_TYPE']);
+			}
+
+			return $buff;
+		}
+
 		private function decodeData($data, $encType)
 		{
-			$dataInfo = array();
+			static $dataInfo = NULL;
 
-			$encType = explode(';', $encType);
-			foreach ($encType as $token)
+			if ($dataInfo === NULL)
 			{
-				$token = strtolower(trim($token));
+				$dataInfo = array();
+				$encType = explode(';', $encType);
+				foreach ($encType as $token)
+				{
+					$token = strtolower(trim($token));
 
-				// content-type
-				if (preg_match('/^.*\/.*$/', $token))
-					$dataInfo['type'] = $token;
-				else
-				if (preg_match('/^charset=.*/', $token))
-					$dataInfo['charset'] = $token;
+					// content-type
+					if (preg_match('/^.*\/.*$/', $token))
+						$dataInfo['type'] = $token;
+					else
+					if (preg_match('/^charset=.*/', $token))
+						$dataInfo['charset'] = $token;
+				}
 			}
 
 			if (array_key_exists('charset', $dataInfo))
