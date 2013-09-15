@@ -16,11 +16,15 @@
 
 		private $_identifier = '';
 
-		public function __construct($type = 'list')
+		private $_emptyNotifier = '';
+
+		private $_renderHeader = TRUE;
+
+		public function __construct()
 		{
 			static $instCounter = 0;
-			$type = strtolower($type);
 			$this->_identifier = substr(md5(uniqid() . ++$instCounter), 0, 16);
+			$this->_emptyNotifier = 'Empty';
 		}
 
 
@@ -48,6 +52,15 @@
 
 
 
+		public function __set_renderHeader($value) { $this->_renderHeader = $value; }
+		public function __get_renderHeader() { return $this->_renderHeader; }
+
+
+
+		public function __set_emptyStr($value) { $this->_emptyNotifier = $value; }
+		public function __get_emptyStr() { return $this->_emptyNotifier; }
+
+
 		public function render()
 		{
 			$columns = array();
@@ -66,45 +79,53 @@
 				$columns[] = $colProp;
 
 
-				@$header .= "<th {$colProp['width']} {$colProp['align']}>{$column['title']}</th>";
+				if ($this->_renderHeader) @$header .= "<th {$colProp['width']} {$colProp['align']}>{$column['title']}</th>";
 			}
-			$header = empty($header) ? '' : "<tr>{$header}</tr>";
+			if ($this->_renderHeader) $header = empty($header) ? '' : "<thead><tr>{$header}</tr></thead>";
 
 
 			$body = '';
-			foreach ($this->_data as $rowData)
+			if (count(($this->_data)) > 0)
 			{
-				$rowHTML = '';
-				foreach ($columns as $idx => $def)
+				foreach ($this->_data as $rowData)
 				{
-					$type = $def['data-type'];
-					$width = $def['width'];
-					$align = $def['align'];
-					$checked = '';
-
-					if (is_array(@$rowData[$idx]))
+					$rowHTML = '';
+					foreach ($columns as $idx => $def)
 					{
-						$value = (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
-						$checked = (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
-						$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
-					}
-					else
-						$value = TO(@$rowData[$idx], $type);
+						$type = $def['data-type'];
+						$width = $def['width'];
+						$align = $def['align'];
+						$checked = '';
 
-					switch ($def['column-type'])
-					{
-						case 'checkbox':
-							$rowHTML .= "<td {$width} {$align}><input type='checkbox' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
-							break;
-						case 'radio':
-							$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
-							break;
-						default:
-							$rowHTML .= "<td {$width} {$align}><span>{$value}</span></td>";
-							break;
+						if (is_array(@$rowData[$idx]))
+						{
+							$value = (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
+							$checked = (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
+							$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
+						}
+						else
+							$value = TO(@$rowData[$idx], $type);
+
+						switch ($def['column-type'])
+						{
+							case 'checkbox':
+								$rowHTML .= "<td {$width} {$align}><input type='checkbox' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
+								break;
+							case 'radio':
+								$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
+								break;
+							default:
+								$rowHTML .= "<td {$width} {$align}><span>{$value}</span></td>";
+								break;
+						}
 					}
+					$body .= "<tr>{$rowHTML}</tr>";
 				}
-				$body .= "<tr>{$rowHTML}</tr>";
+			}
+			else
+			{
+				$numCols = count($columns) + 1;
+				$body .= "<tr><td align='center' colspan='{$numCols}'>{$this->_emptyNotifier}</td></tr>";
 			}
 
 
@@ -112,7 +133,7 @@
 
 			return <<<HTML
 				<table {$attr} rel='{$this->_identifier}'>
-					<thead>{$header}</thead>
+					{$header}
 					<tbody>{$body}</tbody>
 				</table>
 HTML;
