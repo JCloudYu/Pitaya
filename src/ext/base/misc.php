@@ -24,7 +24,7 @@
 				return trim("$value");
 
 			case 'boolean':
-				return $value == TRUE;
+				return $value != TRUE;
 
 			case 'null':
 				return NULL;
@@ -38,4 +38,54 @@
 			default:
 				return $value;
 		}
+	}
+
+	/**
+	 * Decode the data according to the given encoding type
+	 *
+	 * @param mixed $data the data to be deocded
+	 * @param string $encType the encoding type of the given data
+	 *
+	 * @return mixed the decoded data
+	 */
+	function iTrans($data, $encType)
+	{
+		switch ($encType)
+		{
+			case 'urlencoded':
+				$data = urldecode($data);
+				break;
+			case 'base64':
+				$data = base64_decode($data);
+				break;
+			default:
+				break;
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Encode the data according to the given encoding type
+	 *
+	 * @param mixed $data the data to be encoded
+	 * @param string $encType the encoding type of the given data
+	 *
+	 * @return mixed the encoded data
+	 */
+	function Trans($data, $encType)
+	{
+		switch ($encType)
+		{
+			case 'urlencoded':
+				$data = urlencode($data);
+				break;
+			case 'base64':
+				$data = base64_encode($data);
+				break;
+			default:
+				break;
+		}
+
+		return $data;
 	}

@@ -1,11 +1,12 @@
 <?php
 	using('kernel.core.PBModule');
+	using('sys.tool.http.mime');
 
 	class ajax extends PBModule
 	{
-		const AJAX_STATUS_ALERT 	=  1;
-		const AJAX_STATUS_NORMAL	=  0;
-		const AJAX_STATUS_ERROR 	= -1;
+		const STATUS_ALERT 	=  1;
+		const STATUS_NORMAL	=  0;
+		const STATUS_ERROR 	= -1;
 
 		public function exec($param)
 		{
@@ -15,12 +16,12 @@
 
 			if (!is_array($param))
 			{
-				$ajaxReturn['status'] 	= self::AJAX_STATUS_NORMAL;
+				$ajaxReturn['status'] 	= self::STATUS_NORMAL;
 				$ajaxReturn['msg']		= $param;
 			}
 			else
 			{
-				$ajaxReturn['status'] = (is_int(@$param['status'])) ? intval($param['status']) : self::AJAX_STATUS_NORMAL;
+				$ajaxReturn['status'] = (is_int(@$param['status'])) ? intval($param['status']) : self::STATUS_NORMAL;
 				$ajaxReturn['msg'] = (@$param['msg']) ? $param['msg'] : '';
 
 				unset($param['status']); unset($param['msg']);
@@ -28,10 +29,10 @@
 				$ajaxReturn = array_merge($ajaxReturn, $param);
 			}
 
-			self::respondJSON($ajaxReturn);
+			$this->respondJSON($ajaxReturn);
 		}
 
-		public static function respondJSON($jsonData)
+		public function respondJSON($jsonData)
 		{
 			header("Content-type: " . MIME::JSON);
 			$response = json_encode($jsonData);

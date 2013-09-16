@@ -16,6 +16,15 @@ class PBProcess extends PBObject
 
 	private $_bootSequence = NULL;
 
+	/**
+	 * Get the process with specified process id
+	 *
+	 * @param string|null $id the specified process id
+	 *
+	 * @return PBProcess | null the specified PBProcess object
+	 */
+	public static function Process($id = NULL) { return SYS::Process($id); }
+
 	public function __construct() {
 
 		$this->_bootSequence = PBLList::GENERATE();
@@ -69,6 +78,8 @@ class PBProcess extends PBObject
 
 	public function assignNextModule($moduleHandle)
 	{
+		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
+
 		$handle = explode('.', $moduleHandle); array_shift($handle);
 		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
@@ -201,13 +212,13 @@ class PBProcess extends PBObject
 
 			$moduleName = $illustrator['module'];
 
-			$reuse = FALSE;
+			$reuse = TRUE;
 			if(array_key_exists('reuse', $illustrator))
 			{
 				if(!is_bool($illustrator['reuse']))
 					throw(new Exception("Error bootSequence structure definition"));
 
-				$reuse = $reuse || $illustrator['reuse'];
+				$reuse = $reuse && $illustrator['reuse'];
 			}
 
 			$request = NULL;

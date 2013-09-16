@@ -2,6 +2,7 @@
 	using('kernel.basis.PBObject');
 	using('ext.base.time');
 	using('ext.base.misc');
+	using('ext.base.array');
 
 	final class PBRequest extends PBObject
 	{
@@ -26,6 +27,8 @@
 			$this->_incomingRecord['request']['data']		 = $this->_incomingRecord['rawData'];
 			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
 			$this->_incomingRecord['request']['files']		 = @$_FILES;
+			$this->_incomingRecord['request']['post']		 = $_POST;
+			$this->_incomingRecord['request']['get']		 = $_GET;
 
 
 			$this->_incomingRecord['environment']['attr']	 = $_ENV;
@@ -68,37 +71,126 @@
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
+		private $_parsedData = NULL;
+		private $_dataVariable = NULL;
+		private $_dataFlag = NULL;
+
 		/**
-		 * Parse the system's incoming data using the given function.
-		 * If there's no function given, system will parse the data using system built-in parsing function
+		 * Treat and parse the incoming data as the sepcified type.
+		 * The given function will be triggered only when the type is 'cust'.
+		 * If there's no function given, system will parse the data using system built-in parsing function.
+		 *
 		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
 		 * 'data' represets the result structure and variable indicates the vairables that are stored in the
 		 * incoming data, which will be used by function PBRequest::data
 		 *
+		 * @param string $type the type to which the incoming data will be converted
+		 * @param mixed $param the parameters that will be used during parsing process
 		 * @param callable $dataFunction the function that will be used to parse system's incoming data
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		private $_parsedData = NULL;
-		private $_dataVariable = NULL;
-		private $_dataFlag = NULL;
-		public function parseData(Closure $dataFunction = NULL)
+		public function parseData($type = 'cust', $param = NULL, Closure $dataFunction = NULL)
 		{
 			if ($this->_parsedData !== NULL) return $this;
 
-			$func = ($dataFunction === NULL) ? function($targetData) {
-				$data = PBRequest::ParseAttribute($targetData);
-				return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
-			} : $dataFunction;
+			$func = NULL;
 
-			$result = $func($this->_incomingRecord['request']['data']);
-			$this->_parsedData = @$result['data'];
-			$this->_dataVariable = @$result['variable'];
-			$this->_dataFlag = @$result['flag'];
+			switch (strtolower($type))
+			{
+				case 'json':
+					$func = function($targetData, $param) {
+						$depth = intval(@$param['depth']);
+						$data = json_decode($targetData, TRUE, ($depth <= 0) ? 512 : $depth);
+						return array('data' => $data, 'variable' => $data, 'flag' => NULL);
+					};
+					break;
+
+				case 'cust':
+					$func = $dataFunction;
+				case 'raw':
+				default:
+					if($func === NULL) $func =  function($targetData) {
+						$data = PBRequest::ParseAttribute($targetData);
+						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
+					};
+					break;
+			}
+
+			$result = $func($this->_incomingRecord['request']['data'], $param);
+
+			$buff = $this->recursiveDecode($result);
+
+			$this->_parsedData = @$buff['data'];
+			$this->_dataVariable = @$buff['variable'];
+			$this->_dataFlag = @$buff['flag'];
 
 			return $this;
 		}
 
+		private function recursiveDecode($content)
+		{
+			if (!is_array($content))
+				return @$this->decodeData($content, $this->server['CONTENT_TYPE']);
+
+			$buff = array();
+			foreach ($content as $idx => $value)
+			{
+				if (is_array($value))
+					$buff[$idx] = $this->recursiveDecode($value);
+				else
+					@$buff[$idx] = $this->decodeData($value, $this->server['CONTENT_TYPE']);
+			}
+
+			return $buff;
+		}
+
+		private function decodeData($data, $encType)
+		{
+			static $dataInfo = NULL;
+
+			if ($dataInfo === NULL)
+			{
+				$dataInfo = array();
+				$encType = explode(';', $encType);
+				foreach ($encType as $token)
+				{
+					$token = strtolower(trim($token));
+
+					// content-type
+					if (preg_match('/^.*\/.*$/', $token))
+						$dataInfo['type'] = $token;
+					else
+					if (preg_match('/^charset=.*/', $token))
+						$dataInfo['charset'] = $token;
+				}
+			}
+
+			if (array_key_exists('charset', $dataInfo))
+			{
+				// ISSUE: There convert charset here....
+			}
+
+			if (array_key_exists('type', $dataInfo))
+			{
+				switch ($dataInfo['type'])
+				{
+					case 'application/x-www-form-urlencoded':
+						$data = iTrans($data, 'urlencoded');
+						break;
+					case 'application/base64':
+						$data = iTrans($data, 'base64');
+						break;
+				}
+			}
+
+			return $data;
+		}
+
+
+		private $_parsedQuery = NULL;
+		private $_queryVariable = NULL;
+		private $_queryFlag = NULL;
 		/**
 		 * Parse the system's incoming query using the given function.
 		 * If there's no function given, system will parse the query using system built-in parsing function.
@@ -110,9 +202,6 @@
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		private $_parsedQuery = NULL;
-		private $_queryVariable = NULL;
-		private $_queryFlag = NULL;
 		public function parseQuery(Closure $queryFunction = NULL)
 		{
 			if ($this->_parsedQuery !== NULL) return $this;
@@ -137,7 +226,7 @@
 
 			if (!array_key_exists($name, $vars)) return $default;
 
-			return IS($vars[$name], $type);
+			return TO($vars[$name], $type);
 		}
 
 		public function flag($name)
@@ -146,7 +235,17 @@
 								 is_array($this->_dataFlag)  ? $this->_dataFlag  : array());
 
 			$flags = array_unique($flags);
-			return in_array($name, $flags) ? TRUE : FALSE;
+			return in_ary($name, $flags) ? TRUE : FALSE;
+		}
+
+
+		public function post($name, $type = 'raw', $default = NULL)
+		{
+			$var = $this->_incomingRecord['request']['post'];
+
+			if (!array_key_exists($name, $var)) return $default;
+
+			return TO($var[$name], $type);
 		}
 		// endregion
 

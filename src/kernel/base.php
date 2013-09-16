@@ -1,11 +1,15 @@
 <?php
 
 // INFO: Super Global Constants...
-define('__ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
+define('__WEB_ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
+define('__ROOT__', __WEB_ROOT__ . ( file_exists(__WEB_ROOT__.'/Pitaya') ? '/Pitaya' : '/pitaya' ), TRUE);
 
-require_once (__ROOT__.'/config.php');
-require_once (__ROOT__.'/cmd.config.php');
+
+// INFO: Including configuration files
+require_once (__ROOT__ . '/cmd.config.php');
+require_once (__WEB_ROOT__ . "/config.php");	// ISSUE: We need to verify the configuration data...
+
 
 srand(time());
 $GLOBALS['randomCert'] = md5(rand());
@@ -19,9 +23,7 @@ $GLOBALS['randomCert'] = md5(rand());
 function using($referencingContext = '', $important = true, $output = false) {
 
 	static $registeredInclusions = array();
-	static $_cachedKernelPath = NULL;
 	static $_cachedServicePath = NULL;
-	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
 	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
 	if($output === TRUE)
@@ -40,10 +42,6 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 		switch($tokens[0])
 		{
-			case 'kernel':
-				array_shift($tokens);
-				$completePath = $_cachedKernelPath;
-				break;
 			case 'service':
 				array_shift($tokens);
 				if(defined('__WORKING_ROOT__'))
@@ -93,10 +91,6 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 		switch($tokens[0])
 		{
-			case 'kernel':
-				array_shift($tokens);
-				$completePath = $_cachedKernelPath;
-				break;
 			case 'service':
 				array_shift($tokens);
 
@@ -129,9 +123,7 @@ using('kernel.tool.log.*');
 
 function available($referencingContext = '') {
 	static $registeredInclusions = array();
-	static $_cachedKernelPath = NULL;
 	static $_cachedServicePath = NULL;
-	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
 	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
 	if(isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
@@ -140,10 +132,6 @@ function available($referencingContext = '') {
 
 	switch($tokens[0])
 	{
-		case 'kernel':
-			array_shift($tokens);
-			$completePath = $_cachedKernelPath;
-			break;
 		case 'service':
 			array_shift($tokens);
 			if(defined('__WORKING_ROOT__'))

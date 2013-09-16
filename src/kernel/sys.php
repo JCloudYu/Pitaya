@@ -24,7 +24,6 @@ class SYS extends PBObject
 
 // region [ Path Control ]
 	private static $_cacheServicePath = NULL;
-	private static $_cacheKernelPath = NULL;
 	private static $_cacheRandomCert = NULL;
 
 	public static function __imprint_constants() {
@@ -34,7 +33,6 @@ class SYS extends PBObject
 		if($initialized) return;
 
 		SYS::$_cacheServicePath = $GLOBALS['servicePath'];
-		SYS::$_cacheKernelPath = $GLOBALS['kernelPath'];
 		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
 	}
 // endregion
@@ -212,9 +210,10 @@ class SYS extends PBObject
 
 		$process->__processId = $processId;
 		$process->__sysAPI = $this;
-		$process->attachMainService($service, $moduleRequest);
 
 		$this->_processQueue[$processId] = $process;
+
+		$process->attachMainService($service, $moduleRequest);
 	}
 
 	private function __killProcess($processId) {
@@ -272,6 +271,7 @@ class SYS extends PBObject
 
 
 		$servicePath = "service.{$chiefModule}";
+		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
 		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
 		$custServiceSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
 		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
@@ -282,6 +282,9 @@ class SYS extends PBObject
 		// INFO: system core will be chosen first
 		if(available($servicePath))
 			using($servicePath);
+		else
+		if(available($serviceDefaultPath))
+			using($serviceDefaultPath);
 		else
 		if($custServicePath !== NULL && available($custServicePath))
 			using($custServicePath);
@@ -323,6 +326,20 @@ class SYS extends PBObject
 		$selfId = $this->id;
 
 		return $selfId['base'] === $childrenId['extended'];
+	}
+// endregion
+
+// region [ Process Management API ]
+	/**
+	 * Get the process with specified process id
+	 *
+	 * @param string|null $id the specified process id
+	 *
+	 * @return PBProcess | null the specified PBProcess object
+	 */
+	public static function Process($id = NULL)
+	{
+		return ($id === NULL) ? reset(self::$_SYS_INSTANCE->_processQueue) : @self::$_SYS_INSTANCE->_processQueue[$id];
 	}
 // endregion
 }
