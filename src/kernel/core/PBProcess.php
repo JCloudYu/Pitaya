@@ -78,6 +78,8 @@ class PBProcess extends PBObject
 
 	public function assignNextModule($moduleHandle)
 	{
+		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
+
 		$handle = explode('.', $moduleHandle); array_shift($handle);
 		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 

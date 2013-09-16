@@ -75,6 +75,8 @@
 		public function data($name, $type = 'raw', $default = NULL) { return 'data'; }
 
 		public function flag($name) { return TRUE; }
+
+		public function post($name, $type = 'raw', $default = NULL) { return 'data'; }
 		// endregion
 
 		// region [ Data Processing API ]

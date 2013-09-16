@@ -27,6 +27,8 @@
 			$this->_incomingRecord['request']['data']		 = $this->_incomingRecord['rawData'];
 			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
 			$this->_incomingRecord['request']['files']		 = @$_FILES;
+			$this->_incomingRecord['request']['post']		 = $_POST;
+			$this->_incomingRecord['request']['get']		 = $_GET;
 
 
 			$this->_incomingRecord['environment']['attr']	 = $_ENV;
@@ -129,7 +131,7 @@
 		private function recursiveDecode($content)
 		{
 			if (!is_array($content))
-				return $this->decodeData($content, $this->server['CONTENT_TYPE']);
+				return @$this->decodeData($content, $this->server['CONTENT_TYPE']);
 
 			$buff = array();
 			foreach ($content as $idx => $value)
@@ -137,7 +139,7 @@
 				if (is_array($value))
 					$buff[$idx] = $this->recursiveDecode($value);
 				else
-					$buff[$idx] = $this->decodeData($value, $this->server['CONTENT_TYPE']);
+					@$buff[$idx] = $this->decodeData($value, $this->server['CONTENT_TYPE']);
 			}
 
 			return $buff;
@@ -234,6 +236,16 @@
 
 			$flags = array_unique($flags);
 			return in_ary($name, $flags) ? TRUE : FALSE;
+		}
+
+
+		public function post($name, $type = 'raw', $default = NULL)
+		{
+			$var = $this->_incomingRecord['request']['post'];
+
+			if (!array_key_exists($name, $var)) return $default;
+
+			return TO($var[$name], $type);
 		}
 		// endregion
 
