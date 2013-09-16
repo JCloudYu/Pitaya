@@ -15,6 +15,9 @@
 			@$forceVar = (($key = array_search('CREATE_VAR', $option)) !== FALSE ) ? TRUE : FALSE;
 			unset($option[$key]);
 
+			$option[PDO::MYSQL_ATTR_INIT_COMMAND] = isset($option['charset']) ? "SET NAMES {$option['charset']}" : "SET NAMES utf8";
+			unset($option['charset']);
+
 			if (count($option) > 0)
 				parent::__construct($dsn, $username, $userpass, $option);
 			else
