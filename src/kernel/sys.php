@@ -92,7 +92,7 @@ class SYS extends PBObject
 			// http://SERVER_HOST/
 			if($requestItems[0] == '')
 			{
-				$service = 'index';
+				$service = __DEFAULT_SERVICE__;
 				$moduleRequest = '';
 			}
 			else
@@ -108,7 +108,7 @@ class SYS extends PBObject
 				// http://SERVER_HOST/?REQUEST_ATTR
 				if($tmpBuf[0] == '')
 				{
-					$service = 'index';
+					$service = __DEFAULT_SERVICE__;
 					$moduleRequest = $requestItems[0];
 				}
 				else
@@ -158,7 +158,7 @@ class SYS extends PBObject
 			return;
 		}
 
-		$service = 'index';
+		$service = __DEFAULT_SERVICE__;
 		$state = $state || available("service.{$service}.{$service}");
 
 		if ($state)
