@@ -49,15 +49,6 @@
 		 */
 		public function parseData(Closure $dataFunction = NULL) { return $this; }
 
-		/**
-		 * Parse the system's incoming data according to json format
-		 *
-		 * @param int $jsonDepth the maximum parsing depth
-		 *
-		 * @return $this
-		 */
-		public function parseJSONData($jsonDepth = 512) { return $this; }
-
 
 		/**
 		 * Parse the system's incoming query using the given function.

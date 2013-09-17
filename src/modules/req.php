@@ -25,7 +25,11 @@ class req extends PBModule
 												'ICO'	=> 'image/vnd.microsoft.icon',
 												'GIF'	=> 'image/gif',
 												'TIF'	=> 'image/tiff',
-												'TIFF'	=> 'image/tiff');
+												'TIFF'	=> 'image/tiff',
+
+												'WAV'	=> 'audio/wav',
+
+												'AVI'	=> 'video/avi');
 
 	private $_request = NULL;
 	private $_acceptTypes = NULL;
