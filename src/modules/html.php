@@ -121,6 +121,9 @@ HTML;
 				case 'charset':
 					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
 					break;
+				case 'viewport':
+					$this->_header[] = "<meta name='viewport' content='{$value}' />";
+					break;
 				case 'page':
 				default:
 					$this->_prop[$name] = $value;
