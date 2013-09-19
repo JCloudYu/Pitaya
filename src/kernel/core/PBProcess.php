@@ -48,30 +48,8 @@ class PBProcess extends PBObject
 
 	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
 
-		$reqModuleNames = explode('.', $moduleName);
-
-		if (count($reqModuleNames) <= 1)
-			$reqModuleNames = array($moduleName, $moduleName);
-		else
-			$reqModuleNames = array(array_shift($reqModuleNames), ($moduleName = implode('', $reqModuleNames)));
-
-		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
-		{
-			$this->_attachedModules[$moduleName]->prepare($moduleRequest);
-			return $this->_attachedModules[$moduleName];
-		}
-
-		$module = $this->_system->acquireModule($reqModuleNames[0], $reqModuleNames[1]);
-		$module->__processInst = $this;
+		$module = $this->_acquireModule($moduleName, $reusable);
 		$module->prepare($moduleRequest);
-		$moduleId = $module->id;
-
-		$this->_attachedModules[$moduleId] = $module;
-		if($reusable)
-		{
-			$this->_attachedModules[$moduleName] = $module;
-			$this->_attachedModules[$moduleName] = $module;
-		}
 
 		return $module;
 	}
@@ -172,7 +150,6 @@ class PBProcess extends PBObject
 		$module->prepare($moduleRequest);
 
 		// INFO: Get default boot sequence from boot module
-
 		$this->__bootSequence = $module->__bootSequence;
 
 		$this->_attachedModules[$moduleName] = $module;
@@ -202,6 +179,7 @@ class PBProcess extends PBObject
 
 		if(is_null($value) || !is_array($value)) return;
 
+		$requestQueue = array();
 		foreach($value as $illustrator)
 		{
 			if(!is_array($illustrator))
@@ -225,9 +203,47 @@ class PBProcess extends PBObject
 			if(array_key_exists('request', $illustrator))
 				$request = $illustrator['request'];
 
-			$moduleId = $this->attachModule($moduleName, $request, $reuse)->id;
-
+			$moduleId = $this->_acquireModule($moduleName, $reuse)->id;
 			PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
+
+			$requestQueue[] = $request;
 		}
+
+		PBLinkedList::HEAD($this->_bootSequence);
+		PBLinkedList::NEXT($this->_bootSequence);
+
+		foreach ($requestQueue as $request)
+		{
+			$handle = $this->_bootSequence->data;
+			$this->_attachedModules[$handle]->prepare($request);
+
+			PBLinkedList::NEXT($this->_bootSequence);
+		}
+
+		PBLinkedList::HEAD($this->_bootSequence);
+	}
+
+	private function _acquireModule($moduleName, $reusable = TRUE)
+	{
+		$reqModuleNames = explode('.', $moduleName);
+
+		if (count($reqModuleNames) <= 1)
+			$reqModuleNames = array($moduleName, $moduleName);
+		else
+			$reqModuleNames = array(array_shift($reqModuleNames), ($moduleName = implode('', $reqModuleNames)));
+
+		if(array_key_exists($moduleName, $this->_attachedModules) && $reusable)
+			return $this->_attachedModules[$moduleName];
+
+		$module = $this->_system->acquireModule($reqModuleNames[0], $reqModuleNames[1]);
+		$module->__processInst = $this;
+		$moduleId = $module->id;
+
+		$this->_attachedModules[$moduleId] = $module;
+
+		if($reusable)
+			$this->_attachedModules[$moduleName] = $module;
+
+		return $module;
 	}
 }
