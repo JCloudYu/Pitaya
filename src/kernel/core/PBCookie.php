@@ -7,6 +7,7 @@
 		// region [ Singleton Control ]
 		private static $_cookieInst = NULL;
 		private static $_confDomain = '';
+		private static $_confPath = '';
 		public static function Cookie()
 		{
 			if (self::$_cookieInst) return self::$_cookieInst;
@@ -15,11 +16,14 @@
 		}
 
 		public static function CookieDomain($domain = '') { self::$_confDomain = $domain; }
+		public static function CookiePath($subPath = '') { self::$_confPath = (empty($subPath)) ? '/'.__SERVICE__ : $subPath; }
 
 		private $_domain = '';
-		private function __construct($domain = '')
+		private $_path = '';
+		private function __construct($path = '', $domain = '')
 		{
 			$this->_domain = $domain;
+			$this->_path = $path;
 		}
 		// endregion
 
@@ -28,7 +32,7 @@
 		{
 			if (headers_sent()) return;
 			unset($_COOKIE[$name]);
-			setcookie($name, NULL, 1, '/' . __SERVICE__, $this->_domain);
+			setcookie($name, NULL, 1, self::$_confPath, $this->_domain);
 		}
 
 		public function __isset($name) { return array_key_exists($name, $_COOKIE); }
@@ -42,10 +46,10 @@
 			if (is_array($value))
 			{
 				foreach ($value as $key => $value)
-					setcookie("{$name}[$key]", $value, 0, '/'.__SERVICE__, $this->_domain);
+					setcookie("{$name}[$key]", $value, 0, self::$_confPath, $this->_domain);
 			}
 			else
-				setcookie($name, $value, 0, '/' . __SERVICE__, $this->_domain);
+				setcookie($name, $value, 0, self::$_confPath, $this->_domain);
 		}
 
 		public function set($name, $value, $time = 0)
@@ -61,10 +65,10 @@
 			if (is_array($value))
 			{
 				foreach ($value as $key => $value)
-					setcookie("{$name}[$key]", $value, $time, '/'.__SERVICE__, $this->_domain);
+					setcookie("{$name}[$key]", $value, $time, self::$_confPath, $this->_domain);
 			}
 			else
-				setcookie($name, $value, $time, '/' . __SERVICE__, $this->_domain);
+				setcookie($name, $value, $time, self::$_confPath, $this->_domain);
 		}
 
 		public function get($name, $type, $default)

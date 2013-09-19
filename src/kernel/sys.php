@@ -85,8 +85,7 @@ class SYS extends PBObject
 		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 		// INFO: Extract the requested module from request string
-		$requestItems = explode('/', $rawRequest);
-
+		$requestItems = explode('/', $rawRequest);;
 		if(count($requestItems) == 1)
 		{
 			// http://SERVER_HOST/
@@ -158,35 +157,38 @@ class SYS extends PBObject
 			return;
 		}
 
-		$service = __DEFAULT_SERVICE__;
-		$state = $state || available("service.{$service}.{$service}");
 
-		if ($state)
+		if (__DEFAULT_SERVICE_DEFINED__)
 		{
-			$this->_entryService = $service;
 			$moduleRequest = "{$service}/{$moduleRequest}";
+			$service = __DEFAULT_SERVICE__;
+			$state = $state || available("service.{$service}.{$service}");
 
-			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-			chdir(__WORKING_ROOT__);
+			if ($state)
+			{
+				$this->_entryService = $service;
 
-			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = $moduleRequest;
-			return;
-		}
+				define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+				chdir(__WORKING_ROOT__);
 
-		$state = $state || available("modules.{$service}.{$service}");
+				$GLOBALS['service'] = $service;
+				$GLOBALS['request'] = $moduleRequest;
+				return;
+			}
 
-		if ($state)
-		{
-			$this->_entryService = $service;
-			$moduleRequest = "{$service}/{$moduleRequest}";
+			$state = $state || available("modules.{$service}.{$service}");
 
-			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
-			chdir(__WORKING_ROOT__);
+			if ($state)
+			{
+				$this->_entryService = $service;
 
-			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = $moduleRequest;
-			return;
+				define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
+				chdir(__WORKING_ROOT__);
+
+				$GLOBALS['service'] = $service;
+				$GLOBALS['request'] = $moduleRequest;
+				return;
+			}
 		}
 
 		throw(new Exception("Cannot locate the target entry module!"));

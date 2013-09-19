@@ -9,11 +9,12 @@
 		private static $_confTime = 0;
 		private static $_confSessionId = '';
 		private static $_confDomain = '';
+		private static $_confPath = '';
 
 		public static function Session()
 		{
 			if (self::$_sessionInst) return self::$_sessionInst;
-			self::$_sessionInst = new PBSession(self::$_confTime, self::$_confSessionId, self::$_confDomain);
+			self::$_sessionInst = new PBSession(self::$_confTime, self::$_confSessionId, self::$_confPath, self::$_confDomain);
 			return self::$_sessionInst;
 		}
 
@@ -27,6 +28,7 @@
 		}
 
 		public static function SessionId($sessionId = '') { self::$_confSessionId = $sessionId; }
+		public static function SessionPath($subPath = '') { self::$_confPath = $subPath; }
 		public static function SessionDomain($domain = '') { self::$_confDomain = $domain; }
 
 
@@ -34,13 +36,15 @@
 
 		private $_sessionStatus = FALSE;
 		private $_sessionId = '';
-		private function __construct($time = 0, $sessionId = '', $domain = '')
+		private function __construct($time = 0, $sessionId = '', $path = '', $domain = '')
 		{
 			if (!empty($sessionId)) session_id($sessionId);
 
 			$time = time() + TO($time, 'int');
 
-			session_set_cookie_params($time, '/' . __SERVICE__, $domain);
+			$path = (empty($path)) ? '/' . __SERVICE__ : $path;
+
+			session_set_cookie_params($time, $path, $domain);
 			$this->_sessionStatus = session_start();
 			if (empty($this->_sessionId)) $this->_sessionId = session_id();
 		}
