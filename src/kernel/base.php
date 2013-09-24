@@ -1,5 +1,9 @@
 <?php
 
+// INFO: If the document root is assigned by VirtualDocumentRoot, DOCUMENT_ROOT will contain error path... (It's a bug of mod_vhost_alias)
+// INFO: So I decide to rewrite the real document root here... since this file is the earliest invoked one!!!
+$_SERVER['DOCUMENT_ROOT'] = dirname(dirname(dirname(__FILE__)));
+
 // INFO: Super Global Constants...
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 define('__WEB_ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
