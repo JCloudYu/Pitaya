@@ -17,5 +17,6 @@ RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 	Satisfy All
 </FilesMatch>
 
+php_flag register_argc_argv On
 php_flag magic_quotes_gpc Off
 php_value auto_prepend_file kernel/base.php
