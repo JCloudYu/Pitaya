@@ -4,6 +4,8 @@
  * Created by JCloudYu on 2013/09/25 22:37
  */
 
+	using('sys.db.ExtPDO');
+
 	/**
 	 * Prepare and return a database connection singleton.
 	 * This function will return NULL if there's no connection parameter given.
