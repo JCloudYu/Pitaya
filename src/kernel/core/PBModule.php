@@ -13,14 +13,11 @@ class PBModule extends PBObject
 	private $_bootstrap = array();
 
 
-	public function prepare($moduleRequest) {
+	public function prepare($moduleRequest) {}
+	public function exec($param) {}
+	public function install($force) { return TRUE; }
+	public function update($ver) { return TRUE; }
 
-
-	}
-
-	public function exec($param) {
-
-	}
 
 	public function __get_id() {
 
