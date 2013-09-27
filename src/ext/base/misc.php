@@ -1,5 +1,14 @@
 <?php
 
+	define('KB', 	  1024.0, TRUE);	// KiloByte
+	define('MB', KB * 1024.0, TRUE);	// MegaByte
+	define('GB', MB * 1024.0, TRUE);	// GigaByte
+	define('TB', GB * 1024.0, TRUE);	// TeraByte
+	define('PB', TB * 1024.0, TRUE);	// PetaByte
+	define('EB', PB * 1024.0, TRUE);	// ExaByte
+	define('ZB', EB * 1024.0, TRUE);	// ZetaByte
+	define('YB', ZB * 1024.0, TRUE);	// YotaByte
+
 	/**
 	 * Parse the given $value into specified $type
 	 *
