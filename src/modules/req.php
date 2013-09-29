@@ -39,12 +39,18 @@ class req extends PBModule
 		$this->_acceptTypes = ($acceptables === NULL) ? req::$DefaultAcceptables : $acceptables;
 
 
-		$this->_request = is_string($moduleRequest) ? PBHTTP::ParseRequest($moduleRequest) : $moduleRequest;
+		if (is_string($moduleRequest))
+		{
+			$this->_request = PBHTTP::ParseRequest($moduleRequest);
+			$this->_request['resource'];
+		}
+		else
+			$this->_request = $moduleRequest;
 	}
 
 	public function exec($param) {
 	
-		$targetFile = implode('/', $this->_request['resource']);
+		$targetFile = implode('/', $this->_request);
 		$filePath = __WORKING_ROOT__."/".$targetFile;
 		if(is_file($filePath))
 		{
