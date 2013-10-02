@@ -87,13 +87,14 @@
 
 	define('IN_ARY_MODE_STRICT', 		1 << 1, TRUE);
 	define('IN_ARY_MODE_NONE_STRICT', 	0 << 1, TRUE);
+
 	function in_ary($needle, $candidates, $mode = IN_ARY_MODE_OR)
 	{
 		if (!is_array($needle)) $needle = array($needle);
 
 
 		if (!is_int($mode)) $mode = 0;
-		$andMode 	= $mode & IN_ARY_MODE_OR;
+		$andMode 	= $mode & IN_ARY_MODE_AND;
 		$strictMode = $mode & IN_ARY_MODE_STRICT;
 
 		$state = ($andMode === TRUE) ? TRUE : FALSE;
