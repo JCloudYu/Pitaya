@@ -37,7 +37,7 @@
 				$position = "({$trace[0]['file']}:{$trace[0]['line']})";
 			}
 
-			$now = '[' . date("Y-m-d g:i:s") . "]{$position}";
+			$now = '[' . date("Y-m-d g:i:s") . "][SYS]{$position}";
 			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
@@ -47,6 +47,8 @@
 		{
 			static $_srvLogPath = NULL;
 			static $_FILE = NULL;
+			static $_logName = 'SYS';
+
 			if ($_srvLogPath === NULL)
 			{
 				if (defined('__WORKING_ROOT__'))
@@ -57,6 +59,7 @@
 					$_srvLogPath = $logPath .= '/service_log';
 					if ($_FILE) fclose($_FILE);
 					$_FILE = NULL;
+					$_logName = __SERVICE__;
 				}
 				else
 				{
@@ -91,7 +94,7 @@
 				$position = "({$trace[0]['file']}:{$trace[0]['line']})";
 			}
 
-			$now = '[' . date("Y-m-d g:i:s") . "]{$position}";
+			$now = '[' . date("Y-m-d g:i:s") . "][{$_logName}]{$position}";
 			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
