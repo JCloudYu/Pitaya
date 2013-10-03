@@ -258,7 +258,11 @@
 			if(count($rawRequest) > 1) $request['attribute'] = $rawRequest[1];
 
 			$request['resource'] = explode('/', $request['resource']);
-			if($request['resource'][0] === '') $request['resource'] = array();
+			if ($request['resource'][0] === '') $request['resource'] = array();
+
+			// INFO: In some cases with only one element, there will be a tailling empty string...
+			if (end($request['resource']) === '') array_pop($request['resource']);
+			reset($request['resource']);
 
 			$request['attribute'] = PBRequest::ParseAttribute($request['attribute']);
 
