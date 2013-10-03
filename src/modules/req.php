@@ -29,7 +29,9 @@ class req extends PBModule
 
 												'WAV'	=> 'audio/wav',
 
-												'AVI'	=> 'video/avi');
+												'AVI'	=> 'video/avi',
+
+												'TXT'	=> 'text/plain');
 
 	private $_request = NULL;
 	private $_acceptTypes = NULL;
