@@ -106,6 +106,8 @@ HTML;
 		public function __get_rcPath() { return $this->_baseRCPath; }
 		public function __set_rcPath($value) { $this->_baseRCPath = (is_string($value)) ? $value : ''; }
 
+		public function __set_header($value) {$this->_header[] = $value;}
+
 		public function property($name, $value)
 		{
 			$serviceName = __SERVICE__;
