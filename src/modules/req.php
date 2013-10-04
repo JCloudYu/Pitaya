@@ -8,38 +8,36 @@
 using('kernel.core.PBModule');
 using('sys.tool.http.*');
 
+define('DEFAULT_ACCEPTABLE_TYPES', array('JS' 	=> 'text/javascript',
+										 'CSS'	=> 'text/css',
+										 'HTML'	=> 'text/html',
+										 'PDF'	=> 'application/pdf',
+										 'JSON'	=> 'application/json',
+										 'XML'	=> 'application/xml',
+
+										 'BMP'	=> 'image/bmp',
+										 'JPG'	=> 'image/jpeg',
+										 'PNG'	=> 'image/png',
+										 'ICO'	=> 'image/vnd.microsoft.icon',
+										 'GIF'	=> 'image/gif',
+										 'TIF'	=> 'image/tiff',
+										 'TIFF'	=> 'image/tiff',
+
+										 'WAV'	=> 'audio/wav',
+										 'AVI'	=> 'video/avi',
+
+										 'TXT'	=> 'text/plain'), TRUE);
+
 class req extends PBModule
-{
-	// Constants
-	public static $DefaultAcceptables = array(	'JS' 	=> 'text/javascript',
-									 			'CSS'	=> 'text/css',
-												'HTML'	=> 'text/html',
-
-												'PDF'	=> 'application/pdf',
-												'JSON'	=> 'application/json',
-												'XML'	=> 'application/xml',
-
-												'BMP'	=> 'image/bmp',
-												'JPG'	=> 'image/jpeg',
-												'PNG'	=> 'image/png',
-												'ICO'	=> 'image/vnd.microsoft.icon',
-												'GIF'	=> 'image/gif',
-												'TIF'	=> 'image/tiff',
-												'TIFF'	=> 'image/tiff',
-
-												'WAV'	=> 'audio/wav',
-
-												'AVI'	=> 'video/avi',
-
-												'TXT'	=> 'text/plain');
-
+{ 
 	private $_request = NULL;
 	private $_acceptTypes = NULL;
 
-	public function prepare($moduleRequest, $acceptables = NULL) {
+	public function __set_acceptTypes($value) { if (is_array($value)) $this->_acceptTypes = $value; }
 
-		$this->_acceptTypes = ($acceptables === NULL) ? req::$DefaultAcceptables : $acceptables;
-
+	public function prepare($moduleRequest)
+	{
+		if (empty($this->_acceptTypes)) $this->_acceptTypes = DEFAULT_ACCEPTABLE_TYPES;
 
 		if (is_string($moduleRequest))
 		{
