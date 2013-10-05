@@ -34,6 +34,8 @@
 		public $rawQuery = '';
 		public $rawData = '';
 
+		public $localePrefer = array();
+
 
 		// region [ Data Preprocessing Methods ]
 		/**

@@ -49,7 +49,66 @@
 		}
 		// endregion
 
+		// region [ Static data parsing ]
+		private function __parseLocale($localeInfo = '')
+		{
+			$userLocales = explode(',', $localeInfo);
+
+			$localeInfo = array();
+			foreach ($userLocales as $localeContent)
+			{
+				$attr = explode(';', trim($localeContent));
+				$lang = $country = '';
+				$quality = 0;
+
+				// INFO: language part
+				if (!empty($attr[0]))
+				{
+					$buff = preg_split('/(^[a-zA-Z]+$)|^([a-zA-Z]+)-([a-zA-Z]+)$/', $attr[0], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
+					$lang = @"{$buff[0]}"; $country = @"{$buff[1]}";
+				}
+				else
+					$lang = $country = '';
+
+
+				// INFO: quality part
+				if (!empty($attr[1]))
+				{
+					list($quality) = sscanf("{$attr[1]}", "q=%f");
+					if (empty($quality)) $quality = 0;
+				}
+				else
+					$quality = 1;
+
+
+				if (empty($quality) || empty($lang)) continue;
+
+				$localeInfo[] = array('lang' => strtolower($lang), 'country' => strtolower($country), 'quality' => $quality);
+			}
+
+			usort($localeInfo, function(array $a, array $b) {
+				if (@$a['quality'] > $b['quality']) return -1;
+				if (@$a['quality'] == $b['quality']) return 0;
+				if (@$a['quality'] < $b['quality']) return 1;
+			});
+
+			return $localeInfo;
+		}
+		// endregion
+
 		// region [ Getters / Setters ]
+		public function __get_localePrefer()
+		{
+			static $localeInfo = NULL;
+
+			if (!empty($localeInfo)) return $localeInfo;
+
+			$info = @$this->_incomingRecord['environment']['server']['HTTP_ACCEPT_LANGUAGE'];
+			$localeInfo = $this->__parseLocale(empty($info) ? '' : $info);
+
+			return $localeInfo;
+		}
+
 		public function __get_all() { return $this->_incomingRecord; }
 
 		public function __get_request()		{ return $this->_incomingRecord['request']; }
