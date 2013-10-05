@@ -39,7 +39,7 @@ class req extends PBModule
 
 	public function prepare($moduleRequest)
 	{
-		if (empty($this->_acceptTypes)) $this->_acceptTypes = json_decode(self::DEFAULT_ACCEPTABLE_TYPES);
+		if (empty($this->_acceptTypes)) $this->_acceptTypes = json_decode(self::DEFAULT_ACCEPTABLE_TYPES, TRUE);
 
 		if (is_string($moduleRequest))
 		{
