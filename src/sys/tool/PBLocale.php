@@ -38,7 +38,7 @@
 		public function __get_locale() { return $this->_curLocale; }
 		public function __set_locale($value)
 		{
-			$this->_curLocale =  empty($value) ? '' : "$value";
+			$this->_curLocale =  empty($value) ? 'default' : "$value";
 
 			if (isset($this->_storedLocales[$this->_curLocale])) return;
 
