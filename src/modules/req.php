@@ -18,7 +18,7 @@ class req extends PBModule
 											"HTML":		"text/html",
 											"HTM":		"text/html",
 											"VCARD":	"text/vcard",
-											"VCF":		"text/vcard"
+											"VCF":		"text/vcard",
 
 											"PDF":		"application/pdf",
 											"PS":		"application/postscript",
