@@ -29,11 +29,11 @@ define('DEFAULT_ACCEPTABLE_TYPES', array('JS' 	=> 'text/javascript',
 										 'TXT'	=> 'text/plain'), TRUE);
 
 class req extends PBModule
-{ 
+{
 	private $_request = NULL;
 	private $_acceptTypes = NULL;
 
-	public function __set_acceptTypes($value) { if (is_array($value)) $this->_acceptTypes = $value; }
+	public function __set_acceptableExt($value) { if (is_array($value)) $this->_acceptTypes = $value; }
 
 	public function prepare($moduleRequest)
 	{
