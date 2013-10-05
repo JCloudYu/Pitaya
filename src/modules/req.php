@@ -8,28 +8,30 @@
 using('kernel.core.PBModule');
 using('sys.tool.http.*');
 
-define('DEFAULT_ACCEPTABLE_TYPES', array('JS' 	=> 'text/javascript',
-										 'CSS'	=> 'text/css',
-										 'HTML'	=> 'text/html',
-										 'PDF'	=> 'application/pdf',
-										 'JSON'	=> 'application/json',
-										 'XML'	=> 'application/xml',
-
-										 'BMP'	=> 'image/bmp',
-										 'JPG'	=> 'image/jpeg',
-										 'PNG'	=> 'image/png',
-										 'ICO'	=> 'image/vnd.microsoft.icon',
-										 'GIF'	=> 'image/gif',
-										 'TIF'	=> 'image/tiff',
-										 'TIFF'	=> 'image/tiff',
-
-										 'WAV'	=> 'audio/wav',
-										 'AVI'	=> 'video/avi',
-
-										 'TXT'	=> 'text/plain'), TRUE);
-
 class req extends PBModule
 {
+	const DEFAULT_ACCEPTABLE_TYPES = '	{	"JS":	"text/javascript",
+											"CSS":	"text/css",
+											"HTML":	"text/html",
+
+											"PDF":	"application/pdf",
+											"JSON":	"application/json",
+											"XML":	"application/xml",
+
+											"BMP":	"image/bmp",
+											"JPG":	"image/bmp",
+											"PNG":	"image/bmp",
+											"ICO":	"image/bmp",
+											"GIF":	"image/bmp",
+											"TIF":	"image/bmp",
+											"TIFF":	"image/bmp",
+
+											"WAV":	"audio/wav",
+											"AVI":	"video/avi",
+
+											"TXT":	"text/plain"
+										}';
+
 	private $_request = NULL;
 	private $_acceptTypes = NULL;
 
@@ -37,7 +39,7 @@ class req extends PBModule
 
 	public function prepare($moduleRequest)
 	{
-		if (empty($this->_acceptTypes)) $this->_acceptTypes = DEFAULT_ACCEPTABLE_TYPES;
+		if (empty($this->_acceptTypes)) $this->_acceptTypes = json_decode(self::DEFAULT_ACCEPTABLE_TYPES);
 
 		if (is_string($moduleRequest))
 		{
