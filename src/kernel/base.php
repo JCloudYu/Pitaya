@@ -121,9 +121,50 @@ function using($referencingContext = '', $important = true, $output = false) {
 	}
 }
 
+function package($referencingContext = '', $output = true)
+{
+	static $_cachedServicePath = NULL;
+	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
+
+	$tokens = explode('.', $referencingContext);
+	$tokens = array_reverse($tokens);
+
+	if($tokens[0] == '*')
+		throw(new Exception("Star notation is not allowed in function [package]"));
+	else
+	{
+		$tokens = array_reverse($tokens);
+
+		switch($tokens[0])
+		{
+			case 'service':
+				array_shift($tokens);
+
+				if(defined('__WORKING_ROOT__'))
+					$completePath = __WORKING_ROOT__;
+				else
+					$completePath = $_cachedServicePath;
+				break;
+			default:
+				$completePath = __ROOT__;
+				break;
+		}
+
+		foreach( $tokens as $token)
+			$completePath .= "/{$token}";
+
+		$completePath .= '.php';
+
+		if ($output) return $completePath;
+		elseif(file_exists($completePath)) include($completePath);
+	}
+}
+
 using('kernel.const');
 using('kernel.tool.debug.*');
 using('kernel.tool.log.*');
+
+package('');
 
 function available($referencingContext = '') {
 	static $registeredInclusions = array();
@@ -156,22 +197,6 @@ function available($referencingContext = '') {
 	$registeredInclusions[($referencingContext)] = file_exists($completePath);
 
 	return $registeredInclusions[($referencingContext)];
-}
-
-function acquiring($referencingContext = '', $param = NULL) {
-
-	static $_cachedKernelPath = NULL;
-	if(is_null($_cachedKernelPath)) $_cachedKernelPath = $GLOBALS['kernelPath'];
-
-	$tokens = explode('.', $referencingContext);
-
-	$completePath = $tokens[0] == 'kernel' ? __ROOT__ : $_cachedKernelPath;
-
-	foreach( $tokens as $token) $completePath .= "/{$token}";
-
-	$completePath .= '.php';
-
-	require($completePath);
 }
 
 function caller() {
