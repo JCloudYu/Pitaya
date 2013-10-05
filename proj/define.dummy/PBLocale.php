@@ -10,5 +10,7 @@
 	{
 		public $basePackage = '';
 		public $locale = '';
+
+		public static function Locale() { return new PBLocale(); }
 		public static function basePackage($packagePath = NULL) {}
 	}

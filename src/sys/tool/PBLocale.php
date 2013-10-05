@@ -11,6 +11,14 @@
 		private static $_sharedBasePackage = NULL;
 
 		public static function basePackage($packagePath = NULL) { self::$_sharedBasePackage = "$packagePath"; }
+		public static function Locale()
+		{
+			static $__locale_singleton = NULL;
+			if ($__locale_singleton !== NULL) return $__locale_singleton;
+
+			$__locale_singleton = new PBLocale();
+			return $__locale_singleton;
+		}
 
 
 		private $_basePackage = '';
