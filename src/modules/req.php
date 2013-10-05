@@ -10,26 +10,41 @@ using('sys.tool.http.*');
 
 class req extends PBModule
 {
-	const DEFAULT_ACCEPTABLE_TYPES = '	{	"JS":	"text/javascript",
-											"CSS":	"text/css",
-											"HTML":	"text/html",
+	const DEFAULT_ACCEPTABLE_TYPES = '	{	"JS":		"text/javascript",
+											"CSS":		"text/css",
+											"HTML":		"text/html",
+											"TXT":		"text/plain",
+											"CSV":		"text/csv",
+											"HTML":		"text/html",
+											"HTM":		"text/html",
+											"VCARD":	"text/vcard",
+											"VCF":		"text/vcard"
 
-											"PDF":	"application/pdf",
-											"JSON":	"application/json",
-											"XML":	"application/xml",
+											"PDF":		"application/pdf",
+											"PS":		"application/postscript",
 
-											"BMP":	"image/bmp",
-											"JPG":	"image/bmp",
-											"PNG":	"image/bmp",
-											"ICO":	"image/bmp",
-											"GIF":	"image/bmp",
-											"TIF":	"image/bmp",
-											"TIFF":	"image/bmp",
+											"JSON":		"application/json",
+											"XML":		"application/xml",
 
-											"WAV":	"audio/wav",
-											"AVI":	"video/avi",
+											"BMP":		"image/bmp",
+											"JPG":		"image/jpeg",
+											"PNG":		"image/png",
+											"ICO":		"image/x-icon",
+											"GIF":		"image/gif",
+											"TIF":		"image/tiff",
+											"TIFF":		"image/tiff",
 
-											"TXT":	"text/plain"
+											"WAV":		"audio/wav",
+											"MP3":		"audio/mpeg",
+											"OGG":		"audio/ogg",
+											"AAC":		"audio/x-aac",
+
+											"AVI":		"video/avi",
+											"MP4":		"video/mp4",
+
+											"ZIP":		"application/zip",
+											"GZ":		"application/gzip",
+											"TGZ":		"application/gzip"
 										}';
 
 	private $_request = NULL;
