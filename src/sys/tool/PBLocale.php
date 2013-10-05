@@ -39,8 +39,6 @@
 			@$locale = array_key_exists('locale', $locale) ? $locale['locale'] : array();
 
 			$this->_storedLocales[$this->_curLocale] = $locale;
-
-			DEBUG::VarDump($this->_storedLocales);
 		}
 
 		public function offsetExists($offset) { return TRUE; }
