@@ -126,8 +126,32 @@ class SYS extends PBObject
 			$moduleRequest = implode('/', $requestItems);
 		}
 
-		if (!__CASE_SENSITIVE_MODULE_NAME__) $service = strtolower($service);
+		// INFO: Decide module maintenance mode
+		switch (strtoupper(@"{$requestItems[0]}"))
+		{
+			case 'INSTALL':
+				array_shift($requestItems);
+				define('SERVICE_EXEC_MODE', 'INSTALL', TRUE);
+				break;
+			case 'UPDATE':
+				array_shift($requestItems);
+				define('SERVICE_EXEC_MODE', 'UPDATE', TRUE);
+				break;
+			case 'PATCH':
+				array_shift($requestItems);
+				define('SERVICE_EXEC_MODE', 'PATCH', TRUE);
+				break;
+			case 'UNINSTALL':
+				array_shift($requestItems);
+				define('SERVICE_EXEC_MODE', 'UNINSTALL', TRUE);
+				break;
+			default:
+				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+				break;
+		}
 
+
+		if (!__CASE_SENSITIVE_MODULE_NAME__) $service = strtolower($service);
 
 		// INFO: Detect Main Service
 		$state = FALSE;

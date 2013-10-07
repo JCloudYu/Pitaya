@@ -12,7 +12,10 @@
 
 		private $_bootstrap = array();
 
-		public $process = new PBProcess();
+		/**
+		 * @var PBProcess
+		 */
+		public $process = NULL;
 		public $bootStrap = array();
 
 		public $id = '';
@@ -24,13 +27,15 @@
 		}
 
 
-		public function prepare($moduleRequest) {
+		public function prepare($moduleRequest)          {}
+		public function prepareInstall($moduleRequest)   {}
+		public function prepareUpdate($moduleRequest)    {}
+		public function preparePatch($moduleRequest)     {}
+		public function prepareUninstall($moduleRequest) {}
 
-
-		}
-
-		public function exec($param) {
-
-		}
-
+		public function exec($param) {}
+		public function install($param) {}
+		public function update($param) {}
+		public function patch($param) {}
+		public function uninstall($param) {}
 	}

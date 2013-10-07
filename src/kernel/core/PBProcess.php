@@ -49,7 +49,26 @@ class PBProcess extends PBObject
 	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
 
 		$module = $this->_acquireModule($moduleName, $reusable);
-		$module->prepare($moduleRequest);
+
+		switch (SERVICE_EXEC_MODE)
+		{
+			case 'INSTALL':
+				$module->prepareInstall($moduleRequest);
+				break;
+			case 'UPDATE':
+				$module->prepareUpdate($moduleRequest);
+				break;
+			case 'PATCH':
+				$module->preparePatch($moduleRequest);
+				break;
+			case 'UNINSTALL':
+				$module->prepareUninstall($moduleRequest);
+				break;
+			case 'NORMAL':
+			default:
+				$module->prepare($moduleRequest);
+				break;
+		}
 
 		return $module;
 	}
@@ -114,13 +133,56 @@ class PBProcess extends PBObject
 			throw(new Exception("The process has no module to execute!."));
 
 		$dataInput = NULL;
-		PBLList::HEAD($this->_bootSequence);
-		do
+
+		switch (SERVICE_EXEC_MODE)
 		{
-			$moduleHandle = $this->_bootSequence->data;
-			$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
+			case 'INSTALL':
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data;
+					$dataInput = $this->_attachedModules[$moduleHandle]->install($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+			case 'UPDATE':
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data;
+					$dataInput = $this->_attachedModules[$moduleHandle]->update($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+			case 'PATCH':
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data;
+					$dataInput = $this->_attachedModules[$moduleHandle]->patch($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+			case 'UNINSTALL':
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data;
+					$dataInput = $this->_attachedModules[$moduleHandle]->uninstall($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+			case 'NORMAL':
+			default:
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data;
+					$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
 		}
-		while(PBLList::NEXT($this->_bootSequence));
 
 		return 'terminated';
 	}
@@ -147,7 +209,25 @@ class PBProcess extends PBObject
 
 		PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
 
-		$module->prepare($moduleRequest);
+		switch (SERVICE_EXEC_MODE)
+		{
+			case 'INSTALL':
+				$module->prepareInstall($moduleRequest);
+				break;
+			case 'UPDATE':
+				$module->prepareUpdate($moduleRequest);
+				break;
+			case 'PATCH':
+				$module->preparePatch($moduleRequest);
+				break;
+			case 'UNINSTALL':
+				$module->prepareUninstall($moduleRequest);
+				break;
+			case 'NORMAL':
+			default:
+				$module->prepare($moduleRequest);
+				break;
+		}
 
 		// INFO: Get default boot sequence from boot module
 		$this->__bootSequence = $module->__bootSequence;
