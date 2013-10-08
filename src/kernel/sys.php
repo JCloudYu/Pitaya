@@ -42,7 +42,10 @@ class SYS extends PBObject
 	private $_systemId = NULL;
 
 	// INFO: Singleton declaration
-	private function __construct() { }
+	private function __construct()
+	{
+		define('__SYS_WORKING_ENV__', (isset($_SERVER['REMOTE_ADDR'])) ? 'NETWORK' : 'COMMAND', TRUE);
+	}
 
 	// INFO: System workflow initialization
 	private function __initialize() {
@@ -80,7 +83,7 @@ class SYS extends PBObject
 		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
 		// INFO: 		  will be purged into
 		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-		$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', $_SERVER['REQUEST_URI'])));
+		$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @$_SERVER['REQUEST_URI'])));
 		$GLOBALS['rawRequest'] = $rawRequest;
 		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 

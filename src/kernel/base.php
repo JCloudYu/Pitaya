@@ -212,10 +212,10 @@ function encode($appendInfo = NULL, $referenceBase = NULL) {
 	static $mergeDelegate = NULL;
 
 	if(is_null($cacheServer)) $cacheServer = $_SERVER;
-	if(is_null($cacheRawRequest)) $cacheRawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', $_SERVER['REQUEST_URI']));
+	if(is_null($cacheRawRequest)) $cacheRawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', @$_SERVER['REQUEST_URI']));
 	if(is_null($baseEncoding))
 	{
-		$baseEncoding = "#|#{$cacheServer['HTTP_USER_AGENT']}#|#{$cacheServer['REMOTE_ADDR']}#|#{$cacheServer['REMOTE_PORT']}#|#".
+		@$baseEncoding = "#|#{$cacheServer['HTTP_USER_AGENT']}#|#{$cacheServer['REMOTE_ADDR']}#|#{$cacheServer['REMOTE_PORT']}#|#".
 						"{$cacheRawRequest}#|#{$cacheServer['REQUEST_TIME']}#|#".uniqid("", TRUE)."#|#";
 		$baseEncoding = hash('sha512', $baseEncoding);
 	}

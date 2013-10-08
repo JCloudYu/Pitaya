@@ -19,10 +19,12 @@
 		private $_incomingRecord = array();
 		private function __construct()
 		{
+			$this->_incomingRecord['command']                = array('argc' => $_SERVER['argc'], 'argv' => $_SERVER['argv']);
+
 			$this->_incomingRecord['rawQuery']				 = $GLOBALS['rawRequest'];
 			$this->_incomingRecord['rawData']				 = file_get_contents('php://input');
 
-			$this->_incomingRecord['request']['method']		 = $_SERVER['REQUEST_METHOD'];
+			$this->_incomingRecord['request']['method']		 = @$_SERVER['REQUEST_METHOD'];
 			$this->_incomingRecord['request']['query']		 = $GLOBALS['request'];
 			$this->_incomingRecord['request']['data']		 = $this->_incomingRecord['rawData'];
 			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
@@ -127,6 +129,10 @@
 		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
 		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
 		public function __get_rawData()		{ return $this->_incomingRecord['rawData']; }
+
+		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
+		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
+		public function __get_command()     { return $this->_incomingRecord['command']; }
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
