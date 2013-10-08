@@ -10,6 +10,13 @@ define('__WEB_ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
 define('__ROOT__', __WEB_ROOT__ . ( file_exists(__WEB_ROOT__.'/Pitaya') ? '/Pitaya' : '/pitaya' ), TRUE);
 
 
+define('SYS_COMMAND_ENV', 'CMD', TRUE);
+define('SYS_NETWORK_ENV', 'NET', TRUE);
+
+define('__SYS_WORKING_ENV__', (isset($_SERVER['REMOTE_ADDR']) ? SYS_NETWORK_ENV : SYS_COMMAND_ENV), TRUE);
+define('EOL', (__SYS_WORKING_ENV__ === SYS_NETWORK_ENV) ? '<br />' : "\n", TRUE);
+
+
 // INFO: Including configuration files
 require_once (__ROOT__ . '/cmd.config.php');
 require_once (__WEB_ROOT__ . "/config.php");	// ISSUE: We need to verify the configuration data...

@@ -6,5 +6,3 @@
 
 	define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__'), TRUE);
 	if (!__DEFAULT_SERVICE_DEFINED__) define('__DEFAULT_SERVICE__', 'index', TRUE);
-
-	define('EOL', (__SYS_WORKING_ENV__ === SYS_NETWORK_ENV) ? '<br />' : "\n", TRUE);

@@ -42,12 +42,7 @@ class SYS extends PBObject
 	private $_systemId = NULL;
 
 	// INFO: Singleton declaration
-	private function __construct()
-	{
-		define('SYS_COMMAND_ENV', 'COMMAND', TRUE);
-		define('SYS_NETWORK_ENV', 'NETWORK', TRUE);
-		define('__SYS_WORKING_ENV__', (isset($_SERVER['REMOTE_ADDR'])) ? SYS_NETWORK_ENV : SYS_COMMAND_ENV, TRUE);
-	}
+	private function __construct() {}
 
 	// INFO: System workflow initialization
 	private function __initialize() {
