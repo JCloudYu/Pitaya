@@ -59,7 +59,7 @@ class req extends PBModule
 		if (is_string($moduleRequest))
 		{
 			$this->_request = PBHTTP::ParseRequest($moduleRequest);
-			$this->_request['resource'];
+			$this->_request = $this->_request['resource'];
 		}
 		else
 			$this->_request = $moduleRequest;
