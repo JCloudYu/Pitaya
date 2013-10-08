@@ -36,7 +36,7 @@
 			{
 				return $this->query("CREATE TABLE IF NOT EXISTS `" . ExtPDO::VARIABLE_TABLE . "`(`id` int(11) NOT NULL AUTO_INCREMENT,
 									`name` varchar(255) NOT NULL,
-									`value` blob,
+									`value` longtext,
 
 									PRIMARY KEY (`id`),
 									UNIQUE KEY `name_UNIQUE` (`name`));"
