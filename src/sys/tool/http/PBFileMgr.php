@@ -8,7 +8,9 @@
 	{
 		public static function Chunk($fileInfo, $from, $to = NULL, $packageSize = 1024, $restrict = FALSE)
 		{
-			if (is_string($fileInfo) && file_exists($filePath))
+			$filePath = ''; $fileSize = 0;
+
+			if (is_string($fileInfo) && file_exists($fileInfo))
 			{
 				$filePath = $fileInfo;
 				$fileSize = filesize($filePath);
@@ -72,12 +74,7 @@
 				$to = $fileSize - 1;
 			}
 
-
-			if ($to != ($fileSize - 1))
-				header("HTTP/1.1 206 Partial Content");
-			else
-				header("HTTP/1.1 200 OK");
-
+			header("HTTP/1.1 206 Partial Content");
 
 			fseek($hFile, $from);
 
