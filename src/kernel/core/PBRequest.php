@@ -110,6 +110,27 @@
 
 			return $localeInfo;
 		}
+		public function __get_range()
+		{
+			static $requestedRange = NULL;
+			if ($requestedRange !== NULL) return $requestedRange;
+
+			$requestedRange = array();
+			list(,$range) = explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
+			$range = explode(',', trim($range));
+
+			foreach ($range as $rangeToken)
+			{
+				$rangeToken = explode('-', $rangeToken);
+				$buff = array();
+				if (is_numeric(trim(@$rangeToken[0]))) $buff['from'] = intval(trim($rangeToken[0]));
+				if (is_numeric(trim(@$rangeToken[1]))) $buff['to'] = intval(trim($rangeToken[1]));
+
+				if (!empty($buff)) $requestedRange[] = $buff;
+			}
+
+			return $requestedRange;
+		}
 
 		public function __get_all() { return $this->_incomingRecord; }
 
