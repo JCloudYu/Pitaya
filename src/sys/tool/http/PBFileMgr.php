@@ -86,7 +86,7 @@
 			header("Content-Length: {$length}");
 
 			set_time_limit(0);
-			while (!feof($hFile) || $length > 0))
+			while (!feof($hFile) || ($length > 0))
 			{
 				$readSize = min($length, $packageSize);
 				echo fread($hFile, $packageSize);
