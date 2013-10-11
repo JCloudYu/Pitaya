@@ -108,3 +108,23 @@
 
 		return $state;
 	}
+
+	/**
+	 * The replacement of array_fill function which seldom uses its startIndex parameter and has warning when $size is smaller or equal to zero.
+	 * In this version, $sizes that are smaller or equal to zero will only result in empty array, and the $startIndex parameter now has its default value 0
+	 *
+	 * @param int $size the size of the generated array
+	 * @param mixed $element the element that is used to fill the array
+	 * @param int $startIndex the start index of the elements
+	 *
+	 * @return array the generated array
+	 */
+	function ary_fill($size, $element, $startIndex = 0)
+	{
+		$rtAry = array();
+
+		for($i = 0; $i <$size; $i++, $startIndex++)
+			$rtAry[$startIndex] = $element;
+
+		return $rtAry;
+	}
