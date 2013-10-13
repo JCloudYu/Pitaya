@@ -43,7 +43,7 @@ class PBProcess extends PBObject
 
 	public function getModule($moduleName) {
 
-		return $this->attachModule($moduleName, NULL, TRUE);
+		return $this->_acquireModule($moduleName, $reusable);
 	}
 
 	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
