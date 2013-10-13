@@ -295,7 +295,25 @@ class PBProcess extends PBObject
 		foreach ($requestQueue as $request)
 		{
 			$handle = $this->_bootSequence->data;
-			$this->_attachedModules[$handle]->prepare($request);
+			switch (SERVICE_EXEC_MODE)
+			{
+				case 'INSTALL':
+					$this->_attachedModules[$handle]->prepareInstall($request);
+					break;
+				case 'UPDATE':
+					$this->_attachedModules[$handle]->prepareUpdate($request);
+					break;
+				case 'PATCH':
+					$this->_attachedModules[$handle]->preparePatch($request);
+					break;
+				case 'UNINSTALL':
+					$this->_attachedModules[$handle]->prepareUninstall($request);
+					break;
+				case 'NORMAL':
+				default:
+					$this->_attachedModules[$handle]->prepare($request);
+					break;
+			}
 
 			PBLinkedList::NEXT($this->_bootSequence);
 		}
