@@ -41,14 +41,24 @@ class PBProcess extends PBObject
 		return $this->_processId;
 	}
 
-	public function getModule($moduleName) {
+	public function getModule($moduleName, $reusable = TRUE) {
 
-		return $this->_acquireModule($moduleName, TRUE);
+		return $this->_acquireModule($moduleName, $reusable);
 	}
 
-	public function attachModule($moduleName, $moduleRequest = NULL, $reusable = TRUE) {
+	public function assignNextModule($moduleHandle, $moduleRequest = NULL)
+	{
+		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
 
-		$module = $this->_acquireModule($moduleName, $reusable);
+		$handle = explode('.', $moduleHandle); array_shift($handle);
+		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
+
+		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
+
+		PBLList::AFTER($this->_bootSequence, array('prepared' => TRUE, 'data' => $handle), $handle);
+		PBLList::NEXT($this->_bootSequence);
+
+		$module = $this->_attachedModules[$handle];
 
 		switch (SERVICE_EXEC_MODE)
 		{
@@ -70,19 +80,7 @@ class PBProcess extends PBObject
 				break;
 		}
 
-		return $module;
-	}
-
-	public function assignNextModule($moduleHandle)
-	{
-		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
-
-		$handle = explode('.', $moduleHandle); array_shift($handle);
-		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
-
-		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
-
-		PBLList::AFTER($this->_bootSequence, $handle, $handle);
+		PBLList::PREV($this->_bootSequence);
 
 		return TRUE;
 	}
@@ -96,7 +94,7 @@ class PBProcess extends PBObject
 		return $status;
 	}
 
-	public function replaceNextModule($moduleHandle)
+	public function replaceNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		$handle = explode('.', $moduleHandle); array_shift($handle);
 		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
@@ -104,20 +102,64 @@ class PBProcess extends PBObject
 		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
 		$status = PBLList::NEXT($this->_bootSequence);
-		$status = $status && PBLList::SET($this->_bootSequence, $handle, $handle);
+		$status = $status && PBLList::SET($this->_bootSequence, array('prepared' => TRUE, 'data' => $handle), $handle);
 		$status = $status && PBLList::PREV($this->_bootSequence);
+
+		$module = $this->_attachedModules[$handle];
+
+		switch (SERVICE_EXEC_MODE)
+		{
+			case 'INSTALL':
+				$module->prepareInstall($moduleRequest);
+				break;
+			case 'UPDATE':
+				$module->prepareUpdate($moduleRequest);
+				break;
+			case 'PATCH':
+				$module->preparePatch($moduleRequest);
+				break;
+			case 'UNINSTALL':
+				$module->prepareUninstall($moduleRequest);
+				break;
+			case 'NORMAL':
+			default:
+				$module->prepare($moduleRequest);
+				break;
+		}
 
 		return $status;
 	}
 
-	public function pushModule($moduleHandle)
+	public function pushModule($moduleHandle, $moduleRequest = NULL)
 	{
 		$handle = explode('.', $moduleHandle); array_shift($handle);
 		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
 		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
-		$status = PBLList::PUSH($this->_bootSequence, $handle, $handle);
+		$status = PBLList::PUSH($this->_bootSequence, array('prepared' => TRUE, 'data' => $handle), $handle);
+
+		$module = $this->_attachedModules[$handle];
+
+		switch (SERVICE_EXEC_MODE)
+		{
+			case 'INSTALL':
+				$module->prepareInstall($moduleRequest);
+				break;
+			case 'UPDATE':
+				$module->prepareUpdate($moduleRequest);
+				break;
+			case 'PATCH':
+				$module->preparePatch($moduleRequest);
+				break;
+			case 'UNINSTALL':
+				$module->prepareUninstall($moduleRequest);
+				break;
+			case 'NORMAL':
+			default:
+				$module->prepare($moduleRequest);
+				break;
+		}
 
 		return $status;
 	}
@@ -140,7 +182,7 @@ class PBProcess extends PBObject
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
-					$moduleHandle = $this->_bootSequence->data;
+					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->install($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -149,7 +191,7 @@ class PBProcess extends PBObject
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
-					$moduleHandle = $this->_bootSequence->data;
+					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->update($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -158,7 +200,7 @@ class PBProcess extends PBObject
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
-					$moduleHandle = $this->_bootSequence->data;
+					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->patch($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -167,7 +209,7 @@ class PBProcess extends PBObject
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
-					$moduleHandle = $this->_bootSequence->data;
+					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->uninstall($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -177,7 +219,7 @@ class PBProcess extends PBObject
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
-					$moduleHandle = $this->_bootSequence->data;
+					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -207,7 +249,10 @@ class PBProcess extends PBObject
 		$moduleId = $module->id;
 		$this->_mainModuleId = $moduleId;
 
-		PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
+		$this->_attachedModules[$moduleName] = $module;
+		$this->_attachedModules[$moduleId] = $module;
+
+		PBLList::PUSH($this->_bootSequence, array('prepared' => TRUE, 'data' => $moduleId), $moduleId);
 
 		switch (SERVICE_EXEC_MODE)
 		{
@@ -231,9 +276,6 @@ class PBProcess extends PBObject
 
 		// INFO: Get default boot sequence from boot module
 		$this->__bootSequence = $module->__bootSequence;
-
-		$this->_attachedModules[$moduleName] = $module;
-		$this->_attachedModules[$moduleId] = $module;
 	}
 
 	// MARK: Friend(SYS)
@@ -284,37 +326,47 @@ class PBProcess extends PBObject
 				$request = $illustrator['request'];
 
 			$moduleId = $this->_acquireModule($moduleName, $reuse)->id;
-			PBLList::PUSH($this->_bootSequence, $moduleId, $moduleId);
+			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId), $moduleId);
 
 			$requestQueue[] = $request;
 		}
 
 		PBLinkedList::HEAD($this->_bootSequence);
-		PBLinkedList::NEXT($this->_bootSequence);
 
-		foreach ($requestQueue as $request)
+		$reqCount = count($requestQueue);
+		$i = 0;
+
+		while ($i < $reqCount)
 		{
-			$handle = $this->_bootSequence->data;
-			switch (SERVICE_EXEC_MODE)
-			{
-				case 'INSTALL':
-					$this->_attachedModules[$handle]->prepareInstall($request);
-					break;
-				case 'UPDATE':
-					$this->_attachedModules[$handle]->prepareUpdate($request);
-					break;
-				case 'PATCH':
-					$this->_attachedModules[$handle]->preparePatch($request);
-					break;
-				case 'UNINSTALL':
-					$this->_attachedModules[$handle]->prepareUninstall($request);
-					break;
-				case 'NORMAL':
-				default:
-					$this->_attachedModules[$handle]->prepare($request);
-					break;
-			}
+			$data = $this->_bootSequence->data;
 
+			if (empty($data['prepared']))
+			{
+				$handle = $data['data'];
+				$request = $requestQueue[$i];
+
+				switch (SERVICE_EXEC_MODE)
+				{
+					case 'INSTALL':
+						$this->_attachedModules[$handle]->prepareInstall($request);
+						break;
+					case 'UPDATE':
+						$this->_attachedModules[$handle]->prepareUpdate($request);
+						break;
+					case 'PATCH':
+						$this->_attachedModules[$handle]->preparePatch($request);
+						break;
+					case 'UNINSTALL':
+						$this->_attachedModules[$handle]->prepareUninstall($request);
+						break;
+					case 'NORMAL':
+					default:
+						$this->_attachedModules[$handle]->prepare($request);
+						break;
+				}
+
+				$i++;
+			}
 			PBLinkedList::NEXT($this->_bootSequence);
 		}
 
