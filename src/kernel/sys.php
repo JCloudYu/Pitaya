@@ -62,11 +62,11 @@ class SYS extends PBObject
 		}
 		catch(PBException $e)
 		{
-			print_r($e);
+			PBLog::SYSLog(print_r($e, TRUE));
 		}
 		catch(Exception $e)
 		{
-			print_r($e);
+			PBLog::SYSLog(print_r($e, TRUE));
 		}
 
 	}
