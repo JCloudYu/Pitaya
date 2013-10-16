@@ -33,7 +33,7 @@
 				return trim("$value");
 
 			case 'boolean':
-				return $value != TRUE;
+				return $value == TRUE;
 
 			case 'null':
 				return NULL;
