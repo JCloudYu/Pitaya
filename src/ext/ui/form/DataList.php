@@ -99,7 +99,7 @@
 						$width = $def['width'];
 						$align = $def['align'];
 						$style = $def['style'];
-
+						$disabled = '';
 						$group = $def['group'];
 
 						$checked = '';
