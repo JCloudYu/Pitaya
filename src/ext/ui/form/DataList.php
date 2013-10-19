@@ -95,6 +95,7 @@
 						$type = $def['data-type'];
 						$width = $def['width'];
 						$align = $def['align'];
+						$style = $def['style'];
 						$checked = '';
 
 						if (is_array(@$rowData[$idx]))
@@ -102,6 +103,7 @@
 							$value = (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
 							$checked = (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
 							$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
+							$style = (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
 						}
 						else
 							$value = TO(@$rowData[$idx], $type);
@@ -115,7 +117,7 @@
 								$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							default:
-								$rowHTML .= "<td {$width} {$align}><span>{$value}</span></td>";
+								$rowHTML .= "<td {$width} {$align}><div {$style}>{$value}</div></td>";
 								break;
 						}
 					}
@@ -125,7 +127,7 @@
 			else
 			{
 				$numCols = count($columns) + 1;
-				$body .= "<tr><td align='center' colspan='{$numCols}'>{$this->_emptyNotifier}</td></tr>";
+				$body .= "<tr><td colspan='{$numCols}'><div style='text-align:center'>{$this->_emptyNotifier}</div></td></tr>";
 			}
 
 
