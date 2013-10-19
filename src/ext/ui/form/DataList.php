@@ -76,6 +76,8 @@
 				@$colProp['width'] 		= (empty($column['width'])) ? '' : "width=\"{$column['width']}\"";
 				@$colProp['align'] 		= (empty($column['align'])) ? '' : "style='text-align:{$column['align']}'";
 
+				@$colProp['style'] 		= (empty($column['style'])) ? '' : $column['style'];
+
 				$columns[] = $colProp;
 
 
