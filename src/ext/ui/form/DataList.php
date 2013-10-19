@@ -77,6 +77,7 @@
 				@$colProp['align'] 		= (empty($column['align'])) ? '' : "style='text-align:{$column['align']}'";
 
 				@$colProp['style'] 		= (empty($column['style'])) ? '' : $column['style'];
+				@$colProp['group']		= (empty($column['group'])) ? '' : $column['group'];
 
 				$columns[] = $colProp;
 
@@ -98,6 +99,9 @@
 						$width = $def['width'];
 						$align = $def['align'];
 						$style = $def['style'];
+
+						$group = $def['group'];
+
 						$checked = '';
 
 						if (is_array(@$rowData[$idx]))
@@ -107,19 +111,23 @@
 							$disabled = (TO(@$rowData[$idx]['disabled'], 'boolean')) ? 'disabled' : '';
 							$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
 							$style = (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
+							$group = (isset($rowData[$idx]['group'])) ? $rowData[$idx]['group'] : $group;
 						}
 						else
 							$value = TO(@$rowData[$idx], $type);
 
 						if (!empty($style)) $style = "style='{$style}'";
+						if (empty($group)) $group = $this->_identifier;
+
+						$group = "name='{$group}'";
 
 						switch ($def['column-type'])
 						{
 							case 'checkbox':
-								$rowHTML .= "<td {$width} {$align}><input type='checkbox' value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align}><input type='checkbox' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							case 'radio':
-								$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align}><input type='radio' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							default:
 								$rowHTML .= "<td {$width} {$align}><div {$style}>{$value}</div></td>";
