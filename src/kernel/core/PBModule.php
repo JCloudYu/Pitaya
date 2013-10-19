@@ -18,11 +18,11 @@ class PBModule extends PBObject
 	public function preparePatch($moduleRequest)     {}
 	public function prepareUninstall($moduleRequest) {}
 
-	public function exec($param) {}
-	public function install($param) {}
-	public function update($param) {}
-	public function patch($param) {}
-	public function uninstall($param) {}
+	public function exec($param) { return $param; }
+	public function install($param) { return $param; }
+	public function update($param) { return $param; }
+	public function patch($param) { return $param; }
+	public function uninstall($param) { return $param; }
 
 	public function __get_id() {
 
