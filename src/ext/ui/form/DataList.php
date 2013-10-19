@@ -110,6 +110,8 @@
 						else
 							$value = TO(@$rowData[$idx], $type);
 
+						if (!empty($style)) $style = "style='{$style}';
+
 						switch ($def['column-type'])
 						{
 							case 'checkbox':
