@@ -104,6 +104,7 @@
 						{
 							$value = (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
 							$checked = (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
+							$disabled = (TO(@$rowData[$idx]['disabled'], 'boolean')) ? 'disabled' : '';
 							$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
 							$style = (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
 						}
@@ -115,10 +116,10 @@
 						switch ($def['column-type'])
 						{
 							case 'checkbox':
-								$rowHTML .= "<td {$width} {$align}><input type='checkbox' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align}><input type='checkbox' value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							case 'radio':
-								$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align}><input type='radio' value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							default:
 								$rowHTML .= "<td {$width} {$align}><div {$style}>{$value}</div></td>";
