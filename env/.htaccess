@@ -23,12 +23,29 @@ RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 #     Header set Access-Control-Allow-Credentials true
 # </IfModule>
 
-php_flag register_argc_argv On
-php_flag magic_quotes_gpc Off
+
+## The most important thing....
 php_value auto_prepend_file kernel/base.php
 
+
+
+## Environmental constants
+php_flag register_argc_argv On
+php_flag magic_quotes_gpc Off
+# php_value date.timezone "Europe/Paris"
+
+
+
+## File upload
 # php_value post_max_size 100M
 # php_value upload_max_filesize 100M
 # php_value max_execution_time 600
 
-# php_value date.timezone "Europe/Paris"
+
+## Error and Warning
+php_flag display_startup_errors on
+php_flag display_errors on
+# php_flag html_errors on
+# php_flag log_errors on
+# php_value error_log /home/path/public_html/domain/PHP_errors.log
+php_value error_reporting 32759 # E_ALL ^ E_NOTICE
