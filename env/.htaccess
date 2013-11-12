@@ -49,5 +49,5 @@ php_flag display_errors on
 # php_flag log_errors on
 # php_value error_log /home/path/public_html/domain/PHP_errors.log
 
-## E_ALL ^ E_NOTICE
-php_value error_reporting 32759
+## E_ALL &  ~E_NOTICE & ~E_STRICT
+php_value error_reporting 30711
