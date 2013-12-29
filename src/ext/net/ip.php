@@ -127,3 +127,39 @@
 
 		return $result;
 	}
+
+	function RemoteIP($_SERVER_VAR)
+	{
+		if (!is_array($_SERVER_VAR)) return NULL;
+
+
+
+		static $seq = array(
+			'HTTP_CLIENT_IP',
+			'HTTP_X_FORWARDED_FOR',
+			'HTTP_X_FORWARDED',
+			'HTTP_X_CLUSTER_CLIENT_IP',
+			'HTTP_FORWARDED_FOR',
+			'HTTP_FORWARDED',
+			'REMOTE_ADDR'
+		);
+
+		foreach ($seq as $key)
+		{
+			if (empty($_SERVER[$key]))
+			{
+				$ipSeq = explode(',', $_SERVER[$key]);
+
+				foreach ($ipSeq as $ip)
+				{
+					$ip = trim($ip);
+					$check = (bool) filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 |
+											   		FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+					if (!empty($check))
+						return $ip;
+				}
+			}
+		}
+
+		return NULL;
+	}
