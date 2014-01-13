@@ -169,7 +169,7 @@ function package($referencingContext = '', $output = true)
 	}
 }
 
-function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = TRUE) {
+function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALSE) {
 	if (!defined($name))
 		define($name, $value, $sensitive);
 	else
