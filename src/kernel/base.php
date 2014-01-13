@@ -169,6 +169,15 @@ function package($referencingContext = '', $output = true)
 	}
 }
 
+function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = TRUE) {
+	if (!defined($name))
+		define($name, $value, $sensitive);
+	else
+	if ($REPETITIVE_EXCEPTION)
+		throw(new Exception("Constant {$name} has been defined!"));
+
+}
+
 using('kernel.const');
 using('kernel.tool.debug.*');
 using('kernel.tool.log.*');
