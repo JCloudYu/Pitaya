@@ -33,7 +33,7 @@
 			$this->_incomingRecord['request']['get']		 = $_GET;
 
 
-			$this->_incomingRecord['environment']['attr']	 = $_ENV;
+			$this->_incomingRecord['environment']['env']	 = $_ENV;
 			$this->_incomingRecord['environment']['server']	 = $_SERVER;
 
 			// INFO: GET information is not kept since it may contains error parsed parameters
