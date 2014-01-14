@@ -5,6 +5,7 @@
 
 	// This is the default service path, you can assign customized path... with proper permissions
 	$GLOBALS['servicePath'] = __DIR__ . '/Services';
+	$GLOBALS['sharePath'] = __DIR__ . '/Share';
 
 
 	//define("__DEFAULT_SERVICE__", 'index', TRUE);

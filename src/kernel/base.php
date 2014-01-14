@@ -27,6 +27,65 @@ require_once (__WEB_ROOT__ . "/config.php");	// ISSUE: We need to verify the con
 srand(time());
 $GLOBALS['randomCert'] = md5(rand());
 
+
+function ____________env_path($token = 'root') {
+
+	static $delegator = NULL;
+	if ($delegator === NULL)
+	{
+		$delegator = call_user_func(function() {
+
+			$_cachedPath = array();
+
+			if (empty($GLOBALS['custPath'])) $GLOBALS['custPath'] = array();
+			foreach ($GLOBALS['custPath'] as $identifier => $path)
+				$_cachedPath[$identifier] = is_string($path) ? $path : __ROOT__;
+
+
+			$list = scandir(__ROOT__);
+			foreach ($list as $file)
+			{
+				$absPath = __ROOT__ . "/{$file}";
+				if (is_dir($absPath))
+					$_cachedPath[strtolower($file)] = $absPath;
+			}
+
+
+
+			// INFO: service and share are reserved keywords
+			if (empty($GLOBALS['servicePath']))
+				$GLOBALS['servicePath'] = __WEB_ROOT__ . '/Services';
+
+			if (!is_dir($GLOBALS['servicePath']))
+				throw(new Exception("Service root doesn't exist!"));
+
+			$_cachedPath['service'] = "{$GLOBALS['servicePath']}";
+
+
+
+
+			if (empty($GLOBALS['sharePath']))
+				$GLOBALS['sharePath'] = __WEB_ROOT__ . '/Share';
+
+			$_cachedPath['share'] = (is_dir($GLOBALS['sharePath'])) ? "{$GLOBALS['sharePath']}" : '';
+
+
+
+			$_cachedPath['root'] = __ROOT__;
+
+			return function($package = 'root') use ($_cachedPath) {
+				$pCache = array_key_exists("{$package}", $_cachedPath) ? $_cachedPath[$package] : '';
+				return ($package == 'service' && defined('__WORKING_ROOT__')) ? __WORKING_ROOT__ : $pCache;
+			};
+		});
+	}
+
+	return $delegator($token);
+}
+____________env_path();
+
+
+
 /**
  * An alternative file inclusion call
  * @param string $referencingContext The class to include
@@ -36,8 +95,6 @@ $GLOBALS['randomCert'] = md5(rand());
 function using($referencingContext = '', $important = true, $output = false) {
 
 	static $registeredInclusions = array();
-	static $_cachedServicePath = NULL;
-	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
 
 	if($output === TRUE)
 		return preg_replace('/\n|\r/', '<br />', var_export($registeredInclusions, TRUE));
@@ -52,20 +109,8 @@ function using($referencingContext = '', $important = true, $output = false) {
 	{
 		array_shift($tokens);
 		$tokens = array_reverse($tokens);
+		$completePath = ____________env_path(array_shift($tokens));
 
-		switch($tokens[0])
-		{
-			case 'service':
-				array_shift($tokens);
-				if(defined('__WORKING_ROOT__'))
-					$completePath = __WORKING_ROOT__;
-				else
-					$completePath = $_cachedServicePath;
-				break;
-			default:
-				$completePath = __ROOT__;
-				break;
-		}
 
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
@@ -101,21 +146,7 @@ function using($referencingContext = '', $important = true, $output = false) {
 	else
 	{
 		$tokens = array_reverse($tokens);
-
-		switch($tokens[0])
-		{
-			case 'service':
-				array_shift($tokens);
-
-				if(defined('__WORKING_ROOT__'))
-					$completePath = __WORKING_ROOT__;
-				else
-					$completePath = $_cachedServicePath;
-				break;
-			default:
-				$completePath = __ROOT__;
-				break;
-		}
+		$completePath = ____________env_path(array_shift($tokens));
 
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
@@ -132,9 +163,6 @@ function using($referencingContext = '', $important = true, $output = false) {
 
 function package($referencingContext = '', $output = true)
 {
-	static $_cachedServicePath = NULL;
-	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
-
 	$tokens = explode('.', $referencingContext);
 	$tokens = array_reverse($tokens);
 
@@ -143,21 +171,7 @@ function package($referencingContext = '', $output = true)
 	else
 	{
 		$tokens = array_reverse($tokens);
-
-		switch($tokens[0])
-		{
-			case 'service':
-				array_shift($tokens);
-
-				if(defined('__WORKING_ROOT__'))
-					$completePath = __WORKING_ROOT__;
-				else
-					$completePath = $_cachedServicePath;
-				break;
-			default:
-				$completePath = __ROOT__;
-				break;
-		}
+		$completePath = ____________env_path(array_shift($tokens));
 
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
@@ -167,6 +181,36 @@ function package($referencingContext = '', $output = true)
 		if ($output) return $completePath;
 		elseif(file_exists($completePath)) include($completePath);
 	}
+}
+
+function available($referencingContext = '') {
+	static $registeredInclusions = array();
+
+	if(isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
+
+	$tokens = explode('.', $referencingContext);
+
+	$completePath = ____________env_path(array_shift($tokens));
+
+	foreach( $tokens as $token)
+		$completePath .= "/{$token}";
+
+	$completePath .= '.php';
+
+	$registeredInclusions[($referencingContext)] = file_exists($completePath);
+
+	return $registeredInclusions[($referencingContext)];
+}
+
+function path($referencingContext = '') {
+
+	$tokens = explode('.', $referencingContext);
+	$completePath = ____________env_path(array_shift($tokens));
+
+	foreach( $tokens as $token)
+		$completePath .= "/{$token}";
+
+	return $completePath;
 }
 
 function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALSE) {
@@ -184,38 +228,6 @@ using('kernel.tool.log.*');
 
 package('');
 
-function available($referencingContext = '') {
-	static $registeredInclusions = array();
-	static $_cachedServicePath = NULL;
-	if(is_null($_cachedServicePath)) $_cachedServicePath = $GLOBALS['servicePath'];
-
-	if(isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
-
-	$tokens = explode('.', $referencingContext);
-
-	switch($tokens[0])
-	{
-		case 'service':
-			array_shift($tokens);
-			if(defined('__WORKING_ROOT__'))
-				$completePath = __WORKING_ROOT__;
-			else
-				$completePath = $_cachedServicePath;
-			break;
-		default:
-			$completePath = __ROOT__;
-			break;
-	}
-
-	foreach( $tokens as $token)
-		$completePath .= "/{$token}";
-
-	$completePath .= '.php';
-
-	$registeredInclusions[($referencingContext)] = file_exists($completePath);
-
-	return $registeredInclusions[($referencingContext)];
-}
 
 function caller() {
 	$backtrace = debug_backtrace(0);
@@ -312,8 +324,9 @@ using('kernel.sys');
 SYS::__imprint_constants();
 
 unset($GLOBALS['randomCert']);
-unset($GLOBALS['kernelPath']);
 unset($GLOBALS['servicePath']);
+unset($GLOBALS['sharePath']);
+unset($GLOBALS['custPath']);
 unset($reg);
 
 // INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6
