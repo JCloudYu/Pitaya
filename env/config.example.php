@@ -4,7 +4,7 @@
 	// $GLOBALS['servicePath'] = (__OS__ == 'WIN') ? 'E:/path/to/service/folder' : '/path/to/service/folder';
 
 	// This is the default service path, you can assign customized path... with proper permissions
-	define('HOST_ROOT', __DIR__);
+	define('HOST_ROOT', __DIR__, TRUE);
 
 	$GLOBALS['servicePath'] = __DIR__ . '/Services';
 	$GLOBALS['sharePath'] = __DIR__ . '/Share';
