@@ -24,6 +24,9 @@ class PBModule extends PBObject
 	public function patch($param) { return $param; }
 	public function uninstall($param) { return $param; }
 
+
+	public function onEvent($event) {}
+
 	public function __get_id() {
 
 		return $this->_moduleId;
