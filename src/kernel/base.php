@@ -204,7 +204,7 @@ function available($referencingContext = '') {
 	return $registeredInclusions[($referencingContext)];
 }
 
-function path($referencingContext = '') {
+function path($referencingContext = '', $appendItem = '') {
 
 	$tokens = explode('.', $referencingContext);
 	$completePath = ____________env_path(array_shift($tokens));
@@ -212,7 +212,9 @@ function path($referencingContext = '') {
 	foreach( $tokens as $token)
 		$completePath .= "/{$token}";
 
-	return $completePath;
+	$appendItem = trim($appendItem);
+
+	return $completePath . (empty($appendItem) ? '' : "/{$appendItem}");
 }
 
 function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALSE) {
