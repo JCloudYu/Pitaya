@@ -49,6 +49,12 @@ class SYS extends PBObject
 
 		try
 		{
+			$sysEnvPath = path('root', 'sys.php');
+			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
+
+			$serviceEnvPath = path("service", 'common.php');
+			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+
 			$this->__judgeMainService();
 			PBRequest::Request();
 
