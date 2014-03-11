@@ -73,7 +73,7 @@ function ____________env_path($token = 'root') {
 
 
 
-			$_cachedPath['root'] = __ROOT__;
+			$_cachedPath['root'] = __WEB_ROOT__;
 
 			return function($package = 'root') use ($_cachedPath) {
 				$pCache = array_key_exists("{$package}", $_cachedPath) ? $_cachedPath[$package] : '';
