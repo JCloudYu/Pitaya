@@ -132,8 +132,13 @@ class SYS extends PBObject
 			$moduleRequest = implode('/', $requestItems);
 		}
 
+
+		// http://SERVER_HOST/RC/Update?attributes
+		$requestMode = explode('?', @"{$requestItems[0]}");
+
+
 		// INFO: Decide module maintenance mode
-		switch (strtoupper(@"{$requestItems[0]}"))
+		switch (strtoupper($requestMode[0]))
 		{
 			case 'INSTALL':
 				array_shift($requestItems);
