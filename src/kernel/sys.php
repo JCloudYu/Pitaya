@@ -315,14 +315,21 @@ class SYS extends PBObject
 
 
 
+		$sharePath = "share.modules.{$chiefModule}.{$moduleName}";
+		$shareSubPath = "share.modules.{$chiefModule}.{$chiefModule}";
+		$shareStoragePath = "share.modules.{$chiefModule}";
+
+
+
 		$servicePath = "service.{$chiefModule}";
 		$serviceSubModulePath = "service.{$chiefModule}.{$moduleName}";
 		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
 
 
-		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
-		$custServiceSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
-		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
+
+		$serviceInternalModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
+		$serviceInternalModuleSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
+		$serviceInternalModuleNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
 
 		$invokeModule = $moduleName;
 
@@ -337,14 +344,23 @@ class SYS extends PBObject
 		if(available($serviceDefaultPath))
 			using($serviceDefaultPath);
 		else
-		if($custServicePath !== NULL && available($custServicePath))
-			using($custServicePath);
+		if($serviceInternalModulePath !== NULL && available($serviceInternalModulePath))
+			using($serviceInternalModulePath);
 		else
-		if($custServiceSubModulePath !== NULL && available($custServiceSubModulePath))
-			using($custServiceSubModulePath);
+		if($serviceInternalModuleSubModulePath !== NULL && available($serviceInternalModuleSubModulePath))
+			using($serviceInternalModuleSubModulePath);
 		else
-		if($custServiceNestedPath !== NULL && available($custServiceNestedPath))
-			using($custServiceNestedPath);
+		if($serviceInternalModuleNestedPath !== NULL && available($serviceInternalModuleNestedPath))
+			using($serviceInternalModuleNestedPath);
+		else
+		if(available($sharePath))
+			using($sharePath);
+		else
+		if(available($shareSubPath))
+			using($shareSubPath);
+		else
+		if(available($shareStoragePath))
+			using($shareStoragePath);
 		else
 		if(available($modulePath))
 			using($modulePath);
