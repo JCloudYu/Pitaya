@@ -106,6 +106,11 @@ class PBProcess extends PBObject
 		return $status;
 	}
 
+	public function cancelFollowingModules() {
+		while (PBLList::NEXT($this->_bootSequence))
+			PBLList::REMOVE($this->_bootSequence);
+	}
+
 	public function replaceNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		$handle = explode('.', $moduleHandle); array_shift($handle);

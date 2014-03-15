@@ -31,13 +31,13 @@ class PBLinkedList extends PBObject
 		return $this->_curr->_data;
 	}
 
-	public function _get_id() {
+	public function __get_id() {
 
 		if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return NULL;
 		return $this->_curr->_id;
 	}
 
-	public function _get_length() {
+	public function __get_length() {
 
 		if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return 0;
 		return $this->_counter;
@@ -139,7 +139,32 @@ class PBLinkedList extends PBObject
 
 	public static function ENQUEUE(&$list, $data, $identifier = NULL) {
 
-		return PBLinkedList::PUSH($list, $data, $identifier);
+		if(!is_a($list, 'PBLinkedList')) return FALSE;
+		if(!is_string($identifier) && !is_int($identifier)) $identifier = NULL;
+
+		$item = PBLinkedList::__genItem($data, $identifier);
+
+		if($list->_tail === NULL || $list->_head === NULL || $list->_curr === NULL)
+		{
+			$list->_head = $item;
+			$list->_tail = $item;
+			$list->_curr = $item;
+		}
+		else
+		{
+			// INFO: Buffer the tail and generate the item that carries inserted data
+			$nextItem = $list->_next;
+
+			// INFO: Make linkage of relation available
+			$item->_next = $nextItem;
+			$prevItem->_prev = $item;
+
+			// INFO: Set the tail to be the inserted item
+			$list->_head = $item;
+		}
+
+		$list->_counter++;
+		return TRUE;
 	}
 
 	public static function DEQUEUE(&$list) {
@@ -199,6 +224,10 @@ class PBLinkedList extends PBObject
 
 			$item->_next = $nextItem;
 			if($nextItem !== NULL) $nextItem->_prev = $item;
+
+
+			if($list->_curr === $list->_head)
+				$list->_head = $item;
 		}
 
 		$list->_counter++;
@@ -229,6 +258,9 @@ class PBLinkedList extends PBObject
 
 			$item->_next = $nextItem;
 			if($nextItem !== NULL) $nextItem->_prev = $item;
+
+			if($list->_curr === $list->_tail)
+				$list->_tail = $item;
 		}
 
 		$list->_counter++;
@@ -283,8 +315,8 @@ class PBLinkedList extends PBObject
 		$list->_counter--;
 
 		// INFO: Prepare the returning data and unset the popped item
-		$rt = array('data' => $item->_data, 'id' => $item->_id);
-		unset($item);
+//		$rt = array('data' => $item->_data, 'id' => $item->_id);
+//		unset($item);
 		return $rt;
 	}
 
