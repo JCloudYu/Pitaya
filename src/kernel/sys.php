@@ -49,20 +49,31 @@ class SYS extends PBObject
 
 		try
 		{
+			// INFO: Preserve path of system container
 			$sysEnvPath = path('root', 'sys.php');
-			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
-
 			$serviceEnvPath = path("service", 'common.php');
-			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
 
+
+
+			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService();
 			PBRequest::Request();
+
+
 
 			// INFO: Define runtime constants
 			define('__SERVICE__', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
+
+
+
+			// INFO: Invoke pre-included files
+			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
+			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+
+
 
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
 		}
