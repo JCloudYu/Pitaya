@@ -38,6 +38,11 @@
 			case 'null':
 				return NULL;
 
+			case 'time':
+				$val = strtotime("{$value}");
+				return ($val === FALSE || $val < 0) ? 0 : $val;
+
+
 			// INFO: Experimental Conversions
 			case 'uint':
 				if (!is_numeric($value)) return 0;
