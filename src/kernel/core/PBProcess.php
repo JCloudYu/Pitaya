@@ -48,6 +48,15 @@ class PBProcess extends PBObject
 		return $this->_acquireModule($moduleName, $reusable);
 	}
 
+	public function getNextModule()
+	{
+		if (!PBLinkedList::NEXT($this->_bootSequence)) return NULL;
+		$moduleId = $this->_bootSequence->data['data'];
+		PBLinkedList::PREV($this->_bootSequence);
+
+		return $this->_attachedModules[$moduleId];
+	}
+
 	public function assignNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
