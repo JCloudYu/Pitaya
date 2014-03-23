@@ -7,13 +7,13 @@
 
 	final class Control extends PBObject
 	{
-		public static function selectOptions($options = array())
+		public static function SelectOptions($options = array())
 		{
 			$content = array();
 			foreach ($options as $opt)
 			{
-				$opt['checked'] = empty($opt['selected']) ? '' : 'checked';
-				$content[] = @"<option value='{$opt['value']}' title='{$opt['title']}' {$opt['checked']} >{$opt['label']}</option>";
+				$opt['selected'] = empty($opt['selected']) ? '' : 'checked';
+				$content[] = @"<option value='{$opt['value']}' title='{$opt['title']}' {$opt['selected']} >{$opt['label']}</option>";
 			}
 
 			return implode("\n", $content);
