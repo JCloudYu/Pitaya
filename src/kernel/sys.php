@@ -24,7 +24,7 @@ class SYS extends PBObject
 
 // region [ Path Control ]
 	private static $_cacheServicePath = NULL;
-	private static $_cacheRandomCert = NULL;
+	private static $_cacheRandomCert  = NULL;
 
 	public static function __imprint_constants() {
 
@@ -33,7 +33,7 @@ class SYS extends PBObject
 		if($initialized) return;
 
 		SYS::$_cacheServicePath = $GLOBALS['servicePath'];
-		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
+		SYS::$_cacheRandomCert  = $GLOBALS['randomCert'];
 	}
 // endregion
 

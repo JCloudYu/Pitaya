@@ -1,5 +1,7 @@
 <?php
 
+$GLOBALS['invokeTime'] = time();
+
 // INFO: Super Global Constants...
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 
@@ -326,11 +328,13 @@ using('kernel.core.*');
 using('kernel.sys');
 
 SYS::__imprint_constants();
+PBRequest::__imprint_constants();
 
 unset($GLOBALS['randomCert']);
 unset($GLOBALS['servicePath']);
 unset($GLOBALS['sharePath']);
 unset($GLOBALS['custPath']);
+unset($GLOBALS['invokeTime']);
 unset($reg);
 
 // INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6
