@@ -12,7 +12,7 @@
 			$content = array();
 			foreach ($options as $opt)
 			{
-				$opt['selected'] = empty($opt['selected']) ? '' : 'checked';
+				$opt['selected'] = empty($opt['selected']) ? '' : 'selected';
 				$content[] = @"<option value='{$opt['value']}' title='{$opt['title']}' {$opt['selected']} >{$opt['label']}</option>";
 			}
 
