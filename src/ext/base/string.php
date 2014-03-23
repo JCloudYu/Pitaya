@@ -46,3 +46,34 @@
 		$unit = ($interval->s > 1) ? 'seconds' : 'second';
 		return "{$interval->s} {$unit} before";
 	}
+
+	function ext_strtr($pattern, $replacements)
+	{
+		if (!is_array($replacements)) return $pattern;
+
+		$firstElm = reset($replacements);
+		if (!is_array($firstElm))
+			return strtr($pattern, $replacements);
+		else
+		{
+			$result = array();
+			foreach ($replacements as $key => $replace)
+				$result[$key] = strtr($pattern, $replace);
+
+			return $result;
+		}
+	}
+
+	function ext_trim($instance)
+	{
+		if (!is_array($instance))
+			return trim($instance);
+		else
+		{
+			$result = array();
+			foreach ($instance as $key => $str)
+				$result[$key] = trim($str);
+
+			return $result;
+		}
+	}
