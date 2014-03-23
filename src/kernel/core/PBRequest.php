@@ -16,6 +16,13 @@
 			return self::$_reqInstance;
 		}
 
+
+		private static $_invokedTime = 0;
+		public static function __imprint_constants()
+		{
+			self::$_invokedTime = $GLOBALS['invokeTime'];
+		}
+
 		private $_incomingRecord = array();
 		private function __construct()
 		{
@@ -154,6 +161,12 @@
 		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
+
+		public function __get_requestTime()
+		{
+			$netRequestTime = $this->_incomingRecord['environment']['server']['REQUEST_TIME'];
+			return empty($netRequestTime) ? PBRequest::$_invokedTime : $netRequestTime;
+		}
 		// endregion
 
 		// region [ Data Preprocessing Methods ]

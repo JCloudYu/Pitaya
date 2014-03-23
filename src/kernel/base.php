@@ -1,5 +1,7 @@
 <?php
 
+$GLOBALS['invokeTime'] = time();
+
 // INFO: Super Global Constants...
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 
@@ -73,7 +75,7 @@ function ____________env_path($token = 'root') {
 
 
 
-			$_cachedPath['root'] = __ROOT__;
+			$_cachedPath['root'] = __WEB_ROOT__;
 
 			return function($package = 'root') use ($_cachedPath) {
 				$pCache = array_key_exists("{$package}", $_cachedPath) ? $_cachedPath[$package] : '';
@@ -204,7 +206,7 @@ function available($referencingContext = '') {
 	return $registeredInclusions[($referencingContext)];
 }
 
-function path($referencingContext = '') {
+function path($referencingContext = '', $appendItem = '') {
 
 	$tokens = explode('.', $referencingContext);
 	$completePath = ____________env_path(array_shift($tokens));
@@ -212,7 +214,9 @@ function path($referencingContext = '') {
 	foreach( $tokens as $token)
 		$completePath .= "/{$token}";
 
-	return $completePath;
+	$appendItem = trim($appendItem);
+
+	return $completePath . (empty($appendItem) ? '' : "/{$appendItem}");
 }
 
 function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALSE) {
@@ -324,11 +328,13 @@ using('kernel.core.*');
 using('kernel.sys');
 
 SYS::__imprint_constants();
+PBRequest::__imprint_constants();
 
 unset($GLOBALS['randomCert']);
 unset($GLOBALS['servicePath']);
 unset($GLOBALS['sharePath']);
 unset($GLOBALS['custPath']);
+unset($GLOBALS['invokeTime']);
 unset($reg);
 
 // INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6

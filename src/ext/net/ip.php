@@ -128,7 +128,7 @@
 		return $result;
 	}
 
-	function RemoteIP($_SERVER_VAR)
+	function RemoteIP($_SERVER_VAR, $allowPrivate = TRUE, $allowReservedRanged = TRUE)
 	{
 		if (!is_array($_SERVER_VAR)) return NULL;
 
@@ -146,17 +146,28 @@
 
 		foreach ($seq as $key)
 		{
-			if (empty($_SERVER[$key]))
+			if (!empty($_SERVER_VAR[$key]))
 			{
-				$ipSeq = explode(',', $_SERVER[$key]);
+				$ipSeq = explode(',', $_SERVER_VAR[$key]);
 
 				foreach ($ipSeq as $ip)
 				{
 					$ip = trim($ip);
-					$check = (bool) filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6 |
-											   		FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-					if (!empty($check))
-						return $ip;
+
+					$filterOpt =  0;
+
+					if (!$allowReservedRanged) $filterOpt = $filterOpt | FILTER_FLAG_NO_RES_RANGE;
+					if (!$allowPrivate) $filterOpt = $filterOpt | FILTER_FLAG_NO_PRIV_RANGE;
+
+
+
+
+					$checkIPV4 = (bool) filter_var($ip, FILTER_VALIDATE_IP, $filterOpt | FILTER_FLAG_IPV4);
+					if ($checkIPV4) return $ip;
+
+
+					$checkIPV6 = (bool) filter_var($ip, FILTER_VALIDATE_IP, $filterOpt | FILTER_FLAG_IPV6);
+					if ($checkIPV6) return $ip;
 				}
 			}
 		}

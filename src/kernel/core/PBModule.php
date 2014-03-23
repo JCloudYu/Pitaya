@@ -24,6 +24,9 @@ class PBModule extends PBObject
 	public function patch($param) { return $param; }
 	public function uninstall($param) { return $param; }
 
+
+	public function onEvent($event) {}
+
 	public function __get_id() {
 
 		return $this->_moduleId;
@@ -33,6 +36,8 @@ class PBModule extends PBObject
 
 		return $this->_process->id;
 	}
+
+	public function __get_class() { return get_class($this); }
 
 //SEC: Getters/Setters that are provided for internal usage
 	protected function __get_process() {

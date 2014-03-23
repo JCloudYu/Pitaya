@@ -24,7 +24,7 @@ class SYS extends PBObject
 
 // region [ Path Control ]
 	private static $_cacheServicePath = NULL;
-	private static $_cacheRandomCert = NULL;
+	private static $_cacheRandomCert  = NULL;
 
 	public static function __imprint_constants() {
 
@@ -33,7 +33,7 @@ class SYS extends PBObject
 		if($initialized) return;
 
 		SYS::$_cacheServicePath = $GLOBALS['servicePath'];
-		SYS::$_cacheRandomCert = $GLOBALS['randomCert'];
+		SYS::$_cacheRandomCert  = $GLOBALS['randomCert'];
 	}
 // endregion
 
@@ -49,14 +49,31 @@ class SYS extends PBObject
 
 		try
 		{
+			// INFO: Preserve path of system container
+			$sysEnvPath = path('root', 'sys.php');
+			$serviceEnvPath = path("service", 'common.php');
+
+
+
+			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService();
 			PBRequest::Request();
+
+
 
 			// INFO: Define runtime constants
 			define('__SERVICE__', $this->_entryService, TRUE);
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
+
+
+
+			// INFO: Invoke pre-included files
+			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
+			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+
+
 
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
 		}
@@ -126,8 +143,13 @@ class SYS extends PBObject
 			$moduleRequest = implode('/', $requestItems);
 		}
 
+
+		// http://SERVER_HOST/RC/Update?attributes
+		$requestMode = explode('?', @"{$requestItems[0]}");
+
+
 		// INFO: Decide module maintenance mode
-		switch (strtoupper(@"{$requestItems[0]}"))
+		switch (strtoupper($requestMode[0]))
 		{
 			case 'INSTALL':
 				array_shift($requestItems);
@@ -304,14 +326,21 @@ class SYS extends PBObject
 
 
 
+		$sharePath = "share.modules.{$chiefModule}.{$moduleName}";
+		$shareSubPath = "share.modules.{$chiefModule}.{$chiefModule}";
+		$shareStoragePath = "share.modules.{$chiefModule}";
+
+
+
 		$servicePath = "service.{$chiefModule}";
 		$serviceSubModulePath = "service.{$chiefModule}.{$moduleName}";
 		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
 
 
-		$custServicePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
-		$custServiceSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
-		$custServiceNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
+
+		$serviceInternalModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
+		$serviceInternalModuleSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
+		$serviceInternalModuleNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
 
 		$invokeModule = $moduleName;
 
@@ -326,14 +355,23 @@ class SYS extends PBObject
 		if(available($serviceDefaultPath))
 			using($serviceDefaultPath);
 		else
-		if($custServicePath !== NULL && available($custServicePath))
-			using($custServicePath);
+		if($serviceInternalModulePath !== NULL && available($serviceInternalModulePath))
+			using($serviceInternalModulePath);
 		else
-		if($custServiceSubModulePath !== NULL && available($custServiceSubModulePath))
-			using($custServiceSubModulePath);
+		if($serviceInternalModuleSubModulePath !== NULL && available($serviceInternalModuleSubModulePath))
+			using($serviceInternalModuleSubModulePath);
 		else
-		if($custServiceNestedPath !== NULL && available($custServiceNestedPath))
-			using($custServiceNestedPath);
+		if($serviceInternalModuleNestedPath !== NULL && available($serviceInternalModuleNestedPath))
+			using($serviceInternalModuleNestedPath);
+		else
+		if(available($sharePath))
+			using($sharePath);
+		else
+		if(available($shareSubPath))
+			using($shareSubPath);
+		else
+		if(available($shareStoragePath))
+			using($shareStoragePath);
 		else
 		if(available($modulePath))
 			using($modulePath);

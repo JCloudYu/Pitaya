@@ -10,7 +10,7 @@ using('sys.tool.http.*');
 
 class req extends PBModule
 {
-	const DEFAULT_ACCEPTABLE_TYPES = '	{	"JS":		"text/javascript",
+	const DEFAULT_ACCEPTABLE_TYPES =    '{	"JS":		"text/javascript",
 											"CSS":		"text/css",
 											"HTML":		"text/html",
 											"TXT":		"text/plain",
@@ -82,6 +82,6 @@ class req extends PBModule
 			}
 		}
 
-		throw(new Exception("file {$filePath} not found!"));
+		header('HTTP/1.0 404 Not Found');
 	}
 }
