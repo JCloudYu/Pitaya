@@ -38,6 +38,8 @@
 			}
 
 			$now = '[' . date("Y-m-d g:i:s") . "][SYS]{$position}";
+
+			if (!is_string($message)) $message = print_r($message, TRUE);
 			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
@@ -95,6 +97,8 @@
 			}
 
 			$now = '[' . date("Y-m-d g:i:s") . "][{$_logName}]{$position}";
+
+			if (!is_string($message)) $message = print_r($message, TRUE);
 			$msg = "$now $message\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
