@@ -177,7 +177,7 @@ class SYS extends PBObject
 
 		// INFO: Detect Main Service
 		$state = FALSE;
-		$state = $state || available("service.{$service}.{$service}");
+		$state = $state || available("service.{$service}.{$service}", FALSE);
 
 		if ($state)
 		{
@@ -191,7 +191,7 @@ class SYS extends PBObject
 			return;
 		}
 
-		$state = $state || available("modules.{$service}.{$service}");
+		$state = $state || available("modules.{$service}.{$service}", FALSE);
 
 		if($state)
 		{
@@ -210,7 +210,7 @@ class SYS extends PBObject
 		{
 			$moduleRequest = "{$service}/{$moduleRequest}";
 			$service = __DEFAULT_SERVICE__;
-			$state = $state || available("service.{$service}.{$service}");
+			$state = $state || available("service.{$service}.{$service}", FALSE);
 
 			if ($state)
 			{
@@ -224,7 +224,7 @@ class SYS extends PBObject
 				return;
 			}
 
-			$state = $state || available("modules.{$service}.{$service}");
+			$state = $state || available("modules.{$service}.{$service}", FALSE);
 
 			if ($state)
 			{

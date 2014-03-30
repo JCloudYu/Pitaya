@@ -187,10 +187,10 @@ function package($referencingContext = '', $output = true)
 	}
 }
 
-function available($referencingContext = '') {
+function available($referencingContext = '', $cache = TRUE) {
 	static $registeredInclusions = array();
 
-	if(isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
+	if($cache && isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
 
 	$tokens = explode('.', $referencingContext);
 
@@ -198,12 +198,14 @@ function available($referencingContext = '') {
 
 	foreach( $tokens as $token)
 		$completePath .= "/{$token}";
-
 	$completePath .= '.php';
 
-	$registeredInclusions[($referencingContext)] = file_exists($completePath);
+	$result = file_exists($completePath);
 
-	return $registeredInclusions[($referencingContext)];
+	if ($cache)
+		$registeredInclusions[($referencingContext)] = $result;
+
+	return $result;
 }
 
 function path($referencingContext = '', $appendItem = '') {
