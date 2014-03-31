@@ -31,3 +31,52 @@
 
 		return NULL;
 	}
+
+	function LIMIT($SQL, $page = NULL, $pageSize = NULL, &$pageInfo = NULL)
+	{
+		if (is_array($SQL))
+		{
+			$sql	= $SQL['sql'];
+			$param	= $SQL['param'];
+		}
+		else
+		{
+			$sql	= $SQL;
+			$param	= array();
+		}
+
+		$sql = trim($sql);
+		$sql = preg_replace('/(select)(.|[\n])*(from([^;]|[\n])*);*/i', "$1 count(*) as count $3", $sql, -1);
+		$countResult = DB()->fetch($sql, $param);
+
+
+		$totalCount = $countResult['count'];
+		$page		= TO($page,		'int');
+		$pageSize	= TO($pageSize,	'int');
+
+		if (!empty($pageSize))
+		{
+			$totalPages = ceil((float)$totalCount/(float)$pageSize);
+			$page = min(max($page, 1), max($totalPages, 1));
+
+			$from = ($page - 1) * $pageSize;
+			$limitClause = "LIMIT {$from},{$pageSize}";
+		}
+		else
+		{
+			$totalPages = $page = 1;
+			$pageSize = $totalCount;
+			$limitClause = '';
+		}
+
+
+
+		$pageInfo = array(
+			'pageSize'		=> $pageSize,
+			'page'			=> $page,
+			'totalPages'	=> $totalPages,
+			'totalRecords'	=> $totalCount
+		);
+
+		return $limitClause;
+	}
