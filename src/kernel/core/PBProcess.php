@@ -106,6 +106,15 @@ class PBProcess extends PBObject
 		return TRUE;
 	}
 
+	public function assignNextModules($moduleAry)
+	{
+		if (!is_array($moduleAry))
+			throw(new Exception("Input parameter must be an array!"));
+
+		foreach ($moduleAry as $requestPair)
+			$this->assignNextModule(@$requestPair['module'], @$requestPair['request']);
+	}
+
 	public function cancelNextModule() {
 
 		$status = PBLList::NEXT($this->_bootSequence);
