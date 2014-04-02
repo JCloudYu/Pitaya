@@ -111,6 +111,9 @@ class PBProcess extends PBObject
 		if (!is_array($moduleAry))
 			throw(new Exception("Input parameter must be an array!"));
 
+
+		$moduleAry = array_reverse($moduleAry);
+
 		foreach ($moduleAry as $requestPair)
 			$this->assignNextModule(@$requestPair['module'], @$requestPair['request']);
 	}
