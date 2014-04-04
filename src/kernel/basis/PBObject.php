@@ -14,7 +14,7 @@
 		private static $_getPrefix = "__get_";
 		private static $_setPrefix = "__set_";
 
-		public function __get($name) {
+		public function &__get($name) {
 
 			$getTarget = self::$_getPrefix.$name;
 			$setTarget = self::$_setPrefix.$name;

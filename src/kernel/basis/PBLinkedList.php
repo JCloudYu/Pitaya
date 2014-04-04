@@ -25,7 +25,7 @@ class PBLinkedList extends PBObject
 		$this->_counter = 0;
 	}
 
-	public function __get_data() {
+	public function &__get_data() {
 
 		if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return NULL;
 		return $this->_curr->_data;
