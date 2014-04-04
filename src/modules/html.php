@@ -84,15 +84,13 @@ HTML;
 
 		public function addFile($name, $type)
 		{
-			$serviceName = __SERVICE__;
-
 			switch (strtolower($type))
 			{
 				case 'js':
-					$this->_jsFiles[] = "/{$serviceName}/{$this->_baseRCPath}{$name}";
+					$this->_jsFiles[] = "{$this->_baseRCPath}{$name}";
 					break;
 				case 'css':
-					$this->_cssFiles[] = "/{$serviceName}/{$this->_baseRCPath}{$name}";
+					$this->_cssFiles[] = "{$this->_baseRCPath}{$name}";
 					break;
 				default: break;
 			}
@@ -110,15 +108,13 @@ HTML;
 
 		public function property($name, $value)
 		{
-			$serviceName = __SERVICE__;
-
 			switch (strtolower($name))
 			{
 				case 'title':
 					$this->_header[] = "<title>{$value}</title>";
 					break;
 				case 'favicon':
-					$this->_header[] = "<link rel='shortcut icon' href='/{$serviceName}/{$this->_baseRCPath}{$value}' />";
+					$this->_header[] = "<link rel='shortcut icon' href='{$this->_baseRCPath}{$value}' />";
 					break;
 				case 'charset':
 					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
