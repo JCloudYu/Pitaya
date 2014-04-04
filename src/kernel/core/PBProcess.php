@@ -57,6 +57,13 @@ class PBProcess extends PBObject
 		return $this->_attachedModules[$moduleId];
 	}
 
+	public function transferRequest($moduleRequest)
+	{
+		PBLinkedList::NEXT($this->_bootSequence);
+		$this->_bootSequence->data['request'] = $moduleRequest;
+		PBLinkedList::PREV($this->_bootSequence);
+	}
+
 	public function assignNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
