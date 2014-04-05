@@ -2,105 +2,210 @@
 /*
  * File: PBStorage.php
  * Created by JCloudYu.
- * DateTime: 13/2/9 PM3:30
+ * DateTime: 2014/04/05
  */
+	class PBStorage implements ArrayAccess
+	{
+		private $_storage		 = NULL;
+		private $_forceOverwrite = TRUE;
 
-class PBStorage
-{
-	private $_storage = NULL;
-	private $_storedData = NULL;
-	private $_autoMerge = TRUE;
-
-	public function __construct($value = NULL, $autoMerge = TRUE) {
-
-		$this->_autoMerge = $autoMerge;
-		$this->_storage = array();
-
-		if(is_array($value))
+		public function __construct($default = array(), $forceOverwrite = TRUE)
 		{
-			foreach($value as $key => $val)
+			$this->_storage = (is_array($default)) ? $default : array();
+			$this->_forceOverwrite = empty($forceOverwrite) ? FALSE : TRUE;
+		}
+
+		public function &get($offset = NULL)
+		{
+			if (empty($offset))
+				return $this->_storage;
+
+			$offsets = explode('.', $offset);
+			return $this->_travel($offsets);
+		}
+
+		public function &set($offset, $value)
+		{
+			if (is_a($value, 'PBStorage'))
+				$value = $value->_storage;
+
+			if ($value === NULL)
 			{
-				if(!is_numeric($key)) $this->{$key} = $val;
+				$this->clear($offset);
+				return;
 			}
 
-			return;
-		}
-	}
 
-	public function __get($name){
 
-		if($name == 'data') return $this->_retrieveData();
-
-		if(!array_key_exists($name, $this->_storage))
-			$this->_storage[$name] = new PBStorage(NULL, $this->_autoMerge);
-
-		return $this->_storage[$name];
-	}
-
-	public function __set($name, $value) {
-
-		if(!array_key_exists($name, $this->_storage) || !$this->_autoMerge)
-			$this->_storage[$name] = new PBStorage(NULL, $this->_autoMerge);
-
-		// INFO: storage->a = array('b' => 1, 'c' => array('index' => 'something'))
-		if(is_array($value))
-		{
-			foreach($value as $key => $val)
+			if (empty($offset))
 			{
-				if(!is_numeric($key))
+				if (is_array($value))
+					$this->_storage = $value;
+
+				return;
+			}
+
+			$offsets	 = explode('.', $offset);
+			$finalOffset = array_pop($offsets);
+
+			$target = &$this->_travel($offsets);
+
+			if ($target === NULL)
+				return;
+			else
+				$target[$finalOffset] = $value;
+		}
+
+		public function clear($offset)
+		{
+			if (empty($offset))
+			{
+				$this->_storage = array();
+				return TRUE;
+			}
+
+			$offsets	 = explode('.', $offset);
+			$finalOffset = array_pop($offsets);
+
+			$target = &$this->_storage;
+			foreach ($offsets as $offset)
+			{
+				if (!isset($target[$offset]) || !is_array($target[$offset]))
+					return FALSE;
+
+				$target = &$target[$offset];
+			}
+
+			unset($target[$finalOffset]);
+
+			return TRUE;
+		}
+
+		public function valid($offset)
+		{
+			if (empty($offset)) return TRUE;
+
+			$offsets	 = explode('.', $offset);
+
+			$target = &$this->_storage;
+			foreach ($offsets as $offset)
+			{
+				if (!isset($target[$offset]) || !is_array($target[$offset]))
+					return FALSE;
+
+				$target = &$target[$offset];
+			}
+			return TRUE;
+		}
+
+		public function merge($offset, $ref, $deepMerge = FALSE, $forceMerge = TRUE)
+		{
+			if (is_a($ref, 'PBStorage'))
+				$ref = $ref->_storage;
+
+
+			if (empty($offset))
+			{
+				if (!is_array($ref))
+					return FALSE;
+
+				$result = self::_merge($this->_storage, $ref, $deepMerge, $forceMerge);
+				if ($result !== FALSE)
+					$this->_storage = $result;
+				else
+					return FALSE;
+			}
+			else
+			{
+				$offsets	 = explode('.', $offset);
+				$finalOffset = array_pop($offsets);
+
+				$target = &$this->_travel($offsets);
+				if ($target === NULL) return FALSE;
+
+				if (!is_array($target[$finalOffset]) || !is_array($ref))
 				{
-					$this->_storage[$name]->{$key} = $val;
-					$this->_storage[$name]->_storedData = NULL;
+					if ($forceMerge)
+						$target[$finalOffset] = $ref;
+					else
+						return FALSE;
+				}
+
+
+				$result = self::_merge($target[$finalOffset], $ref, $deepMerge, $forceMerge);
+
+				if ($result !== FALSE)
+					$target[$finalOffset] = $result;
+				else
+					return FALSE;
+			}
+
+			return TRUE;
+		}
+
+		private static function _merge($target, $ref, $deepMerge = FALSE, $forceMerge = TRUE)
+		{
+			$merged = $target;
+			foreach ($ref as $idx => $value)
+			{
+				if (!isset($target[$idx]))
+					$merged[$idx] = $value;
+				else
+				{
+					if (is_array($target[$idx]) && is_array($value) && $deepMerge)
+					{
+						$result = self::_merge($target[$idx], $value, $deepMerge, $forceMerge);
+						if ($result !== FALSE)
+							$merged[$idx] = $result;
+						else
+							return FALSE;
+					}
+					else
+					if ($forceMerge)
+						$merged[$idx] = $value;
+					else
+						return FALSE;
 				}
 			}
-		}
-		// INFO: storage->a = 'abc';
-		else
-		{
-			$this->_storage[$name]->_storage = array();
-			$this->_storage[$name]->_storedData = $value;
+			return $merged;
 		}
 
-		// INFO: This is for multiple assignment such as $a = $storage->a->b->e->f = data3;
-		// INFO: Hence we must throw the value back
-		return $value;
-	}
-
-	public function clear($target = NULL)
-	{
-		if(is_null($target))
+		private function &_travel($offsets)
 		{
-			$this->_storedData = NULL;
-			$this->_storage = array();
-		}
-		else
-		{
-			unset($this->_storage[$target]);
-		}
-	}
+			$finalOffset = array_pop($offsets);
 
-	public function merge($value)
-	{
-		if(!is_array($value)) return;
 
-		foreach($value as $key => $val)
-		{
-			if(!is_numeric($key))
+			$target = &$this->_storage;
+			foreach ($offsets as $offset)
 			{
-				$this->{$key} = $val;
-				$this->_storedData = NULL;
+				if (!isset($target[$offset]))
+					$target[$offset] = array();
+				else
+				if (!is_array($target[$offset]))
+				{
+					if ($this->_forceOverwrite)
+						$target[$offset] = array();
+					else
+						return NULL;
+				}
+
+				$target = &$target[$offset];
 			}
+
+			if (!isset($target[$finalOffset]))
+				$target[$finalOffset] = array();
+
+
+			return $target[$finalOffset];
 		}
+
+
+
+
+
+
+		public function offsetGet($offset) { return $this->get($offset); }
+		public function offsetSet($offset, $value) { $this->set($offset, $value); }
+		public function offsetUnset($offset) { $this->clear($offset); }
+		public function offsetExists($offset) { return $this->valid($offset); }
 	}
-
-	private function _retrieveData()
-	{
-		if(count($this->_storage) <= 0) return $this->_storedData;
-
-		$returnData = array();
-		foreach($this->_storage as $key => $item)
-			$returnData[$key] = $item->_retrieveData();
-
-		return $returnData;
-	}
-}
