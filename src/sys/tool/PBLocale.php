@@ -11,7 +11,7 @@
 	{
 		private static $_sharedBasePackage = NULL;
 
-		public static function Linkfty($token, $translation, &$localeAry)
+		public static function Linkfy($token, $translation, &$localeAry)
 		{
 			$localeAry["{$token}"]   = $translation;
 			$localeAry[" {$token}"]  = $translation;
@@ -30,8 +30,8 @@
 		}
 
 
-		private $_basePackage = '';
-		private $_curLocale = '';
+		private $_basePackage 	= '';
+		private $_curLocale 	= '';
 		private $_storedLocales = array();
 
 		public function __construct()
@@ -51,8 +51,8 @@
 
 			if (isset($this->_storedLocales[$this->_curLocale])) return;
 
-			$leading = empty($this->_basePackage) ? '' : "{$this->_basePackage}.";
-			$locale = Imprint("service.{$leading}{$this->_curLocale}.locale");
+			$leading = empty($this->_basePackage) ? 'service.' : "{$this->_basePackage}.";
+			$locale = Imprint("{$leading}{$this->_curLocale}.locale");
 			@$locale = array_key_exists('locale', $locale) ? $locale['locale'] : array();
 
 			$this->_storedLocales[$this->_curLocale] = $locale;
