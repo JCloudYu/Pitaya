@@ -11,7 +11,7 @@
 	{
 		private static $_sharedBasePackage = NULL;
 
-		public static function Tokenize($token, $translation, &$localeAry)
+		public static function Linkfty($token, $translation, &$localeAry)
 		{
 			$localeAry["{$token}"]   = $translation;
 			$localeAry[" {$token}"]  = $translation;
