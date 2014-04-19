@@ -52,7 +52,10 @@
 			if (isset($this->_storedLocales[$this->_curLocale])) return;
 
 			$leading = empty($this->_basePackage) ? 'service.' : "{$this->_basePackage}.";
-			$locale = @Imprint("{$leading}{$this->_curLocale}.locale");
+
+			$localePath = "{$leading}{$this->_curLocale}.locale";
+			$locale = (available($localePath)) ? Imprint($localePath) : array();
+
 			@$locale = array_key_exists('locale', $locale) ? $locale['locale'] : array();
 
 			$this->_storedLocales[$this->_curLocale] = $locale;

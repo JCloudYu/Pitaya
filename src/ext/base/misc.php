@@ -119,7 +119,7 @@
 			empty($____path_of_the_package_file_to_be_imprinted))
 			return NULL;
 
-		include path($____path_of_the_package_file_to_be_imprinted);
+		require package($____path_of_the_package_file_to_be_imprinted, TRUE);
 		$____path_of_the_package_file_to_be_imprinted = get_defined_vars();
 
 		foreach ($____pre_cached_to_be_deleted_existing_variables as $varName => $varValue)
