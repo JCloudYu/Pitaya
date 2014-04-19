@@ -67,50 +67,49 @@ class PBProcess extends PBObject
 	public function assignNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) $moduleHandle = $this->_acquireModule($moduleHandle, TRUE)->id;
 
-		$handle = explode('.', $moduleHandle); array_shift($handle);
-		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
 
-		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
-
-		$doPrepare = ($this->_processState != 'running') ? FALSE : TRUE;
-		PBLList::AFTER($this->_bootSequence, array('prepared' => $doPrepare, 'data' => $handle, 'request' => $moduleRequest), $handle);
+		$status = TRUE;
+		$doPrepare = ($this->_processState == 'running') ? TRUE : FALSE;
+		$status = $status && PBLinkedList::AFTER($this->_bootSequence, array('prepared' => $doPrepare, 'data' => $moduleHandle, 'request' => $moduleRequest), $moduleHandle);
 
 
 
-		if (!$doPrepare) return TRUE;
+		if (!$doPrepare) return $status;
 
 
 
+		$status = $status && PBLList::NEXT($this->_bootSequence);
 
-
-
-		PBLList::NEXT($this->_bootSequence);
-		$module = $this->_attachedModules[$handle];
-
-		switch (SERVICE_EXEC_MODE)
+		if ($status)
 		{
-			case 'INSTALL':
-				$module->prepareInstall($moduleRequest);
-				break;
-			case 'UPDATE':
-				$module->prepareUpdate($moduleRequest);
-				break;
-			case 'PATCH':
-				$module->preparePatch($moduleRequest);
-				break;
-			case 'UNINSTALL':
-				$module->prepareUninstall($moduleRequest);
-				break;
-			case 'NORMAL':
-			default:
-				$module->prepare($moduleRequest);
-				break;
+			$module = $this->_attachedModules[$moduleHandle];
+
+			switch (SERVICE_EXEC_MODE)
+			{
+				case 'INSTALL':
+					$module->prepareInstall($moduleRequest);
+					break;
+				case 'UPDATE':
+					$module->prepareUpdate($moduleRequest);
+					break;
+				case 'PATCH':
+					$module->preparePatch($moduleRequest);
+					break;
+				case 'UNINSTALL':
+					$module->prepareUninstall($moduleRequest);
+					break;
+				case 'NORMAL':
+				default:
+					$module->prepare($moduleRequest);
+					break;
+			}
+
+			$status = $status && PBLList::PREV($this->_bootSequence);
 		}
 
-		PBLList::PREV($this->_bootSequence);
-
-		return TRUE;
+		return $status;
 	}
 
 	public function assignNextModules($moduleAry)
@@ -141,35 +140,43 @@ class PBProcess extends PBObject
 
 	public function replaceNextModule($moduleHandle, $moduleRequest = NULL)
 	{
-		$handle = explode('.', $moduleHandle); array_shift($handle);
-		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
+		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) $moduleHandle = $this->_acquireModule($moduleHandle, TRUE)->id;
 
-		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
+		$doPrepare = ($this->_processState == 'running') ? TRUE : FALSE;
 
-		$status = PBLList::NEXT($this->_bootSequence);
-		$status = $status && PBLList::SET($this->_bootSequence, array('prepared' => TRUE, 'data' => $handle), $handle);
-		$status = $status && PBLList::PREV($this->_bootSequence);
+		$status = TRUE;
+		$status = $status && PBLList::NEXT($this->_bootSequence);
 
-		$module = $this->_attachedModules[$handle];
-
-		switch (SERVICE_EXEC_MODE)
+		if ($status)
 		{
-			case 'INSTALL':
-				$module->prepareInstall($moduleRequest);
-				break;
-			case 'UPDATE':
-				$module->prepareUpdate($moduleRequest);
-				break;
-			case 'PATCH':
-				$module->preparePatch($moduleRequest);
-				break;
-			case 'UNINSTALL':
-				$module->prepareUninstall($moduleRequest);
-				break;
-			case 'NORMAL':
-			default:
-				$module->prepare($moduleRequest);
-				break;
+			$status = $status && PBLList::SET($this->_bootSequence, array('prepared' => $doPrepare, 'data' => $moduleHandle), $moduleHandle);
+
+			if ($status && $doPrepare)
+			{
+				$module = $this->_attachedModules[$moduleHandle];
+				switch (SERVICE_EXEC_MODE)
+				{
+					case 'INSTALL':
+						$module->prepareInstall($moduleRequest);
+						break;
+					case 'UPDATE':
+						$module->prepareUpdate($moduleRequest);
+						break;
+					case 'PATCH':
+						$module->preparePatch($moduleRequest);
+						break;
+					case 'UNINSTALL':
+						$module->prepareUninstall($moduleRequest);
+						break;
+					case 'NORMAL':
+					default:
+						$module->prepare($moduleRequest);
+						break;
+				}
+			}
+
+			$status = $status && PBLList::PREV($this->_bootSequence);
 		}
 
 		return $status;
@@ -177,33 +184,43 @@ class PBProcess extends PBObject
 
 	public function pushModule($moduleHandle, $moduleRequest = NULL)
 	{
-		$handle = explode('.', $moduleHandle); array_shift($handle);
-		$handle = (count($handle) >= 1) ? implode('', $handle) : $moduleHandle;
+		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
+		if(!array_key_exists($moduleHandle, $this->_attachedModules)) $moduleHandle = $this->_acquireModule($moduleHandle, TRUE)->id;
 
-		if(!array_key_exists($handle, $this->_attachedModules)) return FALSE;
 
-		$status = PBLList::PUSH($this->_bootSequence, array('prepared' => TRUE, 'data' => $handle), $handle);
+		$doPrepare = ($this->_processState == 'running') ? TRUE : FALSE;
 
-		$module = $this->_attachedModules[$handle];
+		$status = PBLList::PUSH($this->_bootSequence, array('prepared' => $doPrepare, 'data' => $moduleHandle), $moduleHandle);
 
-		switch (SERVICE_EXEC_MODE)
+
+
+		if (!$doPrepare) return $status;
+
+
+
+		if ($status)
 		{
-			case 'INSTALL':
-				$module->prepareInstall($moduleRequest);
-				break;
-			case 'UPDATE':
-				$module->prepareUpdate($moduleRequest);
-				break;
-			case 'PATCH':
-				$module->preparePatch($moduleRequest);
-				break;
-			case 'UNINSTALL':
-				$module->prepareUninstall($moduleRequest);
-				break;
-			case 'NORMAL':
-			default:
-				$module->prepare($moduleRequest);
-				break;
+			$module = $this->_attachedModules[$moduleHandle];
+
+			switch (SERVICE_EXEC_MODE)
+			{
+				case 'INSTALL':
+					$module->prepareInstall($moduleRequest);
+					break;
+				case 'UPDATE':
+					$module->prepareUpdate($moduleRequest);
+					break;
+				case 'PATCH':
+					$module->preparePatch($moduleRequest);
+					break;
+				case 'UNINSTALL':
+					$module->prepareUninstall($moduleRequest);
+					break;
+				case 'NORMAL':
+				default:
+					$module->prepare($moduleRequest);
+					break;
+			}
 		}
 
 		return $status;
