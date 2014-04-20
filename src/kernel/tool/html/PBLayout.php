@@ -27,7 +27,7 @@
 					$module = $process->getModule($moduleConf['module'], FALSE);
 					$module->tag = md5($module->id);
 					$this->_regions[$regionName][] = $module;
-					$module->prepare($moduleConf['request']);
+					$module->prepare($moduleConf['request'], __CLASS__);
 				}
 			}
 		}
@@ -43,7 +43,7 @@
 			{
 				foreach ($this->_regions[$offset] as $module)
 				{
-					$result = $module->exec(NULL);
+					$result = $module->exec(NULL, __CLASS__);
 					$resultCache .= "<div modId='{$module->tag}' module='{$module->class}'>{$result}</div>";
 				}
 			}
