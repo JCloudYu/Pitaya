@@ -8,50 +8,85 @@
 	class PBLayout implements ArrayAccess
 	{
 		private $_regions	 	= array();
+		private $_modules		= array();
 		private $_region_cache	= array();
 
 		public function __construct($layoutStruct = array()) { $this->processLayout($layoutStruct); }
 
 		public function processLayout($layoutStruct)
 		{
-			$process = PBProcess::Process();
-			$this->_regions = $this->_region_cache = array();
-
-			if (empty($layoutStruct)) return;
-
-			foreach ($layoutStruct as $regionName => $regionContent)
-			{
-				$this->_regions[$regionName] = array();
-				foreach ($regionContent as $moduleConf)
-				{
-					$module = $process->getModule($moduleConf['module'], FALSE);
-					$module->tag = md5($module->id);
-					$this->_regions[$regionName][] = $module;
-					$module->prepare($moduleConf['request'], __CLASS__);
-				}
-			}
+			$this->_regions = $this->_modules = $this->_region_cache = array();
+			$this->_regions[0] = $this->analyzeLayoutStructure($layoutStruct);
 		}
+
+		private function analyzeLayoutStructure($layer)
+		{
+			static $_anonymousCounter = 0;
+
+			if (isset($layer['module']))
+			{
+				$module = PBProcess::Process()->getModule($layer['module'], FALSE);
+				$module->tag = md5($module->id);
+				$module->prepare($layer['request'], __CLASS__);
+
+				$this->_modules[$module->tag] = $module;
+				return $module->tag;
+			}
+
+			$layerInfo = array();
+			foreach ($layer as $name => $content)
+			{
+				$regionName = (is_numeric($name)) ? md5($_anonymousCounter++) : $name;
+				$this->_regions[$regionName] = $this->analyzeLayoutStructure($content);
+				$layerInfo[] = $regionName;
+			}
+
+			return $layerInfo;
+		}
+
+
 
 		public function offsetGet($offset)
 		{
-			if (isset($this->_region_cache[$offset]))
-				return $this->_region_cache[$offset];
+			$result = $this->collectRegionContent($offset);
+			return $result['content'];
+		}
 
-			$resultCache = '';
+		public function collectRegionContent($regionName)
+		{
+			if (isset($this->_region_cache[$regionName]))
+				return $this->_region_cache[$regionName];
 
-			if (!empty($this->_regions[$offset]))
+			$regionCache = '';
+			$isRegion = FALSE;
+			if (isset($this->_regions[$regionName]))
 			{
-				foreach ($this->_regions[$offset] as $module)
+				$regionContent = $this->_regions[$regionName];
+
+				if (!is_array($regionContent))
 				{
-					$result = $module->exec(NULL, __CLASS__);
-					$resultCache .= "<div modId='{$module->tag}' module='{$module->class}'>{$result}</div>";
+					$module = @$this->_modules["{$regionContent}"];
+					if (!empty($module))
+					{
+						$result = $module->exec(NULL, __CLASS__);
+						$regionCache = "<div id='{$module->tag}' class='wrapper module-wrapper {$module->class}' role='module'>{$result}</div>";
+						$isRegion = FALSE;
+					}
+				}
+				else
+				{
+					foreach ($regionContent as $regionId)
+					{
+						$result = $this->collectRegionContent($regionId);
+						$regionCache .= (!$result['isRegion']) ? $result['content'] : "<div id='{$regionId}' class='wrapper region-wrapper' role='region'>{$result['content']}</div>";
+						$isRegion = TRUE;
+					}
 				}
 			}
 
-			$this->_region_cache[$offset] = $resultCache;
-			return $resultCache;
+			$this->_region_cache[$regionName] = $regionCache;
+			return array('isRegion' => $isRegion, 'content' => $regionCache);
 		}
-
 
 
 		public function offsetSet($offset, $value)	{}
