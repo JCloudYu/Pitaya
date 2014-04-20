@@ -13,6 +13,8 @@
 		private $_layoutStuct	= array();
 		private $_layoutObj		= NULL;
 
+		private $_tplPath		= '';
+
 		public function __construct() { $this->_layoutObj = new PBLayout(); }
 
 		public function exec($param)
@@ -55,5 +57,13 @@
 			$this->_layoutObj->processLayout($this->_layoutStuct);
 		}
 
-		abstract function render($layout);
+		protected function __get_tplPath() { return $this->_tplPath; }
+		protected function __set_tplPath($path) { $this->_tplPath = (file_exists($path)) ? $path : ''; }
+
+
+		protected function render($layout)
+		{
+			if (empty($this->_tplPath)) return '';
+			return Script($this->_tplPath, array('layout' => $layout));
+		}
 	}
