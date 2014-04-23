@@ -4,6 +4,19 @@
 	function CheckPasswordSyntax($password) { $pass = trim($password); return (strlen($pass) >= 8 && $password === $pass); }
 	function CheckEmailSyntax($email) { return (filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE); }
 
+	function ParseVersion($verStr)
+	{
+		if(!preg_match('/^\d.\d((.\d[.-]\d){0,1}|(.\d){0,1})$/', $verStr)) return NULL;
+
+		$ver = preg_split('/[.-]/', $verStr);
+		return array(
+			'major'		=> TO($verStr[0], 'int'),
+			'minor'		=> TO($verStr[1], 'int'),
+			'build'		=> TO($verStr[2], 'int'),
+			'revision'	=> TO($verStr[3], 'int')
+		);
+	}
+
 	function TimeElapsedQuantum($now, $target) {
 
 		$nowBuff = new DateTime();
@@ -63,7 +76,6 @@
 			return $result;
 		}
 	}
-
 	function ext_trim($instance)
 	{
 		if (!is_array($instance))
