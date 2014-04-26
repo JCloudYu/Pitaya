@@ -69,7 +69,7 @@
 					if (!empty($module))
 					{
 						$result = $module->exec(NULL, __CLASS__);
-						$regionCache = "<div id='{$module->tag}' class='wrapper module-wrapper {$module->class}' role='module'>{$result}</div>";
+						$regionCache = "<div id='{$module->tag}' class='wrapper module-wrapper {$module->class} {$module->ext}' role='module'>{$result}</div>";
 						$isRegion = FALSE;
 					}
 				}
