@@ -76,6 +76,18 @@
 			return $result;
 		}
 	}
+
+	function repeat_strtr($pattern, $replacements, $glue = '')
+	{
+		if (!is_array($replacements)) return $pattern;
+
+		$result = array();
+		foreach ($replacements as $replace)
+			$result[] = strtr($pattern, $replace);
+
+		return implode($glue, $result);
+	}
+
 	function ext_trim($instance)
 	{
 		if (!is_array($instance))
