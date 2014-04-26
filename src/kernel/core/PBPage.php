@@ -17,10 +17,25 @@
 
 		public function __construct() { $this->_layoutObj = new PBLayout(); }
 
-		public function exec($param)
+		public function prepare($moduleRequest, $taggingFlag = NULL)
 		{
-			return $this->render($this->_layoutObj);
+			if ($taggingFlag == 'PBLayout')
+				$this->prepareModule($moduleRequest);
+			else
+				$this->preparePage($moduleRequest);
 		}
+
+		abstract function preparePage($moduleRequest);
+		abstract function prepareModule($moduleRequest);
+
+
+		public function exec($param, $taggingFlag = NULL)
+		{
+			return ($taggingFlag == 'PBLayout') ? $this->execModule($param) : $this->execPage($param);
+		}
+
+		public function execPage($param) { return $this->render($this->_layoutObj); }
+		abstract function execModule($param);
 
 		protected function __get_layoutPath() { return $this->_layoutPath; }
 		protected function __set_layoutPath($layoutPath)
