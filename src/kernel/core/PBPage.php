@@ -12,6 +12,9 @@
 		private $_layoutPath	= '';
 		private $_layoutStuct	= array();
 		private $_layoutObj		= NULL;
+		private $_logic			= '';
+
+
 
 		private $_tplPath		= '';
 
@@ -25,17 +28,34 @@
 				$this->preparePage($moduleRequest);
 		}
 
-		abstract function preparePage($moduleRequest);
-		abstract function prepareModule($moduleRequest);
+		public function preparePage($moduleRequest = NULL) {}
+		public function prepareModule($moduleRequest = NULL)
+		{
+			$this->_logic = $moduleRequest['logic'];
+			$func = "prepare_{$this->_logic}";
+
+			unset($moduleRequest['logic']);
+
+			if (method_exists($this, $func))
+				$this->{$func}($moduleRequest);
+		}
 
 
-		public function exec($param, $taggingFlag = NULL)
+
+		public function exec($param = NULL, $taggingFlag = NULL)
 		{
 			return ($taggingFlag == 'PBLayout') ? $this->execModule($param) : $this->execPage($param);
 		}
 
-		public function execPage($param) { return $this->render($this->_layoutObj); }
-		abstract function execModule($param);
+		public function execPage($param = NULL) { return $this->render($this->_layoutObj); }
+		public function execModule($param = NULL)
+		{
+			$func	= "exec_{$this->_logic}";
+			$result = (method_exists($this, $func)) ? $this->{$func}($param) : '';
+			return "{$result}";
+		}
+
+
 
 		protected function __get_layoutPath() { return $this->_layoutPath; }
 		protected function __set_layoutPath($layoutPath)
