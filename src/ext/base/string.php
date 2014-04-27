@@ -17,6 +17,29 @@
 		);
 	}
 
+	function CompareVersion($verA, $verB)
+	{
+		$verA = ParseVersion($verA);
+		$verB = ParseVersion($verB);
+
+		if (empty($verA) || empty($verB)) return FALSE;
+
+		// major
+		if ($verA['major'] > $verB['major']) return  1;
+		if ($verA['major'] < $verB['major']) return -1;
+
+		if ($verA['minor'] > $verB['minor']) return  1;
+		if ($verA['minor'] < $verB['minor']) return -1;
+
+		if ($verA['build'] > $verB['build']) return  1;
+		if ($verA['build'] < $verB['build']) return -1;
+
+		if ($verA['revision'] > $verB['revision']) return  1;
+		if ($verA['revision'] < $verB['revision']) return -1;
+
+		return 0;
+	}
+
 	function TimeElapsedQuantum($now, $target) {
 
 		$nowBuff = new DateTime();
