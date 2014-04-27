@@ -84,7 +84,7 @@
 	function SET($data, &$param = NULL, $varIndex = FALSE)
 	{
 		$param = $sql = array();
-		foreach ($userData as $col => $val)
+		foreach ($data as $col => $val)
 		{
 			if ($varIndex)
 			{
