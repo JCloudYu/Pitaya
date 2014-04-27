@@ -135,14 +135,7 @@
 			static $table = ExtPDO::VARIABLE_TABLE;
 
 			$value = json_encode($value);
-
-			$result = $this->query("UPDATE `$table` SET `value` = :value WHERE `name` = :name;",
-								   array(':name' => $name,
-										 ':value' => $value));
-
-			if ($result > 0) return $result;
-
-			return $this->query("INSERT INTO `$table`(`name`, `value`) VALUES(:name, :value);",
+			return $this->query("INSERT INTO `$table`(`name`, `value`) VALUES(:name, :value) ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);",
 								 array(':name' => $name,
 									   ':value' => $value));
 		}
