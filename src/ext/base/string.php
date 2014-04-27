@@ -6,14 +6,14 @@
 
 	function ParseVersion($verStr)
 	{
-		if(!preg_match('/^\d.\d((.\d[.-]\d){0,1}|(.\d){0,1})$/', $verStr)) return NULL;
+		if(!preg_match('/^\d+.\d+((.\d+[.-]\d+){0,1}|(.\d+){0,1})$/', $verStr)) return NULL;
 
 		$ver = preg_split('/[.-]/', $verStr);
 		return array(
-			'major'		=> TO($verStr[0], 'int'),
-			'minor'		=> TO($verStr[1], 'int'),
-			'build'		=> TO($verStr[2], 'int'),
-			'revision'	=> TO($verStr[3], 'int')
+			'major'		=> TO($ver[0], 'int'),
+			'minor'		=> TO($ver[1], 'int'),
+			'build'		=> TO($ver[2], 'int'),
+			'revision'	=> TO($ver[3], 'int')
 		);
 	}
 
