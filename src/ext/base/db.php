@@ -80,3 +80,24 @@
 
 		return $limitClause;
 	}
+
+	function SET($data, &$param = NULL, $varIndex = FALSE)
+	{
+		$param = $sql = array();
+		foreach ($userData as $col => $val)
+		{
+			if ($varIndex)
+			{
+				$stmt = "`{$col}` = :{$col}";
+				$param[":{$col}"] = $val;
+			}
+			else
+			{
+				$stmt = "`{$col}` = ?";
+				$param[] = $val;
+			}
+
+			$sql[] = $stmt;
+		}
+		return implode(', ', $sql);
+	}
