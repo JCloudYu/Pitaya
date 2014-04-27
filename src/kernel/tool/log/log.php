@@ -37,10 +37,10 @@
 				$position = "({$trace[0]['file']}:{$trace[0]['line']})";
 			}
 
-			$now = '[' . date("Y-m-d g:i:s") . "][SYS]{$position}";
+			$now = '[' . date("Y-m-d g:i:s") . "][SYS]";
 
 			if (!is_string($message)) $message = print_r($message, TRUE);
-			$msg = "$now $message\n";
+			$msg = "$now $message {$position}\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
 		}
@@ -96,10 +96,10 @@
 				$position = "({$trace[0]['file']}:{$trace[0]['line']})";
 			}
 
-			$now = '[' . date("Y-m-d g:i:s") . "][{$_logName}]{$position}";
+			$now = '[' . date("Y-m-d g:i:s") . "][{$_logName}]";
 
 			if (!is_string($message)) $message = print_r($message, TRUE);
-			$msg = "$now $message\n";
+			$msg = "$now $message {$position}\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
 		}
@@ -138,10 +138,10 @@
 				$position = "({$trace[0]['file']}:{$trace[0]['line']})";
 			}
 
-			$now = '[' . date("Y-m-d g:i:s") . "][SHARE]{$position}";
+			$now = '[' . date("Y-m-d g:i:s") . "][SHARE]";
 
 			if (!is_string($message)) $message = print_r($message, TRUE);
-			$msg = "$now $message\n";
+			$msg = "$now $message {$position}\n";
 			fwrite($_FILE, $msg);
 			fflush($_FILE);
 		}
