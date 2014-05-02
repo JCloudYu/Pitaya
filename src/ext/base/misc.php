@@ -11,16 +11,20 @@
 	define('ZB', EB * 1024.0, TRUE);	// ZetaByte
 	define('YB', ZB * 1024.0, TRUE);	// YotaByte
 
-	/**
-	 * Parse the given $value into specified $type
-	 *
-	 * @param mixed $value thevalue to be parse
-	 * @param string $type expected converting type
-	 *
-	 * @return mixed the converted value
-	 */
+
 	function TO($value, $type)
 	{
+		if (is_array($type))
+		{
+			$criteria	= @$type['criteria'];
+			$type		= @$type['type'];
+			$default	= @$type['default'];
+		}
+		else
+			$default = $criteria = NULL;
+
+
+
 		$type = is_string($type) ? strtolower($type) : 'raw';
 
 		switch($type)
@@ -49,6 +53,11 @@
 			case 'time':
 				$val = strtotime("{$value}");
 				return ($val === FALSE || $val < 0) ? 0 : $val;
+
+			case 'range':
+				if ($criteria) $criteria = array();
+				return (in_array($value, $criteria)) ? $value : $default;
+
 
 
 			// INFO: Experimental Conversions
