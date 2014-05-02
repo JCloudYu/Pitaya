@@ -7,6 +7,8 @@
 
 	class PBPageModule extends PBModule
 	{
+		protected $_logic			= '';
+
 		public function prepare($moduleRequest, $taggingFlag = NULL)
 		{
 			if ($taggingFlag == 'PBLayout')
