@@ -131,4 +131,4 @@
 
 	function ary_intersect() { return call_user_func_array('array_intersect', func_get_args()); }
 
-	function ary_union() { return array_unique(call_user_func_array('array_merge', $args)); }
+	function ary_union() { return array_unique(call_user_func_array('array_merge', func_get_args())); }
