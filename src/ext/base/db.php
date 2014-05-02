@@ -101,3 +101,20 @@
 		}
 		return implode(', ', $sql);
 	}
+
+	function ORDER($orderOpt = array())
+	{
+		if (!is_array($orderOpt)) return '';
+
+		$orderStmt = array();
+		foreach ($orderOpt as $colName => $sequence)
+		{
+			$seq = (in_array(strtoupper("{$sequence}"), array('ASC', 'DESC'))) ? " $sequence" : "";
+			$orderStmt[] = "{$colName}{$seq}";
+		}
+		$orderStmt = implode(', ', $orderStmt);
+
+		if (empty($orderStmt)) return '';
+
+		return $orderStmt;
+	}
