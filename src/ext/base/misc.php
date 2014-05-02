@@ -17,8 +17,10 @@
 		if (is_array($type))
 		{
 			$criteria	= @$type['criteria'];
-			$type		= @$type['type'];
 			$default	= @$type['default'];
+
+			// NOTE: The following line must put at the end of this scope for overwriting prevention!!!
+			$type		= @$type['type'];
 		}
 		else
 			$default = $criteria = NULL;
