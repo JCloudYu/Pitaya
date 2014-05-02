@@ -110,7 +110,7 @@
 		foreach ($orderOpt as $colName => $sequence)
 		{
 			$seq = (in_array(strtoupper("{$sequence}"), array('ASC', 'DESC'))) ? " $sequence" : "";
-			$orderStmt[] = "{$colName}{$seq}";
+			$orderStmt[] = "`{$colName}`{$seq}";
 		}
 		$orderStmt = implode(', ', $orderStmt);
 
