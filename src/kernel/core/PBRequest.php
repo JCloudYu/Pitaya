@@ -162,6 +162,7 @@
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
 
+		public function __get_domain() { return @"{$this->server['SERVER_NAME']}"; }
 		public function __get_ssl() { return $this->is_ssl(); }
 
 		public function is_ssl($checkStdPorts = FALSE)
