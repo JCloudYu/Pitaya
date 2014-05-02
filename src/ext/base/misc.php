@@ -1,5 +1,7 @@
 <?php
 
+	using('ext.base.math');
+
 	define('KB', 	  1024.0, TRUE);	// KiloByte
 	define('MB', KB * 1024.0, TRUE);	// MegaByte
 	define('GB', MB * 1024.0, TRUE);	// GigaByte
@@ -24,10 +26,16 @@
 		switch($type)
 		{
 			case 'int':
-				return intval($value);
+				return EXPR_NUMERIC($value) ? intval($value) : 0;
+
+			case 'int strict':
+				return EXPR_INT($value) ? intval($value) : 0;
 
 			case 'float':
-				return floatval($value);
+				return EXPR_NUMERIC($value) ? floatval($value) : 0.0;
+
+			case 'float strict':
+				return EXPR_FLOAT($value) ? floatval($value) : 0.0;
 
 			case 'string':
 				return trim("$value");

@@ -162,6 +162,27 @@
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
 
+		public function __get_ssl() { return $this->is_ssl(); }
+
+		public function is_ssl($checkStdPorts = FALSE)
+		{
+			static $is_https = NULL;
+
+			if ($is_https !== NULL) return $is_https;
+
+			$server = $this->server;
+
+			if (in_array(@"{$server['HTTPS']}", array('on', '1')))
+				return ($is_https = TRUE);
+			else
+				if ($checkStdPorts && (@"{$server['SERVER_PORT']}" == '443'))
+					return ($is_https = TRUE);
+
+			return ($is_https = FALSE);
+		}
+
+		public function __get_port() { return TO($this->server['SERVER_PORT'], 'int'); }
+
 		public function __get_requestTime()
 		{
 			$netRequestTime = $this->_incomingRecord['environment']['server']['REQUEST_TIME'];
