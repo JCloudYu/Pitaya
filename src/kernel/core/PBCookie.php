@@ -2,7 +2,8 @@
 	using('kernel.basis.PBObject');
 	using('ext.base.time');
 	using('ext.base.misc');
-	using('ext.base.math');
+
+
 
 	final class PBCookie extends PBObject implements ArrayAccess
 	{
@@ -90,7 +91,7 @@
 		public function __get_sslOnly()		{ return $this->_defaultSSLOnly; }
 		public function __get_serverOnly()	{ return $this->_defaultServerOnly; }
 
-		public function __set_domain($value)	 { $this->_defaultDomain	= (empty($domain)) ? PBRequest::Request()->domain : $value; }
+		public function __set_domain($value)	 { $this->_defaultDomain	= (empty($value)) ? PBRequest::Request()->domain : $value; }
 		public function __set_path($value)		 { $this->_defaultPath		= preg_replace("/^[\\/\\\\]*/", '', "{$value}"); }
 		public function __set_expire($value)	 { $this->_defaultExpire	= $value; }
 		public function __set_sslOnly($value)	 { $this->_defaultSSLOnly	= ($value === TRUE); }

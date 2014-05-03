@@ -2,6 +2,8 @@
 
 $GLOBALS['invokeTime'] = time();
 
+ini_set('session.use_cookies', '0');
+
 // INFO: Super Global Constants...
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 
@@ -12,6 +14,10 @@ $_SERVER['DOCUMENT_ROOT'] = dirname(dirname($_SERVER["SCRIPT_FILENAME"]));
 
 define('__WEB_ROOT__', $_SERVER['DOCUMENT_ROOT'], TRUE);
 define('__ROOT__', __WEB_ROOT__ . ( file_exists(__WEB_ROOT__.'/Pitaya') ? '/Pitaya' : '/pitaya' ), TRUE);
+
+
+define('ENV_SESSION_NAME',		session_name());
+define('ENV_SESSION_LIFETIME',	ini_get('session.gc_maxlifetime'));
 
 
 define('SYS_COMMAND_ENV', 'CMD', TRUE);
