@@ -9,10 +9,10 @@
 	final class PBSession extends PBObject implements ArrayAccess
 	{
 		const PB_SESSION_NAME			= 'PBSESSIONINDENTIFIER';
-		const FIELD_SESSION_EXPIRE_TIME	= '________PBSEESION_EXPIRE__TIME_____FIELD___';
-		const FIELD_SESSION_DOMAIN		= '________PBSEESION__DOMAIN______FIELD_____';
-		const FIELD_SESSION_PATH		= '________PBSEESION___PATH____FIELD_____';
-		const FIELD_SESSION_SSL_ONLY	= '________PBSEESION____SSL_ONY__FIELD_____';
+		const FIELD_SESSION_EXPIRE_TIME	= '________PBSEESION__EXPIRE__TIME__FIELD________';
+		const FIELD_SESSION_DOMAIN		= '________PBSEESION_____DOMAIN_____FIELD________';
+		const FIELD_SESSION_PATH		= '________PBSEESION______PATH______FIELD________';
+		const FIELD_SESSION_SSL_ONLY	= '________PBSEESION___SSL____ONY___FIELD________';
 
 		const SESSION_STATE_RESUME			 = 0;
 		const SESSION_STATE_NEW				 = 1;
