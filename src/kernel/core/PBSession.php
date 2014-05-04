@@ -126,6 +126,14 @@
 			$this->__updateCookie();
 		}
 
+		public function destroy()
+		{
+			$this->_sessionExpire = PBCookie::EXPIRE_RIGHT_NOW;
+			$this->_updateCookie();
+
+			session_destroy();
+		}
+
 
 		private $_updating = FALSE;
 		private function __updateCookie()
@@ -144,7 +152,7 @@
 		public function STOP_UPDATING_SESSION_INFO() { $this->_updating = FALSE; }
 
 
-
+		public function __get_state()		{ return $this->_sessionState; }
 		public function __get_sessionId()	{ return $this->_sessionId; }
 		public function __get_sessionName()	{ return $this->_sessionName; }
 		public function __get_domain()		{ return $this->_sessionDomain; }
