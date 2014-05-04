@@ -29,33 +29,54 @@
 
 		$type = is_string($type) ? strtolower($type) : 'raw';
 
-		switch($type)
+
+		$illustrator = explode(' ', trim($type));
+		$baseType = array_shift($illustrator);
+
+		switch($baseType)
 		{
+			// INFO: int [strict]
 			case 'int':
-				return EXPR_NUMERIC($value) ? intval($value) : 0;
+				$value = trim("$value");
 
-			case 'int strict':
-				return EXPR_INT($value) ? intval($value) : 0;
+				if (in_array('strict', $illustrator))
+					return EXPR_INT($value) ? intval($value) : 0;
+				else
+					return EXPR_NUMERIC($value) ? intval($value) : 0;
 
+			// INFO: float [strict]
 			case 'float':
-				return EXPR_NUMERIC($value) ? floatval($value) : 0.0;
+				$value = trim("$value");
 
-			case 'float strict':
-				return EXPR_FLOAT($value) ? floatval($value) : 0.0;
+				if (in_array('strict', $illustrator))
+					return EXPR_FLOAT($value) ? floatval($value) : 0.0;
+				else
+					return EXPR_NUMERIC($value) ? floatval($value) : 0.0;
 
+			// INFO: string [urldecode] [purge-html]
 			case 'string':
-				return trim("$value");
+				$value = trim("$value");
 
+				if (in_array('urldecode', $illustrator))
+					$value = urldecode($value);
+
+				if (in_array('purge-html', $illustrator))
+					$value = htmlspecialchars($value);
+
+				return $value;
+
+			// INFO: boolean
 			case 'boolean':
-				return $value == TRUE;
+				return !empty($value);
 
-			case 'null':
-				return NULL;
-
+			// INFO: time string
 			case 'time':
+				$value = trim("$value");
+
 				$val = strtotime("{$value}");
 				return ($val === FALSE || $val < 0) ? 0 : $val;
 
+			// INFO: range
 			case 'range':
 				if ($criteria) $criteria = array();
 				return (in_array($value, $criteria)) ? $value : $default;
