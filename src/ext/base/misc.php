@@ -53,11 +53,14 @@
 				else
 					return EXPR_NUMERIC($value) ? floatval($value) : 0.0;
 
-			// INFO: string [urldecode] [purge-html]
+			// INFO: string [decode-url] [encode-url] [purge-html]
 			case 'string':
 				$value = trim("$value");
 
-				if (in_array('urldecode', $illustrator))
+				if (in_array('encode-url', $illustrator))
+					$value = urlencode($value);
+
+				if (in_array('decode-url', $illustrator))
 					$value = urldecode($value);
 
 				if (in_array('purge-html', $illustrator))
