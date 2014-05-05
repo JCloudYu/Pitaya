@@ -19,15 +19,27 @@
 		const SESSION_STATE_NEW_FROM_EXPIRED = 2;
 
 
-
-		public static function Session($expire = NULL)
+		private static $_singleton = NULL;
+		public static function Session($expire = NULL, $path = NULL, $domain = NULL)
 		{
-			static $_singleton = NULL;
+			if (self::$_singleton) return self::$_singleton;
 
-			if ($_singleton) return $_singleton;
+			self::$_singleton = new PBSession($expire, $path, $domain);
+			return self::$_singleton;
+		}
+		public static function DestroySession()
+		{
+			if (empty(self::$_singleton)) return;
 
-			$_singleton = new PBSession($expire);
-			return $_singleton;
+			self::$_singleton->__destroySession();
+			self::$_singleton = NULL;
+		}
+		public static function InvalidSession($newExpire = NULL, $newPath = NULL, $newDomain = NULL)
+		{
+			if (!empty(self::$_singleton)) return self::Session($newExpire, $newPath, $newDomain);
+
+			self::$_singleton->invalid($newExpire, $newPath, $newDomain);
+			return self::$_singleton;
 		}
 		public static function GenerateSessID()
 		{
@@ -56,7 +68,6 @@
 
 
 
-
 		private $_sessionState		= PBSession::SESSION_STATE_RESUME;
 		private $_sessionName		= '';
 		private $_sessionId			= '';
@@ -66,39 +77,64 @@
 		private $_sessionExpire		= PBCookie::EXPIRE_AFTER_BROWSER_CLOSE;
 		private $_sessionSSLOnly	= FALSE;
 
-		private function __construct($expire = NULL)
+		private function __construct($expire = NULL, $path = NULL, $domain = NULL)
 		{
-			$cookie = PBCookie::Cookie();
+			// INFO: Prepare variables
+			$cookie		 = PBCookie::Cookie();
 			$requestTime = PBRequest::Request()->requestTime;
 
 
 
-			$this->_sessionName = PBSession::PB_SESSION_NAME;
+			$this->_sessionName = PBSession::PB_SESSION_NAME; // NOTE: PBSession Cookie Name
 			if (isset($cookie[$this->_sessionName]))
 			{
+				// INFO: Check and load session with specified id
 				$this->_sessionId = $cookie[$this->_sessionName];
 				session_id($this->_sessionId); session_start();
 
+
+
 				$expireTime = intval(@$_SESSION[self::FIELD_SESSION_EXPIRE_TIME]);
-				if (($expireTime <= $requestTime) && ($expireTime != 0))
+				if (($expireTime <= $requestTime) && ($expireTime != 0))	// NOTE: Session expired
 				{
 					session_destroy();
 					$this->_sessionState = PBSession::SESSION_STATE_NEW_FROM_EXPIRED;
 				}
 				else
 				{
+					// INFO: Load session configuration
 					$this->_sessionExpire	= (($expireTime == 0) ? 0 : $expireTime - $requestTime);
 					$this->_sessionPath		= TO(@$_SESSION[self::FIELD_SESSION_PATH], 'string');
 					$this->_sessionDomain	= TO(@$_SESSION[self::FIELD_SESSION_DOMAIN], 'string');
 					$this->_sessionSSLOnly	= (@$_SESSION[self::FIELD_SESSION_SSL_ONLY] === TRUE);
 
+
+
+					// INFO: Check input updaing paramters
+					$updateCookie = FALSE;
+
 					if ($expire !== NULL)
 					{
-						$this->_sessionExpire = $expire;
-						$_SESSION[self::FIELD_SESSION_EXPIRE_TIME] = ($expireTime == 0) ? 0 : TO($expire, 'int strict') + $requestTime;
-
-						$this->__updateCookie();
+						$this->_sessionExpire = TO($expire, 'int strict');
+						$_SESSION[self::FIELD_SESSION_EXPIRE_TIME] = ($this->_sessionExpire == 0) ? 0 : $this->_sessionExpire + $requestTime;
+						$updateCookie = $updateCookie || TRUE;
 					}
+
+					if ($domain !== NULL)
+					{
+						$this->_sessionDomain = empty($domain) ? PBRequest::Request()->domain : $domain;
+						$_SESSION[self::FIELD_SESSION_DOMAIN] = $this->_sessionDomain;
+						$updateCookie = $updateCookie || TRUE;
+					}
+
+					if ($path !== NULL)
+					{
+						$this->_sessionPath = "{$path}";
+						$_SESSION[self::FIELD_SESSION_PATH] = $this->_sessionPath;
+						$updateCookie = $updateCookie || TRUE;
+					}
+
+					if ($updateCookie) $this->__updateCookie();
 
 					return;
 				}
@@ -110,8 +146,8 @@
 
 
 			$this->_sessionExpire	= ($expire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : TO($expire, 'int strict');
-			$this->_sessionPath		= '';
-			$this->_sessionDomain	= PBRequest::Request()->domain;
+			$this->_sessionPath		= "{$path}";
+			$this->_sessionDomain	= empty($domain) ? PBRequest::Request()->domain : $domain;
 			$this->_sessionSSLOnly	= FALSE;
 
 			$this->_sessionId = PBSession::GenerateSessID();
@@ -126,13 +162,30 @@
 			$this->__updateCookie();
 		}
 
-		public function destroy()
+		public function invalid($newExpire = NULL, $newPath = NULL, $newDomain = NULL)
 		{
-			$this->_sessionExpire = PBCookie::EXPIRE_RIGHT_NOW;
-			$this->_updateCookie();
+			$requestTime = PBRequest::Request()->requestTime;
 
+			$this->_sessionState = PBSession::SESSION_STATE_NEW_FROM_EXPIRED;
 			session_destroy();
+
+			$this->_sessionExpire	= ($newExpire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : TO($newExpire, 'int strict');
+			$this->_sessionPath		= "{$newPath}";
+			$this->_sessionDomain	= empty($newDomain) ? PBRequest::Request()->domain : $newDomain;
+			$this->_sessionSSLOnly	= FALSE;
+
+			$this->_sessionId = PBSession::GenerateSessID();
+			session_id($this->_sessionId); session_start(); session_unset();
+
+
+			$_SESSION[self::FIELD_SESSION_EXPIRE_TIME]	= ($this->_sessionExpire == 0) ? 0 : $this->_sessionExpire + $requestTime;
+			$_SESSION[self::FIELD_SESSION_PATH]			= $this->_sessionPath;
+			$_SESSION[self::FIELD_SESSION_DOMAIN]		= $this->_sessionDomain;
+			$_SESSION[self::FIELD_SESSION_SSL_ONLY]		= $this->_sessionSSLOnly;
+
+			$this->__updateCookie();
 		}
+
 
 
 		private $_updating = FALSE;
@@ -148,12 +201,21 @@
 						 $this->_sessionDomain,
 						 $this->_sessionSSLOnly, TRUE);
 		}
+		private function __destroySession()
+		{
+			$this->_sessionExpire = PBCookie::EXPIRE_RIGHT_NOW;
+			$this->_sessionId	  = '';
+			$this->__updateCookie();
+
+			session_destroy();
+		}
+
 		public function START_UPDATING_SESSION_INFO() { $this->_updating = TRUE; }
 		public function STOP_UPDATING_SESSION_INFO() { $this->_updating = FALSE; }
 
 
 		public function __get_state()		{ return $this->_sessionState; }
-		public function __get_sessionId()	{ return $this->_sessionId; }
+		public function __get_id()			{ return $this->_sessionId; }
 		public function __get_sessionName()	{ return $this->_sessionName; }
 		public function __get_domain()		{ return $this->_sessionDomain; }
 		public function __get_path()		{ return $this->_sessionPath; }
@@ -161,7 +223,7 @@
 		public function __get_sslOnly()		{ return $this->_sessionSSLOnly; }
 		public function __get_serverOnly()	{ return TRUE; }
 
-		public function __set_sessionId($value)	  { session_destroy(); session_start($value); $this->__updateCookie(); }
+		public function __set_id($value)		  { session_destroy(); session_start($value); $this->__updateCookie(); }
 		public function __set_sessionName($value) { if (empty($value)) $value = PBSession::PB_SESSION_NAME; $this->_sessionName	= $value; $this->__updateCookie(); }
 		public function __set_domain($value)	  { $this->_sessionDomain	= (empty($value)) ? PBRequest::Request()->domain : $value; $this->__updateCookie(); }
 		public function __set_path($value)		  { $this->_sessionPath		= preg_replace("/^[\\/\\\\]*/", '', "{$value}"); $this->__updateCookie(); }
