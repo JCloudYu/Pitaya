@@ -70,7 +70,14 @@
 
 			// INFO: boolean
 			case 'boolean':
-				return !empty($value);
+			case 'bool':
+				if (in_array('is-true', $illustrator))
+					return ($value == TRUE);
+				else
+				if (in_array('is-false', $illustrator))
+					return ($value == FALSE);
+				else
+					return !(empty($value));
 
 			// INFO: time string
 			case 'time':
