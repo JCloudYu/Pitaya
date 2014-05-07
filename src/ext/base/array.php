@@ -132,3 +132,16 @@
 	function ary_intersect() { return call_user_func_array('array_intersect', func_get_args()); }
 
 	function ary_union() { return array_unique(call_user_func_array('array_merge', func_get_args())); }
+
+	function ary_flag($flag, $array)
+	{
+		foreach ($array as $idx => $item)
+		{
+			if (is_numeric(preg_match('/^\d+$/', "{$idx}")) && ($item == $flag))
+				return TRUE;
+			else
+				continue;
+		}
+
+		return FALSE;
+	}
