@@ -350,13 +350,13 @@
 			return TO($vars[$name], $type);
 		}
 
-		public function flag($name, $matchCase = TRUE)
+		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 		{
 			$flags = array_merge(is_array($this->_queryFlag) ? $this->_queryFlag : array(),
 								 is_array($this->_dataFlag)  ? $this->_dataFlag  : array());
 
 			$flags = array_unique($flags);
-			return ary_flag($flags, $name, $matchCase);
+			return ary_flag($flags, $name, $matchCase, $compareMode);
 		}
 
 

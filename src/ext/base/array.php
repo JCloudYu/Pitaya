@@ -99,13 +99,13 @@
 		$andMode 	= $mode & IN_ARY_MODE_AND;
 		$strictMode = $mode & IN_ARY_MODE_STRICT;
 
-		$state = ($andMode === TRUE) ? TRUE : FALSE;
+		$state = (empty($andMode)) ? FALSE : TRUE;
 		foreach ($needle as $content)
 		{
 			if ($andMode)
-				$state = $state && in_array($content, $candidates, $strictMode);
+				$state = $state && in_array($content, $candidates, !empty($strictMode));
 			else
-				$state = $state || in_array($content, $candidates, $strictMode);
+				$state = $state || in_array($content, $candidates, !empty($strictMode));
 		}
 
 		return $state;
@@ -135,22 +135,23 @@
 
 	function ary_union() { return array_unique(call_user_func_array('array_merge', func_get_args())); }
 
-	function ary_flag($ary, $flag, $matchCase = TRUE)
+	function ary_flag($ary, $flag, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 	{
 		if (!is_array($ary)) $ary = array();
-		$flag = trim($matchCase ? strtolower("{$flag}") : "{$flag}");
+		if (!is_array($flag)) $flag = array($flag);
 
+		if (!$matchCase)
+			foreach ($flag as $id => $content) $flag[$id] = trim(strtolower("{$content}"));
+
+
+		$candidates = array();
 		foreach ($ary as $idx => $item)
 		{
-			$value = trim($matchCase ? strtolower("{$item}") : "{$item}");
-
-			if (preg_match('/^\d+$/', "{$idx}") && ($value == $flag))
-				return TRUE;
-			else
-				continue;
+			if (!preg_match('/^\d+$/', "{$idx}")) continue;
+			$candidates[] = trim(((!$matchCase) ? strtolower("{$item}") : "{$item}"));
 		}
 
-		return FALSE;
+		return in_ary($flag, $candidates, $compareMode);
 	}
 
 	function ary_data($ary, $idx, $type = 'raw', $default = NULL)
