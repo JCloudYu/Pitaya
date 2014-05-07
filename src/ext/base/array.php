@@ -1,5 +1,7 @@
 <?php
 
+	using('ext.base.misc');
+
 	function ary_merge(&$ary1, $ary2)
 	{
 		$args = func_get_args();
@@ -133,15 +135,28 @@
 
 	function ary_union() { return array_unique(call_user_func_array('array_merge', func_get_args())); }
 
-	function ary_flag($flag, $array)
+	function ary_flag($ary, $flag, $matchCase = TRUE)
 	{
-		foreach ($array as $idx => $item)
+		if (!is_array($ary)) $ary = array();
+		$flag = trim($matchCase ? strtolower("{$flag}") : "{$flag}");
+
+		foreach ($ary as $idx => $item)
 		{
-			if (is_numeric(preg_match('/^\d+$/', "{$idx}")) && ($item == $flag))
+			$value = trim($matchCase ? strtolower("{$item}") : "{$item}");
+
+			if (preg_match('/^\d+$/', "{$idx}") && ($value == $flag))
 				return TRUE;
 			else
 				continue;
 		}
 
 		return FALSE;
+	}
+
+	function ary_data($ary, $idx, $type = 'raw', $default = NULL)
+	{
+		if (!is_array($ary)) $ary = array();
+		if (preg_match('/^\d+$/', "{$idx}") || !isset($ary[$idx])) return $default;
+
+		return TO($ary[$idx], $type);
 	}
