@@ -47,10 +47,16 @@ class req extends PBModule
 											"TGZ":		"application/gzip"
 										}';
 
-	private $_request = NULL;
-	private $_acceptTypes = NULL;
+	private $_request	  = NULL;
 
+
+	private $_acceptTypes = NULL;
 	public function __set_acceptableExt($value) { if (is_array($value)) $this->_acceptTypes = $value; }
+
+
+	private $_relPath	  = '';
+	public function __get_relPath() { return $this->_relPath; }
+	public function __set_relPath($value) { $this->_relPath = $value; }
 
 	public function prepare($moduleRequest)
 	{
@@ -66,9 +72,11 @@ class req extends PBModule
 	}
 
 	public function exec($param) {
-	
+
+		$rootPath = empty($this->_relPath) ? __WORKING_ROOT__ : "{$this->_relPath}";
+
 		$targetFile = implode('/', $this->_request);
-		$filePath = __WORKING_ROOT__."/".$targetFile;
+		$filePath = "{$rootPath}/{$targetFile}";
 		if(is_file($filePath))
 		{
 			$ext = @strtoupper(pathinfo($targetFile, PATHINFO_EXTENSION));
