@@ -85,13 +85,16 @@ HTML;
 
 		public function addFile($name, $type)
 		{
-			switch (strtolower($type))
+			$type = explode(' ', strtolower($type));
+			$paddingPath = in_array('external', $type) ? '' : $this->_baseRCPath;
+
+			switch (strtolower($type[0]))
 			{
 				case 'js':
-					$this->_jsFiles[] = "{$this->_baseRCPath}{$name}";
+					$this->_jsFiles[] = "{$paddingPath}{$name}";
 					break;
 				case 'css':
-					$this->_cssFiles[] = "{$this->_baseRCPath}{$name}";
+					$this->_cssFiles[] = "{$paddingPath}{$name}";
 					break;
 				default: break;
 			}
