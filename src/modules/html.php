@@ -45,7 +45,8 @@
 
 			$header = implode("\r\n", $this->_header);
 
-			$wrapper = empty($this->_prop['page']) ? '' : "class='{$this->_prop['page']}'";
+			$wrapper   = empty($this->_prop['page']) ? '' : "class='{$this->_prop['page']}'";
+			$bodyClass = empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
 
 			echo <<<HTML
 				<HTML>
@@ -57,7 +58,7 @@
 						{$css['file']}
 						{$css['inline']}
 					</head>
-					<body>
+					<body {$bodyClass}>
 						<div {$wrapper}>
 						{$param}
 						{$js['append']}
@@ -123,6 +124,7 @@ HTML;
 					$this->_header[] = "<meta name='viewport' content='{$value}' />";
 					break;
 				case 'page':
+				case 'body':
 				default:
 					$this->_prop[$name] = $value;
 					break;
