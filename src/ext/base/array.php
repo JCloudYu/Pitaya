@@ -135,6 +135,32 @@
 
 	function ary_union() { return array_unique(call_user_func_array('array_merge', func_get_args())); }
 
+	function ary_exclude($src, $ref)
+	{
+		if (!is_array($src)) return array();
+
+		$args = func_get_args();
+		array_shift($args);
+
+
+		$left = $src;
+		foreach ($args as $param)
+		{
+			if (!is_array($param)) continue;
+
+
+			$stayed = array();
+			foreach ($left as $src_content)
+			{
+				if (in_array($src_content, $ref)) continue;
+				$stayed[] = $src_content;
+			}
+			$left = $stayed;
+		}
+
+		return $left;
+	}
+
 	function ary_flag($ary, $flag, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 	{
 		if (!is_array($ary)) $ary = array();
