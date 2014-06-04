@@ -88,7 +88,7 @@
 
 			// INFO: range
 			case 'range':
-				if ($criteria) $criteria = array();
+				if (!is_array($criteria)) $criteria = array();
 				return (in_array($value, $criteria)) ? $value : $default;
 
 
