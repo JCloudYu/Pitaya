@@ -29,11 +29,17 @@
 			$this->_incomingRecord['command']                = array('argc' => $_SERVER['argc'], 'argv' => $_SERVER['argv']);
 
 			$this->_incomingRecord['rawQuery']				 = $GLOBALS['rawRequest'];
-			$this->_incomingRecord['rawData']				 = file_get_contents('php://input');
+
+			$inputCache = tmpfile();
+			$rawDataStream = fopen('php://input', "rb");
+			stream_copy_to_stream($rawDataStream, $inputCache);
+			fclose($rawDataStream);
+
+			$this->_incomingRecord['rawDataStream']			 = $inputCache;
 
 			$this->_incomingRecord['request']['method']		 = @$_SERVER['REQUEST_METHOD'];
 			$this->_incomingRecord['request']['query']		 = $GLOBALS['request'];
-			$this->_incomingRecord['request']['data']		 = $this->_incomingRecord['rawData'];
+			$this->_incomingRecord['request']['data']		 = NULL;
 			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
 			$this->_incomingRecord['request']['files']		 = @$_FILES;
 			$this->_incomingRecord['request']['post']		 = $_POST;
@@ -156,7 +162,20 @@
 
 		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
 		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
-		public function __get_rawData()		{ return $this->_incomingRecord['rawData']; }
+		public function __get_rawData()		{
+
+			$stream = $this->rawDataStream;
+			$data = '';
+			while ( !feof($stream) )
+			{
+				$buff = fread($stream, 1024);
+				$data.= $buff;
+			}
+
+			return $data;
+		}
+
+		public function __get_rawDataStream() { fseek($this->_incomingRecord['rawDataStream'], 0); return $this->_incomingRecord['rawDataStream']; }
 
 		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
@@ -220,7 +239,9 @@
 			switch (strtolower($type))
 			{
 				case 'json':
-					$func = function($targetData, $param) {
+					$func = function($stream, $param) {
+						$targetData = stream_get_contents($stream);
+
 						$depth = intval(@$param['depth']);
 						$data = json_decode($targetData, TRUE, ($depth <= 0) ? 512 : $depth);
 						return array('data' => $data, 'variable' => $data, 'flag' => NULL);
@@ -231,14 +252,16 @@
 					$func = $dataFunction;
 				case 'raw':
 				default:
-					if($func === NULL) $func =  function($targetData) {
+					if($func === NULL) $func =  function($stream) {
+						$targetData = stream_get_contents($stream);
+
 						$data = PBRequest::ParseAttribute($targetData);
 						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
 					};
 					break;
 			}
 
-			$result = $func($this->_incomingRecord['request']['data'], $param);
+			$result = $func($this->rawDataStream, $param);
 
 			$buff = $this->recursiveDecode($result);
 
