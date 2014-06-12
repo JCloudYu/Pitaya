@@ -45,8 +45,12 @@
 
 			$header = implode("\r\n", $this->_header);
 
-			$wrapper   = empty($this->_prop['page']) ? '' : "class='{$this->_prop['page']}'";
-			$bodyClass = empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
+
+			$bodyClass = empty($this->_prop['body']) ? '' : "";
+			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}" :
+															"<div class='{$this->_prop['body']}'>{$param}{$js['append']}</div>";
+
+
 
 			echo <<<HTML
 				<HTML>
@@ -58,12 +62,7 @@
 						{$css['file']}
 						{$css['inline']}
 					</head>
-					<body {$bodyClass}>
-						<div {$wrapper}>
-						{$param}
-						{$js['append']}
-						</div>
-					</body>
+					<body {$bodyClass}>{$bodyContent}</body>
 				</HTML>
 HTML;
 
