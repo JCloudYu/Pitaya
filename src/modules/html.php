@@ -46,9 +46,9 @@
 			$header = implode("\r\n", $this->_header);
 
 
-			$bodyClass = empty($this->_prop['body']) ? '' : "";
+			$bodyClass = empty($this->_prop['body']) ? '' : "{$this->_prop['body']}";
 			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}" :
-															"<div class='{$this->_prop['body']}'>{$param}{$js['append']}</div>";
+															"<div class='{$this->_prop['page']}'>{$param}{$js['append']}</div>";
 
 
 
