@@ -53,17 +53,18 @@
 
 
 			echo <<<HTML
-				<HTML>
-					<head>
-						{$header}
+<!DOCTYPE html>
+<HTML>
+	<head>
+		{$header}
 
-						{$js['file']}
-						{$js['prepend']}
-						{$css['file']}
-						{$css['inline']}
-					</head>
-					<body {$bodyClass}>{$bodyContent}</body>
-				</HTML>
+		{$js['file']}
+		{$js['prepend']}
+		{$css['file']}
+		{$css['inline']}
+	</head>
+	<body {$bodyClass}>{$bodyContent}</body>
+</HTML>
 HTML;
 
 			return NULL;
