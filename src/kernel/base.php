@@ -33,6 +33,9 @@ define('EOB', '<br />', TRUE);
 require_once (__ROOT__ . '/cmd.config.php');
 require_once (__WEB_ROOT__ . "/config.php");	// ISSUE: We need to verify the configuration data...
 
+if (!defined("__LOG_EXCEPTION__")) 	 define("__LOG_EXCEPTION__", TRUE, TRUE);
+if (!defined("__THROW_EXCEPTION__")) define("__THROW_EXCEPTION__", FALSE, TRUE);
+
 
 srand(time());
 $GLOBALS['randomCert'] = md5(rand());

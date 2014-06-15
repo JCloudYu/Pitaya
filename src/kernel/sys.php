@@ -77,13 +77,12 @@ class SYS extends PBObject
 
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
 		}
-		catch(PBException $e)
-		{
-			PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
-		}
 		catch(Exception $e)
 		{
-			PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
+			if ( __LOG_EXCEPTION__ === TRUE )
+				PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
+
+			if ( __THROW_EXCEPTION__ === TRUE ) throw($e);
 		}
 
 	}

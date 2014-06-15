@@ -11,6 +11,8 @@
 	//define("__DEFAULT_SERVICE__", 'index', TRUE);
 	//define("__DEBUG_MODE__", TRUE, TRUE);
 	//define("__DEBUG_CONSOLE_WIDTH__", 350, TRUE);
+	//define("__LOG_EXCEPTION__", FALSE, TRUE);
+	//define("__THROW_EXCEPTION__", TRUE, TRUE);
 
 	// OS Dependent...
 	//define("__CASE_SENSITIVE_MODULE_NAME__", TRUE, TRUE);
