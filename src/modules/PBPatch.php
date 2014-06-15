@@ -11,6 +11,10 @@
 		private $_patchDir = "share.patch";
 		public function __set_patchDir($value) { $this->_patchDir = $value; }
 
+		public function preparePatch($moduleRequest) { $this->prepareUpdate($moduleRequest); }
+		public function prepareUpdate($moduleRequest) { if (is_string($moduleRequest)) $this->patchDir = $moduleRequest; }
+
+		public function patch($param) { return $this->update($param); }
 		public function update($param = NULL)
 		{
 			if (ParseVersion("{$param}") === NULL)
