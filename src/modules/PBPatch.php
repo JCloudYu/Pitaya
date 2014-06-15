@@ -11,12 +11,17 @@
 		private $_patchDir = "share.patch";
 		public function __set_patchDir($value) { $this->_patchDir = $value; }
 
+
+		private $_targetVersion = NULL;
 		public function preparePatch($moduleRequest) { $this->prepareUpdate($moduleRequest); }
-		public function prepareUpdate($moduleRequest) { if (is_string($moduleRequest)) $this->patchDir = $moduleRequest; }
+		public function prepareUpdate($moduleRequest) { $this->_targetVersion = $moduleRequest; }
 
 		public function patch($param) { return $this->update($param); }
 		public function update($param = NULL)
 		{
+			if ($this->_targetVersion !== NULL && $param === NULL)
+				$param = $this->_targetVersion;
+
 			if (ParseVersion("{$param}") === NULL)
 			{
 				PBLog::ERRLog("Given parameter is not a valid version format!");
