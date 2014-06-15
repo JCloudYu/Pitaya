@@ -48,6 +48,10 @@
 
 			usort($patchList, "CompareVersion");
 
+
+			$CWD = getcwd();
+			chdir($patchDir);
+
 			PBPatch::Log("Start patching...", FALSE);
 			PBPatch::Log("", FALSE);
 			PBPatch::INDENT();
@@ -70,6 +74,8 @@
 
 			PBPatch::UNINDENT();
 			PBPatch::Log("All patches are done!!", FALSE);
+
+			chdir($CWD);
 		}
 
 
