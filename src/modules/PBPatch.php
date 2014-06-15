@@ -42,10 +42,9 @@
 				if (is_dir("{$patchDir}/{$filename}") || (substr($filename, -4) != ".php")) continue;
 
 				$filename = substr($filename, 0, -4);
-				$fileVer = NormalizeVersion($filename);
-				$result = CompareVersion("{$fileVer}", "{$param}", FALSE);
+				$result = CompareVersion("{$filename}", "{$param}");
 
-				if ($result === FALSE || $result > 0) continue;
+				if ($result === FALSE || $result <= 0) continue;
 				$patchList[] = $filename;
 			}
 

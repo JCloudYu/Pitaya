@@ -25,8 +25,10 @@
 
 	function CompareVersion($verA, $verB, $minimalMajored = TRUE)
 	{
-		$verA = ParseVersion($verA, TRUE);
-		$verB = ParseVersion($verB, TRUE);
+		$normalize = (func_num_args() > 2) ? TRUE : FALSE;
+
+		$verA = ParseVersion($verA, !$normalize);
+		$verB = ParseVersion($verB, !$normalize);
 
 		if (empty($verA) || empty($verB)) return FALSE;
 
