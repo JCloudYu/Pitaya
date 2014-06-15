@@ -2,6 +2,13 @@
 
 	final class PBLog
 	{
+		public static function ERRLog($meesage, $logPos = FALSE, $logFileName = '')
+		{
+			$logPath = path('share.log', (empty($logFileName) ? 'error.log' : $logFileName));
+			$stream  = self::LogStream($logPath);
+			self::LogMsg($stream, $message, $logPos, 'ERROR');
+		}
+
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '')
 		{
 			$logPath = path('share.log', (empty($logFileName) ? 'system.log' : $logFileName));
