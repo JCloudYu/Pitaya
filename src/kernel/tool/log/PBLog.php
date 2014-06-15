@@ -6,14 +6,14 @@
 		{
 			$logPath = path('share.log', (empty($logFileName) ? 'error.log' : $logFileName));
 			$stream  = self::LogStream($logPath);
-			self::LogMsg($stream, $message, $logPos, 'ERROR');
+			return self::LogMsg($stream, $message, $logPos, 'ERROR');
 		}
 
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '')
 		{
 			$logPath = path('share.log', (empty($logFileName) ? 'system.log' : $logFileName));
 			$stream  = self::LogStream($logPath);
-			self::LogMsg($stream, $message, $logPos, 'SYS');
+			return self::LogMsg($stream, $message, $logPos, 'SYS');
 		}
 
 		public static function Log($message, $logPos = FALSE, $logFileName = '')
@@ -23,14 +23,14 @@
 
 			$defaultCate = defined('__WORKING_ROOT__') ? "SERVICE \"".__SERVICE__."\"" : "SERVICE";
 
-			self::LogMsg($stream, $message, $logPos, $defaultCate);
+			return self::LogMsg($stream, $message, $logPos, $defaultCate);
 		}
 
 		public static function ShareLog($message, $logPos = FALSE, $logFileName = '')
 		{
 			$logPath = path('share.log', (empty($logFileName) ? 'share.log' : $logFileName));
 			$stream  = self::LogStream($logPath);
-			self::LogMsg($stream, $message, $logPos, 'SHARE');
+			return self::LogMsg($stream, $message, $logPos, 'SHARE');
 		}
 
 		public static function LogMsg($stream, $message, $logPos = FALSE, $logCate = '')
@@ -51,6 +51,8 @@
 			$msg = "$now $message {$position}\n";
 			fwrite($stream, $msg);
 			fflush($stream);
+
+			return $msg;
 		}
 
 		public static function LogStream($logFilePath)
