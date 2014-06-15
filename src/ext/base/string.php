@@ -4,23 +4,29 @@
 	function CheckPasswordSyntax($password) { $pass = trim($password); return (strlen($pass) >= 8 && $password === $pass); }
 	function CheckEmailSyntax($email) { return (filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE); }
 
-	function ParseVersion($verStr)
+	function ParseVersion($verStr, $keepEmpty = FALSE)
 	{
-		if(!preg_match('/^\d+.\d+((.\d+[.-]\d+){0,1}|(.\d+){0,1})$/', $verStr)) return NULL;
+		if(!preg_match('/^\d+[.-]\d+(([.-]\d+[.-]\d+){0,1}|([.-]\d+){0,1})$/', $verStr)) return NULL;
 
 		$ver = preg_split('/[.-]/', $verStr);
 		return array(
 			'major'		=> TO($ver[0], 'int'),
 			'minor'		=> TO($ver[1], 'int'),
-			'build'		=> TO($ver[2], 'int'),
-			'revision'	=> TO($ver[3], 'int')
+			'build'		=> ($ver[2] === NULL && $keepEmpty) ? NULL : TO($ver[2], 'int'),
+			'revision'	=> ($ver[3] === NULL && $keepEmpty) ? NULL : TO($ver[3], 'int')
 		);
 	}
 
-	function CompareVersion($verA, $verB)
+	function NormalizeVersion($verStr)
 	{
-		$verA = ParseVersion($verA);
-		$verB = ParseVersion($verB);
+		$ver = ParseVersion($verStr);
+		return ($ver === NULL) ? NULL : "{$ver['major']}.{$ver['minor']}.{$ver['build']}-{$ver['revision']}";
+	}
+
+	function CompareVersion($verA, $verB, $minimalMajored = TRUE)
+	{
+		$verA = ParseVersion($verA, TRUE);
+		$verB = ParseVersion($verB, TRUE);
 
 		if (empty($verA) || empty($verB)) return FALSE;
 
@@ -31,11 +37,24 @@
 		if ($verA['minor'] > $verB['minor']) return  1;
 		if ($verA['minor'] < $verB['minor']) return -1;
 
-		if ($verA['build'] > $verB['build']) return  1;
-		if ($verA['build'] < $verB['build']) return -1;
+		if ($verA['build'] !== NULL || $verB['build'] !== NULL)
+		{
+			if ($verA['build'] === NULL) return ($minimalMajored) ? -1 : 1;
+			if ($verB['build'] === NULL) return ($minimalMajored) ?  1 : -1;
 
-		if ($verA['revision'] > $verB['revision']) return  1;
-		if ($verA['revision'] < $verB['revision']) return -1;
+			if ($verA['build'] > $verB['build']) return  1;
+			if ($verA['build'] < $verB['build']) return -1;
+
+
+			if ($verA['revision'] !== NULL || $verB['revision'] !== NULL)
+			{
+				if ($verA['revision'] === NULL) return ($minimalMajored) ? -1 : 1;
+				if ($verB['revision'] === NULL) return ($minimalMajored) ?  1 : -1;
+
+				if ($verA['revision'] > $verB['revision']) return  1;
+				if ($verA['revision'] < $verB['revision']) return -1;
+			}
+		}
 
 		return 0;
 	}
