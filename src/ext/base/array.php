@@ -187,3 +187,13 @@
 
 		return TO($ary[$idx], $type);
 	}
+
+	function ary_collect($ary, $indices)
+	{
+		if (empty($indices) || !is_array($indices) || !is_string($indices)) return array();
+		$indices = (is_string($indices)) ? explode(',', $indices) : $indices;
+		$collected = array();
+		foreach ($indices as $idx) { $collected[] = $ary[$idx]; }
+
+		return $collected;
+	}
