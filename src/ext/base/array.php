@@ -188,7 +188,7 @@
 		return TO($ary[$idx], $type);
 	}
 
-	function ary_collect($ary, $indices)
+	function ary_pick($ary, $indices)
 	{
 		if (empty($indices) || !is_array($indices) || !is_string($indices)) return array();
 		$indices = (is_string($indices)) ? explode(',', $indices) : $indices;
