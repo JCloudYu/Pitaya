@@ -121,13 +121,16 @@
 		}
 	}
 
-	function repeat_strtr($pattern, $replacements, $glue = '')
+	function repeat_strtr($pattern, $replacements, $glue = '', $mapper = NULL)
 	{
 		if (!is_array($replacements)) return $pattern;
 
 		$result = array();
 		foreach ($replacements as $replace)
-			$result[] = strtr($pattern, $replace);
+		{
+			$rep = (is_callable($mapper)) ? $mapper($replace) : $replace;
+			$result[] = strtr($pattern, $rep);
+		}
 
 		return implode($glue, $result);
 	}
