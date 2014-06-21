@@ -45,7 +45,7 @@
 			if (!empty($logCate))
 				$logCate = "[{$logCate}]";
 
-			$now = '[' . date("Y-m-d g:i:s") . "]{$logCate}";
+			$now = '[' . date("Y-m-d G:i:s") . "]{$logCate}";
 
 			if (!is_string($message)) $message = print_r($message, TRUE);
 			$msg = "$now $message {$position}\n";
