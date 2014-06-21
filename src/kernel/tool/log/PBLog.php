@@ -33,6 +33,13 @@
 			return self::LogMsg($stream, $message, $logPos, 'SHARE');
 		}
 
+		public static function CustomLog($message, $class = 'CUSTOM', $logPos = FALSE, $logFileName = '')
+		{
+			$logPath = path('share.log', (empty($logFileName) ? 'custom.log' : $logFileName));
+			$stream  = self::LogStream($logPath);
+			return self::LogMsg($stream, $message, $logPos, empty($class) ? 'CUSTOM' : "{$class}");
+		}
+
 		public static function LogMsg($stream, $message, $logPos = FALSE, $logCate = '')
 		{
 			$position = '';
