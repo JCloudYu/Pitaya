@@ -78,7 +78,7 @@
 
 
 			if (!empty($logCate)) $logCate = "[{$logCate}]";
-			$logTime = (empty(@$options['UNIX_TIMESTAMP'])) ? date("Y-m-d G:i:s") : time();
+			$logTime = (@empty($options['UNIX_TIMESTAMP'])) ? date("Y-m-d G:i:s") : time();
 
 
 
