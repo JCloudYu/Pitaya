@@ -28,9 +28,7 @@
 
 		private function __checkVariableCap($forceVariable) {
 
-			$stmt = $this->select("SHOW TABLES;");
-			while (($row = $stmt->fetch(PDO::FETCH_NUM)) !== FALSE)
-				if ($row[0] === ExtPDO::VARIABLE_TABLE) return TRUE;
+			if ($this->checkTable(self::VARIABLE_TABLE)) return TRUE;
 
 			if ($forceVariable)
 			{
@@ -42,6 +40,23 @@
 									UNIQUE KEY `name_UNIQUE` (`name`));"
 				);
 			}
+		}
+
+
+
+		public function checkTable($tableName, $updateCache = FALSE) { return in_array($tableName, $this->getTables($updateCache)); }
+
+		public function getTables($updateCache = FALSE) {
+
+			static $tableCache = NULL;
+
+			if ($tableCache !== NULL && $updateCache == FALSE) return $tableCache;
+
+			$tableCache = array();
+			$stmt = $this->select("SHOW TABLES;");
+			while (($row = $stmt->fetch(PDO::FETCH_NUM)) !== FALSE) $tableCache[] = $row[0];
+
+			return $tableCache;
 		}
 
 		public function select($sqlStmt, $stmtVars = NULL) {
