@@ -66,6 +66,12 @@
 				if (in_array('purge-html', $illustrator))
 					$value = htmlspecialchars($value);
 
+				if (in_array('json', $illustrator) || in_array('json-array', $illustrator))
+					$value = json_decode($value, TRUE);
+
+				if (in_array('json-object', $illustrator))
+					$value = json_decode($value);
+
 				return $value;
 
 			// INFO: boolean
