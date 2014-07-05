@@ -241,7 +241,6 @@ function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALS
 
 using('kernel.const');
 using('kernel.tool.debug.*');
-using('kernel.tool.log.*');
 
 package('');
 
