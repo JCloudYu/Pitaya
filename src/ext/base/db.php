@@ -10,9 +10,10 @@
 	 * Prepare and return a database connection singleton.
 	 * This function will return NULL if there's no connection parameter given.
 	 *
-	 * @param array|null $param connection related parameter that is defined in env.ini
+	 * @param null|array $param connection related parameter that is defined in env.ini
+	 * @param array $option addition parameters for database linkage initialization
 	 *
-	 * @return ExtPDO|null the database connection singleton
+	 * @return ExtPDO|null
 	 */
 	function DB($param = NULL, $option = array('CREATE_VAR'))
 	{
