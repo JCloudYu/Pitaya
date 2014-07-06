@@ -152,7 +152,7 @@
 			$stayed = array();
 			foreach ($left as $src_content)
 			{
-				if (in_array($src_content, $ref)) continue;
+				if (in_array($src_content, $param)) continue;
 				$stayed[] = $src_content;
 			}
 			$left = $stayed;
