@@ -2,9 +2,9 @@
 
 	using('kernel.core.PBProcess');
 
-	final class PBChain extends PBObject
+	final class PBEvent extends PBObject
 	{
-		public static function Chain($events = array())
+		public static function Event($events = array())
 		{
 			static $_singleton = NULL;
 			if ($_singleton) return $_singleton;
