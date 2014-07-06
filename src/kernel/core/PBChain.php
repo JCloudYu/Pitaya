@@ -2,83 +2,78 @@
 
 	using('kernel.core.PBProcess');
 
-	class PBChain extends PBObject
+	final class PBChain extends PBObject
 	{
-		public static function Chain()
+		public static function Chain($events = array())
 		{
 			static $_singleton = NULL;
-
-			if ($_singleton !== NULL)
-				return $_singleton;
-
+			if ($_singleton) return $_singleton;
 
 			$_singleton = new PBChain();
-
-			$serviceChain = path('service') . '/chain.json';
-			$chainData = (file_exists($serviceChain)) ? json_decode(file_get_contents($serviceChain), TRUE) : array();
-
-
-
-			// INFO: [ {"event":eventName, "class":className}, {"event":eventName, "class":className} ... ]
-			foreach ($chainData as $chainRecord)
-				$_singleton->register($chainRecord['event'], $chainRecord['class']);
+			$_singleton->registerEvents($events);
 
 			return $_singleton;
 		}
 
 
 
-
-
-
 		private $_registeredEvents = NULL;
 
-		private function __construct() { $this->_registeredEvents = array(); }
+		public function __construct() { $this->_registeredEvents = array(); }
 
-		public function register($event, $target, $method = 'onEvent')
+		public function registerEvents($events = array())
 		{
-			if (!is_string($event)  || trim($event) === '')  return FALSE;
-			if (!is_string($target) || trim($target) === '') return FALSE;
-			if (!is_string($method) || trim($method) === '') return FALSE;
+			if (!is_array($events)) return FALSE;
 
+			foreach ($events as $event)
+				$this->register($event['event'], $event['listener']);
 
-			if (!array_key_exists($event, $this->_registeredEvents))
+			return TRUE;
+		}
+
+		public function is_register($event, $listener)
+		{
+			if (!is_object($listener) && !is_string($listener))
+			{
+				throw(new Exception("Given listener is not acceptable!"));
+				die();
+			}
+
+			if (!is_array($this->_registeredEvents[$event])) return FALSE;
+			foreach ($this->_registeredEvents[$event] as $idx => $item)
+				if ($listener === $item) return $idx;
+
+			return FALSE;
+		}
+
+		public function register($event, $listener)
+		{
+			if ($this->is_register($event, $listener) !== FALSE) return FALSE;
+
+			if (!is_array($this->_registeredEvents[$event]))
 				$this->_registeredEvents[$event] = array();
 
-			if (@$this->_registeredEvents[$event][$target]['method'] === $method) return TRUE;
+			$this->_registeredEvents[$event][] = $listener;
+		}
 
+		public function deregister($event, $listener)
+		{
+			$index = $this->is_register($event, $listener);
+			if ($index === FALSE) return FALSE;
 
-			$this->_registeredEvents[$event][$target] = array('target' => $target, 'method' => $method);
+			array_splice($this->_registeredEvents[$event], $index, 1);
 			return TRUE;
 		}
 
-		public function deregister($event, $target, $method = 'onEvent')
+		public function fire($event, $param)
 		{
-			if (!is_string($event)  || trim($event) === '')  return FALSE;
-			if (!is_string($target) || trim($target) === '') return FALSE;
-			if (!is_string($method) || trim($method) === '') return FALSE;
+			if (!is_array($this->_registeredEvents[$event])) return FALSE;
 
-
-			if (@$this->_registeredEvents[$event][$target]['method'] !== $method)
-				return FALSE;
-
-
-			unset($this->_registeredEvents[$event][$target]);
-			return TRUE;
-		}
-
-		public function trigger($event, $param)
-		{
-			if (!array_key_exists($event, $this->_registeredEvents)) return FALSE;
-
+			$param['type'] = $event;
 			foreach ($this->_registeredEvents[$event] as $listener)
 			{
-				$class = $listener['target'];
-				$method = $listener['method'];
-
-				$module = PBProcess::Process()->getModule($class, TRUE);
-				$ret = $module->{$method}(array('event' => $event, 'param' => $param));
-
+				$module =  (is_string($listener)) ? PBProcess::Process()->getModule($listener) : $listener;
+				$ret = $module->onEvent($param);
 				if ($ret === FALSE) break;
 			}
 

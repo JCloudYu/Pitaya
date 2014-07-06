@@ -50,7 +50,7 @@ class SYS extends PBObject
 		try
 		{
 			// INFO: Preserve path of system container
-			$sysEnvPath = path('root', 'sys.php');
+			$sysEnvPath		= path('root', 'sys.php');
 			$serviceEnvPath = path("service", 'common.php');
 
 
