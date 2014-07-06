@@ -18,7 +18,11 @@
 
 		private $_registeredEvents = NULL;
 
-		public function __construct() { $this->_registeredEvents = array(); }
+		public function __construct($events = array())
+		{
+			$this->_registeredEvents = array();
+			$this->registerEvents($events);
+		}
 
 		public function registerEvents($events = array())
 		{
