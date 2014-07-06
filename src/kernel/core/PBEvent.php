@@ -7,11 +7,10 @@
 		public static function Event($events = array())
 		{
 			static $_singleton = NULL;
-			if ($_singleton) return $_singleton;
+			if ($_singleton === NULL) $_singleton = new PBEvent();
 
-			$_singleton = new PBChain();
+
 			$_singleton->registerEvents($events);
-
 			return $_singleton;
 		}
 
