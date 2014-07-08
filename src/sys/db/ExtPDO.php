@@ -49,7 +49,7 @@ SQL
 
 		public function checkTable($tableName, $updateCache = FALSE)
 		{
-			$result = $this->fetch("SHOW TABLES LIKE `{$tableName}`;");
+			$result = $this->fetch("SHOW TABLES LIKE '{$tableName}';");
 			return !empty($result);
 		}
 
