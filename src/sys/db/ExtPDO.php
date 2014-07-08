@@ -26,18 +26,23 @@
 			$this->__use_Variable = $this->__checkVariableCap($forceVar);
 		}
 
-		private function __checkVariableCap($forceVariable) {
+		private function __checkVariableCap($forceVariable)
+		{
+			$tableName = self::VARIABLE_TABLE;
 
-			if ($this->checkTable(self::VARIABLE_TABLE)) return TRUE;
+			if ($this->checkTable($tableName)) return TRUE;
 
 			if ($forceVariable)
 			{
-				return $this->query("CREATE TABLE IF NOT EXISTS `" . ExtPDO::VARIABLE_TABLE . "`(`id` int(11) NOT NULL AUTO_INCREMENT,
-									`name` varchar(255) NOT NULL,
-									`value` longtext,
-
-									PRIMARY KEY (`id`),
-									UNIQUE KEY `name_UNIQUE` (`name`));"
+				return $this->query(<<<SQL
+					CREATE TABLE IF NOT EXISTS `{$tableName}` (
+						`id` int(11) NOT NULL AUTO_INCREMENT,
+						`name` varchar(255) NOT NULL,
+						`value` longtext,
+						PRIMARY KEY (`id`),
+						UNIQUE KEY `name_UNIQUE` (`name`)
+					) DEFAULT CHARSET=utf8;
+SQL
 				);
 			}
 		}
