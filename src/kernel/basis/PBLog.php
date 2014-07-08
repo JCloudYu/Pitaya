@@ -31,7 +31,8 @@
 
 			// INFO: Write file stream
 			$position = ($logPos) ? " {$info['position']}" : '';
-			$msg = "[{$info['time']}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}\n";
+			$timeInfo = empty($options['UNIX_TIMESTAMP']) ? $options['timestamp'] : $options['time'];
+			$msg = "[{$timeInfo}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}\n";
 			fwrite($this->_logStream, $msg);
 			fflush($this->_logStream);
 
@@ -205,9 +206,11 @@ SQL
 			}
 
 
+			$curTime = time();
 			return array(
 				'cate'		=> (empty($logCate) || !is_string($logCate)) ? 'INFO' : "{$logCate}",
-				'time'		=> (@empty($options['UNIX_TIMESTAMP'])) ? date("Y-m-d G:i:s") : time(),
+				'time'		=> $curTime,
+				'timestamp' => date("Y-m-d G:i:s", $curTime),
 				'service'	=> (!defined('__SERVICE__') ? 'Pitaya' : __SERVICE__),
 				'module'	=> $module,
 				'route'		=> $route,
