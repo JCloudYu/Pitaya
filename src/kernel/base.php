@@ -26,6 +26,12 @@ define('SYS_NETWORK_ENV', 'NET', TRUE);
 define('__SYS_WORKING_ENV__', (isset($_SERVER['REMOTE_ADDR']) ? SYS_NETWORK_ENV : SYS_COMMAND_ENV), TRUE);
 define('EOL', (__SYS_WORKING_ENV__ === SYS_NETWORK_ENV) ? '<br />' : "\n", TRUE);
 define('EON', "\n", TRUE);
+define('EOR', "\r", TRUE);
+define('EORN', "\r\n");
+
+define('LF', "\n", TRUE);
+define('CR', "\r", TRUE);
+define('CRLF', "\r\n");
 define('EOB', '<br />', TRUE);
 
 
