@@ -16,6 +16,8 @@
 
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
 		{
+			if (!is_array($options)) $options = array();
+
 			if (!is_string($message)) $message = print_r($message, TRUE);
 			if (!is_array(@$options['tags'])) $options['tags'] = array();
 			$info = self::PrepLogInfo($logCate, $options);
@@ -31,12 +33,12 @@
 
 			// INFO: Write file stream
 			$position = ($logPos) ? " {$info['position']}" : '';
-			$timeInfo = empty($options['UNIX_TIMESTAMP']) ? $options['timestamp'] : $options['time'];
+			$timeInfo = in_array('UNIX_TIMESTAMP', $options) ? $options['time'] : $options['timestamp'];
 			$msg = "[{$timeInfo}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}\n";
 			fwrite($this->_logStream, $msg);
 			fflush($this->_logStream);
 
-			if (!empty(PBLog::$LogDB))
+			if (!empty(PBLog::$LogDB) && !in_array('SKIP_DB', $options))
 				PBLog::LogDB("{$message}{$position}", $info);
 
 			return $msg;
