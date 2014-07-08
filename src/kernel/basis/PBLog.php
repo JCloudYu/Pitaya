@@ -104,7 +104,7 @@
 			$driver = empty($conInfo['type']) ? 'mysql' : "{$conInfo['type']}";
 			$dsn	= "{$driver}:host={$conInfo['host']};port={$conInfo['port']};dbname={$conInfo['db']};";
 
-			PBLog::$LogDB = new PDO($dsn, $username, $userpass);
+			PBLog::$LogDB = new PDO($dsn, "{$conInfo['account']}", "{$conInfo['password']}");
 			PBLog::$LogDB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			PBLog::$LogDB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
