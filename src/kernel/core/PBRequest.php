@@ -1,6 +1,7 @@
 <?php
 	using('kernel.basis.PBObject');
 	using('ext.base.time');
+	using('ext.base.math');
 	using('ext.base.misc');
 	using('ext.base.array');
 
@@ -130,19 +131,33 @@
 
 			$requestedRange = array();
 			list(,$range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
-			$range = explode(',', trim($range));
+			$range = trim($range);
 
+
+			$range = (empty($range)) ? array() : explode(',', $range);
 			foreach ($range as $rangeToken)
 			{
 				$rangeToken = explode('-', $rangeToken);
+				$rangeToken[0] = trim($rangeToken[0]);
+				$rangeToken[1] = trim($rangeToken[1]);
+
 				$buff = array();
-				if (is_numeric(trim(@$rangeToken[0]))) $buff['from'] = intval(trim($rangeToken[0]));
-				if (is_numeric(trim(@$rangeToken[1]))) $buff['to'] = intval(trim($rangeToken[1]));
+				$buff['from'] = (EXPR_INT($rangeToken[0])) ? intval($rangeToken[0]) : NULL;
+				$buff['to']	  = (EXPR_INT($rangeToken[1])) ? intval($rangeToken[1]) : NULL;
 
 				if (!empty($buff)) $requestedRange[] = $buff;
 			}
 
 			return $requestedRange;
+		}
+
+		public function __get_rangeUnit()
+		{
+			static $reqRangeType = NULL;
+			if ($reqRangeType !== NULL) return $reqRangeType;
+
+			list($reqRangeType, $range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
+			return $reqRangeType;
 		}
 
 		public function __get_all() { return $this->_incomingRecord; }
