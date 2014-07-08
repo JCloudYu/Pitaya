@@ -35,6 +35,9 @@
 			fwrite($this->_logStream, $msg);
 			fflush($this->_logStream);
 
+			if (!empty(PBLog::$LogDB))
+				PBLog::LogDB("{$message}{$position}", $info);
+
 			return $msg;
 		}
 
@@ -43,7 +46,6 @@
 
 
 
-		// INFO: Global logging API
 		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = path('share.log', (empty($logFileName) ? "service.log" : $logFileName));
@@ -86,7 +88,72 @@
 
 
 
+		// INFO: Global logging API
+		/**
+		 * @var PDO
+		 */
+		private static $LogDB	= NULL;
+		private static $LogTbl	= '';
 
+		const LOG_TABLE = '__ext_pdo_sys_wide_log';
+
+		public static function ConnectDB($conInfo = array())
+		{
+			if (PBLog::$LogDB !== NULL) return;
+
+			$driver = empty($conInfo['type']) ? 'mysql' : "{$conInfo['type']}";
+			$dsn	= "{$driver}:host={$conInfo['host']};port={$conInfo['port']};dbname={$conInfo['db']};";
+
+			PBLog::$LogDB = new PDO($dsn, $username, $userpass);
+			PBLog::$LogDB->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+			PBLog::$LogDB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+			PBLog::$LogTbl = empty($conInfo['table']) ? PBLog::LOG_TABLE : $conInfo['table'];
+
+
+			$tbl = PBLog::$LogTbl;
+			$checkTbl = PBLog::$LogDB->query("SHOW TABLES LIKE '{$tbl}';")->fetch();
+			if (empty($checkTbl))
+			{
+				PBLog::$LogDB->query(<<<SQL
+					CREATE TABLE IF NOT EXISTS `{$tbl}` (
+						`cate` varchar(128) NOT NULL,
+						`service` varchar(128) NOT NULL,
+						`module` varchar(128) NOT NULL,
+						`tags` text NOT NULL,
+						`route` text NOT NULL,
+						`msg` longtext NOT NULL,
+						`time` bigint(20) NOT NULL,
+						PRIMARY KEY (`time`)
+					) DEFAULT CHARSET=utf8;
+SQL
+				);
+			}
+		}
+
+		// cate time service module tag route msg
+		private static function LogDB($message, $attributes = array())
+		{
+			if (empty(PBLog::$LogDB)) return FALSE;
+
+			$tableName = PBLog::$LogTbl;
+			$stmt = PBLog::$LogDB->prepare("INSERT INTO `{$tableName}`(`cate`, `service`, `module`, `tags`, `route`, `msg`, `time`)
+								  								VALUES(:cate:, :service:, :module:, :tags:, :route:, :msg:, :time:)");
+
+			$stmt->execute(
+			array(
+				':cate:'	=> @"{$attributes['cate']}",
+				':service:'	=> @"{$attributes['service']}",
+				':module:'	=> @"{$attributes['module']}",
+				':tag:'		=> @"{$attributes['tags']}",
+				':route:'	=> @"{$attributes['route']}",
+				':msg:'		=> "{$message}",
+				':time:'	=> @"{$attributes['time']}"
+			));
+
+			return $stmt->rowCount() > 0;
+		}
 
 
 		/**
