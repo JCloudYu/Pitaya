@@ -118,6 +118,7 @@
 			{
 				PBLog::$LogDB->query(<<<SQL
 					CREATE TABLE IF NOT EXISTS `{$tbl}` (
+						`id` int(11) NOT NULL AUTO_INCREMENT,
 						`cate` varchar(128) NOT NULL,
 						`service` varchar(128) NOT NULL,
 						`module` varchar(128) NOT NULL,
@@ -125,7 +126,7 @@
 						`route` text NOT NULL,
 						`msg` longtext NOT NULL,
 						`time` bigint(20) NOT NULL,
-						PRIMARY KEY (`time`)
+						PRIMARY KEY (`id`)
 					) DEFAULT CHARSET=utf8;
 SQL
 				);
@@ -133,13 +134,13 @@ SQL
 		}
 
 		// cate time service module tag route msg
-		private static function LogDB($message, $attributes = array())
+		private static function LogDB($message, array $attributes = array())
 		{
 			if (empty(PBLog::$LogDB)) return FALSE;
 
 			$tableName = PBLog::$LogTbl;
 			$stmt = PBLog::$LogDB->prepare("INSERT INTO `{$tableName}`(`cate`, `service`, `module`, `tags`, `route`, `msg`, `time`)
-								  								VALUES(:cate:, :service:, :module:, :tags:, :route:, :msg:, :time:)");
+								  								VALUES(:cate:, :service:, :module:, :tags:, :route:, :msg:, :time:);");
 
 			$stmt->execute(array(
 				':cate:'	=> @"{$attributes['cate']}",
