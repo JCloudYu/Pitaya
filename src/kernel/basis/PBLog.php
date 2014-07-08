@@ -141,14 +141,13 @@ SQL
 			$stmt = PBLog::$LogDB->prepare("INSERT INTO `{$tableName}`(`cate`, `service`, `module`, `tags`, `route`, `msg`, `time`)
 								  								VALUES(:cate:, :service:, :module:, :tags:, :route:, :msg:, :time:)");
 
-			$stmt->execute(
-			array(
+			$stmt->execute(array(
 				':cate:'	=> @"{$attributes['cate']}",
 				':service:'	=> @"{$attributes['service']}",
 				':module:'	=> @"{$attributes['module']}",
-				':tags:'		=> @"{$attributes['tags']}",
+				':tags:'	=> @"{$attributes['tags']}",
 				':route:'	=> @"{$attributes['route']}",
-				':msg:'		=> "{$message}",
+				':msg:'		=>  "{$message}",
 				':time:'	=> @"{$attributes['time']}"
 			));
 
