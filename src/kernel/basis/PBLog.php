@@ -146,7 +146,7 @@ SQL
 				':cate:'	=> @"{$attributes['cate']}",
 				':service:'	=> @"{$attributes['service']}",
 				':module:'	=> @"{$attributes['module']}",
-				':tag:'		=> @"{$attributes['tags']}",
+				':tags:'		=> @"{$attributes['tags']}",
 				':route:'	=> @"{$attributes['route']}",
 				':msg:'		=> "{$message}",
 				':time:'	=> @"{$attributes['time']}"
