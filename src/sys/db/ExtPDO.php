@@ -42,9 +42,11 @@
 			}
 		}
 
-
-
-		public function checkTable($tableName, $updateCache = FALSE) { return in_array($tableName, $this->getTables($updateCache)); }
+		public function checkTable($tableName, $updateCache = FALSE)
+		{
+			$result = $this->fetch("SHOW TABLES LIKE `{$tableName}`;");
+			return !empty($result);
+		}
 
 		public function getTables($updateCache = FALSE) {
 
