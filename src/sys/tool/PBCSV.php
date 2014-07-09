@@ -50,8 +50,8 @@
 			else
 			if (is_array($value))
 				$this->_dataHeader = $value;
-
-			$this->_dataHeader = array();
+			else
+				$this->_dataHeader = array();
 		}
 
 		public function __get_header() { return $this->_dataHeader; }

@@ -33,13 +33,16 @@
 
 			// INFO: Write file stream
 			$position = ($logPos) ? " {$info['position']}" : '';
-			$timeInfo = in_array('UNIX_TIMESTAMP', $options) ? $options['time'] : $options['timestamp'];
+			$timeInfo = in_array('UNIX_TIMESTAMP', $options) ? $info['time'] : $info['timestamp'];
 			$msg = "[{$timeInfo}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}\n";
 			fwrite($this->_logStream, $msg);
 			fflush($this->_logStream);
 
-			if (!empty(PBLog::$LogDB) && !in_array('SKIP_DB', $options))
-				PBLog::LogDB("{$message}{$position}", $info);
+			if (!empty(PBLog::$LogDB))
+			{
+				if (PBLog::$_forceLogDB || in_array('WRITE_DB', $options))
+					PBLog::LogDB("{$message}{$position}", $info);
+			}
 
 			return $msg;
 		}
@@ -157,6 +160,9 @@ SQL
 
 			return $stmt->rowCount() > 0;
 		}
+
+		private static $_forceLogDB = FALSE;
+		public static function ForceDB($force = FALSE) { self::$_forceLogDB = !empty($force); }
 
 
 		/**
