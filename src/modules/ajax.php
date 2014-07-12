@@ -1,6 +1,5 @@
 <?php
 	using('kernel.core.PBModule');
-	using('sys.tool.http.mime');
 
 	class ajax extends PBModule
 	{
@@ -34,7 +33,7 @@
 
 		public function respondJSON($jsonData)
 		{
-			header("Content-type: " . MIME::JSON);
+			header("Content-type: application/json");
 			$response = json_encode($jsonData);
 			echo "$response";
 		}
