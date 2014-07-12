@@ -8,21 +8,6 @@
 
 	final class PBCSV extends PBObject implements IDataFetcher
 	{
-		public static function ToString(array $data, $encoding = 'UTF-8', $fEnc = 'UTF-8')
-		{
-			$fields = array();
-			foreach ($data as $val)
-			{
-				$val = str_replace(CRLF, "\\r\\n", "{$val}");
-				$val = str_replace(CR, "\\r", "{$val}");
-				$val = str_replace(LF, "\\n", "{$val}");
-				$fields[] = $val;
-			}
-
-			$result = iconv($fEnc, $encoding, implode(',', $fields));
-			return $result;
-		}
-
 		public static function FromFile($path, $encoding = 'UTF-8')
 		{
 			if (is_dir($path) || !is_readable($path)) return NULL;
@@ -77,20 +62,10 @@
 		{
 			if (feof($this->_stream)) return FALSE;
 
-			$rawData = fgets($this->_stream);
-			if ($rawData === FALSE) return FALSE;
-
+			$rawData = fgetcsv($rawData);
 
 			if ($this->_dataEncoding != $encoding)
-				$rawData = iconv($this->_dataEncoding, $encoding, $rawData);
-
-			$rawData = str_getcsv($rawData);
-			foreach ($rawData as $idx => $content)
-			{
-				$content = str_replace("\\r", "\r", $content);
-				$content = str_replace("\\n", "\n", $content);
-				$rawData[$idx] = $content;
-			}
+				foreach ($rawData as $idx => $val) $rawData[$idx] = iconv($this->_dataEncoding, $encoding, "{$val}");
 
 			switch ($fetchOptions)
 			{
