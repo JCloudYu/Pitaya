@@ -16,7 +16,7 @@
 			foreach ($data as $val)
 			{
 				$val = str_replace("\"", "\"\"", "{$val}");
-				$fields[] = "\"{$val}\"}";
+				$fields[] = "\"{$val}\"";
 			}
 
 			$result = implode(',', $fields);
