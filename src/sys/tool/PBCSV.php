@@ -8,6 +8,19 @@
 
 	final class PBCSV extends PBObject implements IDataFetcher
 	{
+		public static function ToCSV(array $data, $encoding = 'UTF-8', $fEnc = 'UTF-8')
+		{
+			$fields = array();
+			foreach ($data as $val)
+			{
+				$val = str_replace("\"", "\"\"", "{$val}");
+				$fields[] = "\"{$val}\"}";
+			}
+
+			$result = iconv($fEnc, $encoding, implode(',', $fields));
+			return $result;
+		}
+
 		public static function FromFile($path, $encoding = 'UTF-8')
 		{
 			if (is_dir($path) || !is_readable($path)) return NULL;
