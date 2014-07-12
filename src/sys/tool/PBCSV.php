@@ -19,8 +19,11 @@
 				$fields[] = "\"{$val}\"}";
 			}
 
+			$result = implode(',', $fields);
+
 			if ($encoding != $fEnc)
-			$result = iconv($fEnc, $encoding, implode(',', $fields));
+				$result = iconv($fEnc, $encoding, $result);
+
 			return $result;
 		}
 
