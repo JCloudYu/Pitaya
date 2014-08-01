@@ -172,7 +172,6 @@ class SYS extends PBObject
 		}
 
 
-		if (!__CASE_SENSITIVE_MODULE_NAME__) $service = strtolower($service);
 
 		// INFO: Detect Main Service
 		$state = FALSE;
@@ -300,12 +299,6 @@ class SYS extends PBObject
 	public function acquireModule($chiefModule, $moduleName = '', $exception = TRUE) {
 
 		static $allocCounter = 0;
-
-		if (!__CASE_SENSITIVE_MODULE_NAME__)
-		{
-			$chiefModule = strtolower($chiefModule);
-			$moduleName = strtolower($moduleName);
-		}
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
