@@ -57,6 +57,12 @@
 			case 'string':
 				$value = trim("$value");
 
+				if (in_array('lower-case', $illustrator))
+					$value = strtolower($value);
+				else
+				if (in_array('upper-case', $illustrator))
+					$value = strtoupper($value);
+
 				if (in_array('encode-url', $illustrator))
 					$value = urlencode($value);
 
