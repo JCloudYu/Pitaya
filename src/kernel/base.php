@@ -35,10 +35,12 @@ define('CRLF', "\r\n");
 define('EOB', '<br />', TRUE);
 
 
+
 // INFO: Including configuration files
 require_once (__ROOT__ . '/cmd.config.php');
 require_once (__WEB_ROOT__ . "/config.php");	// ISSUE: We need to verify the configuration data...
 
+if (!defined("DEBUG_MODE")) define("DEBUG_MODE", FALSE, TRUE);
 if (!defined("__LOG_EXCEPTION__")) 	 define("__LOG_EXCEPTION__", TRUE, TRUE);
 if (!defined("__THROW_EXCEPTION__")) define("__THROW_EXCEPTION__", FALSE, TRUE);
 
