@@ -14,5 +14,4 @@
 	//define("__LOG_EXCEPTION__", FALSE, TRUE);
 	//define("__THROW_EXCEPTION__", TRUE, TRUE);
 
-	// OS Dependent...
-	//define("__CASE_SENSITIVE_MODULE_NAME__", TRUE, TRUE);
+	//define("DEBUG_MODE", FALSE, TRUE);
