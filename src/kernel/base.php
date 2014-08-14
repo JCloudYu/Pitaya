@@ -2,7 +2,7 @@
 
 $GLOBALS['invokeTime'] = time();
 
-ini_set('session.use_cookies', '0');
+//ini_set('session.use_cookies', '0');
 
 // INFO: Super Global Constants...
 (preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
