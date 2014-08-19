@@ -67,7 +67,7 @@ class PBProcess extends PBObject
 	public function assignNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;
-		if(!array_key_exists($moduleHandle, $this->_attachedModules)) $moduleHandle = $this->_acquireModule($moduleHandle, TRUE)->id;
+		if (!array_key_exists($moduleHandle, $this->_attachedModules)) $moduleHandle = $this->_acquireModule($moduleHandle, TRUE)->id;
 
 
 		$status = TRUE;
@@ -375,22 +375,28 @@ class PBProcess extends PBObject
 			if(!array_key_exists('module', $illustrator))
 				throw(new Exception("Error bootSequence structure definition"));
 
-			$moduleName = $illustrator['module'];
 
-			$reuse = TRUE;
-			if(array_key_exists('reuse', $illustrator))
+
+			$moduleHandle = $illustrator['module'];
+
+			if (is_a($moduleHandle, 'PBModule') && array_key_exists($moduleHandle->id, $this->_attachedModules))
+				$moduleId = $moduleHandle->id;
+			else
 			{
-				if(!is_bool($illustrator['reuse']))
-					throw(new Exception("Error bootSequence structure definition"));
+				$reuse = TRUE;
+				if(array_key_exists('reuse', $illustrator))
+				{
+					if(!is_bool($illustrator['reuse']))
+						throw(new Exception("Error bootSequence structure definition"));
 
-				$reuse = $reuse && $illustrator['reuse'];
+					$reuse = $reuse && $illustrator['reuse'];
+				}
+
+				$moduleId = $this->_acquireModule($moduleHandle, $reuse)->id;
 			}
 
-			$request = NULL;
-			if(array_key_exists('request', $illustrator))
-				$request = $illustrator['request'];
+			$request = (array_key_exists('request', $illustrator)) ? $illustrator['request'] : NULL;
 
-			$moduleId = $this->_acquireModule($moduleName, $reuse)->id;
 			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $request), $moduleId);
 		}
 
