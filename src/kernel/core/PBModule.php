@@ -41,6 +41,8 @@ class PBModule extends PBObject
 	}
 
 	public function __get_class() { return get_class($this); }
+	public function __get_class_lower() { return strtolower(get_class($this)); }
+	public function __get_class_uppper() { return strtoupper(get_class($this)); }
 
 	public function __get_tag()			{ return $this->_tag; }
 	public function __set_tag($value)	{ $this->_tag = $value; }

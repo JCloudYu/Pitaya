@@ -30,10 +30,16 @@ class PBProcess extends PBObject
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
 		$proc = SYS::Process($pId);
-		if (is_string($module)) $module = $proc->getModule($module, $reusable);
+		if (!is_a($module, "PBModule")) $module = $proc->getModule("{$module}", $reusable);
 
 		$module->prepare($request);
 		return $module->exec(NULL);
+	}
+
+	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
+
+		$result = self::Execute($module, $request, $reusable, $pId);
+		echo "<div class='module {$module->class_lower}'>{$result}</div>";
 	}
 
 	public function __construct() {
