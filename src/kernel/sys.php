@@ -329,11 +329,20 @@ class SYS extends PBObject
 		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
 
 
-
-		$custModulePath = ( defined("MODULE_PATH") ? MODULE_PATH : ( defined("__MODULE_PATH__") ? __MODULE_PATH__ : NULL ) );
-		$serviceInternalModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}";
-		$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$moduleName}";
-		$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$chiefModule}";
+		if ( defined("MODULE_PATH") )
+		{
+			$custModulePath = MODULE_PATH;
+			$serviceInternalModulePath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}";
+			$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$moduleName}";
+			$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$chiefModule}";
+		}
+		else
+		{
+			$custModulePath = defined("__MODULE_PATH__") ? __MODULE_PATH__ : NULL;
+			$serviceInternalModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}";
+			$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$moduleName}";
+			$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$chiefModule}";
+		}
 
 		$invokeModule = $moduleName;
 
