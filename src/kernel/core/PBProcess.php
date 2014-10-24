@@ -27,6 +27,15 @@ class PBProcess extends PBObject
 	 */
 	public static function Process($id = NULL) { return SYS::Process($id); }
 
+	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
+
+		$proc = SYS::Process($pId);
+		if (is_string($module)) $module = $proc->getModule($module, $reusable);
+
+		$module->prepare($request);
+		return $module->exec(NULL);
+	}
+
 	public function __construct() {
 
 		$this->_bootSequence = PBLList::GENERATE();
