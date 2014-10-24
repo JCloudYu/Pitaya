@@ -330,9 +330,10 @@ class SYS extends PBObject
 
 
 
-		$serviceInternalModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}" : NULL;
-		$serviceInternalModuleSubModulePath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$moduleName}" : NULL;
-		$serviceInternalModuleNestedPath = defined('__MODULE_PATH__') ? "service.".__MODULE_PATH__.".{$chiefModule}.{$chiefModule}" : NULL;
+		$custModulePath = ( defined("MODULE_PATH") ? MODULE_PATH : ( defined("__MODULE_PATH__") ? __MODULE_PATH__ : NULL ) );
+		$serviceInternalModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}";
+		$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$moduleName}";
+		$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$chiefModule}";
 
 		$invokeModule = $moduleName;
 
