@@ -38,7 +38,7 @@
 
 			$this->_incomingRecord['rawDataStream']			 = $inputCache;
 
-			$this->_incomingRecord['request']['method']		 = @$_SERVER['REQUEST_METHOD'];
+			$this->_incomingRecord['request']['method']		 = strtoupper(@"{$_SERVER['REQUEST_METHOD']}");
 			$this->_incomingRecord['request']['query']		 = $GLOBALS['request'];
 			$this->_incomingRecord['request']['data']		 = NULL;
 			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
