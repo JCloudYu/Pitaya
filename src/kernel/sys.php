@@ -108,7 +108,7 @@ class SYS extends PBObject
 				// http://SERVER_HOST/
 				if($requestItems[0] == '')
 				{
-					$service = __DEFAULT_SERVICE__;
+					$service = '';
 					$moduleRequest = '';
 				}
 				else
@@ -124,7 +124,7 @@ class SYS extends PBObject
 					// http://SERVER_HOST/?REQUEST_ATTR
 					if($tmpBuf[0] == '')
 					{
-						$service = __DEFAULT_SERVICE__;
+						$service = '';
 						$moduleRequest = $requestItems[0];
 					}
 					else
@@ -133,7 +133,6 @@ class SYS extends PBObject
 						$service = array_shift($tmpBuf);
 						$moduleRequest = "?".implode('?', $tmpBuf);
 					}
-
 				}
 			}
 			else
@@ -143,36 +142,20 @@ class SYS extends PBObject
 				$moduleRequest = implode('/', $requestItems);
 			}
 
-
-			// http://SERVER_HOST/RC/Update?attributes
-			$requestMode = explode('?', @"{$requestItems[0]}");
-
-
-			// INFO: Decide module maintenance mode
-			if ( strtoupper($requestMode[0]) == 'EVENT' )
-			{
-				array_shift($argv);
-				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-			}
-			else
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+			$moduleRequest = explode('/', $moduleRequest);
 		}
 		else
 		{
 			$service = TO(@array_shift($argv), 'string');
-			$reqMode = strtoupper(@"{$argv[0]}");
-
-			if ( $reqMode == 'EVENT')
-			{
-				array_shift($argv);
-				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-			}
-			else
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
-
-
 			$moduleRequest = $argv;
 		}
+
+		if ( strtoupper($service) == 'EVENT' )
+		{
+			$service = '';
+			array_unshift($moduleRequest, 'EVENT');
+		}
+
 
 
 
@@ -187,8 +170,18 @@ class SYS extends PBObject
 			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+
+			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
+			{
+				array_shift($moduleRequest);
+				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
+			}
+			else
+				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+
 			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = $moduleRequest;
+			$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 			return;
 		}
 
@@ -201,20 +194,25 @@ class SYS extends PBObject
 			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
 			chdir(__WORKING_ROOT__);
 
+
+			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
+			{
+				array_shift($moduleRequest);
+				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
+			}
+			else
+				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+
 			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = $moduleRequest;
+			$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 			return;
 		}
 
 
 		if (__DEFAULT_SERVICE_DEFINED__)
 		{
-
-			if ( __SYS_WORKING_ENV__ == SYS_ENV_NET )
-				$moduleRequest = "{$service}/{$moduleRequest}";
-			else
-			if ( !empty($service) )
-				 array_unshift($moduleRequest, $service);
+			if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
 			$service = __DEFAULT_SERVICE__;
 			$state = $state || available("service.{$service}.{$service}", FALSE);
@@ -226,8 +224,18 @@ class SYS extends PBObject
 				define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
 				chdir(__WORKING_ROOT__);
 
+
+				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
+				{
+					array_shift($moduleRequest);
+					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
+				}
+				else
+					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = $moduleRequest;
+				$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 				return;
 			}
 
@@ -240,8 +248,18 @@ class SYS extends PBObject
 				define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
 				chdir(__WORKING_ROOT__);
 
+
+				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
+				{
+					array_shift($moduleRequest);
+					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
+				}
+				else
+					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = $moduleRequest;
+				$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 				return;
 			}
 		}
