@@ -89,86 +89,96 @@ class SYS extends PBObject
 
 	public function __judgeMainService($argc = 0, $argv = NULL)
 	{
-
-		// INFO: Parse URL
-		//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
-		// INFO: Purge redundant separators from the REQUEST_URI
-		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
-		// INFO: 		  will be purged into
-		// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-		$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @$_SERVER['REQUEST_URI'])));
-		$GLOBALS['rawRequest'] = $rawRequest;
-		//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		// INFO: Extract the requested module from request string
-		$requestItems = explode('/', $rawRequest);;
-		if(count($requestItems) == 1)
+		if ( __SYS_WORKING_ENV__ == SYS_ENV_NET )
 		{
-			// http://SERVER_HOST/
-			if($requestItems[0] == '')
+			// INFO: Parse URL
+			//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
+			// INFO: Purge redundant separators from the REQUEST_URI
+			// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
+			// INFO: 		  will be purged into
+			// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
+			$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @$_SERVER['REQUEST_URI'])));
+			$GLOBALS['rawRequest'] = $rawRequest;
+			//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+			// INFO: Extract the requested module from request string
+			$requestItems = explode('/', $rawRequest);;
+			if(count($requestItems) == 1)
 			{
-				$service = __DEFAULT_SERVICE__;
-				$moduleRequest = '';
-			}
-			else
-			{
-				$tmpBuf = explode('?', $requestItems[0]);
-				// http://SERVER_HOST/RC
-				if(count($tmpBuf) == 1)
+				// http://SERVER_HOST/
+				if($requestItems[0] == '')
 				{
-					$service = $requestItems[0];
+					$service = __DEFAULT_SERVICE__;
 					$moduleRequest = '';
 				}
 				else
-				// http://SERVER_HOST/?REQUEST_ATTR
-				if($tmpBuf[0] == '')
 				{
-					$service = __DEFAULT_SERVICE__;
-					$moduleRequest = $requestItems[0];
-				}
-				else
-				// http://SERVER_HOST/RC?REQUEST_ATTR
-				{
-					$service = array_shift($tmpBuf);
-					$moduleRequest = "?".implode('?', $tmpBuf);
-				}
+					$tmpBuf = explode('?', $requestItems[0]);
+					// http://SERVER_HOST/RC
+					if(count($tmpBuf) == 1)
+					{
+						$service = $requestItems[0];
+						$moduleRequest = '';
+					}
+					else
+					// http://SERVER_HOST/?REQUEST_ATTR
+					if($tmpBuf[0] == '')
+					{
+						$service = __DEFAULT_SERVICE__;
+						$moduleRequest = $requestItems[0];
+					}
+					else
+					// http://SERVER_HOST/RC?REQUEST_ATTR
+					{
+						$service = array_shift($tmpBuf);
+						$moduleRequest = "?".implode('?', $tmpBuf);
+					}
 
+				}
 			}
+			else
+			// http://SERVER_HOST/RC/REQUEST
+			{
+				$service = array_shift($requestItems);
+				$moduleRequest = implode('/', $requestItems);
+			}
+
+
+			// http://SERVER_HOST/RC/Update?attributes
+			$requestMode = explode('?', @"{$requestItems[0]}");
+
+
+			// INFO: Decide module maintenance mode
+			switch (strtoupper($requestMode[0]))
+			{
+				case 'INSTALL':
+					array_shift($requestItems);
+					define('SERVICE_EXEC_MODE', 'INSTALL', TRUE);
+					break;
+				case 'UPDATE':
+					array_shift($requestItems);
+					define('SERVICE_EXEC_MODE', 'UPDATE', TRUE);
+					break;
+				case 'PATCH':
+					array_shift($requestItems);
+					define('SERVICE_EXEC_MODE', 'PATCH', TRUE);
+					break;
+				case 'UNINSTALL':
+					array_shift($requestItems);
+					define('SERVICE_EXEC_MODE', 'UNINSTALL', TRUE);
+					break;
+				default:
+					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+					break;
+			}
+
 		}
 		else
-		// http://SERVER_HOST/RC/REQUEST
 		{
-			$service = array_shift($requestItems);
-			$moduleRequest = implode('/', $requestItems);
-		}
+			$service = TO(@array_shift($argv), 'string');
+			$moduleRequest = $argv;
 
-
-		// http://SERVER_HOST/RC/Update?attributes
-		$requestMode = explode('?', @"{$requestItems[0]}");
-
-
-		// INFO: Decide module maintenance mode
-		switch (strtoupper($requestMode[0]))
-		{
-			case 'INSTALL':
-				array_shift($requestItems);
-				define('SERVICE_EXEC_MODE', 'INSTALL', TRUE);
-				break;
-			case 'UPDATE':
-				array_shift($requestItems);
-				define('SERVICE_EXEC_MODE', 'UPDATE', TRUE);
-				break;
-			case 'PATCH':
-				array_shift($requestItems);
-				define('SERVICE_EXEC_MODE', 'PATCH', TRUE);
-				break;
-			case 'UNINSTALL':
-				array_shift($requestItems);
-				define('SERVICE_EXEC_MODE', 'UNINSTALL', TRUE);
-				break;
-			default:
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
-				break;
+			define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 		}
 
 
@@ -206,7 +216,13 @@ class SYS extends PBObject
 
 		if (__DEFAULT_SERVICE_DEFINED__)
 		{
-			$moduleRequest = "{$service}/{$moduleRequest}";
+
+			if ( __SYS_WORKING_ENV__ == SYS_ENV_NET )
+				$moduleRequest = "{$service}/{$moduleRequest}";
+			else
+			if ( !empty($service) )
+				 array_unshift($moduleRequest, $service);
+
 			$service = __DEFAULT_SERVICE__;
 			$state = $state || available("service.{$service}.{$service}", FALSE);
 
