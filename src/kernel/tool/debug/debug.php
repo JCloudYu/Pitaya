@@ -9,12 +9,12 @@ class Debug
 {
 	public static function VarDumpParent() {
 
-		echo self::VDump(func_get_args(), TRUE, TRUE);
+		echo self::VDump(func_get_args(), (__SYS_WORKING_ENV__ == SYS_ENV_NET), TRUE);
 	}
 
 	public static function VarDump() {
 
-		echo self::VDump(func_get_args(), TRUE);
+		echo self::VDump(func_get_args(), (__SYS_WORKING_ENV__ == SYS_ENV_NET));
 	}
 
 	public static function VarDumpParentString() {
@@ -29,8 +29,11 @@ class Debug
 
 	public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
-		if (__DEBUG_MODE__ !== TRUE) return '';
-		$width = intval(__DEBUG_CONSOLE_WIDTH__);
+		if ( __DEBUG_MODE__ !== TRUE ) return '';
+
+
+
+		$width = ( defined('__DEBUG_CONSOLE_WIDTH__') ) ? intval(__DEBUG_CONSOLE_WIDTH__) : 0;
 
 		$out = '';
 		if($forHTML)
@@ -113,7 +116,7 @@ class Debug
 
 	public static function JSLog($outStr) {
 
-		if (__DEBUG_MODE__ !== TRUE) return;
+		if ( __DEBUG_MODE__ !== TRUE ) return;
 
 		if(!is_string($outStr))
 			throw(new Exception('Input variable must be a string'));
@@ -123,13 +126,13 @@ class Debug
 
 	public static function BackTrace($args = 0) {
 
-		if (__DEBUG_MODE__ !== TRUE) return NULL;
+		if ( __DEBUG_MODE__ !== TRUE ) return NULL;
 
 		$info = debug_backtrace($args);
 		$depth = count($info);
 
 		$adjusted = array();
-		for($i=1;$i<$depth; $i++)
+		for( $i=1; $i<$depth; $i++)
 		{
 			$adjusted[$i-1] = array();
 
@@ -156,8 +159,5 @@ class Debug
 		return $adjusted;
 	}
 
-	public static function IS_DEBUG_MODE() {
-
-		return __DEBUG_MODE__ === TRUE;
-	}
+	public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
 }

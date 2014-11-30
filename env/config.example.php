@@ -13,5 +13,3 @@
 	//define("__DEBUG_CONSOLE_WIDTH__", 350, TRUE);
 	//define("__LOG_EXCEPTION__", FALSE, TRUE);
 	//define("__THROW_EXCEPTION__", TRUE, TRUE);
-
-	//define("DEBUG_MODE", FALSE, TRUE);
