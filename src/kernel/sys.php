@@ -15,7 +15,7 @@ class SYS extends PBObject
 		if(SYS::$_SYS_INSTANCE) return;
 
 		SYS::$_SYS_INSTANCE = new SYS();
-		SYS::$_SYS_INSTANCE->__initialize();
+		SYS::$_SYS_INSTANCE->__initialize($argc, $argv);
 		SYS::$_SYS_INSTANCE->__jobDaemonRun();
 
 		die();
@@ -45,7 +45,7 @@ class SYS extends PBObject
 	private function __construct() {}
 
 	// INFO: System workflow initialization
-	private function __initialize() {
+	private function __initialize($argc = 0, $argv = NULL) {
 
 		try
 		{
@@ -56,7 +56,7 @@ class SYS extends PBObject
 
 
 			// INFO: Perform service decision and data initialization
-			$this->__judgeMainService();
+			$this->__judgeMainService($argc, $argv);
 			PBRequest::Request();
 
 
@@ -87,10 +87,10 @@ class SYS extends PBObject
 
 	}
 
-	public function __judgeMainService() {
+	public function __judgeMainService($argc = 0, $argv = NULL)
+	{
 
 		// INFO: Parse URL
-
 		//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
 		// INFO: Purge redundant separators from the REQUEST_URI
 		// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
