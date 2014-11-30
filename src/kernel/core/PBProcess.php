@@ -106,18 +106,10 @@ class PBProcess extends PBObject
 
 			switch (SERVICE_EXEC_MODE)
 			{
-				case 'INSTALL':
-					$module->prepareInstall($moduleRequest);
+				case 'EVENT':
+					$module->prepareEvent($moduleRequest);
 					break;
-				case 'UPDATE':
-					$module->prepareUpdate($moduleRequest);
-					break;
-				case 'PATCH':
-					$module->preparePatch($moduleRequest);
-					break;
-				case 'UNINSTALL':
-					$module->prepareUninstall($moduleRequest);
-					break;
+
 				case 'NORMAL':
 				default:
 					$module->prepare($moduleRequest);
@@ -175,18 +167,10 @@ class PBProcess extends PBObject
 				$module = $this->_attachedModules[$moduleHandle];
 				switch (SERVICE_EXEC_MODE)
 				{
-					case 'INSTALL':
-						$module->prepareInstall($moduleRequest);
+					case 'EVENT':
+						$module->prepareEvent($moduleRequest);
 						break;
-					case 'UPDATE':
-						$module->prepareUpdate($moduleRequest);
-						break;
-					case 'PATCH':
-						$module->preparePatch($moduleRequest);
-						break;
-					case 'UNINSTALL':
-						$module->prepareUninstall($moduleRequest);
-						break;
+
 					case 'NORMAL':
 					default:
 						$module->prepare($moduleRequest);
@@ -222,18 +206,10 @@ class PBProcess extends PBObject
 
 			switch (SERVICE_EXEC_MODE)
 			{
-				case 'INSTALL':
-					$module->prepareInstall($moduleRequest);
+				case 'EVENT':
+					$module->prepareEvent($moduleRequest);
 					break;
-				case 'UPDATE':
-					$module->prepareUpdate($moduleRequest);
-					break;
-				case 'PATCH':
-					$module->preparePatch($moduleRequest);
-					break;
-				case 'UNINSTALL':
-					$module->prepareUninstall($moduleRequest);
-					break;
+
 				case 'NORMAL':
 				default:
 					$module->prepare($moduleRequest);
@@ -254,50 +230,29 @@ class PBProcess extends PBObject
 		if($this->_processId === NULL)
 			throw(new Exception("The process has no module to execute!."));
 
-		$dataInput = NULL;
-
 		$this->_processState = 'running';
 
 		switch (SERVICE_EXEC_MODE)
 		{
-			case 'INSTALL':
+			case 'EVENT':
+				$dataInput = array('propagation' => TRUE);
+
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
-					$dataInput = $this->_attachedModules[$moduleHandle]->install($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->event($dataInput);
+					if ( !is_array($dataInput) )
+						$dataInput = array('propagation' => TRUE, 'data' => $dataInput);
+					$dataInput['propagation'] = !empty($dataInput['propagation']);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
-			case 'UPDATE':
-				PBLList::HEAD($this->_bootSequence);
-				do
-				{
-					$moduleHandle = $this->_bootSequence->data['data'];
-					$dataInput = $this->_attachedModules[$moduleHandle]->update($dataInput);
-				}
-				while(PBLList::NEXT($this->_bootSequence));
-				break;
-			case 'PATCH':
-				PBLList::HEAD($this->_bootSequence);
-				do
-				{
-					$moduleHandle = $this->_bootSequence->data['data'];
-					$dataInput = $this->_attachedModules[$moduleHandle]->patch($dataInput);
-				}
-				while(PBLList::NEXT($this->_bootSequence));
-				break;
-			case 'UNINSTALL':
-				PBLList::HEAD($this->_bootSequence);
-				do
-				{
-					$moduleHandle = $this->_bootSequence->data['data'];
-					$dataInput = $this->_attachedModules[$moduleHandle]->uninstall($dataInput);
-				}
-				while(PBLList::NEXT($this->_bootSequence));
-				break;
+
 			case 'NORMAL':
 			default:
+				$dataInput = NULL;
+
 				PBLList::HEAD($this->_bootSequence);
 				do
 				{
@@ -340,18 +295,10 @@ class PBProcess extends PBObject
 
 		switch (SERVICE_EXEC_MODE)
 		{
-			case 'INSTALL':
-				$module->prepareInstall($moduleRequest);
+			case 'EVENT':
+				$module->prepareEvent($moduleRequest);
 				break;
-			case 'UPDATE':
-				$module->prepareUpdate($moduleRequest);
-				break;
-			case 'PATCH':
-				$module->preparePatch($moduleRequest);
-				break;
-			case 'UNINSTALL':
-				$module->prepareUninstall($moduleRequest);
-				break;
+
 			case 'NORMAL':
 			default:
 				$module->prepare($moduleRequest);
@@ -431,18 +378,10 @@ class PBProcess extends PBObject
 
 				switch (SERVICE_EXEC_MODE)
 				{
-					case 'INSTALL':
-						$this->_attachedModules[$handle]->prepareInstall($request);
+					case 'EVENT':
+						$this->_attachedModules[$handle]->prepareEvent($request);
 						break;
-					case 'UPDATE':
-						$this->_attachedModules[$handle]->prepareUpdate($request);
-						break;
-					case 'PATCH':
-						$this->_attachedModules[$handle]->preparePatch($request);
-						break;
-					case 'UNINSTALL':
-						$this->_attachedModules[$handle]->prepareUninstall($request);
-						break;
+
 					case 'NORMAL':
 					default:
 						$this->_attachedModules[$handle]->prepare($request);

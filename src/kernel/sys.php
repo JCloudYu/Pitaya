@@ -149,36 +149,29 @@ class SYS extends PBObject
 
 
 			// INFO: Decide module maintenance mode
-			switch (strtoupper($requestMode[0]))
+			if ( strtoupper($requestMode[0]) == 'EVENT' )
 			{
-				case 'INSTALL':
-					array_shift($requestItems);
-					define('SERVICE_EXEC_MODE', 'INSTALL', TRUE);
-					break;
-				case 'UPDATE':
-					array_shift($requestItems);
-					define('SERVICE_EXEC_MODE', 'UPDATE', TRUE);
-					break;
-				case 'PATCH':
-					array_shift($requestItems);
-					define('SERVICE_EXEC_MODE', 'PATCH', TRUE);
-					break;
-				case 'UNINSTALL':
-					array_shift($requestItems);
-					define('SERVICE_EXEC_MODE', 'UNINSTALL', TRUE);
-					break;
-				default:
-					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
-					break;
+				array_shift($argv);
+				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
 			}
-
+			else
+				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 		}
 		else
 		{
 			$service = TO(@array_shift($argv), 'string');
-			$moduleRequest = $argv;
+			$reqMode = strtoupper(@"{$argv[0]}");
 
-			define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+			if ( $reqMode == 'EVENT')
+			{
+				array_shift($argv);
+				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
+			}
+			else
+				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+
+			$moduleRequest = $argv;
 		}
 
 

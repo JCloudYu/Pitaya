@@ -76,7 +76,7 @@
 			foreach ($this->_registeredEvents[$event] as $listener)
 			{
 				$module =  (is_string($listener)) ? PBProcess::Process()->getModule($listener) : $listener;
-				$ret = $module->onEvent($param);
+				$ret = $module->event($param);
 				if ($ret === FALSE) break;
 			}
 

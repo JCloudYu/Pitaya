@@ -16,19 +16,10 @@ class PBModule extends PBObject
 	private $_bootstrap = array();
 
 	public function prepare($moduleRequest, $taggingFlag = NULL) {}
-	public function exec($param, $taggingFlag = NULL)			 { return $param; }
-	public function prepareInstall($moduleRequest, $taggingFlag = NULL)   {}
-	public function prepareUpdate($moduleRequest, $taggingFlag = NULL)    {}
-	public function preparePatch($moduleRequest, $taggingFlag = NULL)     {}
-	public function prepareUninstall($moduleRequest, $taggingFlag = NULL) {}
+	public function exec($param, $taggingFlag = NULL) { return $param; }
 
-	public function install($param, $taggingFlag = NULL)	{ return $param; }
-	public function update($param, $taggingFlag = NULL)		{ return $param; }
-	public function patch($param, $taggingFlag = NULL)		{ return $param; }
-	public function uninstall($param, $taggingFlag = NULL)	{ return $param; }
-
-
-	public function onEvent($event) {}
+	public function prepareEvent($moduleRequest, $targetFlag = NULL) {}
+	public function event($event) { return $event; }
 
 	public function __get_id() {
 
