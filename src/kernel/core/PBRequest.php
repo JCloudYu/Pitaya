@@ -27,9 +27,14 @@
 		private $_incomingRecord = array();
 		private function __construct()
 		{
-			$this->_incomingRecord['command']                = array('argc' => $_SERVER['argc'], 'argv' => $_SERVER['argv']);
+			if ( __SYS_WORKING_ENV__ == SYS_ENV_CLI)
+			{
+				$this->_parsedQuery = array();
+				$this->_parsedData = array();
+			}
 
-			$this->_incomingRecord['rawQuery']				 = $GLOBALS['rawRequest'];
+			$this->_incomingRecord['command']                = array('argc' => @$_SERVER['argc'], 'argv' => @$_SERVER['argv']);
+			$this->_incomingRecord['rawQuery']				 = @$GLOBALS['rawRequest'];
 
 			$inputCache = tmpfile();
 			$rawDataStream = fopen('php://input', "rb");
@@ -39,9 +44,9 @@
 			$this->_incomingRecord['rawDataStream']			 = $inputCache;
 
 			$this->_incomingRecord['request']['method']		 = strtoupper(@"{$_SERVER['REQUEST_METHOD']}");
-			$this->_incomingRecord['request']['query']		 = $GLOBALS['request'];
+			$this->_incomingRecord['request']['query']		 = @$GLOBALS['request'];
 			$this->_incomingRecord['request']['data']		 = NULL;
-			$this->_incomingRecord['request']['service']	 = $GLOBALS['service'];
+			$this->_incomingRecord['request']['service']	 = @$GLOBALS['service'];
 			$this->_incomingRecord['request']['files']		 = @$_FILES;
 			$this->_incomingRecord['request']['post']		 = $_POST;
 			$this->_incomingRecord['request']['get']		 = $_GET;
