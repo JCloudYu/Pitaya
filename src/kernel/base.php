@@ -1,6 +1,5 @@
 <?php
-	$GLOBALS['invokeTime'] = time();
-
+	$GLOBALS['invokeTime'] = $_SERVER['REQUEST_TIME'];
 
 
 	// INFO: Environmental independent constants
@@ -22,6 +21,9 @@
 	// INFO: Execution environment
 	if ( isset($_SERVER['SHELL']) )
 	{
+		array_shift($_SERVER['argv']);
+		$_SERVER['argc'] = count($_SERVER['argv']);
+
 		define('__ROOT__', getcwd(), TRUE);
 		define('__SYS_WORKING_ENV__', SYS_ENV_CLI, TRUE);
 		define('EOL', "\n", TRUE);
