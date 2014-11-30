@@ -245,6 +245,9 @@ class PBProcess extends PBObject
 					if ( !is_array($dataInput) )
 						$dataInput = array('propagation' => TRUE, 'data' => $dataInput);
 					$dataInput['propagation'] = !empty($dataInput['propagation']);
+
+					// INFO: Stop propagation
+					if ( empty($dataInput['propagation']) ) break;
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
