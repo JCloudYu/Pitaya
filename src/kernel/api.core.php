@@ -13,9 +13,12 @@
 			{
 				$_cachedPath = array();
 
-				if (empty($GLOBALS['custPath'])) $GLOBALS['custPath'] = array();
-				foreach ($GLOBALS['custPath'] as $identifier => $path)
-					$_cachedPath[$identifier] = is_string($path) ? $path : __ROOT__;
+				if (empty($GLOBALS['extPath'])) $GLOBALS['extPath'] = array();
+				foreach ($GLOBALS['extPath'] as $identifier => $path)
+				{
+					if ( !is_string($path) ) continue;
+					$_cachedPath[$identifier] = $path;
+				}
 
 
 				$list = scandir(__ROOT__);
@@ -29,22 +32,12 @@
 
 
 				// INFO: service and share are reserved keywords
-				if (empty($GLOBALS['servicePath']))
-					$GLOBALS['servicePath'] = __WEB_ROOT__ . '/Services';
-
-				$_cachedPath['service'] = "{$GLOBALS['servicePath']}";
-
-
+				$_cachedPath['service'] = (empty($GLOBALS['servicePath'])) ? __WEB_ROOT__ . '/Services' : "{$GLOBALS['servicePath']}";
+				$_cachedPath['share']	= (empty($GLOBALS['sharePath'])) ?   __WEB_ROOT__ . '/Share'	: "{$GLOBALS['sharePath']}";
+				$_cachedPath['data']	= (empty($GLOBALS['dataPath'])) ?	 __WEB_ROOT__ . '/Data'		: "{$GLOBALS['dataPath']}";
+				$_cachedPath['root']	= __WEB_ROOT__;
 
 
-				if (empty($GLOBALS['sharePath']))
-					$GLOBALS['sharePath'] = __WEB_ROOT__ . '/Share';
-
-				$_cachedPath['share'] = (is_dir($GLOBALS['sharePath'])) ? "{$GLOBALS['sharePath']}" : '';
-
-
-
-				$_cachedPath['root'] = __WEB_ROOT__;
 
 				return function($package = 'root') use ($_cachedPath) {
 					$pCache = array_key_exists("{$package}", $_cachedPath) ? $_cachedPath[$package] : '';

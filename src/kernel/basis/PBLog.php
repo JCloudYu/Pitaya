@@ -54,7 +54,7 @@
 
 		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('share.log', (empty($logFileName) ? "service.log" : $logFileName));
+			$logPath = path('data.log', (empty($logFileName) ? "service.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, '', $options);
@@ -62,7 +62,7 @@
 
 		public static function ERRLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('share.log', (empty($logFileName) ? "error.log" : $logFileName));
+			$logPath = path('data.log', (empty($logFileName) ? "error.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'ERROR', $options);
@@ -70,7 +70,7 @@
 
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('share.log', (empty($logFileName) ? "system.log" : $logFileName));
+			$logPath = path('data.log', (empty($logFileName) ? "system.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SYS', $options);
@@ -78,7 +78,7 @@
 
 		public static function ShareLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('share.log', (empty($logFileName) ? "share.log" : $logFileName));
+			$logPath = path('data.log', (empty($logFileName) ? "share.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SHARE', $options);
@@ -86,7 +86,7 @@
 
 		public static function CustomLog($message, $cate = 'CUSTOM', $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('share.log', (empty($logFileName) ? "custom.log" : $logFileName));
+			$logPath = path('data.log', (empty($logFileName) ? "custom.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, empty($cate) ? 'CUSTOM' : "{$cate}", $options);
