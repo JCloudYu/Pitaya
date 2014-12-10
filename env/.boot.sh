@@ -1,5 +1,9 @@
 #!/bin/bash
 
+PREV_WD=$(pwd)
+cd $(dirname "$0")
+CURR_WD=$(pwd)
+
 BOOT_TIME=($(cat /proc/stat | grep btime))
 BOOT_TIME=${BOOT_TIME[1]}
 
