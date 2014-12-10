@@ -1,15 +1,16 @@
 <?php
-
-	// Example of the service path
-	// $GLOBALS['servicePath'] = (__OS__ == 'WIN') ? 'E:/path/to/service/folder' : '/path/to/service/folder';
-
-	// This is the default service path, you can assign customized path... with proper permissions
-	$GLOBALS['servicePath'] = __DIR__ . '/Services';
-	$GLOBALS['sharePath'] = __DIR__ . '/Share';
+	// $GLOBALS['servicePath'] = __DIR__ . '/Services';
+	// $GLOBALS['sharePath']	= __DIR__ . '/Share';
+	// $GLOBALS['dataPath']	= __DIR__ . '/Data';
+	/*
+	 	$GLOBALS['extPath'] = array(
+			'tmp' => '/tmp',
+		);
+	 */
 
 
 	//define("__DEFAULT_SERVICE__", 'index', TRUE);
-	//define("__DEBUG_MODE__", TRUE, TRUE);
-	//define("__DEBUG_CONSOLE_WIDTH__", 350, TRUE);
+	//define("__DEBUG_MODE__", FALSE, TRUE);
+	//define("__DEBUG_CONSOLE_WIDTH__", 200, TRUE);
 	//define("__LOG_EXCEPTION__", FALSE, TRUE);
-	//define("__THROW_EXCEPTION__", TRUE, TRUE);
+	//define("__THROW_EXCEPTION__", FALSE, TRUE);
