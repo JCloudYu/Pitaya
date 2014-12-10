@@ -32,10 +32,10 @@
 
 
 				// INFO: service and share are reserved keywords
-				$_cachedPath['service'] = (empty($GLOBALS['servicePath'])) ? __WEB_ROOT__ . '/Services' : "{$GLOBALS['servicePath']}";
-				$_cachedPath['share']	= (empty($GLOBALS['sharePath'])) ?   __WEB_ROOT__ . '/Share'	: "{$GLOBALS['sharePath']}";
-				$_cachedPath['data']	= (empty($GLOBALS['dataPath'])) ?	 __WEB_ROOT__ . '/Data'		: "{$GLOBALS['dataPath']}";
-				$_cachedPath['root']	= __WEB_ROOT__;
+				$GLOBALS['servicePath'] = $_cachedPath['service'] = (empty($GLOBALS['servicePath'])) ? __WEB_ROOT__ . '/Services' : "{$GLOBALS['servicePath']}";
+				$GLOBALS['sharePath']	= $_cachedPath['share']	  = (empty($GLOBALS['sharePath'])) ?   __WEB_ROOT__ . '/Share'	  : "{$GLOBALS['sharePath']}";
+				$GLOBALS['dataPath']	= $_cachedPath['data']	  = (empty($GLOBALS['dataPath'])) ?	   __WEB_ROOT__ . '/Data'	  : "{$GLOBALS['dataPath']}";
+										  $_cachedPath['root']	  = __WEB_ROOT__;
 
 
 

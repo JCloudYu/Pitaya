@@ -97,7 +97,8 @@
 	unset($GLOBALS['randomCert']);
 	unset($GLOBALS['servicePath']);
 	unset($GLOBALS['sharePath']);
-	unset($GLOBALS['custPath']);
+	unset($GLOBALS['dataPath']);
+	unset($GLOBALS['extPath']);
 	unset($GLOBALS['invokeTime']);
 
 
