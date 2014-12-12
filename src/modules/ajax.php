@@ -1,5 +1,6 @@
 <?php
 	using('kernel.core.PBModule');
+	using('sys.net.PBHTTP');
 
 	class ajax extends PBModule
 	{
@@ -28,13 +29,6 @@
 				$ajaxReturn = array_merge($ajaxReturn, $param);
 			}
 
-			$this->respondJSON($ajaxReturn);
-		}
-
-		public function respondJSON($jsonData)
-		{
-			header("Content-type: application/json");
-			$response = json_encode($jsonData);
-			echo "$response";
+			PBHTTP::ResponseJSON($ajaxReturn);
 		}
 	}
