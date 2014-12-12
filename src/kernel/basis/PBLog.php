@@ -182,7 +182,7 @@ SQL
 				$remoteIp = RemoteIP(PBRequest::Request()->server, TRUE, TRUE);
 
 			// INFO:
-			if (__SYS_WORKING_ENV__ === SYS_ENV_CLI)
+			if (SYS_WORKING_ENV === SYS_ENV_CLI)
 			{
 				$route = 'CLI';
 

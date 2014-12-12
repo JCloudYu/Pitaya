@@ -25,13 +25,13 @@
 		$_SERVER['argc'] = count($_SERVER['argv']);
 
 		define('__ROOT__', getcwd(), TRUE);
-		define('__SYS_WORKING_ENV__', SYS_ENV_CLI, TRUE);
+		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE);
 		define('EOL', "\n", TRUE);
 	}
 	else
 	{
 		define('__ROOT__', dirname($_SERVER["SCRIPT_FILENAME"]), TRUE);
-		define('__SYS_WORKING_ENV__', SYS_ENV_NET, TRUE);
+		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE);
 		define('EOL', '<br />', TRUE);
 	}
 
@@ -79,7 +79,7 @@
 
 
 	// INFO: Include configurations according working environment
-	require_once __ROOT__ . "/kernel/" . ( (__SYS_WORKING_ENV__ == SYS_ENV_CLI) ? "cli.config.php" : "net.config.php" );
+	require_once __ROOT__ . "/kernel/" . ( (SYS_WORKING_ENV == SYS_ENV_CLI) ? "cli.config.php" : "net.config.php" );
 
 
 

@@ -27,7 +27,7 @@
 		private $_incomingRecord = array();
 		private function __construct()
 		{
-			if ( __SYS_WORKING_ENV__ == SYS_ENV_CLI)
+			if ( SYS_WORKING_ENV == SYS_ENV_CLI)
 			{
 				$this->_parsedQuery = array();
 				$this->_parsedData = array();

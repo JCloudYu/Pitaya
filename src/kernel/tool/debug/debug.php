@@ -9,12 +9,12 @@ class Debug
 {
 	public static function VarDumpParent() {
 
-		echo self::VDump(func_get_args(), (__SYS_WORKING_ENV__ == SYS_ENV_NET), TRUE);
+		echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET), TRUE);
 	}
 
 	public static function VarDump() {
 
-		echo self::VDump(func_get_args(), (__SYS_WORKING_ENV__ == SYS_ENV_NET));
+		echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET));
 	}
 
 	public static function VarDumpParentString() {

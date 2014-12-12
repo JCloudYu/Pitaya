@@ -89,7 +89,7 @@ class SYS extends PBObject
 
 	public function __judgeMainService($argc = 0, $argv = NULL)
 	{
-		if ( __SYS_WORKING_ENV__ == SYS_ENV_NET )
+		if ( SYS_WORKING_ENV == SYS_ENV_NET )
 		{
 			// INFO: Parse URL
 			//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ class SYS extends PBObject
 
 
 			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+			$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 			return;
 		}
 
@@ -205,7 +205,7 @@ class SYS extends PBObject
 
 
 			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+			$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 			return;
 		}
 
@@ -235,7 +235,7 @@ class SYS extends PBObject
 
 
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 				return;
 			}
 
@@ -259,7 +259,7 @@ class SYS extends PBObject
 
 
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = (__SYS_WORKING_ENV__ == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 				return;
 			}
 		}
