@@ -18,12 +18,6 @@
 
 		private $_prop = array();
 
-		public function event($event)
-		{
-			$this->exec($event['data']);
-			$event['propagation'] = FALSE;
-			return $event;
-		}
 		public function exec($param)
 		{
 			$js = array('prepend' => '', 'append' => '', 'file' => '');

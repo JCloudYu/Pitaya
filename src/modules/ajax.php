@@ -7,13 +7,6 @@
 		const STATUS_NORMAL	=  0;
 		const STATUS_ERROR 	= -1;
 
-		public function event($event)
-		{
-			$this->exec($event['data']);
-			$event['propagation'] = FALSE;
-			return $event;
-		}
-
 		public function exec($param)
 		{
 			if ($param === NULL) return;

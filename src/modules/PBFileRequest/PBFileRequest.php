@@ -29,17 +29,10 @@
 
 
 
-		public function prepareEvent($moduleRequest) { $this->prepare($moduleRequest); }
 		public function prepare($moduleRequest) {
 			$this->_targetPath = (is_array($moduleRequest)) ? implode('/', $moduleRequest) : "{$moduleRequest}";
 		}
 
-		public function event($event)
-		{
-			$this->exec($event['data']);
-			$event['propagation'] = FALSE;
-			return $event;
-		}
 		public function exec()
 		{
 			$CONSTANT = PBConstant::Constant();

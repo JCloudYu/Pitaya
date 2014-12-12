@@ -58,7 +58,6 @@ class req extends PBModule
 	public function __get_relPath() { return $this->_relPath; }
 	public function __set_relPath($value) { $this->_relPath = $value; }
 
-	public function prepareEvent($moduleRequest) { $this->prepare($moduleRequest); }
 	public function prepare($moduleRequest)
 	{
 		if (empty($this->_acceptTypes)) $this->_acceptTypes = json_decode(self::DEFAULT_ACCEPTABLE_TYPES, TRUE);
@@ -72,12 +71,6 @@ class req extends PBModule
 			$this->_request = $moduleRequest;
 	}
 
-	public function event($event)
-	{
-		$this->exec($event['data']);
-		$event['propagation'] = FALSE;
-		return $event;
-	}
 	public function exec($param) {
 
 		$rootPath = empty($this->_relPath) ? __WORKING_ROOT__ : "{$this->_relPath}";
