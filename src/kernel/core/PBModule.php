@@ -47,7 +47,7 @@ class PBModule extends PBObject
 		return $this->_process;
 	}
 
-	protected function __set_bootStrap($value){
+	protected function __set_bootstrap($value){
 
 		if(!is_array($value))
 			$this->_bootstrap = array();
@@ -55,7 +55,7 @@ class PBModule extends PBObject
 			$this->_bootstrap = $value;
 	}
 
-	protected function __get_bootStrap(){
+	protected function __get_bootstrap(){
 
 		return $this->_bootstrap;
 	}
