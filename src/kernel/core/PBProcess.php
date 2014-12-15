@@ -244,6 +244,10 @@ class PBProcess extends PBObject
 					$dataInput = $this->_attachedModules[$moduleHandle]->event($dataInput);
 					if ( !is_array($dataInput) )
 						$dataInput = array('propagation' => TRUE, 'data' => $dataInput);
+					else
+					if ( !isset($dataInput['propagation']) )
+						$dataInput['propagation'] = TRUE;
+					
 					$dataInput['propagation'] = !empty($dataInput['propagation']);
 
 					// INFO: Stop propagation
