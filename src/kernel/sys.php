@@ -351,6 +351,12 @@ class SYS extends PBObject
 
 
 
+		$dataPath = "data.modules.{$chiefModule}.{$moduleName}";
+		$dataSubPath = "data.modules.{$chiefModule}.{$chiefModule}";
+		$dataStoragePath = "data.modules.{$chiefModule}";
+
+
+
 		$servicePath = "service.{$chiefModule}";
 		$serviceSubModulePath = "service.{$chiefModule}.{$moduleName}";
 		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
@@ -392,6 +398,15 @@ class SYS extends PBObject
 		else
 		if($serviceInternalModuleNestedPath !== NULL && available($serviceInternalModuleNestedPath))
 			using($serviceInternalModuleNestedPath);
+		else
+		if(available($dataPath))
+			using($dataPath);
+		else
+		if(available($dataSubPath))
+			using($dataSubPath);
+		else
+		if(available($dataStoragePath))
+			using($dataStoragePath);
 		else
 		if(available($sharePath))
 			using($sharePath);
