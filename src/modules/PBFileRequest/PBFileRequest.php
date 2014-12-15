@@ -48,6 +48,21 @@
 
 
 
+			// INFO: Basic Cache Control
+			$fileETag = fileinode( $filePath );
+			$fileTime = gmstrftime( "%a, %d %b %Y %T %Z", filemtime( $filePath ) );
+
+			$headerETag   = @PBRequest::Request()->server['HTTP_IF_NONE_MATCH'];
+			$headerFTime = @PBRequest::Request()->server['HTTP_IF_MODIFIED_SINCE'];
+
+			if ( ( $headerETag == "\"{$fileETag}\"" ) && ($headerFTime == $fileTime) )
+			{
+				header( 'HTTP/1.1 304 Not Modified' );
+				exit(0);
+			}
+
+
+
 			// INFO: Get file info and http range info
 			$ranges	  = PBRequest::Request()->range;
 
@@ -69,6 +84,8 @@
 				header("HTTP/1.1 200 OK");
 				header("Content-Type: {$this->_acceptableExt[$ext]}");
 				header("Content-Length: {$fileSize}");
+				header("Last-Modified: {$fileTime}");
+				header("ETag: \"{$fileETag}\"");
 
 				PBStream::ChunkStream($outStream, $fileStream, array('from' => 0, 'to' => $fileSize-1));
 
@@ -124,8 +141,8 @@
 				}
 
 				$ranges[$idx] = array('from' => $from, 'to' => $to);
-				$ragneSize += strlen(CRLF . "--{$boundaryToken}" . CRLF);
-				$ragneSize += strlen("Content-Type: {$this->_acceptableExt[$ext]}" . CRLF);
+				$rangeSize += strlen(CRLF . "--{$boundaryToken}" . CRLF);
+				$rangeSize += strlen("Content-Type: {$this->_acceptableExt[$ext]}" . CRLF);
 				$rangeSize += strlen("Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}" . CRLF . CRLF);
 
 				$rangeSize += ($to - $from) + 1;
