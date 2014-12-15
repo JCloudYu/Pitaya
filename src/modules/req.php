@@ -83,7 +83,25 @@ class req extends PBModule
 
 			if(in_array($ext, array_keys($this->_acceptTypes)))
 			{
+				// INFO: Basic Cache Control
+				$fileETag = fileinode( $filePath );
+				$fileTime = gmstrftime( "%a, %d %b %Y %T %Z", filemtime( $filePath ) );
+
+				$headerETag   = @PBRequest::Request()->server['HTTP_IF_NONE_MATCH'];
+				$headerFTime  = @PBRequest::Request()->server['HTTP_IF_MODIFIED_SINCE'];
+
+				if ( ( $headerETag == "\"{$fileETag}\"" ) && ($headerFTime == $fileTime) )
+				{
+					header( 'HTTP/1.1 304 Not Modified' );
+					exit(0);
+				}
+
+				$fileSize = filesize($filePath);
+
 				header("Content-Type: ".$this->_acceptTypes[$ext]);
+				header("Content-Length: {$fileSize}");
+				header("Last-Modified: {$fileTime}");
+				header("ETag: \"{$fileETag}\"");
 				readfile($filePath);
 
 				exit();
