@@ -3,10 +3,13 @@
 	"CSS":		"text/css",
 	"HTML":		"text/html",
 	"TXT":		"text/plain",
+	"RTF":		"application/rtf",
 	"CSV":		"text/csv",
 	"HTM":		"text/html",
 	"VCARD":	"text/vcard",
 	"VCF":		"text/vcard",
+
+	"BIB":		"text/x-bibtex",
 
 	"PDF":		"application/pdf",
 	"PS":		"application/postscript",
@@ -14,24 +17,41 @@
 	"JSON":		"application/json",
 	"XML":		"application/xml",
 
+	"RSS":		"application/rss+xml",
+
 	"BMP":		"image/bmp",
 	"JPG":		"image/jpeg",
+	"JPEG":		"image/jpeg",
 	"PNG":		"image/png",
 	"ICO":		"image/x-icon",
 	"GIF":		"image/gif",
 	"TIF":		"image/tiff",
 	"TIFF":		"image/tiff",
+	"SVG":		"image/svg+xml",
+	"SVGZ":		"image/svg+xml",
+
+	"DOC":		"application/msword",
+	"DOCX":		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	"XLS":		"application/vnd.ms-excel",
+	"XLSX":		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	"PPT":		"application/vnd.ms-powerpoint",
+	"PPTX":		"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+
 
 	"WAV":		"audio/wav",
 	"MP3":		"audio/mpeg",
 	"OGG":		"audio/ogg",
 	"AAC":		"audio/x-aac",
+	"MID":		"audio/midi",
+	"MIDI":		"audio/midi",
 
 	"AVI":		"video/avi",
 	"MP4":		"video/mp4",
 	"WEBM":		"video/webm",
+	"MPEG":		"video/mpeg",
 
 	"ZIP":		"application/zip",
 	"GZ":		"application/gzip",
-	"TGZ":		"application/gzip"
+	"TGZ":		"application/gzip",
+	"RAR":		"application/rar"
 }
