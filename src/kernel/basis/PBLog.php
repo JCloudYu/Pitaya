@@ -14,6 +14,20 @@
 			$this->_logStream = self::ObtainStream($logPath);
 		}
 
+
+		public static function STDERR($msg, $newLine = TRUE)
+		{
+			if ( $newLine ) $msg = "{$msg}\n";
+			fwrite(STDERR, $msg);
+		}
+
+		public static function STDOUT($msg, $newLine = TRUE)
+		{
+			if ( $newLine ) $msg = "{$msg}\n";
+			fwrite(STDOUT, $msg);
+		}
+
+
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
 		{
 			if (!is_array($options)) $options = array();
