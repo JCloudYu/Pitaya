@@ -76,6 +76,6 @@
 			shell_exec('stty ' . $oldStyle);
 
 			// Return the password
-			return $password;
+			return rtrim($password, "\n");
 		}
 	}
