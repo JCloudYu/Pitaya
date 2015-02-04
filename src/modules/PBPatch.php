@@ -24,15 +24,27 @@
 
 			if (ParseVersion("{$param}") === NULL)
 			{
+				if ( SYS_WORKING_ENV == SYS_ENV_CLI )
+					PBStdIO::STDERR("Given parameter is not a valid version format! ({$param})");
+
 				PBLog::ERRLog("Given parameter is not a valid version format!");
+
 				return;
 			}
 
 			$patchDir = path($this->_patchDir);
-			if (!is_dir($patchDir))
+			if ( !is_dir($patchDir) )
 			{
-				PBLog::ERRLog("Patch directory doesn't exist!");
-				return;
+				if ( !is_dir($this->_patchDir) )
+				{
+					if ( SYS_WORKING_ENV == SYS_ENV_CLI )
+						PBStdIO::STDERR("Patch directory is not a valid directory! ({$this->_patchDir})");
+
+					PBLog::ERRLog("Patch directory is not a valid directory!");
+					return;
+				}
+
+				$patchDir = $this->_patchDir;
 			}
 
 			$patchList = array();
@@ -50,7 +62,7 @@
 
 			if (empty($patchList))
 			{
-				PBPatch::Log("Nothing to patch!", FALSE);
+				PBStdIO::STDOUT("Nothing to patch!");
 				return;
 			}
 
@@ -60,41 +72,16 @@
 			$CWD = getcwd();
 			chdir($patchDir);
 
-			PBPatch::Log("Start patching...", FALSE);
-			PBPatch::Log("", FALSE);
-			PBPatch::INDENT();
-
-
-
+			PBStdIO::STDOUT("Start patching...");
 			foreach ($patchList as $version)
 			{
-				PBPatch::Log("Patching {$version}...", FALSE);
-				PBPatch::INDENT();
-
-					ScriptOut("{$patchDir}/{$version}.php");
-
-				PBPatch::UNINDENT();
-				PBPatch::Log("Patch done!", FALSE);
-				PBPatch::Log("", FALSE);
+				PBStdIO::STDOUT("Patching {$version}...");
+				ScriptOut("{$patchDir}/{$version}.php");
+				PBStdIO::STDOUT("");
 			}
 
-
-
-			PBPatch::UNINDENT();
-			PBPatch::Log("All patches are done!!", FALSE);
+			PBStdIO::STDOUT("Patch done!");
 
 			chdir($CWD);
-		}
-
-
-
-		private static $_indentedTabs = 0;
-		public static function INDENT() 	{ self::$_indentedTabs++; }
-		public static function UNINDENT()	{ self::$_indentedTabs--; if (self::$_indentedTabs < 0) self::$_indentedTabs = 0; }
-
-		public static function Log($msg, $logPos = FALSE)
-		{
-			PBLog::ShareLog(str_repeat("\t", self::$_indentedTabs) . $msg, $logPos, 'update.log');
-			echo str_repeat(str_repeat("&nbsp;", 8), self::$_indentedTabs) . $msg . EOL;
 		}
 	}
