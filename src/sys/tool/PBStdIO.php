@@ -41,7 +41,10 @@
 					$char = fgetc(STDIN);
 
 					if ( $char === "\n")
+					{
+						fwrite(STDOUT, "\n");
 						break;
+					}
 					else
 					if ( ord($char) === 127 )
 					{
