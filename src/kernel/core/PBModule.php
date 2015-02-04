@@ -15,9 +15,6 @@ class PBModule extends PBObject
 
 	private $_bootstrap = array();
 
-	protected $_status	= 0;
-	protected $_data	= NULL;
-
 
 	public function prepare($moduleRequest, $taggingFlag = NULL) {}
 	public function exec($param, $taggingFlag = NULL) { return $param; }
