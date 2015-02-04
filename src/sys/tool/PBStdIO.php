@@ -17,7 +17,7 @@
 			fwrite(STDOUT, $msg);
 		}
 
-		public static function READ($msg = "", $isPassword = FALSE, $starts = FALSE)
+		public static function READ($msg = "", $isPassword = FALSE, $stars = FALSE)
 		{
 			if ( !empty($msg) ) self::STDOUT("{$msg}", FALSE);
 
