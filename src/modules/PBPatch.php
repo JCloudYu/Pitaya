@@ -71,15 +71,12 @@
 
 			$CWD = getcwd();
 			chdir($patchDir);
-
-			PBStdIO::STDOUT("Start patching...");
+			
 			foreach ($patchList as $version)
 			{
 				PBStdIO::STDOUT("Patching to {$version}...");
 				ScriptOut("{$patchDir}/{$version}.php");
 			}
-
-			PBStdIO::STDOUT("Patch done!");
 
 			chdir($CWD);
 		}
