@@ -75,9 +75,8 @@
 			PBStdIO::STDOUT("Start patching...");
 			foreach ($patchList as $version)
 			{
-				PBStdIO::STDOUT("Patching {$version}...");
+				PBStdIO::STDOUT("Patching to {$version}...");
 				ScriptOut("{$patchDir}/{$version}.php");
-				PBStdIO::STDOUT("");
 			}
 
 			PBStdIO::STDOUT("Patch done!");
