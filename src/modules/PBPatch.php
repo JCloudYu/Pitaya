@@ -49,12 +49,20 @@
 
 			$patchList = array();
 			$dh  = opendir($patchDir);
-			while (false !== ($filename = readdir($dh)))
+			while ( ($filename = readdir($dh)) !== FALSE )
 			{
-				if (is_dir("{$patchDir}/{$filename}") || (substr($filename, -4) != ".php")) continue;
+				if ( is_dir("{$patchDir}/{$filename}") )
+				{
+					if ( !is_file("{$patchDir}/{$filename}/{$filename}.php") ) continue;
+					$result = CompareVersion("{$filename}", "{$param}");
+				}
+				else
+				{
+					if ( substr($filename, -4) != ".php" ) continue;
+					$filename = substr($filename, 0, -4);
+					$result = CompareVersion("{$filename}", "{$param}");
+				}
 
-				$filename = substr($filename, 0, -4);
-				$result = CompareVersion("{$filename}", "{$param}");
 
 				if ($result === FALSE || $result <= 0) continue;
 				$patchList[] = $filename;
@@ -70,14 +78,22 @@
 
 
 			$CWD = getcwd();
-			chdir($patchDir);
-			
 			foreach ($patchList as $version)
 			{
 				PBStdIO::STDOUT("Patching to {$version}...");
-				ScriptOut("{$patchDir}/{$version}.php");
-			}
 
+				$relPath = "{$patchDir}/{$version}";
+				if ( is_dir($relPath) )
+				{
+					chdir($relPath);
+					ScriptOut("{$patchDir}/{$version}/{$version}.php");
+				}
+				else
+				{
+					chdir($patchDir);
+					ScriptOut("{$patchDir}/{$version}.php");
+				}
+			}
 			chdir($CWD);
 		}
 	}
