@@ -19,10 +19,17 @@
 	{
 		static $__singleton_db = NULL;
 
-		if ($__singleton_db) return $__singleton_db;
+		if ( $__singleton_db && !in_array('FORCE_CREATE', $option) )
+			return $__singleton_db;
 
 		if ($param)
 		{
+			if ( $__singleton_db )
+			{
+				unset($__singleton_db);
+				$__singleton_db = NULL;
+			}
+
 			$dsn = ExtPDO::DSN($param['host'], $param['db'], $param['port']);
 			$__singleton_db = new ExtPDO($dsn, $param['account'], $param['password'], $option);
 			$__singleton_db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
@@ -31,6 +38,15 @@
 		}
 
 		return NULL;
+	}
+
+	function CONNECT($param = NULL, $option = array('CREATE_VAR'))
+	{
+		$dsn = ExtPDO::DSN($param['host'], $param['db'], $param['port']);
+		$connection = new ExtPDO($dsn, $param['account'], $param['password'], $option);
+		$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+		$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		return $connection;
 	}
 
 	function LIMIT($SQL, $page = NULL, $pageSize = NULL, &$pageInfo = NULL)
