@@ -17,9 +17,9 @@
 		public function prepareEvent($moduleRequest) { $this->_targetVersion = $moduleRequest; }
 
 		public function exec($param) { return $this->event($param); }
-		public function event($param = NULL)
+		public function event($param)
 		{
-			if ($this->_targetVersion !== NULL && $param === NULL)
+			if ($this->_targetVersion !== NULL)
 				$param = $this->_targetVersion;
 
 			if (ParseVersion("{$param}") === NULL)
