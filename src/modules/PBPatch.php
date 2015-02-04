@@ -13,11 +13,11 @@
 
 
 		private $_targetVersion = NULL;
-		public function preparePatch($moduleRequest) { $this->prepareUpdate($moduleRequest); }
-		public function prepareUpdate($moduleRequest) { $this->_targetVersion = $moduleRequest; }
+		public function prepare($moduleRequest) { $this->prepareEvent($moduleRequest); }
+		public function prepareEvent($moduleRequest) { $this->_targetVersion = $moduleRequest; }
 
-		public function patch($param) { return $this->update($param); }
-		public function update($param = NULL)
+		public function exec($param) { return $this->event($param); }
+		public function event($param = NULL)
 		{
 			if ($this->_targetVersion !== NULL && $param === NULL)
 				$param = $this->_targetVersion;
