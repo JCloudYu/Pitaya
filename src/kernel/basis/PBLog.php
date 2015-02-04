@@ -5,6 +5,7 @@
  */
 
 	using('ext.net.ip');
+	using('sys.tool.PBStdIO');
 
 	final class PBLog
 	{
@@ -15,17 +16,8 @@
 		}
 
 
-		public static function STDERR($msg, $newLine = TRUE)
-		{
-			if ( $newLine ) $msg = "{$msg}\n";
-			fwrite(STDERR, $msg);
-		}
-
-		public static function STDOUT($msg, $newLine = TRUE)
-		{
-			if ( $newLine ) $msg = "{$msg}\n";
-			fwrite(STDOUT, $msg);
-		}
+		public static function STDERR($msg, $newLine = TRUE) { PBStdIO::STDERR($msg, $newLine); }
+		public static function STDOUT($msg, $newLine = TRUE) { PBStdIO::STDOUT($msg, $newLine); }
 
 
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
