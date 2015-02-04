@@ -30,6 +30,7 @@
 			{
 				shell_exec('stty -echo');
 				$password = fgets(STDIN);
+				fwrite(STDOUT, "\n");
 			}
 			else
 			{
