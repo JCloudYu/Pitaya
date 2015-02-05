@@ -16,10 +16,6 @@
 		}
 
 
-		public static function STDERR($msg, $newLine = TRUE) { PBStdIO::STDERR($msg, $newLine); }
-		public static function STDOUT($msg, $newLine = TRUE) { PBStdIO::STDOUT($msg, $newLine); }
-
-
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
 		{
 			if (!is_array($options)) $options = array();
@@ -52,6 +48,8 @@
 
 			return $msg;
 		}
+
+
 
 
 
