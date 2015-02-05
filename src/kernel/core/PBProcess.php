@@ -283,37 +283,50 @@ class PBProcess extends PBObject
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
 		// INFO: Reference the definition file comes along with the service
-		if(available("service.env")) using("service.env");
+		if( available("service.env") ) using("service.env");
 
-		// INFO: System will first look for [ main ] module in the service folder
-		// INFO: If the main module doesn't exist, look for module with the service name instead
-		$module = $this->_system->acquireModule($moduleName, $moduleName, TRUE);
 
-		$module->__processInst = $this;
-
-		// INFO: Preparing the module will force the module to it's corresponding bootstrap
-		$moduleId = $module->id;
-		$this->_mainModuleId = $moduleId;
-
-		$this->_attachedModules[$moduleName] = $module;
-		$this->_attachedModules[$moduleId] = $module;
-
-		PBLList::PUSH($this->_bootSequence, array('prepared' => TRUE, 'data' => $moduleId), $moduleId);
-
-		switch (SERVICE_EXEC_MODE)
+		// NOTE: Leading Module
+		if ( defined('LEADING_MODULE') )
 		{
-			case 'EVENT':
-				$module->prepareEvent($moduleRequest);
-				break;
-
-			case 'NORMAL':
-			default:
-				$module->prepare($moduleRequest);
-				break;
+			$leadingModule = $this->_acquireModule(LEADING_MODULE, TRUE);
+			$moduleId =  $leadingModule->id;
+			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $moduleRequest), $moduleId);
 		}
 
+
+		// NOTE: Service Entry Module
+		$entryModule = $this->_acquireModule($moduleName, TRUE);
+		$this->_mainModuleId = $entryModule->id;
+		PBLList::PUSH($this->_bootSequence, array('prepared' => FALSE, 'data' => $this->_mainModuleId, 'request' => $moduleRequest), $this->_mainModuleId);
+
+
+		PBLList::HEAD($this->_bootSequence);
+		do
+		{
+			$data	 = &$this->_bootSequence->data;
+			$handle  = $data['data'];
+			$request = $data['request'];
+			$data['prepared'] = TRUE;
+
+			switch (SERVICE_EXEC_MODE)
+			{
+				case 'EVENT':
+					$this->_attachedModules[$handle]->prepareEvent($request);
+					break;
+
+				case 'NORMAL':
+				default:
+					$this->_attachedModules[$handle]->prepare($request);
+					break;
+			}
+		}
+		while (PBLList::NEXT($this->_bootSequence));
+
+
+
 		// INFO: Get default boot sequence from boot module
-		$this->__bootSequence = $module->__bootSequence;
+		$this->__bootSequence = $entryModule->__bootSequence;
 	}
 
 	// MARK: Friend(SYS)
@@ -374,14 +387,15 @@ class PBProcess extends PBObject
 
 		PBLinkedList::HEAD($this->_bootSequence);
 
-		while (PBLinkedList::NEXT($this->_bootSequence))
+		do
 		{
-			$data	 = $this->_bootSequence->data;
+			$data = &$this->_bootSequence->data;
 
 			if (empty($data['prepared']))
 			{
 				$handle = $data['data'];
 				$request = $data['request'];
+				$data['prepared'] = TRUE;
 
 				switch (SERVICE_EXEC_MODE)
 				{
@@ -396,6 +410,7 @@ class PBProcess extends PBObject
 				}
 			}
 		}
+		while (PBLinkedList::NEXT($this->_bootSequence));
 
 		PBLinkedList::HEAD($this->_bootSequence);
 	}
