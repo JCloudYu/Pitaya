@@ -4,7 +4,7 @@
  * Created by JCloudYu on 2014/07/08 18:59
  */ 
 	using('kernel.core.PBModule');
-	using('sys.tool.PBStream');
+	using('sys.tool.PBStreaming');
 
 	class PBFileRequest extends PBModule
 	{
@@ -87,7 +87,7 @@
 				header("Last-Modified: {$fileTime}");
 				header("ETag: \"{$fileETag}\"");
 
-				PBStream::ChunkStream($outStream, $fileStream, array('from' => 0, 'to' => $fileSize-1));
+				PBStreaming::ChunkStream($outStream, $fileStream, array('from' => 0, 'to' => $fileSize-1));
 
 				fclose($fileStream);
 				fclose($outStream);
@@ -173,7 +173,7 @@
 				echo "Content-Type: {$this->_acceptableExt[$ext]}" . CRLF;
 				echo "Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}" . CRLF . CRLF;
 
-				PBStream::ChunkStream($outStream, $fileStream, $range);
+				PBStreaming::ChunkStream($outStream, $fileStream, $range);
 
 			}
 			echo CRLF . "--{$boundaryToken}--" . CRLF;
@@ -240,7 +240,7 @@
 			header("Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}");
 
 
-			PBStream::ChunkStream($outStream, $fileStream, $range);
+			PBStreaming::ChunkStream($outStream, $fileStream, $range);
 
 			fclose($fileStream);
 			fclose($outStream);

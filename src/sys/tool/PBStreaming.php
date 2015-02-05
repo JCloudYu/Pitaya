@@ -1,10 +1,10 @@
 <?php
 /**
- * 0002.pitaya.workbench - PBFile.php
+ * 0002.pitaya.workbench - PBStreaming.php
  * Created by JCloudYu on 2014/07/09 02:36
  */
 
-	final class PBStream
+	final class PBStreaming
 	{
 		public static function ChunkStream($oStream, $iStream, $range, $packageSize = 1024, $restrict = FALSE)
 		{
