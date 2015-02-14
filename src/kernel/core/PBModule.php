@@ -19,6 +19,9 @@ class PBModule extends PBObject
 	public function prepare($moduleRequest, $taggingFlag = NULL) {}
 	public function exec($param, $taggingFlag = NULL) { return $param; }
 
+	public function prepareShell($moduleRequest, $taggingFlag = NULL) {}
+	public function shell($param, $taggingFlag = NULL) { return $param; }
+
 	public function prepareEvent($moduleRequest, $targetFlag = NULL) {}
 	public function event($event) { return $event; }
 

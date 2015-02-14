@@ -110,6 +110,10 @@ class PBProcess extends PBObject
 					$module->prepareEvent($moduleRequest);
 					break;
 
+				case 'SHELL':
+					$module->prepareShell($moduleRequest);
+					break;
+
 				case 'NORMAL':
 				default:
 					$module->prepare($moduleRequest);
@@ -171,6 +175,10 @@ class PBProcess extends PBObject
 						$module->prepareEvent($moduleRequest);
 						break;
 
+					case 'SHELL':
+						$module->prepareShell($moduleRequest);
+						break;
+
 					case 'NORMAL':
 					default:
 						$module->prepare($moduleRequest);
@@ -208,6 +216,10 @@ class PBProcess extends PBObject
 			{
 				case 'EVENT':
 					$module->prepareEvent($moduleRequest);
+					break;
+
+				case 'SHELL':
+					$module->prepareShell($moduleRequest);
 					break;
 
 				case 'NORMAL':
@@ -252,6 +264,18 @@ class PBProcess extends PBObject
 
 					// INFO: Stop propagation
 					if ( empty($dataInput['propagation']) ) break;
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+
+			case 'SHELL':
+				$dataInput = NULL;
+
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->shell($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
@@ -314,6 +338,11 @@ class PBProcess extends PBObject
 				case 'EVENT':
 					$this->_attachedModules[$handle]->prepareEvent($request);
 					break;
+
+				case 'SHELL':
+					$this->_attachedModules[$handle]->prepareShell($request);
+					break;
+
 
 				case 'NORMAL':
 				default:
@@ -401,6 +430,10 @@ class PBProcess extends PBObject
 				{
 					case 'EVENT':
 						$this->_attachedModules[$handle]->prepareEvent($request);
+						break;
+
+					case 'SHELL':
+						$this->_attachedModules[$handle]->prepareShell($request);
 						break;
 
 					case 'NORMAL':

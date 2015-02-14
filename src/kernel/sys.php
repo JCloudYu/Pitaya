@@ -177,6 +177,9 @@ class SYS extends PBObject
 				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
 			}
 			else
+			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+				define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
+			else
 				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 
 
@@ -200,6 +203,9 @@ class SYS extends PBObject
 				array_shift($moduleRequest);
 				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
 			}
+			else
+			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+				define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
 			else
 				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 
@@ -231,6 +237,9 @@ class SYS extends PBObject
 					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
 				}
 				else
+				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+					define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
+				else
 					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 
 
@@ -254,6 +263,9 @@ class SYS extends PBObject
 					array_shift($moduleRequest);
 					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
 				}
+				else
+				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+					define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
 				else
 					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
 
