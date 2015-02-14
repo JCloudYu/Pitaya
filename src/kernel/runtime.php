@@ -17,3 +17,4 @@
 		define('CMD_MOVE', 'mv', TRUE);
 		define('CMD_COPY', 'cp', TRUE);
 	}
+

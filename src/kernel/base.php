@@ -50,7 +50,7 @@
 
 
 	// INFO: System Core APIs ( using, package, path, available and etc... )
-	require_once __ROOT__ . '/kernel/os.php';
+	require_once __ROOT__ . '/kernel/runtime.php';
 	require_once __ROOT__ . '/kernel/api.core.php';
 	require_once __ROOT__ . '/kernel/api.encrypt.php';
 
