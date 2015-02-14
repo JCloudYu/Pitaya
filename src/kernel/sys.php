@@ -381,6 +381,7 @@ class SYS extends PBObject
 			$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$moduleName}";
 			$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$chiefModule}";
 		}
+		// DEPRECATED: The constants will be removed in v1.4.0
 		else
 		{
 			$custModulePath = defined("__MODULE_PATH__") ? __MODULE_PATH__ : NULL;
