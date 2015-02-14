@@ -18,3 +18,27 @@
 		define('CMD_COPY', 'cp', TRUE);
 	}
 
+
+	final class Termination
+	{
+		const STATUS_SUCCESS			= 0;
+		const STATUS_ERROR				= 1;
+		const STATUS_INCORRECT_USAGE	= 2;
+		const STATUS_NOT_AN_EXECUTABLE	= 126;
+		const STATUS_COMMAND_NOT_FOUND	= 127;
+		const STATUS_SIGNAL_ERROR		= 128;
+
+		private function __construct(){}
+
+		public static function NORMALLY()		 { exit( self::STATUS_SUCCESS ); }
+		public static function WITH_STATUS( $errorCode = self::STATUS_ERROR )
+		{
+			$errorCode = abs($errorCode);
+
+			if ( $errorCode >= self::STATUS_SIGNAL_ERROR )
+				$errorCode = $errorCode % self::STATUS_SIGNAL_ERROR;
+
+			exit( $errorCode );
+		}
+	}
+
