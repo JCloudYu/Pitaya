@@ -2,9 +2,14 @@
 	$GLOBALS['invokeTime'] = $_SERVER['REQUEST_TIME'];
 
 
-	// INFO: Environmental independent constants
+	// DEPRECATED: The constants will be removed in v1.4.0
 	define('SYS_ENV_CLI', 'CMD', TRUE);
 	define('SYS_ENV_NET', 'NET', TRUE);
+
+
+
+	define('EXEC_ENV_CLI',	'CLI', TRUE);
+	define('EXEC_ENV_HTTP', 'HTTP', TRUE);
 
 	define('EON',	"\n",	TRUE);
 	define('EOR',	"\r",	TRUE);
@@ -25,47 +30,35 @@
 		$_SERVER['argc'] = count($_SERVER['argv']);
 
 		define('__ROOT__', getcwd(), TRUE);
-		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE);
+		define('SYS_EXEC_ENV',	  EXEC_ENV_CLI, TRUE);
+
+		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+
 		define('EOL', "\n", TRUE);
 	}
 	else
 	{
 		define('__ROOT__', dirname($_SERVER["SCRIPT_FILENAME"]), TRUE);
-		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE);
+		define('SYS_EXEC_ENV',	  EXEC_ENV_HTTP, TRUE);
+
+		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+
 		define('EOL', '<br />', TRUE);
 	}
 
 	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
 
 
-
-	// INFO: Working operating system
-	(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
-
-	if (__OS__ === 'WIN')
-	{
-		define('CMD_MOVE', 'move', TRUE);
-		define('CMD_COPY', 'copy', TRUE);
-	}
-	else
-	{
-		define('CMD_MOVE', 'mv', TRUE);
-		define('CMD_COPY', 'cp', TRUE);
-	}
-
-
-
 	// INFO: System Core APIs ( using, package, path, available and etc... )
+	require_once __ROOT__ . '/kernel/os.php';
 	require_once __ROOT__ . '/kernel/api.core.php';
 	require_once __ROOT__ . '/kernel/api.encrypt.php';
 
 
 
 	// INFO: Including configuration files
-	$ENV_CONF_FILE = __WEB_ROOT__ . "/config.php";
-	if ( file_exists($ENV_CONF_FILE) )
-		require_once $ENV_CONF_FILE; // ISSUE: We need to verify the configuration data...
-	unset($ENV_CONF_FILE);
+	if ( file_exists(__WEB_ROOT__ . "/config.php") )
+		require_once __WEB_ROOT__ . "/config.php"; // ISSUE: We need to verify the configuration data...
 
 
 
