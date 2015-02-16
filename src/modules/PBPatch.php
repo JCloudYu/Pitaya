@@ -13,11 +13,11 @@
 
 
 		private $_targetVersion = NULL;
-		public function prepare($moduleRequest) { $this->prepareEvent($moduleRequest); }
-		public function prepareEvent($moduleRequest) { $this->_targetVersion = $moduleRequest; }
+		public function prepareShell($moduleRequest) { $this->_targetVersion = $moduleRequest; }
+		public function prepare($moduleRequest) { $this->prepareShell($moduleRequest); }
 
-		public function exec($param) { return $this->event($param); }
-		public function event($param)
+		public function shell($param) { return $this->shell($param); }
+		public function exec($param)
 		{
 			if ($this->_targetVersion !== NULL)
 				$param = $this->_targetVersion;
