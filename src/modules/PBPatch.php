@@ -95,6 +95,8 @@
 					chdir($patchDir);
 					ScriptOut("{$patchDir}/{$version}.php");
 				}
+
+				PBStdIO::STDOUT("Patch done!");
 			}
 			chdir($CWD);
 		}
