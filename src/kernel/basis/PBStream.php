@@ -6,9 +6,9 @@
 	final class PBStream extends PBObject
 	{
 		private $_pipes = array();
-		public function __construct( $resource = NULL ) { $this->Tee( $resource ); }
+		public function __construct( $resource = NULL ) { $this->tee( $resource ); }
 
-		public function Tee( $resource )
+		public function tee( $resource )
 		{
 			if ( $resource === NULL ) return;
 
@@ -36,7 +36,37 @@
 			return $this;
 		}
 
-		public function Write( $string, $length = NULL )
+		public function pop( $close = FALSE )
+		{
+			$stream = @array_pop($this->_pipes);
+
+			if ( $close )
+			{
+				if ( is_resource( $stream ) && get_resource_type($stream) == "stream" )
+					fclose( $stream );
+
+				$stream = NULL;
+			}
+
+			return $stream;
+		}
+
+		public function shift( $close = FALSE )
+		{
+			$stream = @array_shift($this->_pipes);
+
+			if ( $close )
+			{
+				if ( is_resource( $stream ) && get_resource_type($stream) == "stream" )
+					fclose( $stream );
+
+				$stream = NULL;
+			}
+
+			return $stream;
+		}
+
+		public function write( $string, $length = NULL )
 		{
 			foreach ( $this->_pipes as $handle )
 			{
@@ -51,7 +81,7 @@
 			return $this;
 		}
 
-		public function Flush()
+		public function flush()
 		{
 			foreach ( $this->_pipes as $handle )
 			{
@@ -97,11 +127,16 @@
 
 		private function _purgePipes()
 		{
+			$newPipes = array();
 			foreach ( $this->_pipes as $idx => $handle )
 			{
-				if ( !is_resource( $handle ) )
-					unset($this->_pipes[$idx]);
+				if ( is_resource( $handle ) )
+					$newPipes[] = $handle;
 			}
+
+			$old = $this->_pipes;
+			$this->_pipes = $newPipes;
+			unset( $old );
 		}
 		// endregion
 

@@ -21,10 +21,10 @@
 			self::WriteMsg($stream, $msg, $newLine);
 		}
 
-		private static function WriteMsg($stream, $msg, $newLine = TRUE)
+		private static function WriteMsg(PBStream $stream, $msg, $newLine = TRUE)
 		{
 			if ( $newLine ) $msg = "{$msg}\n";
-			$stream->Write($msg)->Flush();
+			$stream->write($msg)->flush();
 		}
 
 
