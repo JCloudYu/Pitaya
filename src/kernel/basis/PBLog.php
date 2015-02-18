@@ -5,7 +5,6 @@
  */
 
 	using('ext.net.ip');
-	using('sys.tool.PBStdIO');
 
 	final class PBLog
 	{

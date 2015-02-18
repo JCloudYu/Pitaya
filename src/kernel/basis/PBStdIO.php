@@ -7,19 +7,31 @@
 	{
 		public static function STDERR($msg, $newLine = TRUE)
 		{
-			if ( $newLine ) $msg = "{$msg}\n";
-			fwrite(STDERR, $msg);
+			static $stream = NULL;
+			if ( !$stream ) $stream = PBStream::STDERR();
+
+			self::WriteMsg($stream, $msg, $newLine);
 		}
 
 		public static function STDOUT($msg, $newLine = TRUE)
 		{
-			if ( $newLine ) $msg = "{$msg}\n";
-			fwrite(STDOUT, $msg);
+			static $stream = NULL;
+			if ( !$stream ) $stream = PBStream::STDOUT();
+
+			self::WriteMsg($stream, $msg, $newLine);
 		}
+
+		private static function WriteMsg($stream, $msg, $newLine = TRUE)
+		{
+			if ( $newLine ) $msg = "{$msg}\n";
+			$stream->Write($msg)->Flush();
+		}
+
+
 
 		public static function READ($msg = "", $isPassword = FALSE, $stars = FALSE)
 		{
-			if ( !empty($msg) ) self::STDOUT("{$msg}", FALSE);
+			if ( !empty($msg) ) fwrite(STDOUT, "{$msg}");
 
 			if ( !$isPassword ) return fgets(STDIN);
 
