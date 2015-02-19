@@ -49,25 +49,17 @@
 	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
 
 
-	// INFO: System Core APIs ( using, package, path, available and etc... )
-	require_once __ROOT__ . '/kernel/runtime.php';
-	require_once __ROOT__ . '/kernel/api.core.php';
-	require_once __ROOT__ . '/kernel/api.encrypt.php';
 
-
-
-	// INFO: Including configuration files
+	// INFO: Read system working environmental configurations
 	if ( file_exists(__WEB_ROOT__ . "/config.php") )
 		require_once __WEB_ROOT__ . "/config.php"; // ISSUE: We need to verify the configuration data...
 
 
 
-	s_define("__DEBUG_MODE__",		FALSE,	TRUE);
-	s_define("__LOG_EXCEPTION__",	TRUE,	TRUE);
-	s_define("__THROW_EXCEPTION__", FALSE,	TRUE);
-
-	s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__'), TRUE);
-	s_define('__DEFAULT_SERVICE__', 		'index', 						TRUE);
+	// INFO: System Core APIs ( using, package, path, available and etc... )
+	require_once __ROOT__ . '/kernel/runtime.php';
+	require_once __ROOT__ . '/kernel/api.core.php';
+	require_once __ROOT__ . '/kernel/api.encrypt.php';
 
 
 

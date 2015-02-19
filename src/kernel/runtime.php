@@ -19,6 +19,15 @@
 	}
 
 
+
+	// INFO: Environmental constants
+	if ( !defined('__DEBUG_MODE__') )		define('__DEBUG_MODE__',		FALSE, TRUE);
+	if ( !defined('__LOG_EXCEPTION__') )	define('__LOG_EXCEPTION__',		TRUE,  TRUE);
+	if ( !defined('__THROW_EXCEPTION__') )	define('__THROW_EXCEPTION__',	FALSE, TRUE);
+
+
+
+	// INFO: Runtime control
 	final class Termination
 	{
 		const STATUS_SUCCESS			= 0;

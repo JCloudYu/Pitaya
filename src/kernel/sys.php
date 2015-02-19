@@ -14,6 +14,19 @@ class SYS extends PBObject
 		// INFO: Avoid repeated initialization
 		if(SYS::$_SYS_INSTANCE) return;
 
+
+
+		// INFO: Read global service configurations
+		$serviceConf = path('service', 'config.php');
+		if ( file_exists($serviceConf) ) require_once $serviceConf;
+
+		s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
+		s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+		s_define('DEFAULT_SERVICE', 	'index', TRUE);
+
+
+
+		// INFO: Keep booting
 		SYS::$_SYS_INSTANCE = new SYS();
 		SYS::$_SYS_INSTANCE->__initialize($argc, $argv);
 		SYS::$_SYS_INSTANCE->__jobDaemonRun();
@@ -220,7 +233,8 @@ class SYS extends PBObject
 		{
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
-			$service = __DEFAULT_SERVICE__;
+			// DEPRECATED: The constants __DEFAULT_SERVICE__ will be removed in v1.4.0
+			$service = (defined('DEFAULT_SERVICE')) ? DEFAULT_SERVICE : __DEFAULT_SERVICE__;
 			$state = $state || available("service.{$service}.{$service}", FALSE);
 
 			if ($state)
