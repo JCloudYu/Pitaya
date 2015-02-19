@@ -18,5 +18,5 @@
 		else
 			header("Location: {$targetAddr}");
 
-		exit(0);
+		Termination::NORMALLY();
 	}
