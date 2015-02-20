@@ -53,7 +53,10 @@ class PBProcess extends PBObject
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
 
 		$result = self::Execute($module, $request, $reusable, $pId);
-		echo "<div class='module {$module->class_lower}'>{$result}</div>";
+		if ( !empty($module->ext->htmlClass) )
+			echo "<div class='{$module->ext->htmlClass}' data-pb-mod='{$module->class}'>{$result}</div>";
+		else
+			echo $result;
 	}
 
 	public function __construct() {
