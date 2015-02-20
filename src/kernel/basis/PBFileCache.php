@@ -8,15 +8,27 @@
 	final class PBFileCache extends PBCachePrototype
 	{
 		private static $_storages = array();
-		public static function Storage( $storagePath = CONFIG_SESSION_STORAGE_PATH )
+		public static function Storage( $storagePath = NULL )
 		{
-			if ( !is_dir( $storagePath ) || !is_readable($storagePath) || !is_writable( $storagePath ) )
-				return NULL;
+			static $_defaultStorage = NULL;
 
-			$storageKey = md5( realpath($storagePath) );
+			$storagePath = "{$storagePath}"; // Normalization
+
+
+			if ( empty($storagePath) )
+				return (!empty($_defaultStorage)) ? $_defaultStorage : NULL;
+
+
+			if ( !is_dir( $storagePath ) || !is_readable( $storagePath ) || !is_writable( $storagePath ) ) return NULL;
+
+			$storageKey = md5(realpath($storagePath));
 			if ( !empty(self::$_storages[$storageKey]) ) return self::$_storages[$storageKey];
 
-			return ( self::$_storages[$storageKey] = new PBFileCache( $storagePath ) );
+
+			self::$_storages[$storageKey] = $cacheObj = new PBFileCache( $storagePath );
+			if ( $_defaultStorage === NULL ) $_defaultStorage = $cacheObj;
+
+			return $cacheObj;
 		}
 
 
