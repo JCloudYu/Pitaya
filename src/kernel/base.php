@@ -69,7 +69,6 @@
 
 
 	// INFO: Load system core libraries and prepare system constants
-	using('kernel.tool.debug.*');
 	using('kernel.basis.PBObject');
 	using('kernel.basis.*');
 	using('kernel.core.*');
