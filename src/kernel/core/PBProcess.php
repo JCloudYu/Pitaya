@@ -31,17 +31,28 @@ class PBProcess extends PBObject
 
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
 
-		$module->prepare($request);
-		return $module->exec(NULL);
+		switch ( SERVICE_EXEC_MODE )
+		{
+			case "EVENT":
+				$module->prepareEvent($request);
+				return $module->event(NULL);
+
+			case "SHELL":
+				$module->prepareShell($request);
+				return $module->shell(NULL);
+
+			case "NORMAL":
+			default:
+				$module->prepare($request);
+				return $module->exec(NULL);
+		}
 	}
 
 	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
 
-		$module->prepare($request);
-		$result = $module->exec(NULL);
-		
+		$result = self::Execute($module, $request, $reusable, $pId);
 		echo "<div class='module {$module->class_lower}'>{$result}</div>";
 	}
 
