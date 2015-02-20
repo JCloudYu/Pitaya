@@ -10,11 +10,11 @@ class PBModule extends PBObject
 	private $_moduleId 	= NULL;
 	private $_process	= NULL;
 
-	private $_tag 		= NULL;
-	private $_extTag	= NULL;
+	private $_ext		= NULL;
 
 	private $_bootstrap = array();
 
+	public function __construct() { $this->_ext = new stdClass(); }
 
 	public function prepare($moduleRequest, $taggingFlag = NULL) {}
 	public function exec($param, $taggingFlag = NULL) { return $param; }
@@ -39,11 +39,7 @@ class PBModule extends PBObject
 	public function __get_class_lower() { return strtolower(get_class($this)); }
 	public function __get_class_uppper() { return strtoupper(get_class($this)); }
 
-	public function __get_tag()			{ return $this->_tag; }
-	public function __set_tag($value)	{ $this->_tag = $value; }
-
-	public function __get_ext() 		{ return $this->_extTag; }
-	public function __set_ext($value)	{ $this->_extTag = $value; }
+	public function __get_ext() { return $this->_ext; }
 
 //SEC: Getters/Setters that are provided for internal usage
 	protected function __get_process() {
