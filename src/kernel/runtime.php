@@ -25,6 +25,8 @@
 	if ( !defined('__LOG_EXCEPTION__') )	define('__LOG_EXCEPTION__',		TRUE,  TRUE);
 	if ( !defined('__THROW_EXCEPTION__') )	define('__THROW_EXCEPTION__',	FALSE, TRUE);
 
+	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'), TRUE);
+
 
 
 	// INFO: Runtime control
