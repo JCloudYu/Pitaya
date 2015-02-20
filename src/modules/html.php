@@ -121,7 +121,8 @@ HTML;
 					$this->_header[] = "<link rel='shortcut icon' href='{$this->_baseRCPath}{$value}' />";
 					break;
 				case 'charset':
-					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
+//					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
+					$this->_header[] = "<meta charset='{$value}'>";
 					break;
 				case 'viewport':
 					$this->_header[] = "<meta name='viewport' content='{$value}' />";
