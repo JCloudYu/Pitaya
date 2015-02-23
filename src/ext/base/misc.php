@@ -100,11 +100,11 @@
 				if ( !array_key_exists('delimiter', $options) ) return array();
 
 				$value = "{$value}";
-
-				if ( empty($options['regex']) )
-					return explode( $options['delimiter'], $value );
-				else
+				if ( !empty( $options['regex'] ) || empty($options['delimiter']) )
 					return preg_split("/{$options['delimiter']}/", $value);
+				else
+					return explode( $options['delimiter'], $value );
+
 
 			// INFO: time string
 			case 'time':
