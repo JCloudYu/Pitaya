@@ -97,14 +97,14 @@
 				if ( is_array( $value ) )
 					return $value;
 
-				if ( !in_array('delimeter', $options) ) return array();
+				if ( !in_array('delimiter', $options) ) return array();
 
 				$value = "{$value}";
 
 				if ( empty($options['regex']) )
-					return explode( $options['delimeter'], $value );
+					return explode( $options['delimiter'], $value );
 				else
-					return preg_split("/{$options['delimeter']}/", $value);
+					return preg_split("/{$options['delimiter']}/", $value);
 
 			// INFO: time string
 			case 'time':
