@@ -97,7 +97,7 @@
 				if ( is_array( $value ) )
 					return $value;
 
-				if ( !in_array('delimiter', $options) ) return array();
+				if ( !array_key_exists('delimiter', $options) ) return array();
 
 				$value = "{$value}";
 
