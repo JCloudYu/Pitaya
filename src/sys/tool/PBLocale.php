@@ -38,7 +38,7 @@
 		{
 			$this->_basePackage = self::$_sharedBasePackage;
 			$this->_curLocale = 'default';
-			$this->_storedLocales = array('default' => array());
+			$this->_storedLocales = array();
 		}
 
 		public function __get_basePackage() { return $this->_basePackage; }
