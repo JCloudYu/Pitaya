@@ -50,11 +50,12 @@
 			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}" :
 															"<div class='{$this->_prop['page']}'>{$param}{$js['append']}</div>";
 
+			$htmlClass = empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
 
 
 			echo <<<HTML
 <!DOCTYPE html>
-<HTML>
+<HTML {$htmlClass}>
 	<head>
 		{$header}
 
@@ -129,6 +130,7 @@ HTML;
 					break;
 				case 'page':
 				case 'body':
+				case 'html':
 				default:
 					$this->_prop[$name] = $value;
 					break;
