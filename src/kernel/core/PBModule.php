@@ -26,8 +26,11 @@ class PBModule extends PBObject
 	public function event($event) { return $event; }
 
 	public function __get_id() {
-
 		return $this->_moduleId;
+	}
+
+	public function __get_id_short() {
+		return substr($this->_moduleId, 0, 8);
 	}
 
 	public function __get_processId() {
