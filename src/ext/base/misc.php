@@ -12,7 +12,7 @@
 	define('YB', ZB * 1024.0, TRUE);	// YotaByte
 
 
-	function TO($value, $type)
+	function TO($value, $type, $options = NULL)
 	{
 		if (is_array($type))
 		{
@@ -24,6 +24,8 @@
 		}
 		else
 			$default = $criteria = NULL;
+
+		if ( !is_array( $options ) ) $options = array();
 
 
 
@@ -90,6 +92,19 @@
 					return ($value == FALSE);
 				else
 					return !(empty($value));
+
+			case 'array':
+				if ( is_array( $value ) )
+					return $value;
+
+				if ( !in_array('delimeter', $options) ) return array();
+
+				$value = "{$value}";
+
+				if ( empty($options['regex']) )
+					return explode( $options['delimeter'], $value );
+				else
+					return preg_split("/{$options['delimeter']}/", $value);
 
 			// INFO: time string
 			case 'time':
