@@ -27,13 +27,13 @@
 
 			// INFO: Process JS
 			$js['prepend'] = implode("\r\n", $this->_js['prepend']);
-			$js['prepend'] = (!empty($js['prepend'])) ? "<script type='text/javascript'>{$js['prepend']}</script>" : '';
+			$js['prepend'] = (!empty($js['prepend'])) ? "<script type='application/javascript'>{$js['prepend']}</script>" : '';
 
 			$js['append']  = implode("\r\n", $this->_js['append']);
-			$js['append'] = (!empty($js['append'])) ? "<script type='text/javascript'>{$js['append']}</script>" : '';
+			$js['append'] = (!empty($js['append'])) ? "<script type='application/javascript'>{$js['append']}</script>" : '';
 
 			foreach ($this->_jsFiles as $filePath)
-				$js['file'] .= "<script type='text/javascript' src='{$filePath}'></script>\r\n";
+				$js['file'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
 
 
 			// INFO: Process CSS
@@ -41,7 +41,7 @@
 			$css['inline'] = (!empty($css['inline'])) ? "<style type='text/css'>{$css['inline']}</style>" : '';
 
 			foreach ($this->_cssFiles as $filePath)
-				$css['file'] .= "<link href='{$filePath}' rel='stylesheet' />\r\n";
+				$css['file'] .= "<link href='{$filePath}' type='text/css' rel='stylesheet' />\r\n";
 
 			$header = implode("\r\n", $this->_header);
 
