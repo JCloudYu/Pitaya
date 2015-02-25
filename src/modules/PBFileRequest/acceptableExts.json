@@ -30,6 +30,11 @@
 	"SVG":		"image/svg+xml",
 	"SVGZ":		"image/svg+xml",
 
+	"WOFF":		"application/font-woff",
+	"EOT":		"application/vnd.ms-fontobject",
+	"TTF":		"application/font-sfnt",
+	"OTF":		"application/font-sfnt",
+
 	"DOC":		"application/msword",
 	"DOCX":		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 	"XLS":		"application/vnd.ms-excel",
