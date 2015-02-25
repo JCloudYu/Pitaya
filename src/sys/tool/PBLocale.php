@@ -11,14 +11,6 @@
 	{
 		private static $_sharedBasePackage = NULL;
 
-		public static function Linkfy($token, $translation, &$localeAry)
-		{
-			$localeAry["{$token}"]   = $translation;
-			$localeAry[" {$token}"]  = $translation;
-			$localeAry["{$token} "]  = $translation;
-			$localeAry[" {$token} "] = $translation;
-		}
-
 		public static function basePackage($packagePath = NULL) { self::$_sharedBasePackage = "$packagePath"; }
 		public static function Locale()
 		{
@@ -28,7 +20,21 @@
 			$__locale_singleton = new PBLocale();
 			return $__locale_singleton;
 		}
+		public static function Translate($token, $param = array())
+		{
+			if ( !is_array($param) ) $param = array();
 
+			$locale = self::Locale();
+			return strtr($locale[$token], $param);
+		}
+
+		public static function Linkfy($token, $translation, &$localeAry)
+		{
+			$localeAry["{$token}"]   = $translation;
+			$localeAry[" {$token}"]  = $translation;
+			$localeAry["{$token} "]  = $translation;
+			$localeAry[" {$token} "] = $translation;
+		}
 
 		private $_basePackage 	= '';
 		private $_curLocale 	= '';
