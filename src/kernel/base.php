@@ -41,7 +41,7 @@
 	{
 		define('__ROOT__', dirname($_SERVER["SCRIPT_FILENAME"]), TRUE);
 		define('SYS_EXEC_ENV',	  EXEC_ENV_HTTP, TRUE);
-		define('PITAYA_HOST', "{$_SERVER['HOST']}", TRUE);
+		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}", TRUE);
 
 		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
