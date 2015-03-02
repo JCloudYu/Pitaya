@@ -52,7 +52,7 @@
 
 		define('__ROOT__', getcwd(), TRUE);
 		define('SYS_EXEC_ENV',	  EXEC_ENV_CLI, TRUE);
-		define('PITAYA_HOST', isset($GLOBALS['RUNTIME_ENV']['PITAYA_HOST']) ? "{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}" : "", TRUE);
+		define('PITAYA_HOST', @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
 
 		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
