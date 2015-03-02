@@ -63,6 +63,12 @@ class SYS extends PBObject
 
 		try
 		{
+			// INFO: Preserve path of system container
+			$sysEnvPath		= path('root', 'sys.php');
+			$serviceEnvPath = path("service", 'common.php'); // NOTE: This line should executed before __judgeMainService
+
+
+
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService($argc, $argv);
 			PBRequest::Request();
@@ -76,10 +82,6 @@ class SYS extends PBObject
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() {
-				// INFO: Preserve path of system container
-				$sysEnvPath		= path('root', 'sys.php');
-				$serviceEnvPath = path("service", 'common.php');
-
 				if (file_exists($sysEnvPath)) require_once($sysEnvPath);
 				if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
 			});
