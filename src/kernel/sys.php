@@ -197,34 +197,6 @@ class SYS extends PBObject
 			return;
 		}
 
-		$state = $state || available("modules.{$service}.{$service}", FALSE);
-
-		if($state)
-		{
-			$this->_entryService = $service;
-
-			define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
-			chdir(__WORKING_ROOT__);
-
-
-			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
-			{
-				array_shift($moduleRequest);
-				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-			}
-			else
-			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-				define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
-			else
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
-
-
-			$GLOBALS['service'] = $service;
-			$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
-			return;
-		}
-
-
 		if (__DEFAULT_SERVICE_DEFINED__)
 		{
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
