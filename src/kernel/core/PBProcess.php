@@ -171,6 +171,23 @@ class PBProcess extends PBObject
 			PBLList::REMOVE($this->_bootSequence);
 	}
 
+	public function cancelFollowingUntilClass( $moduleName ) {
+
+		while ( PBLinkedList::NEXT($this->_bootSequence) )
+		{
+			$moduleId = $this->_bootSequence->data['data'];
+			if ( $this->_attachedModules[$moduleId]->class == $moduleName )
+			{
+				PBLinkedList::PREV($this->_bootSequence);
+				return;
+			}
+			else
+			{
+				PBLinkedList::REMOVE($this->_bootSequence);
+			}
+		}
+	}
+
 	public function replaceNextModule($moduleHandle, $moduleRequest = NULL)
 	{
 		if (is_a($moduleHandle, 'PBModule')) $moduleHandle = $moduleHandle->id;

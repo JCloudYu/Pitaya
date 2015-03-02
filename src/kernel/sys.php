@@ -14,26 +14,56 @@ class SYS extends PBObject
 		// INFO: Avoid repeated initialization
 		if(SYS::$_SYS_INSTANCE) return;
 
-
-		if ( is_dir($servicePath = path('service')) )
+		try
 		{
-			// INFO: Read global service configurations
-			$serviceConf = "{$servicePath}/config.php";
-			if ( file_exists($serviceConf) ) require_once $serviceConf;
+			if ( is_dir($servicePath = path('service')) )
+			{
+				// INFO: Read global service configurations
+				$serviceConf = "{$servicePath}/config.php";
+				if ( file_exists($serviceConf) ) require_once $serviceConf;
+			}
+
+			s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
+			s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+			s_define('DEFAULT_SERVICE', 	'index', TRUE);
+
+
+
+			// INFO: Keep booting
+			SYS::$_SYS_INSTANCE = new SYS();
+			SYS::$_SYS_INSTANCE->__initialize($argc, $argv);
+			SYS::$_SYS_INSTANCE->__jobDaemonRun();
+
+			Termination::NORMALLY();
 		}
+		catch(Exception $e)
+		{
+			if ( __LOG_EXCEPTION__ === TRUE )
+				PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
 
-		s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
-		s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
-		s_define('DEFAULT_SERVICE', 	'index', TRUE);
+			if ( __THROW_EXCEPTION__ === TRUE )
+				throw($e);
+			else
+			{
+				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+				{
+					PBStdIO::STDERR("Uncaught exception: " . $e->getMessage());
 
+					if ( __LOG_EXCEPTION__ === TRUE )
+					{
+						PBStdIO::STDERR("See log file for more information");
+					}
+				}
+				else
+				if ( (SYS_EXEC_ENV == EXEC_ENV_HTTP) && (!headers_sent()) )
+				{
+					header("HTTP/1.1 500 Internal Server Error");
+					header("Status: 500 Internal Server Error");
+				}
 
-
-		// INFO: Keep booting
-		SYS::$_SYS_INSTANCE = new SYS();
-		SYS::$_SYS_INSTANCE->__initialize($argc, $argv);
-		SYS::$_SYS_INSTANCE->__jobDaemonRun();
-
-		die();
+				Termination::WITH_STATUS(Termination::STATUS_ERROR);
+			}
+		}
 	}
 // endregion
 
@@ -62,28 +92,25 @@ class SYS extends PBObject
 
 	// INFO: System workflow initialization
 	private function __initialize($argc = 0, $argv = NULL) {
-
-		try
-		{
-			// INFO: Preserve path of system container
-			$sysEnvPath		= path('root', 'sys.php');
-			$serviceEnvPath = path("service", 'common.php'); // NOTE: This line should executed before __judgeMainService
+		// INFO: Preserve path of system container
+		$sysEnvPath		= path('root', 'sys.php');
+		$serviceEnvPath = path("service", 'common.php'); // NOTE: This line should executed before __judgeMainService
 
 
 
-			// INFO: Perform service decision and data initialization
-			$this->__judgeMainService($argc, $argv);
-			PBRequest::Request();
+		// INFO: Perform service decision and data initialization
+		$this->__judgeMainService($argc, $argv);
+		PBRequest::Request();
 
 
 
-			// INFO: Define runtime constants
-			define('__SERVICE__', $this->_entryService, TRUE);
+		// INFO: Define runtime constants
+		define('__SERVICE__', $this->_entryService, TRUE);
 
-			// INFO: Generate the unique system execution Id
-			$this->_systemId = encode(PBRequest::Request()->rawQuery);
+		// INFO: Generate the unique system execution Id
+		$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use($sysEnvPath, $serviceEnvPath) {
+		$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use($sysEnvPath, $serviceEnvPath) {
 
 				if (file_exists($sysEnvPath))
 				{
@@ -97,34 +124,6 @@ class SYS extends PBObject
 					require_once($serviceEnvPath);
 				}
 			});
-		}
-		catch(Exception $e)
-		{
-			if ( __LOG_EXCEPTION__ === TRUE )
-				PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
-
-			if ( __THROW_EXCEPTION__ === TRUE )
-				throw($e);
-			else
-			{
-				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-				{
-					PBStdIO::STDERR("Uncaught exception: " . $e->getMessage());
-
-					if ( __LOG_EXCEPTION__ === TRUE )
-					{
-						PBStdIO::STDERR("See log file for more information");
-					}
-				}
-				else
-				if ( (SYS_EXEC_ENV == EXEC_ENV_HTTP) && (!headers_sent()) )
-				{
-					header("HTTP/1.1 500 Internal Server Error");
-					header("Status: 500 Internal Server Error");
-				}
-			}
-		}
-
 	}
 
 	public function __judgeMainService($argc = 0, $argv = NULL)
