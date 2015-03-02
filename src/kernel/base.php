@@ -58,7 +58,8 @@
 		if ( file_exists(__WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php") )
 			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";  // ISSUE: We need to verify the configuration data...
 	}
-	else
+
+
 	if ( file_exists(__WEB_ROOT__ . "/config.php") )
 		require_once __WEB_ROOT__ . "/config.php"; // ISSUE: We need to verify the configuration data...
 
