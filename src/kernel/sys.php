@@ -81,15 +81,13 @@ class SYS extends PBObject
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
+
 
 
 			// INFO: Invoke pre-included files
 			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
 			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
-
-
-
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
 		}
 		catch(Exception $e)
 		{
