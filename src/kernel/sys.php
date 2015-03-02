@@ -15,9 +15,9 @@ class SYS extends PBObject
 		if(SYS::$_SYS_INSTANCE) return;
 
 
-
+		chdir( ($servicePath = path('service')) );
 		// INFO: Read global service configurations
-		$serviceConf = path('service', 'config.php');
+		$serviceConf = "{$servicePath}/config.php";
 		if ( file_exists($serviceConf) ) require_once $serviceConf;
 
 		s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
@@ -82,8 +82,18 @@ class SYS extends PBObject
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use($sysEnvPath, $serviceEnvPath) {
-				if (file_exists($sysEnvPath)) require_once($sysEnvPath);
-				if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+
+				if (file_exists($sysEnvPath))
+				{
+					chdir( dirname($sysEnvPath) );
+					require_once($sysEnvPath);
+				}
+
+				if (file_exists($serviceEnvPath))
+				{
+					chdir( dirname($sysEnvPath) );
+					require_once($serviceEnvPath);
+				}
 			});
 		}
 		catch(Exception $e)
@@ -196,8 +206,6 @@ class SYS extends PBObject
 			$this->_entryService = $service;
 
 			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-			chdir(__WORKING_ROOT__);
-
 
 			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
 			{
@@ -229,8 +237,6 @@ class SYS extends PBObject
 				$this->_entryService = $service;
 
 				define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-				chdir(__WORKING_ROOT__);
-
 
 				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
 				{
@@ -256,8 +262,6 @@ class SYS extends PBObject
 				$this->_entryService = $service;
 
 				define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
-				chdir(__WORKING_ROOT__);
-
 
 				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
 				{
@@ -304,6 +308,7 @@ class SYS extends PBObject
 
 		if ( $custInit !== NULL ) $custInit();
 
+		chdir( __WORKING_ROOT__ );
 		$process->attachMainService($service, $moduleRequest);
 	}
 

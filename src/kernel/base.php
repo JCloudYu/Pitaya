@@ -74,8 +74,7 @@
 	}
 
 	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
-
-
+	chdir( __WEB_ROOT__ );
 
 	// INFO: Read system working environmental configurations
 	if ( PITAYA_HOST != "" )
