@@ -23,10 +23,10 @@
 
 
 
-	// Some special initialiations
-	call_user_func(function() use ( $_RUNTIME_ENV ) {
+	// INFO:Some special initializations
+	call_user_func(function() {
 
-		// INFO: Detect operating system information
+		// Detect operating system information
 		(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
 
 		$GLOBALS['RUNTIME_ENV'] = array();
@@ -47,16 +47,18 @@
 	// INFO: Execution environment
 	if ( isset($_SERVER['SHELL']) )
 	{
-		array_shift($_SERVER['argv']);
+		define('SYS_WORKING_ENV',	SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+
+		define('__ROOT__',			getcwd(), TRUE);
+		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, TRUE);
+		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
+		define('EOL',				"\n", TRUE);
+
+
+
+		// NOTE: Remove script file
+		array_shift( $_SERVER['argv'] );
 		$_SERVER['argc'] = count($_SERVER['argv']);
-
-		define('__ROOT__', getcwd(), TRUE);
-		define('SYS_EXEC_ENV',	  EXEC_ENV_CLI, TRUE);
-		define('PITAYA_HOST', @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
-
-		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
-
-		define('EOL', "\n", TRUE);
 	}
 	else
 	{
@@ -67,6 +69,8 @@
 		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
 		define('EOL', '<br />', TRUE);
+
+		$_SERVER['argv'] = array(); $_SERVER['argc'] = 0;
 	}
 
 	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
@@ -134,8 +138,10 @@
 	unset($GLOBALS['dataPath']);
 	unset($GLOBALS['extPath']);
 	unset($GLOBALS['invokeTime']);
-	UNSET($GLOBALS['RUNTIME_ENV']);
-
+	unset($GLOBALS['RUNTIME_ENV']);
+	unset($GLOBALS['RUNTIME_CONF']);
+	unset($GLOBALS['RUNTIME_ARGC']);
+	unset($GLOBALS['RUNTIME_ARGV']);
 
 
 	// INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6

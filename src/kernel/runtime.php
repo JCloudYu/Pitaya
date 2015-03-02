@@ -3,29 +3,7 @@
  * 1017.NeighborApp - os.php
  * Created by JCloudYu on 2015/02/14 16:33
  */
-
-	if (__OS__ === 'WIN')
-	{
-		define('CMD_MOVE', 'move', TRUE);
-		define('CMD_COPY', 'copy', TRUE);
-	}
-	else
-	{
-		define('CMD_MOVE', 'mv', TRUE);
-		define('CMD_COPY', 'cp', TRUE);
-	}
-
-
-
-	// INFO: Environmental constants
-	if ( !defined('__DEBUG_MODE__') )		define('__DEBUG_MODE__',		FALSE, TRUE);
-	if ( !defined('__LOG_EXCEPTION__') )	define('__LOG_EXCEPTION__',		TRUE,  TRUE);
-	if ( !defined('__THROW_EXCEPTION__') )	define('__THROW_EXCEPTION__',	FALSE, TRUE);
-
-	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'), TRUE);
-
-
-
+	// NOTE: Class definitions
 	// INFO: Debug
 	final class Debug
 	{
@@ -184,8 +162,6 @@
 		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
 	}
 
-
-
 	// INFO: Runtime control
 	final class Termination
 	{
@@ -209,4 +185,96 @@
 			exit( $errorCode );
 		}
 	}
+
+
+
+
+
+
+
+	// NOTE: Parse System Arguments
+	call_user_func(function() {
+		$conf = array();
+		$argv = $_SERVER['argv'];
+
+		$RUN = TRUE;
+		do
+		{
+			switch ( @"{$argv[0]}" )
+			{
+				case "--timezone":
+				case "-tz":
+					array_shift($argv);
+					$TZ = @array_shift($argv);
+
+					if ( empty($TZ) )
+					{
+						error_log("-tz option must be followed with timezone identifier!");
+						Termination::WITH_STATUS(Termination::STATUS_INCORRECT_USAGE);
+					}
+
+					$conf['TZ'] = $TZ;
+					break;
+
+				default:
+					$RUN = $RUN && FALSE;
+			}
+		}
+		while( $RUN );
+
+
+
+		$_SERVER['argv'] = $GLOBALS['RUNTIME_ARGV'] = $argv;
+		$_SERVER['argc'] = $GLOBALS['RUNTIME_ARGC'] = count( $GLOBALS['RUNTIME_ARGV'] );
+
+		$GLOBALS['RUNTIME_CONF'] = $conf;
+	});
+
+
+
+
+
+
+	if (__OS__ === 'WIN')
+	{
+		define('CMD_MOVE', 'move', TRUE);
+		define('CMD_COPY', 'copy', TRUE);
+	}
+	else
+	{
+		define('CMD_MOVE', 'mv', TRUE);
+		define('CMD_COPY', 'cp', TRUE);
+	}
+
+
+
+	// INFO: Environmental constants
+	if ( !defined('__DEBUG_MODE__') )		define('__DEBUG_MODE__',		FALSE, TRUE);
+	if ( !defined('__LOG_EXCEPTION__') )	define('__LOG_EXCEPTION__',		TRUE,  TRUE);
+	if ( !defined('__THROW_EXCEPTION__') )	define('__THROW_EXCEPTION__',	FALSE, TRUE);
+
+	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'), TRUE);
+
+
+
+	// INFO: Set timezone
+	call_user_func(function() {
+		$result = FALSE;
+
+
+		if ( isset( $GLOBALS['RUNTIME_CONF']['TZ'] ) )
+			$result = date_default_timezone_set( $GLOBALS['RUNTIME_CONF']['TZ'] );
+		else
+		if ( defined('__SYSTEM_TIMEZONE__') )
+			$result = date_default_timezone_set( __SYSTEM_TIMEZONE__ );
+		else
+		if ( ini_get('date.timezone') != "" )
+			$result = date_default_timezone_set( ini_get('date.timezone') );
+		else
+		if ( isset($GLOBALS['RUNTIME_ENV']['TZ']) )
+			$result = date_default_timezone_set( $GLOBALS['RUNTIME_ENV']['TZ'] );
+
+
+		if ( $result === FALSE ) date_default_timezone_set('UTC');
+	});
 

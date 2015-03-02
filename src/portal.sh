@@ -3,4 +3,5 @@
 EXT_ARGUMENTS=(${ENV_ARGUMENTS})
 
 cd $(dirname $0)
-php -d auto_prepend_file=kernel/base.php ${EXT_ARGUMENTS[@]} portal.php $@
+# E_ALL & ~E_WARNING & ~E_STRICT
+php -d auto_prepend_file=kernel/base.php -d error_reporting=30711 ${EXT_ARGUMENTS[@]} portal.php $@
