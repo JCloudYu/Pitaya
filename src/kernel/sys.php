@@ -15,10 +15,12 @@ class SYS extends PBObject
 		if(SYS::$_SYS_INSTANCE) return;
 
 
-		chdir( ($servicePath = path('service')) );
-		// INFO: Read global service configurations
-		$serviceConf = "{$servicePath}/config.php";
-		if ( file_exists($serviceConf) ) require_once $serviceConf;
+		if ( is_dir($servicePath = path('service')) )
+		{
+			// INFO: Read global service configurations
+			$serviceConf = "{$servicePath}/config.php";
+			if ( file_exists($serviceConf) ) require_once $serviceConf;
+		}
 
 		s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
 		s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
