@@ -63,12 +63,6 @@ class SYS extends PBObject
 
 		try
 		{
-			// INFO: Preserve path of system container
-			$sysEnvPath		= path('root', 'sys.php');
-			$serviceEnvPath = path("service", 'common.php');
-
-
-
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService($argc, $argv);
 			PBRequest::Request();
@@ -81,13 +75,14 @@ class SYS extends PBObject
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query);
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() {
+				// INFO: Preserve path of system container
+				$sysEnvPath		= path('root', 'sys.php');
+				$serviceEnvPath = path("service", 'common.php');
 
-
-
-			// INFO: Invoke pre-included files
-			if (file_exists($sysEnvPath)) require_once($sysEnvPath);
-			if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+				if (file_exists($sysEnvPath)) require_once($sysEnvPath);
+				if (file_exists($serviceEnvPath)) require_once($serviceEnvPath);
+			});
 		}
 		catch(Exception $e)
 		{
@@ -302,7 +297,7 @@ class SYS extends PBObject
 	// INFO: In this version of system, there will be only one process instance in the system (main process)
 	private $_processQueue = array();
 
-	private function __forkProcess($service, $moduleRequest) {
+	private function __forkProcess($service, $moduleRequest, $custInit = NULL) {
 
 		$systemIds = divide($this->_systemId);
 		$processId = encode(array($service, uniqid("", TRUE)), $systemIds['extended']);
@@ -312,6 +307,9 @@ class SYS extends PBObject
 		$process->__sysAPI = $this;
 
 		$this->_processQueue[$processId] = $process;
+
+
+		if ( $custInit !== NULL ) $custInit();
 
 		$process->attachMainService($service, $moduleRequest);
 	}
