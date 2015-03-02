@@ -173,10 +173,12 @@ class PBProcess extends PBObject
 
 	public function cancelFollowingUntilClass( $moduleName ) {
 
+		if ( !is_array( $moduleName ) ) $moduleName = array( $moduleName );
+
 		while ( PBLinkedList::NEXT($this->_bootSequence) )
 		{
 			$moduleId = $this->_bootSequence->data['data'];
-			if ( $this->_attachedModules[$moduleId]->class == $moduleName )
+			if (in_array( $this->_attachedModules[$moduleId]->class, $moduleName) )
 			{
 				PBLinkedList::PREV($this->_bootSequence);
 				return;
