@@ -77,12 +77,26 @@
 	if ( PITAYA_HOST != "" )
 	{
 		if ( file_exists(__WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php") )
+		{
 			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";  // ISSUE: We need to verify the configuration data...
+			define('HOST_BASED_CONFIG_USED', TRUE, TRUE);
+		}
+		else
+		{
+			define('HOST_BASED_CONFIG_USED', FALSE, TRUE);
+		}
 	}
 
 
-	if ( file_exists(__WEB_ROOT__ . "/config.php") )
+	if ( !HOST_BASED_CONFIG_USED && file_exists(__WEB_ROOT__ . "/config.php") )
+	{
 		require_once __WEB_ROOT__ . "/config.php"; // ISSUE: We need to verify the configuration data...
+		define('DEFAULT_CONFIG_USED', TRUE, TRUE);
+	}
+	else
+	{
+		define('DEFAULT_CONFIG_USED', FALSE, TRUE);
+	}
 
 
 
