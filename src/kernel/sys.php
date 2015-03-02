@@ -51,8 +51,9 @@ class SYS extends PBObject
 // endregion
 
 // region [ System Instance ]
-	private $_entryService = NULL;
-	private $_systemId = NULL;
+	private $_entryService		= NULL;
+	private $_systemId			= NULL;
+	private $_moduleSearchPaths	= array();
 
 	// INFO: Singleton declaration
 	private function __construct() {}
@@ -349,6 +350,28 @@ class SYS extends PBObject
 // endregion
 
 // region [ Module Control ]
+	public function addModuleSearchPath( $package = "" )
+	{
+		if ( empty( $package ) ) return FALSE;
+
+		$hash = md5( ($path = trim($package)) );
+		if ( isset( $this->_moduleSearchPaths[$hash] ) ) return TRUE;
+
+
+		if ( !is_dir( path( $path ) ) ) return FALSE;
+		$this->_moduleSearchPaths[$hash] = $path;
+	}
+
+	public function removeModuleSearchPath( $package )
+	{
+		if ( empty( $package ) ) return FALSE;
+
+		$hash = md5( ($path = trim($package)) );
+		if ( !isset( $this->_moduleSearchPaths[$hash] ) ) return TRUE;
+
+		unset( $this->_moduleSearchPaths[$hash] );
+	}
+
 	public function acquireModule($chiefModule, $moduleName = '', $exception = TRUE) {
 
 		static $allocCounter = 0;
@@ -398,7 +421,13 @@ class SYS extends PBObject
 				$moduleSearchPaths[] = "{$path}.{$chiefModule}";
 				$moduleSearchPaths[] = "{$path}.{$chiefModule}.{$moduleName}";
 			}
+		foreach ( $this->_moduleSearchPaths as $path )
+		{
+			$moduleSearchPaths[] = "{$path}.{$chiefModule}";
+			$moduleSearchPaths[] = "{$path}.{$chiefModule}.{$moduleName}";
 		}
+
+
 
 		$hitPath = NULL;
 		foreach ( $moduleSearchPaths as $path )
