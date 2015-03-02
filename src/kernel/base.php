@@ -23,6 +23,27 @@
 
 
 
+	// Some special initialiations
+	call_user_func(function() use ( $_RUNTIME_ENV ) {
+
+		// INFO: Detect operating system information
+		(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
+
+		$GLOBALS['RUNTIME_ENV'] = array();
+
+		$env = shell_exec( ( __OS__ == "WIN" ) ? 'set' : 'printenv');
+		$env = preg_split("/(\n)+|(\r\n)+/", $env);
+		foreach ( $env as $envStatement )
+		{
+			if ( ($pos = strpos($envStatement, "=")) === FALSE ) continue;
+
+			$var	 = substr( $envStatement, 0, $pos );
+			$content = substr( $envStatement, $pos + 1 );
+			$GLOBALS['RUNTIME_ENV'][$var] = $content;
+		}
+	});
+
+
 	// INFO: Execution environment
 	if ( isset($_SERVER['SHELL']) )
 	{
@@ -31,7 +52,7 @@
 
 		define('__ROOT__', getcwd(), TRUE);
 		define('SYS_EXEC_ENV',	  EXEC_ENV_CLI, TRUE);
-		define('PITAYA_HOST', isset($_ENV['PITAYA_HOST']) ? "{$_ENV['PITAYA_HOST']}" : "", TRUE);
+		define('PITAYA_HOST', isset($GLOBALS['RUNTIME_ENV']['PITAYA_HOST']) ? "{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}" : "", TRUE);
 
 		define('SYS_WORKING_ENV', SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
@@ -90,6 +111,7 @@
 
 	SYS::__imprint_constants();
 	PBRequest::__imprint_constants();
+	PBRunTime::__ImprintEnvironment();
 
 	// INFO: Clean up everything
 	unset($GLOBALS['randomCert']);
@@ -98,6 +120,7 @@
 	unset($GLOBALS['dataPath']);
 	unset($GLOBALS['extPath']);
 	unset($GLOBALS['invokeTime']);
+	UNSET($GLOBALS['RUNTIME_ENV']);
 
 
 
