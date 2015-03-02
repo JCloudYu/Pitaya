@@ -91,7 +91,26 @@ class SYS extends PBObject
 			if ( __LOG_EXCEPTION__ === TRUE )
 				PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
 
-			if ( __THROW_EXCEPTION__ === TRUE ) throw($e);
+			if ( __THROW_EXCEPTION__ === TRUE )
+				throw($e);
+			else
+			{
+				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+				{
+					PBStdIO::STDERR("Uncaught exception: " . $e->getMessage());
+
+					if ( __LOG_EXCEPTION__ === TRUE )
+					{
+						PBStdIO::STDERR("See log file for more information");
+					}
+				}
+				else
+				if ( (SYS_EXEC_ENV == EXEC_ENV_HTTP) && (!headers_sent()) )
+				{
+					header("HTTP/1.1 500 Internal Server Error");
+					header("Status: 500 Internal Server Error");
+				}
+			}
 		}
 
 	}

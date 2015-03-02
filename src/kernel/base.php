@@ -85,11 +85,9 @@
 			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";  // ISSUE: We need to verify the configuration data...
 			define('HOST_BASED_CONFIG_USED', TRUE, TRUE);
 		}
-		else
-		{
-			define('HOST_BASED_CONFIG_USED', FALSE, TRUE);
-		}
 	}
+
+	if ( !defined('HOST_BASED_CONFIG_USED') ) define('HOST_BASED_CONFIG_USED', FALSE, TRUE);
 
 
 	if ( !HOST_BASED_CONFIG_USED && file_exists(__WEB_ROOT__ . "/config.php") )
