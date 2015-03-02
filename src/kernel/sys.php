@@ -357,110 +357,62 @@ class SYS extends PBObject
 		if($caller['class'] != 'PBProcess')
 			throw(new Exception("Calling an inaccessible function SYS::acquireServiceModule()."));
 
-		$moduleName = (is_string($moduleName) && !empty($moduleName)) ? $moduleName : $chiefModule;
+		$moduleName = ( is_string($moduleName) && !empty($moduleName) ) ? $moduleName : $chiefModule;
 
 		$processId = $caller['object']->id;
 		$processIds = divide($processId);
 		$moduleId = encode(array($processId, $chiefModule, $moduleName, ++$allocCounter), $processIds['extended']);
 
+		$moduleSearchPaths = array();
 
+		$moduleSearchPaths[] = "modules.{$chiefModule}";
+		$moduleSearchPaths[] = "modules.{$chiefModule}.{$moduleName}";
 
-		$modulePath = "modules.{$chiefModule}.{$moduleName}";
-		$chiefModulePath = "modules.{$chiefModule}.{$chiefModule}";
-		$moduleStoragePath = "modules.{$chiefModule}";
+		$moduleSearchPaths[] = "share.modules.{$chiefModule}";
+		$moduleSearchPaths[] = "share.modules.{$chiefModule}.{$moduleName}";
 
+		$moduleSearchPaths[] = "data.modules.{$chiefModule}";
+		$moduleSearchPaths[] = "data.modules.{$chiefModule}.{$moduleName}";
 
-
-		$sharePath = "share.modules.{$chiefModule}.{$moduleName}";
-		$shareSubPath = "share.modules.{$chiefModule}.{$chiefModule}";
-		$shareStoragePath = "share.modules.{$chiefModule}";
-
-
-
-		$dataPath = "data.modules.{$chiefModule}.{$moduleName}";
-		$dataSubPath = "data.modules.{$chiefModule}.{$chiefModule}";
-		$dataStoragePath = "data.modules.{$chiefModule}";
-
-
-
-		$servicePath = "service.{$chiefModule}";
-		$serviceSubModulePath = "service.{$chiefModule}.{$moduleName}";
-		$serviceDefaultPath = "service.{$chiefModule}.{$chiefModule}";
+		$moduleSearchPaths[] = "service.{$chiefModule}";
+		$moduleSearchPaths[] = "service.{$chiefModule}.{$moduleName}";
 
 
 		if ( defined("MODULE_PATH") )
-		{
 			$custModulePath = MODULE_PATH;
-			$serviceInternalModulePath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}";
-			$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$moduleName}";
-			$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "{$custModulePath}.{$chiefModule}.{$chiefModule}";
-		}
-		// DEPRECATED: The constants will be removed in v1.4.0
 		else
+		if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v1.4.0
+			$custModulePath = "service." . __MODULE_PATH__ ;
+		else
+			$custModulePath = NULL;
+
+		if ( !empty($custModulePath) )
 		{
-			$custModulePath = defined("__MODULE_PATH__") ? __MODULE_PATH__ : NULL;
-			$serviceInternalModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}";
-			$serviceInternalModuleSubModulePath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$moduleName}";
-			$serviceInternalModuleNestedPath = empty($custModulePath) ? NULL : "service.{$custModulePath}.{$chiefModule}.{$chiefModule}";
+			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}";
+			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}.{$moduleName}";
 		}
 
-		$invokeModule = $moduleName;
-
-		// INFO: If the requested module is existed in system core and services,
-		// INFO: system core will be chosen first
-		if(available($servicePath))
-			using($servicePath);
-		else
-		if (available($serviceSubModulePath))
-			using($serviceSubModulePath);
-		else
-		if(available($serviceDefaultPath))
-			using($serviceDefaultPath);
-		else
-		if($serviceInternalModulePath !== NULL && available($serviceInternalModulePath))
-			using($serviceInternalModulePath);
-		else
-		if($serviceInternalModuleSubModulePath !== NULL && available($serviceInternalModuleSubModulePath))
-			using($serviceInternalModuleSubModulePath);
-		else
-		if($serviceInternalModuleNestedPath !== NULL && available($serviceInternalModuleNestedPath))
-			using($serviceInternalModuleNestedPath);
-		else
-		if(available($dataPath))
-			using($dataPath);
-		else
-		if(available($dataSubPath))
-			using($dataSubPath);
-		else
-		if(available($dataStoragePath))
-			using($dataStoragePath);
-		else
-		if(available($sharePath))
-			using($sharePath);
-		else
-		if(available($shareSubPath))
-			using($shareSubPath);
-		else
-		if(available($shareStoragePath))
-			using($shareStoragePath);
-		else
-		if(available($modulePath))
-			using($modulePath);
-		else
-		if(available($chiefModulePath))
-			using($chiefModulePath);
-		else
-		if(available($moduleStoragePath))
-			using($moduleStoragePath);
-		else
+		$hitPath = NULL;
+		foreach ( $moduleSearchPaths as $path )
 		{
-			if($exception)
+			if ( empty($path) || !available($path) ) continue;
+
+			using($path);
+			$hitPath = $path;
+		}
+
+		if ( empty($hitPath) )
+		{
+			if ( $exception )
 				throw(new Exception("Module doesn't exist!"));
 			else
 				return NULL;
 		}
 
-		$module = new $invokeModule();
+
+
+		$invokeModule = "{$moduleName}";
+		$module		  = new $invokeModule();
 		if(!is_subclass_of($module, 'PBModule'))
 			throw(new Exception("Requested service is not a valid module"));
 
