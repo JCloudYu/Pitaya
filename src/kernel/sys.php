@@ -405,22 +405,18 @@ class SYS extends PBObject
 			$custModulePath = MODULE_PATH;
 		else
 		if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v1.4.0
-		{
-			if ( !is_array($custModulePath) ) $custModulePath = array($custModulePath);
-			foreach ( $custModulePath as $idx => $value ) $custModulePath[$idx] = "service.{$value}";
-		}
+			$custModulePath = "service." . __MODULE_PATH__;
 		else
 			$custModulePath = NULL;
 
 		if ( !empty($custModulePath) )
 		{
-			if ( !is_array($custModulePath) ) $custModulePath = array($custModulePath);
+			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}";
+			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}.{$moduleName}";
+		}
 
-			foreach ( $custModulePath as $path )
-			{
-				$moduleSearchPaths[] = "{$path}.{$chiefModule}";
-				$moduleSearchPaths[] = "{$path}.{$chiefModule}.{$moduleName}";
-			}
+
+
 		foreach ( $this->_moduleSearchPaths as $path )
 		{
 			$moduleSearchPaths[] = "{$path}.{$chiefModule}";
