@@ -104,7 +104,7 @@
 		return "{$interval->s} {$unit} before";
 	}
 
-	function ext_strtr($pattern, $replacements)
+	function ext_strtr($pattern, $replacements, $glue = FALSE)
 	{
 		if (!is_array($replacements)) return $pattern;
 
@@ -113,9 +113,14 @@
 			return strtr($pattern, $replacements);
 		else
 		{
-			$result = array();
+			$result = ( $glue ) ? "" : array();
 			foreach ($replacements as $key => $replace)
-				$result[$key] = strtr($pattern, $replace);
+			{
+				if ( $glue )
+					$result .= strtr( $pattern, $replace );
+				else
+					$result[$key] = strtr( $pattern, $replace );
+			}
 
 			return $result;
 		}
