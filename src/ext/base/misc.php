@@ -99,9 +99,10 @@
 				if ( is_array( $value ) )
 					return $value;
 
-				if ( !array_key_exists('delimiter', $options) ) return array();
-
 				$value = "{$value}";
+				if ( !array_key_exists('delimiter', $options) || empty( $value ) ) return array();
+
+
 				if ( !empty( $options['regex'] ) || empty($options['delimiter']) )
 					return preg_split("/{$options['delimiter']}/", $value);
 				else
