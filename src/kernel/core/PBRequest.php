@@ -390,7 +390,14 @@
 
 			if (!array_key_exists($name, $vars)) return $default;
 
-			return TO($vars[$name], $type);
+			$options = NULL;
+			if ( is_array($type) )
+			{
+				$options = @$type['options'];
+				$options = @$type['type'];
+			}
+
+			return TO($vars[$name], $type, $options);
 		}
 
 		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
