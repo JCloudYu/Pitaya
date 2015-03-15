@@ -109,7 +109,7 @@
 		if (!is_array($replacements)) return $pattern;
 
 		$firstElm = reset($replacements);
-		if (!is_array($firstElm))
+		if ( $firstElm && !is_array($firstElm) )
 			return strtr($pattern, $replacements);
 		else
 		{
