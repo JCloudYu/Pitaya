@@ -75,7 +75,7 @@
 				@$colProp['data-type']		= (empty($column['data-type'])) ? 'raw' : $column['data-type'];
 				@$colProp['width']			= (empty($column['width'])) ? '' : "width=\"{$column['width']}\"";
 				@$colProp['align']			= (empty($column['align'])) ? '' : "style='text-align:{$column['align']}'";
-				@$colProp['content-align']	= (empty($column['content-align'])) ? '' : $column['content-align'];
+				@$colProp['content-align']	= (empty($column['content-align'])) ? '' : "style='text-align:{$column['content-align']}'";
 
 				@$colProp['style']			= (empty($column['style'])) ? '' : $column['style'];
 				@$colProp['group']			= (empty($column['group'])) ? '' : $column['group'];
