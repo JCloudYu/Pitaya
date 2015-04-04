@@ -72,12 +72,13 @@
 				@$colProp['column-type'] = (in_array(strtolower(@$column['column-type']), explode(',', self::ALLOWED_COLUMN_TYPES))) ?
 										  strtolower(@$column['column-type']) : '';
 
-				@$colProp['data-type']	= (empty($column['data-type'])) ? 'raw' : $column['data-type'];
-				@$colProp['width'] 		= (empty($column['width'])) ? '' : "width=\"{$column['width']}\"";
-				@$colProp['align'] 		= (empty($column['align'])) ? '' : "style='text-align:{$column['align']}'";
+				@$colProp['data-type']		= (empty($column['data-type'])) ? 'raw' : $column['data-type'];
+				@$colProp['width']			= (empty($column['width'])) ? '' : "width=\"{$column['width']}\"";
+				@$colProp['align']			= (empty($column['align'])) ? '' : "style='text-align:{$column['align']}'";
+				@$colProp['content-align']	= (empty($column['content-align'])) ? '' : $def['content-align'];
 
-				@$colProp['style'] 		= (empty($column['style'])) ? '' : $column['style'];
-				@$colProp['group']		= (empty($column['group'])) ? '' : $column['group'];
+				@$colProp['style']			= (empty($column['style'])) ? '' : $column['style'];
+				@$colProp['group']			= (empty($column['group'])) ? '' : $column['group'];
 
 				$columns[] = $colProp;
 
@@ -95,29 +96,29 @@
 					$rowHTML = '';
 					foreach ($columns as $idx => $def)
 					{
-						$type = $def['data-type'];
-						$width = $def['width'];
-						$align = $def['align'];
-						$style = $def['style'];
-						$disabled = '';
-						$group = $def['group'];
+						$type			= $def['data-type'];
+						$width			= $def['width'];
+						$align			= empty($def['content-align']) ? $align : $def['content-align'];
+						$style			= $def['style'];
+						$disabled		= '';
+						$group			= $def['group'];
 
 						$checked = '';
 
 						if (is_array(@$rowData[$idx]))
 						{
-							$value = (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
-							$checked = (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
-							$disabled = (TO(@$rowData[$idx]['disabled'], 'boolean')) ? 'disabled' : '';
-							$align = (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
-							$style = (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
-							$group = (isset($rowData[$idx]['group'])) ? $rowData[$idx]['group'] : $group;
+							$value		= (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
+							$checked	= (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
+							$disabled	= (TO(@$rowData[$idx]['disabled'], 'boolean')) ? 'disabled' : '';
+							$align		= (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
+							$style		= (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
+							$group		= (isset($rowData[$idx]['group'])) ? $rowData[$idx]['group'] : $group;
 						}
 						else
 							$value = TO(@$rowData[$idx], $type);
 
 						if (!empty($style)) $style = "style='{$style}'";
-						if (empty($group)) $group = $this->_identifier;
+						if (empty($group))  $group = $this->_identifier;
 
 						$group = "name='{$group}'";
 

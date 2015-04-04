@@ -8,7 +8,7 @@
 		);
 	 */
 
-
+	//define("__SYSTEM_TIMEZONE__",		"UTC",	TRUE);
 	//define("__DEBUG_MODE__",			FALSE,	TRUE);
 	//define("__LOG_EXCEPTION__",		TRUE,	TRUE);
 	//define("__THROW_EXCEPTION__",		FALSE,	TRUE);
