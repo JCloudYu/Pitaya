@@ -83,11 +83,12 @@
 
 				@$colProp['style']			= (empty($column['style'])) ? '' : $column['style'];
 				@$colProp['group']			= (empty($column['group'])) ? '' : $column['group'];
+				@$colProp['attr']			= (empty($column['attr'])) ? '' : $column['attr'];
 
 				$columns[] = $colProp;
 
 
-				if ($this->_renderHeader) @$header .= "<th {$colProp['width']} {$colProp['align']}>{$column['title']}</th>";
+				if ($this->_renderHeader) @$header .= "<th {$colProp['width']} {$colProp['align']} {$colProp['attr']}>{$column['title']}</th>";
 			}
 			if ($this->_renderHeader) $header = empty($header) ? '' : "<thead><tr>{$header}</tr></thead>";
 
@@ -117,6 +118,7 @@
 							$align		= (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
 							$style		= (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
 							$group		= (isset($rowData[$idx]['group'])) ? $rowData[$idx]['group'] : $group;
+							$attr		= (isset($rowData[$idx]['attr'])) ? $rowData[$idx]['attr'] : '';
 						}
 						else
 							$value = TO(@$rowData[$idx], $type);
@@ -129,13 +131,13 @@
 						switch ($def['column-type'])
 						{
 							case 'checkbox':
-								$rowHTML .= "<td {$width} {$align}><input type='checkbox' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align} {$attr}><input type='checkbox' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							case 'radio':
-								$rowHTML .= "<td {$width} {$align}><input type='radio' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
+								$rowHTML .= "<td {$width} {$align} {$attr}><input type='radio' {$group} value='{$value}' {$disabled} {$checked} rel='{$this->_identifier}' /></td>";
 								break;
 							default:
-								$rowHTML .= "<td {$width} {$align}><div {$style}>{$value}</div></td>";
+								$rowHTML .= "<td {$width} {$align} {$attr}><div {$style}>{$value}</div></td>";
 								break;
 						}
 					}
