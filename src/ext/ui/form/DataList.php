@@ -107,6 +107,7 @@
 						$style			= $def['style'];
 						$disabled		= '';
 						$group			= $def['group'];
+						$attr			= '';
 
 						$checked = '';
 
