@@ -25,13 +25,16 @@ class PBModule extends PBObject
 	public function prepareEvent($moduleRequest, $targetFlag = NULL) {}
 	public function event($event) { return $event; }
 
-	public function __get_id() {
-		return $this->_moduleId;
+	public function getId( $length = NULL ) {
+		$length = TO( $length, 'int strict' );
+		return ( $length > 0 ) ? substr($this->_moduleId, 0, $length) : $this->_moduleId;
 	}
 
-	public function __get_id_short() {
-		return substr($this->_moduleId, 0, 8);
-	}
+	public function __get_id() { return $this->getId(); }
+
+	public function __get_id_short()  { return $this->getId(8);  }
+	public function __get_id_medium() { return $this->getId(16); }
+	public function __get_id_long()	  { return $this->getId(32); }
 
 	public function __get_processId() {
 
