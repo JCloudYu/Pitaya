@@ -14,11 +14,11 @@
 		private $_data = array();
 		private $_attr = array();
 
-		private $_identifier = '';
-
+		private $_identifier	= '';
 		private $_emptyNotifier = '';
+		private $_renderHeader	= TRUE;
 
-		private $_renderHeader = TRUE;
+		private $_resultCache	= NULL;
 
 		public function __construct()
 		{
@@ -61,8 +61,12 @@
 		public function __get_emptyStr() { return $this->_emptyNotifier; }
 
 
-		public function render()
+
+		public function __get_html() { return $this->render(); }
+		public function render( $updateCache = FALSE )
 		{
+			if ( $this->_resultCache !== NULL && !$updateCache ) return $this->_resultCache;
+
 			$columns = array();
 
 			$header = '';
@@ -147,7 +151,7 @@
 
 			$attr = implode(' ', $this->_attr);
 
-			return <<<HTML
+			return $this->_resultCache = <<<HTML
 				<table {$attr} rel='{$this->_identifier}'>
 					{$header}
 					<tbody>{$body}</tbody>
