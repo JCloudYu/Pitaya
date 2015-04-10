@@ -30,7 +30,11 @@
 			$js['prepend'] = (!empty($js['prepend'])) ? "<script type='application/javascript'>{$js['prepend']}</script>" : '';
 
 			$js['append']  = implode("\r\n", $this->_js['append']);
-			$js['append'] = (!empty($js['append'])) ? "<script type='application/javascript'>{$js['append']}</script>" : '';
+			$js['append']  = (!empty($js['append'])) ? "<script type='application/javascript'>{$js['append']}</script>" : '';
+
+			$js['last']	   = implode("\r\n", $this->_js['last']);
+			$js['last']    = (!empty($js['last'])) ? "<script type='application/javascript'>{$js['last']}</script>" : '';
+
 
 			foreach ($this->_jsFiles as $filePath)
 				$js['file'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
@@ -47,8 +51,8 @@
 
 
 			$bodyClass = empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
-			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}" :
-															"<div class='{$this->_prop['page']}'>{$param}{$js['append']}</div>";
+			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}{$js['last']}" :
+															"<div class='{$this->_prop['page']}'>{$param}{$js['append']}{$js['last']}</div>";
 
 			$htmlClass = empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
 
@@ -73,11 +77,16 @@ HTML;
 
 		public function addJS($script, $append = TRUE)
 		{
-			$pos = ($append) ? 'append' : 'prepend';
+			if ( is_string($append) && TO($append, 'string upper') == "LAST" )
+				$pos = "last";
+			else
+				$pos = ($append) ? 'append' : 'prepend';
+
 			$this->_js[$pos][] = $script;
 		}
 		public function __get_js() { return $this->_js; }
 		public function __set_js($value) { $this->addJS($value, TRUE); }
+		public function __set_jsLast($value) { $this->addJS($value, "LAST"); }
 
 		public function addCSS($css) { $this->_css[] = $css; }
 		public function __get_css() { return $this->_css; }
