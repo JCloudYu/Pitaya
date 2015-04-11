@@ -153,3 +153,13 @@
 			return $result;
 		}
 	}
+
+	function LogStr($logMsg, $dateStr = TRUE, $timeSecond = TRUE, $timeDffStr = TRUE) {
+		$fmt = array();
+		if ( $dateStr ) $fmt[] = "Y/m/d";
+		$fmt[] = ($timeSecond) ? "H:i:s" : "H:i";
+		if ( $timeDffStr ) $fmt[] = "O";
+
+		$fmt = implode(' ', $fmt);
+		return "[" . date($fmt) . "] {$logMsg}";
+	}
