@@ -37,7 +37,7 @@
 			return NULL;
 		}
 
-		public static function CONNECT()
+		public static function CONNECT($param = NULL, $option = array('CREATE_VAR'))
 		{
 			$dsn = ExtPDO::DSN($param['host'], $param['db'], $param['port']);
 			$connection = new ExtPDO($dsn, $param['account'], $param['password'], $option);
