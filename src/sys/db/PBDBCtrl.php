@@ -31,7 +31,7 @@
 					$__singleton_db = NULL;
 				}
 
-				return ($__singleton_db = self::CONNECT( $parm, $option ));
+				return ($__singleton_db = self::CONNECT( $param, $option ));
 			}
 
 			return NULL;
