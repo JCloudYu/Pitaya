@@ -80,7 +80,7 @@
 			{
 				$totalPages = $page = 1;
 				$pageSize = $totalCount;
-				$limitClause = '';
+				$limitClause = "1,{$totalCount}";
 			}
 
 
