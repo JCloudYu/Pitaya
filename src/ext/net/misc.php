@@ -6,17 +6,24 @@
 
 	function redir($targetAddr, $addHistory = FALSE)
 	{
+		if ( $addHistory )
+		{
+			echo "<script> window.location.href = '{$targetAddr}'; </script>"; ob_flush();
+			Termination::NORMALLY();
+		}
+
+
+
 		if (headers_sent())
 		{
-			if ($addHistory)
-				echo "<script> window.location.href = '{$targetAddr}'; </script>";
-			else
-				echo "<script> window.location.replace('{$targetAddr}'); </script>";
-
-			ob_flush();
+			echo "<script> window.location.replace('{$targetAddr}'); </script>"; ob_flush();
 		}
 		else
+		{
 			header("Location: {$targetAddr}");
+		}
+
+
 
 		Termination::NORMALLY();
 	}
