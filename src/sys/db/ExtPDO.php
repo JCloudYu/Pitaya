@@ -168,10 +168,61 @@ SQL
 		}
 
 
+		public function queryUpdate($table, $WHERE = '', $data = array())
+		{
+			if ( empty($WHERE) ) return FALSE;
+
+			$SET = PBDBCtrl::SET( $data, $param, TRUE );
+
+			if ( is_array($WHERE) )
+			{
+				foreach ( $WHERE['param'] as $idx => $val ) $param[$idx] = $val;
+				$WHERE = $WHERE['where'];
+			}
+
+			$BASE_SQL = "UPDATE `{$table}` SET {$SET} WHERE {$WHERE}";
+			return $this->query( $BASE_SQL, $param );
+		}
+
+		public function queryPickingUpdate($table, $identity, $field = 'id', $data = array())
+		{
+			if ( is_array($identity) ) $identity = implode(',', $identity);
+
+			$WHERE = array(
+				'where' => "FIND_IN_SET(`{$field}`, :id)",
+				'param' => array( ':id' => $identity )
+			);
+
+			return $this->queryUpdate( $table, $WHERE, $data );
+		}
+
+		public function queryInsert($table, $data)
+		{
+			if ( !is_array($data) ) return FALSE;
+			if ( !is_array( reset($data) ) ) $data = array( $data );
+
+			$indices = array();
+
+			foreach ( $data as $value )
+			{
+				if ( empty($value) )
+				{
+					$indices[] = FALSE;
+					continue;
+				}
+
+				$param	= array();
+				$SET	= PBDBCtrl::SET( $value, $param );
+				DB()->query( "INSERT INTO `{$table}` SET {$SET}", $param );
+				$indices[] = DB()->lastInsertId();
+			}
+
+			return $indices;
+		}
 
 		public function queryAll( $table, $options = array(), &$pageInfo = NULL )
 		{
-			$BASE_SQL = "SELECT * FROM `{$table}` WHERE 1";
+			$BASE_SQL = "SELECT :fields FROM `{$table}` WHERE 1";
 			return $this->querySelect( $BASE_SQL, array(':id' => $val), $options, $pageInfo);
 		}
 
