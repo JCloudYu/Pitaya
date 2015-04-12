@@ -166,4 +166,42 @@ SQL
 
 			return parent::setAttribute($name, $value);
 		}
+
+
+
+		public function queryAll( $table, $options = array(), &$pageInfo = NULL )
+		{
+			$BASE_SQL = "SELECT * FROM `{$table}` WHERE 1";
+			return $this->querySelect( $BASE_SQL, array(':id' => $val), $options, $pageInfo);
+		}
+
+		public function queryPicking( $table, $val, $field = 'id', $options = array(), &$pageInfo = NULL )
+		{
+			if ( is_array( $val ) ) $val = implode(',', $val);
+
+			$BASE_SQL = "SELECT :fields FROM `{$table}` WHERE FIND_IN_SET(`{$field}`, :id)";
+			return $this->querySelect( $BASE_SQL, array(':id' => $val), $options, $pageInfo);
+		}
+
+		private function querySelect( $baseSql, $param = NULL, $options = array(), &$pageInfo = NULL )
+		{
+			$SQL = strtr( $baseSql, array(':fields' => '*') );
+			if ( $param ) $SQL = array('sql' => $SQL, 'param' => $param);
+			$LIMIT = PBDBCtrl::LIMIT( $SQL, @$pageInfo['page'], @$pageInfo['pageSize'], $pageInfo );
+
+			$ARGS = self::CollectArgument( $options );
+			$SQL  = strtr( $baseSql, array(':fields' => $ARGS['FIELDS']) );
+			return $this->select( "{$SQL} ORDER BY {$ARGS['ORDER']} LIMIT {$LIMIT};", $param );
+		}
+
+		private static function CollectArgument( $options = array() )
+		{
+			if ( !is_array(@$options['order']) )  $options['order'] = array('id' => 'DESC');
+			if ( !is_array(@$options['fields']) ) $options['fields'] = array();
+
+			return array(
+				'ORDER'	 => PBDBCtrl::ORDER( $options['order'] ),
+				'FIELDS' => emptY( $options['fields'] ) ? '*' : implode(',', $options['fields'])
+			);
+		}
 	}
