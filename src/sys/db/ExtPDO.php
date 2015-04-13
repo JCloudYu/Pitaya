@@ -184,7 +184,7 @@ SQL
 			return $this->query( $BASE_SQL, $param );
 		}
 
-		public function queryPickingUpdate($table, $identity, $field = 'id', $data = array())
+		public function queryPickingUpdate( $table, $identity, $field = 'id', $data = array() )
 		{
 			if ( is_array($identity) ) $identity = implode(',', $identity);
 
