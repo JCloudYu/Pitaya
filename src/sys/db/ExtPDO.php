@@ -196,6 +196,33 @@ SQL
 			return $this->queryUpdate( $table, $WHERE, $data );
 		}
 
+		public function queryRemove( $table, $WHERE = '' )
+		{
+			if ( empty($WHERE) ) return FALSE;
+
+			$param = array();
+			if ( is_array($WHERE) )
+			{
+				foreach ( $WHERE['param'] as $idx => $val ) $param[$idx] = $val;
+				$WHERE = $WHERE['where'];
+			}
+
+			$BASE_SQL = "DELETE FROM `{$table}` WHERE {$WHERE}";
+			return $this->query( $BASE_SQL, $param );
+		}
+
+		public function queryPickingRemove( $table, $identity, $field = 'id', $data = array() )
+		{
+			if ( is_array($identity) ) $identity = implode(',', $identity);
+
+			$WHERE = array(
+				'where' => "FIND_IN_SET(`{$field}`, :id)",
+				'param' => array( ':id' => $identity )
+			);
+
+			return $this->queryRemove( $table, $WHERE, $data );
+		}
+
 		public function queryInsert($table, $data)
 		{
 			if ( !is_array($data) ) return FALSE;
