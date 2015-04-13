@@ -261,7 +261,7 @@ SQL
 			return $this->querySelect( $BASE_SQL, array(':id' => $val), $options, $pageInfo);
 		}
 
-		private function querySelect( $baseSql, $param = NULL, $options = array(), &$pageInfo = NULL )
+		public function querySelect( $baseSql, $param = NULL, $options = array(), &$pageInfo = NULL )
 		{
 			$SQL = strtr( $baseSql, array(':fields' => '*') );
 			if ( $param ) $SQL = array('sql' => $SQL, 'param' => $param);
