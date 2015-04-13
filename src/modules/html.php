@@ -56,10 +56,11 @@
 
 			$htmlClass = empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
 
+			$lang = empty($this->_prop['lang']) ? '' : "lang='{$this->_prop['lang']}'";
 
 			echo <<<HTML
 <!DOCTYPE html>
-<HTML {$htmlClass}>
+<HTML {$lang} {$htmlClass}>
 	<head>
 		{$header}
 
@@ -137,6 +138,7 @@ HTML;
 				case 'viewport':
 					$this->_header[] = "<meta name='viewport' content='{$value}' />";
 					break;
+				case 'lang':
 				case 'page':
 				case 'body':
 				case 'html':
