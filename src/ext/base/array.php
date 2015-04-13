@@ -199,3 +199,29 @@
 
 		return $collected;
 	}
+
+	function ary_filter( $array, $filter = NULL, $skipVal = FALSE )
+	{
+		if ( !is_array($array) ) return FALSE;
+
+		$arguments	= func_get_args();
+		$skipMode	= count($arguments) != 2;
+
+		if ( !is_callable($filter) )
+		{
+			$filter = (!$skipMode) ?
+				function( $item ) { return $item; } :
+				function( $item ) { return (empty($item)) ? FALSE : $item; };
+		}
+
+		$collected = array();
+		foreach ( $array as $idx => $item )
+		{
+			$result = $filter($item, $idx);
+			if ( $skipMode && ($result === $skipVal) ) continue;
+
+			$collected[$idx] = $result;
+		}
+
+		return $collected;
+	}
