@@ -104,40 +104,36 @@
 		return "{$interval->s} {$unit} before";
 	}
 
-	function ext_strtr($pattern, $replacements, $glue = FALSE)
+	function ext_strtr($pattern, $replacements, $glue = FALSE, $mapper = NULL)
 	{
-		if (!is_array($replacements)) return $pattern;
+		static $directMapper = function($item){ return $item; };
+
+		// INFO: Fail safe
+		if ( !is_array($replacements) ) return "";
+		$mapper	 = ( !is_callable($mapper) ) ? $directMapper : $mapper;
+		$pattern = "{$pattern}";
+
 
 		$firstElm = reset($replacements);
-		if ( $firstElm && !is_array($firstElm) )
-			return strtr($pattern, $replacements);
+		if ( !empty($firstElm) && !is_array($firstElm) )
+			return strtr( $pattern, $mapper($replacements) );
 		else
 		{
-			$result = ( $glue ) ? "" : array();
-			foreach ($replacements as $key => $replace)
+			$sepMode	= ( $glue === FALSE || $glue === NULL );
+			$collector	= ( $sepMode ) ? array() : "{$glue}";
+
+			foreach ( $replacements as $key => $replace )
 			{
-				if ( $glue )
-					$result .= strtr( $pattern, $replace );
+				$result = strtr( $pattern, $mapper($replace) );
+
+				if ( $sepMode )
+					$collector .= $result;
 				else
-					$result[$key] = strtr( $pattern, $replace );
+					$collector[$key] = $result;
 			}
 
 			return $result;
 		}
-	}
-
-	function repeat_strtr($pattern, $replacements, $glue = '', $mapper = NULL)
-	{
-		if (!is_array($replacements)) return $pattern;
-
-		$result = array();
-		foreach ($replacements as $replace)
-		{
-			$rep = (is_callable($mapper)) ? $mapper($replace) : $replace;
-			$result[] = strtr($pattern, $rep);
-		}
-
-		return implode($glue, $result);
 	}
 
 	function ext_trim($instance)
