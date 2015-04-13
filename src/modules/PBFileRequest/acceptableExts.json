@@ -58,5 +58,8 @@
 	"ZIP":		"application/zip",
 	"GZ":		"application/gzip",
 	"TGZ":		"application/gzip",
-	"RAR":		"application/rar"
+	"RAR":		"application/rar",
+
+
+	"SWF":		"application/x-shockwave-flash"
 }
