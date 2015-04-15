@@ -211,7 +211,7 @@ SQL
 			return $this->query( $BASE_SQL, $param );
 		}
 
-		public function queryPickingRemove( $table, $identity, $field = 'id', $data = array() )
+		public function queryPickingRemove( $table, $identity, $field = 'id' )
 		{
 			if ( is_array($identity) ) $identity = implode(',', $identity);
 
@@ -220,7 +220,7 @@ SQL
 				'param' => array( ':id' => $identity )
 			);
 
-			return $this->queryRemove( $table, $WHERE, $data );
+			return $this->queryRemove( $table, $WHERE );
 		}
 
 		public function queryInsert($table, $data)
