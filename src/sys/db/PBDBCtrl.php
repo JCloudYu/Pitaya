@@ -80,7 +80,9 @@
 			{
 				$totalPages = $page = 1;
 				$pageSize = $totalCount;
-				$limitClause = "0,{$totalCount}";
+
+				$LIMIT_MAX = ($totalCount < 1) ? 1 : $totalCount;
+				$limitClause = "0,{$LIMIT_MAX}";
 			}
 
 
