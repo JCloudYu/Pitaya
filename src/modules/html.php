@@ -9,7 +9,7 @@
 	{
 		private $_baseRCPath = '';
 
-		private $_js = array('prepend' => array(), 'append' => array());
+		private $_js = array('prepend' => array(), 'append' => array(), 'last' => array());
 		private $_css = array();
 		private $_cssFiles = array();
 		private $_jsFiles = array();
