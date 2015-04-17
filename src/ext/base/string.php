@@ -104,7 +104,7 @@
 		return "{$interval->s} {$unit} before";
 	}
 
-	function ext_strtr($pattern, $replacements, $glue = '', $mapper = NULL)
+	function ext_strtr($pattern, $replacements, $glue = FALSE, $mapper = NULL)
 	{
 		// INFO: Fail safe
 		if ( !is_array($replacements) ) return "";
