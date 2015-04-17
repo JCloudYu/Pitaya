@@ -118,19 +118,15 @@
 		else
 		{
 			$sepMode	= ( $glue === FALSE || $glue === NULL );
-			$collector	= ( $sepMode ) ? array() : "{$glue}";
+			$collector	= array();
 
 			foreach ( $replacements as $key => $replace )
 			{
 				$result = strtr( $pattern, $mapper($replace) );
-
-				if ( $sepMode )
-					$collector .= $result;
-				else
-					$collector[$key] = $result;
+				$collector[$key] = $result;
 			}
 
-			return $result;
+			return ($sepMode) ? $collector : implode("{$glue}", $collector);
 		}
 	}
 
