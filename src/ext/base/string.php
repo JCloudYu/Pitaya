@@ -107,9 +107,10 @@
 	function ext_strtr($pattern, $replacements, $glue = FALSE, $mapper = NULL)
 	{
 		// INFO: Fail safe
-		if ( !is_array($replacements) ) return "";
+		if ( !is_array($replacements) ) return '';
 		$mapper	 = ( !is_callable($mapper) ) ? function($item){ return $item; } : $mapper;
 		$pattern = "{$pattern}";
+		$glue	 = ( $glue === TRUE ) ? '' : $glue;
 
 
 		$firstElm = reset($replacements);
