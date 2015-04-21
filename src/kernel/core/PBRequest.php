@@ -4,6 +4,7 @@
 	using('ext.base.math');
 	using('ext.base.misc');
 	using('ext.base.array');
+	using('ext.net.ip');
 
 	final class PBRequest extends PBObject
 	{
@@ -203,6 +204,8 @@
 
 		public function __get_domain() { return @"{$this->server['SERVER_NAME']}"; }
 		public function __get_ssl() { return $this->is_ssl(); }
+
+		public function __get_remoteIP() { return RemoteIP($this->server); }
 
 		public function is_ssl($checkStdPorts = FALSE)
 		{
