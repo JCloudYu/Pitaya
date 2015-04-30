@@ -249,9 +249,12 @@
 
 
 	// INFO: Environmental constants
-	if ( !defined('__DEBUG_MODE__') )		define('__DEBUG_MODE__',		FALSE, TRUE);
-	if ( !defined('__LOG_EXCEPTION__') )	define('__LOG_EXCEPTION__',		TRUE,  TRUE);
-	if ( !defined('__THROW_EXCEPTION__') )	define('__THROW_EXCEPTION__',	FALSE, TRUE);
+	if ( !defined('__DEBUG_MODE__') )			define('__DEBUG_MODE__',			FALSE, TRUE);
+	if ( !defined('__LOG_EXCEPTION__') )		define('__LOG_EXCEPTION__',			TRUE,  TRUE);
+	if ( !defined('__THROW_EXCEPTION__') )		define('__THROW_EXCEPTION__',		FALSE, TRUE);
+
+
+	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16,		TRUE);
 
 	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'), TRUE);
 
