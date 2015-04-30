@@ -13,7 +13,7 @@
 		public static function Fire( $service, $eventInfo , $serializableArgs = array() )
 		{
 			$EVT_STORAGE = path( 'data.events' );
-			if ( !is_dir( $EVT_STORAGE ) ) @mkdir( $EVT_STORAGE, 0644, TRUE );
+			if ( !is_dir( $EVT_STORAGE ) ) @mkdir( $EVT_STORAGE, 0755, TRUE );
 
 			// INFO: Normalize event information
 			if ( !is_array($eventInfo) ) $eventInfo = array( $eventInfo );
@@ -38,7 +38,7 @@
 			if ( !empty($OUT) ) file_put_contents("{$EVT_STORAGE}/{$EVENT_ID}.out", implode("\n", $OUT));
 
 			$STREAM = PBStream::Rotatable( "{$EVT_STORAGE}/event.history" );
-			$STREAM->write( LogStr( "ID:{$EVENT_ID},SERVICE:{$service},INFO:{$CLI_EVENT_INFO},STATUS:{$STATUS},ARGS:{$EVT_ARGS}" . EOL ) );
+			$STREAM->write( LogStr( "ID:{$EVENT_ID},SERVICE:{$service},INFO:{$CLI_EVENT_INFO},STATUS:{$STATUS},ARGS:{$EVT_ARGS}" . EON ) );
 
 
 			return $STATUS;
