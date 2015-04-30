@@ -32,7 +32,7 @@
 			$CLI_SERVICE_NAME	= @escapeshellarg($service);
 			$CLI_EVENT_INFO		= implode(' ', ary_filter( $eventInfo, function($item) { return escapeshellarg($item); } ));
 			$CLI_EVENT_ARGS		= @escapeshellarg($EVT_ARGS);
-			exec( "{$PITAYA_EXEC} {$CLI_SERVICE_NAME} Event {$CLI_EVENT_INFO} {$CLI_EVENT_ARGS}", $OUT, $STATUS );
+			exec( "{$PITAYA_EXEC} {$CLI_SERVICE_NAME} Event {$CLI_EVENT_INFO} {$CLI_EVENT_ARGS} 2>&1", $OUT, $STATUS );
 
 
 			if ( !empty($OUT) ) file_put_contents("{$EVT_STORAGE}/{$EVENT_ID}.out", implode("\n", $OUT));
