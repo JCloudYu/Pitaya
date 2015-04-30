@@ -54,7 +54,7 @@
 
 
 	// INFO: Execution environment
-	if ( isset($_SERVER['SHELL']) )
+	if ( php_sapi_name() == "cli" )
 	{
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 

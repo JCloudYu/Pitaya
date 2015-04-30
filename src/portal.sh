@@ -2,4 +2,11 @@
 
 cd $(dirname $0)
 # E_ALL & ~E_WARNING & ~E_STRICT
-php -d auto_prepend_file=kernel/base.php -d error_reporting=30711 portal.php $@
+
+i=0
+for STMT in $@; do
+    ARGS[$i]=$( echo "$STMT" )
+    (( i++ ))
+done
+
+php -d auto_prepend_file=kernel/base.php -d error_reporting=30711 portal.php ${ARGS[@]}
