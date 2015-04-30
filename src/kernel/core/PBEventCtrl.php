@@ -8,16 +8,18 @@
 
 	final class PBEventCtrl extends PBObject
 	{
-		public static function Fire( $Service, array $evntArgs = array() )
+		public static function Fire( $service, $event, $eventArgs = array() )
 		{
 			$EVT_STORAGE = path( 'data.events' );
 			if ( !is_dir( $EVT_STORAGE ) ) @mkdir( $EVT_STORAGE, 0644, TRUE );
+			if ( !is_array( $eventArgs ) ) $eventArgs = array( $eventArgs );
+			array_unshift( $eventArgs, $event );
 
 
 
 			$PITAYA_EXEC = __WEB_ROOT__ . "/pitaya.sh";
-			$EVT_ARGS	 = implode(' ', ary_filter( $evntArgs, function( $item ){ return "{$item}"; } ));
-			$EVENT_HASH	 = md5("{$Service} {$EVT_ARGS}" . uniqid("", TRUE));
+			$EVT_ARGS	 = implode(' ', ary_filter( $eventArgs, function( $item ){ return "{$item}"; } ));
+			$EVENT_HASH	 = md5("{$service} {$EVT_ARGS}" . uniqid("", TRUE));
 			$EVENT_ID	 = "E_" . date("Y-m-d") . "_" . substr($EVENT_HASH, rand(0, strlen($EVENT_HASH) - __EVENT_IDENTIFIER_LEN__), __EVENT_IDENTIFIER_LEN__);
 
 			if ( !is_executable( $PITAYA_EXEC ) ) return FALSE;
