@@ -10,17 +10,18 @@
 
 	final class PBEventCtrl extends PBObject
 	{
-		public static function Fire( $service, $event, $eventArgs = array() )
+		public static function Fire( $service, $eventInfo , $serializableArgs = array() )
 		{
 			$EVT_STORAGE = path( 'data.events' );
 			if ( !is_dir( $EVT_STORAGE ) ) @mkdir( $EVT_STORAGE, 0644, TRUE );
-			if ( !is_array( $eventArgs ) ) $eventArgs = array( $eventArgs );
-			array_unshift( $eventArgs, $event );
+
+			// INFO: Normalize event information
+			if ( !is_array($eventInfo) ) $eventInfo = array( $eventInfo );
 
 
 
 			$PITAYA_EXEC = __WEB_ROOT__ . "/pitaya.sh";
-			$EVT_ARGS	 = implode(' ', ary_filter( $eventArgs, function( $item ){ return "{$item}"; } ));
+			$EVT_ARGS	 = serialize($serializableArgs);
 			$EVENT_HASH	 = md5("{$service} {$EVT_ARGS}" . uniqid("", TRUE));
 			$EVENT_ID	 = "E_" . date("Ymd") . "_" . substr($EVENT_HASH, rand(0, strlen($EVENT_HASH) - __EVENT_IDENTIFIER_LEN__), __EVENT_IDENTIFIER_LEN__);
 
@@ -28,13 +29,16 @@
 
 
 			$OUT = array();
-			exec( "{$PITAYA_EXEC} {$service} Event {$EVT_ARGS}", $OUT, $STATUS );
+			$CLI_SERVICE_NAME	= @escapeshellarg($service);
+			$CLI_EVENT_INFO		= implode(' ', ary_filter( $eventInfo, function($item) { return escapeshellarg($item); } ));
+			$CLI_EVENT_ARGS		= @escapeshellarg($EVT_ARGS);
+			exec( "{$PITAYA_EXEC} {$CLI_SERVICE_NAME} Event {$CLI_EVENT_INFO} {$CLI_EVENT_ARGS}", $OUT, $STATUS );
 
 
 			if ( !empty($OUT) ) file_put_contents("{$EVT_STORAGE}/{$EVENT_ID}.out", implode("\n", $OUT));
 
 			$STREAM = PBStream::Rotatable( "{$EVT_STORAGE}/event.history" );
-			$STREAM->write( LogStr( "ID:{$EVENT_ID},SERVICE:{$service},STATUS:{$STATUS},ARGS:{$EVT_ARGS}" . EOL ) );
+			$STREAM->write( LogStr( "ID:{$EVENT_ID},SERVICE:{$service},INFO:{$CLI_EVENT_INFO},STATUS:{$STATUS},ARGS:{$EVT_ARGS}" . EOL ) );
 
 
 			return $STATUS;
