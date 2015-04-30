@@ -32,7 +32,7 @@
 			if ( !empty($OUT) ) file_put_contents("{$EVT_STORAGE}/{$EVENT_ID}.out", implode("\n", $OUT));
 
 
-			file_put_contents("{$EVT_STORAGE}/event.history", "{$STATUS} - {$service} {$EVT_ARGS}" . EON, FILE_APPEND);
+			file_put_contents("{$EVT_STORAGE}/event.history", "STATUS:{$STATUS},SERVICE:{$service},ARGS:{$EVT_ARGS}" . EON, FILE_APPEND);
 			return $STATUS;
 		}
 	}
