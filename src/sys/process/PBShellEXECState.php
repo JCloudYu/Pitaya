@@ -3,7 +3,7 @@
  * 1028.CSMS-BDF - PBShellEXECState.php
  * Created by JCloudYu on 2015/05/04 23:15
  */
-	final class PBShellEXECState
+	class PBShellEXECState
 	{
 		const SUCCESS	= Termination::STATUS_SUCCESS;
 		const ERROR		= Termination::STATUS_ERROR;
