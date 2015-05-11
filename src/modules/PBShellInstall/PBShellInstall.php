@@ -70,8 +70,15 @@
 			PBStdIO::STDOUT("Start patching... " . date("Y/m/d H:i:s"));
 
 
+			PBStdIO::STDOUT( "Establishing runtime storage layout..." );
 			$this->createStorage();
+
+
+			PBStdIO::STDOUT( "Collecting system runtime configuration info..." );
 			$systemConfig = $this->readConfig();
+
+			PBStdIO::STDOUT( "Generating runtime.json..." );
+			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
 		}
 
 		protected function purgeStorage()
@@ -207,6 +214,7 @@
 
 			do
 			{
+				PBStdIO::STDOUT( "Constructing database connection info..." );
 				$conf = $readDBConf();
 				try
 				{
