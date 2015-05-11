@@ -32,4 +32,5 @@
 		const RESOURCE_NOT_FOUND		= -19;
 		const UNSUPPORTED_METHOD		= -20;
 		const UNKNOWN_EVENT				= -21;
+		const DUPLICATED_ENTRY			= -22;
 	}
