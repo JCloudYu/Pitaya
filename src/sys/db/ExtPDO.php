@@ -244,7 +244,7 @@ SQL
 				$indices[] = DB()->lastInsertId();
 			}
 
-			return $indices;
+			return ( count($indices) > 1 ) ? $indices : @array_shift( $indices );
 		}
 
 		public function queryAll( $table, $options = array(), &$pageInfo = NULL )
