@@ -72,18 +72,19 @@
 			PBStdIO::STDOUT( "Collecting system runtime configuration info..." );
 			$systemConfig = $this->readConfig();
 
-			PBStdIO::STDOUT( "Generating runtime.json..." );
-			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
 
 
-
-			// INFO: Purge storage
+			// INFO: Purge storage...
 			$this->purgeStorage();
 
 			PBStdIO::STDOUT( "Establishing runtime storage layout..." );
 			$this->createStorage();
 
 
+
+			// INFO: Write configuration back to storage...
+			PBStdIO::STDOUT( "Generating runtime.json..." );
+			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
 
 			return ( DB()->version == "" || FORCE_INSTALL ) ? "0.0.0" : DB()->version;
 		}
