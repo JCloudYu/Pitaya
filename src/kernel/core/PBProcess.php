@@ -27,6 +27,10 @@ class PBProcess extends PBObject
 	 */
 	public static function Process($id = NULL) { return SYS::Process($id); }
 
+	public static function Module( $moduleName, $reusable = TRUE, $pId = NULL ) {
+		return SYS::Process( $pId )->getModule( $moduleName, $reusable );
+	}
+
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
