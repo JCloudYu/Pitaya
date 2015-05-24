@@ -59,25 +59,29 @@
 
 		public function shell($param)
 		{
-			$this->purgeStorage();
-
 			// INFO: Attach another streaming destination to STDOUT and STDERR
 			$stream = PBStream::Rotatable( path('data.log', 'install-detail.log') );
 			PBStream::STDOUT()->tee( $stream );
 			PBStream::STDERR()->tee( $stream );
 
-			PBStdIO::STDOUT("Start patching... " . date("Y/m/d H:i:s"));
 
 
-			PBStdIO::STDOUT( "Establishing runtime storage layout..." );
-			$this->createStorage();
+			PBStdIO::STDOUT("Start installing... " . date("Y/m/d H:i:s"));
 
-
+			// INFO: Read system configurations first...
 			PBStdIO::STDOUT( "Collecting system runtime configuration info..." );
 			$systemConfig = $this->readConfig();
 
 			PBStdIO::STDOUT( "Generating runtime.json..." );
 			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
+
+
+
+			// INFO: Purge storage
+			$this->purgeStorage();
+
+			PBStdIO::STDOUT( "Establishing runtime storage layout..." );
+			$this->createStorage();
 
 
 
