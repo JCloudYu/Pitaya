@@ -28,7 +28,6 @@
 			// INFO: Prepare patch module
 			$patchObj = PBProcess::Process()->getModule('PBPatch');
 			$patchObj->patchDir = PATCH_DIR;
-			if ( DB()->version == "" || FORCE_INSTALL ) DB()->version = "0.0.0";
 
 
 
@@ -53,7 +52,7 @@
 
 
 			PBProcess::Process()->assignNextModules(array(
-				array( 'module' => $patchObj, 'request' => DB()->version ),
+				array( 'module' => $patchObj ),
 				array( 'module' => $funcChainObj )
 			));
 		}
@@ -79,6 +78,10 @@
 
 			PBStdIO::STDOUT( "Generating runtime.json..." );
 			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
+
+
+
+			return ( DB()->version == "" || FORCE_INSTALL ) ? "0.0.0" : DB()->version;
 		}
 
 		protected function purgeStorage()
