@@ -60,7 +60,7 @@
 		public function shell($param)
 		{
 			// INFO: Attach another streaming destination to STDOUT and STDERR
-			$stream = PBStream::Rotatable( path('data.log', 'install-detail.log') );
+			$stream = PBStream::Rotatable( path('root', '.install.log') );
 			PBStream::STDOUT()->tee( $stream );
 			PBStream::STDERR()->tee( $stream );
 
