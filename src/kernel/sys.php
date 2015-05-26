@@ -307,7 +307,7 @@ class SYS extends PBObject
 		$this->_processQueue[$processId] = $process;
 
 
-		if ( $custInit !== NULL ) $custInit();
+		if ( is_callable($custInit) ) $custInit();
 
 		chdir( __WORKING_ROOT__ );
 		$process->attachMainService($service, $moduleRequest);
