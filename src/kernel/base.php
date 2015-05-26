@@ -85,33 +85,45 @@
 	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
 	chdir( __WEB_ROOT__ );
 
-	// INFO: Read system working environmental configurations
-	if ( PITAYA_HOST != "" )
+
+
+
+
+
+	// ISSUE: We need to verify the configuration data...
+	if ( SYS_EXEC_ENV === EXEC_ENV_CLI )
 	{
-		if ( file_exists(__WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php") )
+		if ( file_exists(__WEB_ROOT__ . "/cli.php") )
 		{
-			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";  // ISSUE: We need to verify the configuration data...
-			define('HOST_BASED_CONFIG_USED', TRUE, TRUE);
+			require_once __WEB_ROOT__ . "/cli.php";
+			define( 'CONFIG_MODE', 'CLI' );
 		}
-	}
-
-	if ( !defined('HOST_BASED_CONFIG_USED') ) define('HOST_BASED_CONFIG_USED', FALSE, TRUE);
-
-
-	if ( !HOST_BASED_CONFIG_USED && file_exists(__WEB_ROOT__ . "/config.php") )
-	{
-		require_once __WEB_ROOT__ . "/config.php"; // ISSUE: We need to verify the configuration data...
-		define('DEFAULT_CONFIG_USED', TRUE, TRUE);
 	}
 	else
 	{
-		define('DEFAULT_CONFIG_USED', FALSE, TRUE);
+		if ( PITAYA_HOST != "" && file_exists( __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
+		{
+			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";
+			define( 'CONFIG_MODE', 'HOST' );
+		}
+	}
+
+
+	if ( !defined( 'CONFIG_MODE' ) )
+	{
+		if ( file_exists(__WEB_ROOT__ . "/config.php") )
+		{
+			require_once __WEB_ROOT__ . "/config.php";
+			define( 'CONFIG_MODE', 'DEFAULT' );
+		}
+		else
+		{
+			define( 'CONFIG_MODE', 'NONE' );
+		}
 	}
 
 
 
-	if ( SYS_EXEC_ENV === EXEC_ENV_CLI && file_exists(__WEB_ROOT__ . "/cli.php") )
-		require_once __WEB_ROOT__ . "/cli.php";  // ISSUE: We need to verify the configuration data...
 
 
 
