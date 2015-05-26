@@ -124,6 +124,11 @@
 
 
 
+	// INFO: Common configurations...
+	if ( file_exists( __WEB_ROOT__ . "/common.php" ) )
+		require_once __WEB_ROOT__ . "/common.php";
+
+
 
 
 
