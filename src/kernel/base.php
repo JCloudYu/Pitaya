@@ -111,7 +111,7 @@
 
 	if ( !defined( 'CONFIG_MODE' ) )
 	{
-		if ( file_exists(__WEB_ROOT__ . "/config.php") )
+		if ( file_exists( __WEB_ROOT__ . "/config.php" ) )
 		{
 			require_once __WEB_ROOT__ . "/config.php";
 			define( 'CONFIG_MODE', 'DEFAULT' );
