@@ -34,7 +34,7 @@ SetEnv session.use_cookies='0';
 ##### Environmental constants
 php_flag register_argc_argv On
 php_flag magic_quotes_gpc Off
-# php_value date.timezone "Europe/Paris"
+# php_value date.timezone "UTC"
 
 
 
