@@ -4,6 +4,7 @@
  * Created by JCloudYu on 2015/04/18 20:18
  */
 	using( 'kernel.core.PBModule' );
+	using( 'sys.db.PBDBCtrl' );
 
 	class PBShellInstall extends PBModule
 	{
