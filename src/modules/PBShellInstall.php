@@ -3,7 +3,7 @@
  * 1024.QueueCounter - PBShellInstall.php
  * Created by JCloudYu on 2015/04/18 20:18
  */
-	using('kernel.core.PBModule');
+	using( 'kernel.core.PBModule' );
 
 	class PBShellInstall extends PBModule
 	{
@@ -86,7 +86,7 @@
 			PBStdIO::STDOUT( "Generating runtime.json..." );
 			file_put_contents(path("data.conf", "runtime.json"), @json_encode( $systemConfig ));
 
-			return ( DB()->version == "" || FORCE_INSTALL ) ? "0.0.0" : DB()->version;
+			return ( PBDBCtrl::DB()->version == "" || FORCE_INSTALL ) ? "0.0.0" : PBDBCtrl::DB()->version;
 		}
 
 		protected function purgeStorage()
@@ -226,7 +226,7 @@
 				$conf = $readDBConf();
 				try
 				{
-					DB( $conf, array('CREATE_VAR', 'FORCE_CREATE') );
+					PBDBCtrl::DB( $conf, array('CREATE_VAR', 'FORCE_CREATE') );
 					break;
 
 				}

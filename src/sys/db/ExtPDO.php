@@ -240,8 +240,8 @@ SQL
 
 				$param	= array();
 				$SET	= PBDBCtrl::SET( $value, $param );
-				DB()->query( "INSERT INTO `{$table}` SET {$SET}", $param );
-				$indices[] = DB()->lastInsertId();
+				$this->query( "INSERT INTO `{$table}` SET {$SET}", $param );
+				$indices[] = $this->lastInsertId();
 			}
 
 			return ( count($indices) > 1 ) ? $indices : @array_shift( $indices );

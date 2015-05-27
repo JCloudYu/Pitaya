@@ -61,7 +61,7 @@
 
 			$sql = trim($sql);
 			$sql = preg_replace('/(select)(.|[\n])*(from([^;]|[\n])*);*/i', "$1 count(*) as count $3", $sql, -1);
-			$countResult = DB()->fetch($sql, $param);
+			$countResult = PBDBCtrl::DB()->fetch($sql, $param);
 
 
 			$totalCount = $countResult['count'];
