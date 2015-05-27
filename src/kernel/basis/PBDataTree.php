@@ -1,10 +1,10 @@
 <?php
 /*
- * File: PBStorage.php
+ * File: PBDataTree.php
  * Created by JCloudYu.
  * DateTime: 2014/04/05
  */
-	class PBStorage implements ArrayAccess
+	class PBDataTree implements ArrayAccess
 	{
 		private $_storage		 = NULL;
 		private $_forceOverwrite = TRUE;
@@ -26,7 +26,7 @@
 
 		public function &set($offset, $value)
 		{
-			if (is_a($value, 'PBStorage'))
+			if (is_a($value, 'PBDataTree'))
 				$value = $value->_storage;
 
 			if ($value === NULL)
@@ -100,7 +100,7 @@
 
 		public function merge($offset, $ref, $deepMerge = FALSE, $forceMerge = TRUE)
 		{
-			if (is_a($ref, 'PBStorage'))
+			if (is_a($ref, 'PBDataTree'))
 				$ref = $ref->_storage;
 
 
@@ -209,3 +209,5 @@
 		public function offsetUnset($offset) { $this->clear($offset); }
 		public function offsetExists($offset) { return $this->valid($offset); }
 	}
+
+	class_alias( 'PBDataTree', 'PBStorage' ); // DEPRECATED: PBStorage will be deprecated in v1.4.0
