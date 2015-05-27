@@ -93,6 +93,9 @@
 	// ISSUE: We need to verify the configuration data...
 	if ( SYS_EXEC_ENV === EXEC_ENV_CLI )
 	{
+		define( 'CLI_ENV',	TRUE,	TRUE );
+		define( 'NET_ENV',	FALSE,	TRUE );
+
 		if ( file_exists(__WEB_ROOT__ . "/cli.php") )
 		{
 			require_once __WEB_ROOT__ . "/cli.php";
@@ -101,6 +104,9 @@
 	}
 	else
 	{
+		define( 'CLI_ENV',	FALSE,	TRUE );
+		define( 'NET_ENV',	TRUE,	TRUE );
+
 		if ( PITAYA_HOST != "" && file_exists( __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
 		{
 			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";

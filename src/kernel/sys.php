@@ -207,17 +207,7 @@ class SYS extends PBObject
 			$this->_entryService = $service;
 
 			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-
-			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
-			{
-				array_shift($moduleRequest);
-				define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-			}
-			else
-			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-				define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
-			else
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+			self::DecideExecMode( $moduleRequest );
 
 
 			$GLOBALS['service'] = $service;
@@ -238,17 +228,7 @@ class SYS extends PBObject
 				$this->_entryService = $service;
 
 				define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
-
-				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
-				{
-					array_shift($moduleRequest);
-					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-				}
-				else
-				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-					define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
-				else
-					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+				self::DecideExecMode( $moduleRequest );
 
 
 				$GLOBALS['service'] = $service;
@@ -263,17 +243,7 @@ class SYS extends PBObject
 				$this->_entryService = $service;
 
 				define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
-
-				if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
-				{
-					array_shift($moduleRequest);
-					define('SERVICE_EXEC_MODE', 'EVENT', TRUE);
-				}
-				else
-				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-					define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
-				else
-					define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+				self::DecideExecMode( $moduleRequest );
 
 
 				$GLOBALS['service'] = $service;
@@ -283,6 +253,36 @@ class SYS extends PBObject
 		}
 
 		throw(new Exception("Cannot locate the target entry module!"));
+	}
+
+	private static function DecideExecMode( &$moduleRequest )
+	{
+		if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
+		{
+			array_shift($moduleRequest);
+			define( 'SERVICE_EXEC_MODE', 'EVENT', TRUE );
+
+			define( 'EVENT_CHAIN',	TRUE,	TRUE );
+			define( 'SHELL_CHAIN',	FALSE,	TRUE );
+			define( 'NORMAL_CHAIN', FALSE,	TRUE );
+		}
+		else
+		if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
+		{
+			define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
+
+			define( 'EVENT_CHAIN',	FALSE,	TRUE );
+			define( 'SHELL_CHAIN',	TRUE,	TRUE );
+			define( 'NORMAL_CHAIN', FALSE,	TRUE );
+		}
+		else
+		{
+			define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+
+			define( 'EVENT_CHAIN',	FALSE,	TRUE );
+			define( 'SHELL_CHAIN',	FALSE,	TRUE );
+			define( 'NORMAL_CHAIN', TRUE,	TRUE );
+		}
 	}
 
 	public function __get_id() {
