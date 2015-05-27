@@ -6,23 +6,24 @@
 
 	final class PBHTTP
 	{
-		public static function ResponseStatus($status)
+		public static function ResponseStatus( $status )
 		{
-			$statusMsg = self::GetStatusString($status);
+			$statusMsg = self::GetStatusString( $status );
 			if ( empty($statusMsg) ) throw new Exception("Unsupported HTTP Status Code");
 
 			header("HTTP/1.1 {$status} {$statusMsg}");
 			header("Status: {$status} {$statusMsg}");
 		}
 
-		public static function ResponseJSON($obj)
+		public static function ResponseJSON( $obj, $status = NULL ) { self::ResponseContent( json_encode($obj), "application/json", $status ); }
+
+		public static function ResponseContent( $content, $contentType = "text/plain", $status = NULL )
 		{
-			header("Content-type: application/json");
-			$obj = json_encode($obj);
-			echo "$obj";
+			if ( $status !== NULL ) self::ResponseStatus( $status );
+
+			header("Content-type: {$contentType}");
+			echo "{$content}";
 		}
-
-
 
 
 
