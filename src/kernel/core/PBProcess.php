@@ -34,22 +34,7 @@ class PBProcess extends PBObject
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
-
-		switch ( SERVICE_EXEC_MODE )
-		{
-			case "EVENT":
-				$module->prepareEvent($request);
-				return $module->event(NULL);
-
-			case "SHELL":
-				$module->prepareShell($request);
-				return $module->shell(NULL);
-
-			case "NORMAL":
-			default:
-				$module->prepare($request);
-				return $module->exec(NULL);
-		}
+		return self::_execChain( $module, $request );
 	}
 
 	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
@@ -125,24 +110,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			$module = $this->_attachedModules[$moduleHandle];
-
-			switch (SERVICE_EXEC_MODE)
-			{
-				case 'EVENT':
-					$module->prepareEvent($moduleRequest);
-					break;
-
-				case 'SHELL':
-					$module->prepareShell($moduleRequest);
-					break;
-
-				case 'NORMAL':
-				default:
-					$module->prepare($moduleRequest);
-					break;
-			}
-
+			self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
 			$status = $status && PBLList::PREV($this->_bootSequence);
 		}
 
@@ -210,22 +178,7 @@ class PBProcess extends PBObject
 
 			if ($status && $doPrepare)
 			{
-				$module = $this->_attachedModules[$moduleHandle];
-				switch (SERVICE_EXEC_MODE)
-				{
-					case 'EVENT':
-						$module->prepareEvent($moduleRequest);
-						break;
-
-					case 'SHELL':
-						$module->prepareShell($moduleRequest);
-						break;
-
-					case 'NORMAL':
-					default:
-						$module->prepare($moduleRequest);
-						break;
-				}
+				self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
 			}
 
 			$status = $status && PBLList::PREV($this->_bootSequence);
@@ -252,23 +205,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			$module = $this->_attachedModules[$moduleHandle];
-
-			switch (SERVICE_EXEC_MODE)
-			{
-				case 'EVENT':
-					$module->prepareEvent($moduleRequest);
-					break;
-
-				case 'SHELL':
-					$module->prepareShell($moduleRequest);
-					break;
-
-				case 'NORMAL':
-				default:
-					$module->prepare($moduleRequest);
-					break;
-			}
+			self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
 		}
 
 		return $status;
@@ -375,22 +312,7 @@ class PBProcess extends PBObject
 			$request = $data['request'];
 			$data['prepared'] = TRUE;
 
-			switch (SERVICE_EXEC_MODE)
-			{
-				case 'EVENT':
-					$this->_attachedModules[$handle]->prepareEvent($request);
-					break;
-
-				case 'SHELL':
-					$this->_attachedModules[$handle]->prepareShell($request);
-					break;
-
-
-				case 'NORMAL':
-				default:
-					$this->_attachedModules[$handle]->prepare($request);
-					break;
-			}
+			self::_prepareChain( $this->_attachedModules[$handle], $request );
 		}
 		while (PBLList::NEXT($this->_bootSequence));
 
@@ -468,21 +390,7 @@ class PBProcess extends PBObject
 				$request = $data['request'];
 				$data['prepared'] = TRUE;
 
-				switch (SERVICE_EXEC_MODE)
-				{
-					case 'EVENT':
-						$this->_attachedModules[$handle]->prepareEvent($request);
-						break;
-
-					case 'SHELL':
-						$this->_attachedModules[$handle]->prepareShell($request);
-						break;
-
-					case 'NORMAL':
-					default:
-						$this->_attachedModules[$handle]->prepare($request);
-						break;
-				}
+				self::_prepareChain( $this->_attachedModules[$handle], $request );
 			}
 		}
 		while (PBLinkedList::NEXT($this->_bootSequence));
@@ -512,5 +420,49 @@ class PBProcess extends PBObject
 			$this->_attachedModules[$moduleName] = $module;
 
 		return $module;
+	}
+
+	private function _prepareChain( PBModule $module, $request = NULL )
+	{
+		switch (SERVICE_EXEC_MODE)
+		{
+			case 'EVENT':
+				$module->prepareEvent($request);
+				break;
+
+			case 'SHELL':
+				$module->prepareShell($request);
+				break;
+
+			case 'NORMAL':
+			default:
+				$module->prepare($request);
+				break;
+		}
+	}
+
+	private function _execChain( PBModule $module, $request = NULL )
+	{
+		switch ( SERVICE_EXEC_MODE )
+		{
+			case "EVENT":
+				if ( func_num_args() > 1 )
+					$module->prepareEvent($request);
+
+				return $module->event(NULL);
+
+			case "SHELL":
+				if ( func_num_args() > 1 )
+					$module->prepareShell($request);
+
+				return $module->shell(NULL);
+
+			case "NORMAL":
+			default:
+				if ( func_num_args() > 1 )
+					$module->prepare($request);
+
+				return $module->exec(NULL);
+		}
 	}
 }

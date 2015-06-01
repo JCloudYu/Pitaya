@@ -72,5 +72,5 @@
 		public function offsetUnset($offset) { unset($this->_storedLocales[$this->_curLocale][$offset]); }
 
 		public function offsetSet($offset, $value) { $this->_storedLocales[$this->_curLocale][$offset] = $value; }
-		public function offsetGet($offset) { return strtr($offset, $this->_storedLocales[$this->_curLocale]); }
+		public function offsetGet($offset) { return @strtr($offset, $this->_storedLocales[$this->_curLocale]); }
 	}
