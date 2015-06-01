@@ -112,7 +112,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
+			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest, FALSE );
 			$status = $status && PBLList::PREV($this->_bootSequence);
 		}
 
@@ -180,7 +180,7 @@ class PBProcess extends PBObject
 
 			if ($status && $doPrepare)
 			{
-				$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
+				$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest, FALSE );
 			}
 
 			$status = $status && PBLList::PREV($this->_bootSequence);
@@ -207,7 +207,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
+			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest, FALSE );
 		}
 
 		return $status;
@@ -420,7 +420,7 @@ class PBProcess extends PBObject
 		return $module;
 	}
 
-	private function _prepareChain( PBModule $module, $request = NULL )
+	private function _prepareChain( PBModule $module, $request = NULL, $bootProcessing = TRUE )
 	{
 		switch (SERVICE_EXEC_MODE)
 		{
@@ -438,7 +438,8 @@ class PBProcess extends PBObject
 				break;
 		}
 
-		$this->_appendBootSequence( $module->bootstrap );
+		if ( $bootProcessing )
+			$this->_appendBootSequence( $module->bootstrap );
 	}
 
 	private function _execChain( PBModule $module, $request = NULL )
