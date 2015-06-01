@@ -4,7 +4,7 @@
  * Created by JCloudYu on 2014/06/16 13:34
  */
 	using ('kernel.basis.PBObject');
-	using ('sys.interface.IDataFetcher');
+	using ('sys.prototype.IDataFetcher');
 
 	final class PBCSV extends PBObject implements IDataFetcher
 	{
