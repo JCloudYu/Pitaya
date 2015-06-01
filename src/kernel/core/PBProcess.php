@@ -33,8 +33,10 @@ class PBProcess extends PBObject
 
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
-		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
-		return self::_execChain( $module, $request );
+		$PROC = SYS::Process($pId);
+
+		if (!is_a($module, "PBModule")) $module = $PROC->getModule("{$module}", $reusable);
+		return $PROC->_execChain( $module, $request );
 	}
 
 	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
@@ -110,7 +112,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
+			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
 			$status = $status && PBLList::PREV($this->_bootSequence);
 		}
 
@@ -178,7 +180,7 @@ class PBProcess extends PBObject
 
 			if ($status && $doPrepare)
 			{
-				self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
+				$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
 			}
 
 			$status = $status && PBLList::PREV($this->_bootSequence);
@@ -205,7 +207,7 @@ class PBProcess extends PBObject
 
 		if ($status)
 		{
-			self::_prepareChain( $this->_attachedModules[$handle], $moduleRequest );
+			$this->_prepareChain( $this->_attachedModules[$moduleHandle], $moduleRequest );
 		}
 
 		return $status;
@@ -312,7 +314,7 @@ class PBProcess extends PBObject
 			$request = $data['request'];
 			$data['prepared'] = TRUE;
 
-			self::_prepareChain( $this->_attachedModules[$handle], $request );
+			$this->_prepareChain( $this->_attachedModules[$handle], $request );
 		}
 		while (PBLList::NEXT($this->_bootSequence));
 
@@ -390,7 +392,7 @@ class PBProcess extends PBObject
 				$request = $data['request'];
 				$data['prepared'] = TRUE;
 
-				self::_prepareChain( $this->_attachedModules[$handle], $request );
+				$this->_prepareChain( $this->_attachedModules[$handle], $request );
 			}
 		}
 		while (PBLinkedList::NEXT($this->_bootSequence));
