@@ -318,6 +318,10 @@ class PBProcess extends PBObject
 		}
 		while (PBLList::NEXT($this->_bootSequence));
 
+
+
+		// INFO: EXEC Ready
+		PBLinkedList::HEAD($this->_bootSequence);
 	}
 
 	// MARK: Friend(SYS)
@@ -341,7 +345,9 @@ class PBProcess extends PBObject
 	// INFO: Parse and prepare bootSequence
 	private function _appendBootSequence( $bootSequence ) {
 
-		if(is_null( $bootSequence ) || !is_array( $bootSequence )) return;
+		if( empty( $bootSequence ) || !is_array( $bootSequence )) return;
+
+		$bootSequence = array_reverse( $bootSequence );
 
 		foreach( $bootSequence as $illustrator )
 		{
@@ -373,27 +379,8 @@ class PBProcess extends PBObject
 
 			$request = (array_key_exists('request', $illustrator)) ? $illustrator['request'] : NULL;
 
-			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $request), $moduleId);
+			PBLList::AFTER($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $request), $moduleId);
 		}
-
-		PBLinkedList::HEAD($this->_bootSequence);
-
-		do
-		{
-			$data = &$this->_bootSequence->data;
-
-			if (empty($data['prepared']))
-			{
-				$handle = $data['data'];
-				$request = $data['request'];
-				$data['prepared'] = TRUE;
-
-				$this->_prepareChain( $this->_attachedModules[$handle], $request );
-			}
-		}
-		while (PBLinkedList::NEXT($this->_bootSequence));
-
-		PBLinkedList::HEAD($this->_bootSequence);
 	}
 
 	private function _acquireModule($moduleName, $reusable = TRUE)
