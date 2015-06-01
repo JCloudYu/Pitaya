@@ -318,10 +318,6 @@ class PBProcess extends PBObject
 		}
 		while (PBLList::NEXT($this->_bootSequence));
 
-
-
-		// INFO: Get default boot sequence from boot module
-		$this->__bootSequence = $entryModule->__bootSequence;
 	}
 
 	// MARK: Friend(SYS)
@@ -343,11 +339,11 @@ class PBProcess extends PBObject
 	}
 
 	// INFO: Parse and prepare bootSequence
-	protected function __set___bootSequence($value) {
+	private function _appendBootSequence( $bootSequence ) {
 
-		if(is_null($value) || !is_array($value)) return;
+		if(is_null( $bootSequence ) || !is_array( $bootSequence )) return;
 
-		foreach($value as $illustrator)
+		foreach( $bootSequence as $illustrator )
 		{
 			if(!is_array($illustrator))
 				throw(new Exception("Error bootSequence structure definition"));
@@ -441,6 +437,8 @@ class PBProcess extends PBObject
 				$module->prepare($request);
 				break;
 		}
+
+		$this->_appendBootSequence( $module->bootstrap );
 	}
 
 	private function _execChain( PBModule $module, $request = NULL )
