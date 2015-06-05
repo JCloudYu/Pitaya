@@ -20,6 +20,40 @@
 
 		private $_resultCache	= NULL;
 
+		public static function Column( $title, $colType = '', $dataType = '', $align = '', $ctntAlign = '', $width = '', $style = '', $attr = '' )
+		{
+			$data = array(
+				'title'			=> '',
+				'column-type'	=> '',
+				'data-type'		=> '',
+				'align'			=> '',
+				'content-align'	=> '',
+				'width'			=> '',
+				'style'			=> '',
+				'attr'			=> ''
+			);
+
+			if ( func_num_args() == 1 && is_array($title) )
+			{
+				foreach ( $title as $field => $val ) $data[ $field ] = $val;
+				return $data;
+			}
+			else
+			{
+				return array(
+					'title'			=> $title,
+					'column-type'	=> $colType,
+					'data-type'		=> $dataType,
+					'align'			=> $align,
+					'content-align'	=> $ctntAlign,
+					'width'			=> $width,
+					'style'			=> $style,
+					'attr'			=> $attr
+				);
+			}
+
+		}
+
 		public function __construct()
 		{
 			static $instCounter = 0;
