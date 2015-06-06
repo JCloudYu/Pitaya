@@ -242,4 +242,17 @@
 
 			return array( 'database' => $conf );
 		}
+
+
+		public static function RunCommand( $cmd, $msg = '' )
+		{
+			PBStdIO::STDOUT( ( !empty($msg) ) ? $cmd : $msg );
+			exec( $cmd, $out = NULL, $status);
+			if ( $status )
+			{
+				PBStdIO::STDERR( implode("\n", $out) );
+				PBStdIO::STDERR( "Error occurred! Terminating..." );
+				Termination::WITH_STATUS( Termination::STATUS_ERROR );
+			}
+		}
 	}
