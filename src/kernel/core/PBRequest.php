@@ -388,10 +388,21 @@
 			return $this;
 		}
 
-		public function data($name, $type = 'raw', $default = NULL)
+		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
 		{
-			$vars = array_merge(is_array($this->_queryVariable) ? $this->_queryVariable : array(),
-							    is_array($this->_dataVariable)  ? $this->_dataVariable  : array());
+			$qVar = is_array($this->_queryVariable) ? $this->_queryVariable : array();
+			$dVar = is_array($this->_dataVariable)  ? $this->_dataVariable  : array();
+
+			if ( $varSrc === "query" )
+				$vars = $qVar;
+			else
+			if ( $varSrc === "data" )
+				$vars = $dVar;
+			else
+				$vars = array_merge($qVar, $dVar);
+
+
+			
 
 			if (!array_key_exists($name, $vars)) return $default;
 
