@@ -246,7 +246,7 @@
 
 		public static function RunCommand( $cmd, $msg = '' )
 		{
-			PBStdIO::STDOUT( ( !empty($msg) ) ? $cmd : $msg );
+			PBStdIO::STDOUT( ( empty($msg) ) ? $cmd : $msg );
 			exec( $cmd, $out = NULL, $status);
 			if ( $status )
 			{
