@@ -54,6 +54,13 @@
 		public function __get_emptyStr() { return $this->_emptyNotifier; }
 
 
+		public function __get_html( $force = FALSE ) {
+			static $cache = NULL;
+
+			if ( !empty($cache) && !$force ) return $cache;
+			return $cache = $this->render();
+		}
+
 		public function render()
 		{
 			$dataProp = array();
