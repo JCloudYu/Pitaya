@@ -28,4 +28,4 @@
 			return $_singleton;
 	}
 
-	function S() { return D(); } // DEPRECATED: S will be deprecated in v1.4.0
+	function S( $selector = NULL ) { return D( $selector ); } // DEPRECATED: S will be deprecated in v1.4.0
