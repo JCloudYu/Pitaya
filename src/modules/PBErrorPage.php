@@ -21,6 +21,7 @@
 
 			$status = @$param['status'];
 			$msg	= @$param['msg'];
+			$desc	= @$param['data'];
 
 			if ( !$this->hasCustomStyle )
 			{
@@ -39,6 +40,7 @@
 						.error .message { font-size:2em; font-weight:bolder; }
 						.error .message:before	{ content:'<< '; }
 						.error .message:after	{ content:' >>'; }
+						.error .desc { margin-top:20px; text-align:center; }
 					</style>
 HTML;
 			}
@@ -50,6 +52,7 @@ HTML;
 					<div class="logo"><img src="{$this->errIconURI}"></div>
 					<div class="status"><label>ERROR({$status})</label></div>
 					<div class="message">{$msg}</div>
+					<div class="desc">{$desc}</div>
 				</div></main>
 HTML;
 		}
