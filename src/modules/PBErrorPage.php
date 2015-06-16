@@ -40,7 +40,7 @@
 						.error .message { font-size:2em; font-weight:bolder; }
 						.error .message:before	{ content:'<< '; }
 						.error .message:after	{ content:' >>'; }
-						.error .desc { margin-top:20px; text-align:center; }
+						.error .desc { font-size:2em; line-height:normal; margin-top:20px; text-align:center; }
 					</style>
 HTML;
 			}
