@@ -164,53 +164,45 @@
 				$conf = array();
 
 				// Database Host & port
-				$value = trim(PBStdIO::READ("Enter DB Host [localhost]: "));
+				$value = PBShell::ReadLine("Enter DB Host [localhost]: ", 'string');
 				$conf['host'] = empty($value) ? "localhost" : $value;
 
-				$value = trim(PBStdIO::READ("Enter DB Port [3306]: "));
+				$value = PBShell::ReadLine("Enter DB Port [3306]: ", 'string');
 				$conf['port'] = empty($value) ? 3306 : $value;
 
 
 
 				// Database Name
-				do
-				{
-					$value = trim(PBStdIO::READ("Enter DB name: "));
-					if ( !empty($value) ) break;
+				$conf["db"] = PBShell::ReadLine( "Enter DB name: ", 'string', function($val) {
+					if ( !empty($val) ) return TRUE;
 
 					PBStdIO::STDERR("DB name should not be empty...");
-				}
-				while(1);
-				$conf["db"] = $value;
+					return FALSE;
+				});
 
 
 
 				// User Database Account
-				do
-				{
-					$value = trim(PBStdIO::READ("Enter DB user account: "));
-					if ( !empty($value) ) break;
+				$conf["account"] = PBShell::ReadLine( "Enter DB user account: ", 'string', function($val) {
+					if ( !empty($val) ) return TRUE;
 
 					PBStdIO::STDERR("DB user account should not be empty...");
-				}
-				while(1);
-				$conf["account"] = $value;
+					return FALSE;
+				});
 
 
 
 				// User Database Password
 				do
 				{
-					do
-					{
-						$value = PBStdIO::READ("Enter DB user pass: ", TRUE, FALSE);
-						if ( !empty($value) ) break;
+					$value = PBShell::ReadPass( "Enter DB user pass: ", 'raw', function($val) {
+						if ( !empty($val) ) return TRUE;
 
 						PBStdIO::STDERR("Password should not be empty...");
-					}
-					while(1);
+						return FALSE;
+					});
 
-					if ( $value == PBStdIO::READ("Confirm DB user pass: ", TRUE, FALSE) ) break;
+					if ( $value == PBShell::ReadPass("Confirm DB user pass: ") ) break;
 					PBStdIO::STDERR("Password doesn't match!");
 				}
 				while(1);
@@ -244,15 +236,5 @@
 		}
 
 
-		public static function RunCommand( $cmd, $msg = '' )
-		{
-			PBStdIO::STDOUT( ( empty($msg) ) ? $cmd : $msg );
-			exec( $cmd, $out = NULL, $status);
-			if ( $status )
-			{
-				PBStdIO::STDERR( implode("\n", $out) );
-				PBStdIO::STDERR( "Error occurred! Terminating..." );
-				Termination::WITH_STATUS( Termination::STATUS_ERROR );
-			}
-		}
+		public static function RunCommand( $cmd, $msg = '' ) { PBShell::RunCommand( $cmd, $msg ); } // DEPRECATED: This api will be removed in v1.4.0
 	}
