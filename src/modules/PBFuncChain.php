@@ -31,7 +31,7 @@
 			foreach ( $this->_postprocessChain as $call )
 			{
 				if ( !is_callable( $call ) ) continue;
-				$call( $param );
+				$param = $call( $param );
 			}
 
 			return $param;
