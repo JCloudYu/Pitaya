@@ -23,9 +23,9 @@
 		}
 
 
-		public function exec( $param )	{ $this->postprocess( $param ); }
-		public function shell( $param ) { $this->postprocess( $param ); }
-		public function event( $param ) { $this->postprocess( $param ); }
+		public function exec( $param )	{ return $this->postprocess( $param ); }
+		public function shell( $param ) { return $this->postprocess( $param ); }
+		public function event( $param ) { return $this->postprocess( $param ); }
 		protected function postprocess( $param )
 		{
 			foreach ( $this->_postprocessChain as $call )
