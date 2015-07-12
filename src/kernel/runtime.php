@@ -7,6 +7,12 @@
 	// INFO: Debug
 	final class Debug
 	{
+		private static $_silent = FALSE;
+		public static function Silent()	 { self::$_silent = TRUE; }
+		public static function Verbose() { self::$_silent = FALSE; }
+
+		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
+
 		public static function VarDumpParent() {
 
 			echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET), TRUE);
@@ -29,7 +35,7 @@
 
 		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
-			if ( __DEBUG_MODE__ !== TRUE ) return '';
+			if ( self::IS_SILENT() ) return '';
 
 
 
@@ -116,7 +122,7 @@
 
 		public static function JSLog($outStr) {
 
-			if ( __DEBUG_MODE__ !== TRUE ) return;
+			if ( self::IS_SILENT() ) return;
 
 			if(!is_string($outStr))
 				throw(new Exception('Input variable must be a string'));
@@ -126,7 +132,7 @@
 
 		public static function BackTrace($args = 0) {
 
-			if ( __DEBUG_MODE__ !== TRUE ) return NULL;
+			if ( self::IS_SILENT() ) return NULL;
 
 			$info = debug_backtrace($args);
 			$depth = count($info);

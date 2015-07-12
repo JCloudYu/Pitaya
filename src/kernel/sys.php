@@ -418,12 +418,13 @@ class SYS extends PBObject
 
 
 		$moduleDesc = self::ParseModuleIdentifier( $identifier );
+
 		if ( $moduleDesc === FALSE )
 			throw( new Exception( "Given target module identifier has syntax error!" ) );
 
 		$package	= implode( '.', $moduleDesc[ 'package' ] );
 		$module		= $moduleDesc[ 'module' ];
-		$class		= empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'module' ];
+		$class		= empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'class' ];
 
 		$processId	= $caller['object']->id;
 		$processIds = divide( $processId );
