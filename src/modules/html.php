@@ -36,6 +36,7 @@
 			$js['last']    = (!empty($js['last'])) ? "<script type='application/javascript'>{$js['last']}</script>" : '';
 
 
+			$this->_jsFiles = array_unique( $this->_jsFiles );
 			foreach ($this->_jsFiles as $filePath)
 				$js['file'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
 
@@ -44,6 +45,7 @@
 			$css['inline'] = implode("\r\n", $this->_css);
 			$css['inline'] = (!empty($css['inline'])) ? "<style type='text/css'>{$css['inline']}</style>" : '';
 
+			$this->_cssFiles = array_unique( $this->_cssFiles );
 			foreach ($this->_cssFiles as $filePath)
 				$css['file'] .= "<link href='{$filePath}' type='text/css' rel='stylesheet' />\r\n";
 
@@ -94,6 +96,7 @@ HTML;
 		public function __set_css($value) { $this->addCSS($value); }
 
 
+
 		public function addFile($name, $type)
 		{
 			$type = explode(' ', strtolower($type));
@@ -104,9 +107,11 @@ HTML;
 				case 'js':
 					$this->_jsFiles[] = $path;
 					break;
+
 				case 'css':
 					$this->_cssFiles[] = $path;
 					break;
+
 				default:
 					break;
 			}
@@ -122,10 +127,7 @@ HTML;
 					foreach ( $this->_jsFiles as $idx => $fPath )
 					{
 						if ( $fPath == $path )
-						{
 							unset( $this->_jsFiles[ $idx ] );
-							break;
-						}
 					}
 					break;
 
@@ -133,12 +135,32 @@ HTML;
 					foreach ( $this->_cssFiles as $idx => $fPath )
 					{
 						if ( $fPath == $path )
-						{
 							unset( $this->_cssFiles[ $idx ] );
-							break;
-						}
 					}
 					break;
+
+				default:
+					break;
+			}
+		}
+		public function replaceFile($name, $replacement, $type)
+		{
+			$type = explode(' ', strtolower($type));
+			$path = in_array('external', $type) ? "{$name}" : "{$this->_baseRCPath}{$name}";
+			$rep  = in_array('external', $type) ? "{$replacement}" : "{$this->_baseRCPath}{$replacement}";
+
+			switch (strtolower($type[0]))
+			{
+				case 'js':
+					foreach ( $this->_jsFiles as $idx => $fPath )
+						if ( $fPath == $path ) $this->_jsFiles[ $idx ] = $rep;
+					break;
+
+				case 'css':
+					foreach ( $this->_cssFiles as $idx => $fPath )
+						if ( $fPath == $path ) $this->_cssFiles[ $idx ] = $rep;
+					break;
+
 				default:
 					break;
 			}
