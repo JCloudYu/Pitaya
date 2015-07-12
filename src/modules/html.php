@@ -97,17 +97,50 @@ HTML;
 		public function addFile($name, $type)
 		{
 			$type = explode(' ', strtolower($type));
-			$paddingPath = in_array('external', $type) ? '' : $this->_baseRCPath;
+			$path = in_array('external', $type) ? "{$name}" : "{$this->_baseRCPath}{$name}";
 
 			switch (strtolower($type[0]))
 			{
 				case 'js':
-					$this->_jsFiles[] = "{$paddingPath}{$name}";
+					$this->_jsFiles[] = $path;
 					break;
 				case 'css':
-					$this->_cssFiles[] = "{$paddingPath}{$name}";
+					$this->_cssFiles[] = $path;
 					break;
-				default: break;
+				default:
+					break;
+			}
+		}
+		public function removeFile($name, $type)
+		{
+			$type = explode(' ', strtolower($type));
+			$path = in_array('external', $type) ? "{$name}" : "{$this->_baseRCPath}{$name}";
+
+			switch (strtolower($type[0]))
+			{
+				case 'js':
+					foreach ( $this->_jsFiles as $idx => $fPath )
+					{
+						if ( $fPath == $path )
+						{
+							unset( $this->_jsFiles[ $idx ] );
+							break;
+						}
+					}
+					break;
+
+				case 'css':
+					foreach ( $this->_cssFiles as $idx => $fPath )
+					{
+						if ( $fPath == $path )
+						{
+							unset( $this->_cssFiles[ $idx ] );
+							break;
+						}
+					}
+					break;
+				default:
+					break;
 			}
 		}
 		public function __get_jsFiles() { return $this->_jsFiles; }
