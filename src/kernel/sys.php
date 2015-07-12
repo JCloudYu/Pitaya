@@ -5,6 +5,8 @@
  * DateTime: 13/2/9 PM4:05
  */
 
+using( 'ext.base.array' );
+
 class SYS extends PBObject
 {
 // region [ System Boot Loader ]
@@ -367,7 +369,45 @@ class SYS extends PBObject
 		unset( $this->_moduleSearchPaths[$hash] );
 	}
 
-	public function acquireModule($chiefModule, $moduleName = '', $exception = TRUE) {
+
+		/**
+		 * Parse module identifier according to following syntax
+		 * 		 Syntax => leadingModule.subModule#class
+		 * 				=> module#class
+		 *
+		 * @param $moduleIdentifier
+		 *
+		 * @return array|bool
+		 */
+	public static function ParseModuleIdentifier( $moduleIdentifier )
+	{
+		$moduleIdentifier = trim( "{$moduleIdentifier}" );
+		if ( empty($moduleIdentifier) ) return FALSE;
+
+
+
+		$packages	= explode( '.',  "{$moduleIdentifier}" );
+		$packages	= ary_filter( $packages, NULL, FALSE );
+		$module		= array_pop( $packages );
+
+
+
+		$module = explode( '#', $module);
+		if ( count( $module ) > 2 ) return FALSE;
+
+		$class	= trim(@"{$module[1]}");
+		$module	= trim("{$module[0]}");
+		if ( empty( $module ) ) return FALSE;
+
+
+		return array(
+			'package'	=> $packages,
+			'module'	=> $module,
+			'class'		=> $class
+		);
+	}
+
+	public function acquireModule( $identifier, $module = '' ) {
 
 		static $allocCounter = 0;
 
@@ -375,78 +415,85 @@ class SYS extends PBObject
 		if($caller['class'] != 'PBProcess')
 			throw(new Exception("Calling an inaccessible function SYS::acquireServiceModule()."));
 
-		$moduleName = ( is_string($moduleName) && !empty($moduleName) ) ? $moduleName : $chiefModule;
 
-		$processId = $caller['object']->id;
-		$processIds = divide($processId);
-		$moduleId = encode(array($processId, $chiefModule, $moduleName, ++$allocCounter), $processIds['extended']);
 
+		$moduleDesc = self::ParseModuleIdentifier( $identifier );
+		if ( $moduleDesc === FALSE )
+			throw( new Exception( "Given target module identifier has syntax error!" ) );
+
+		$package	= implode( '.', $moduleDesc[ 'package' ] );
+		$module		= $moduleDesc[ 'module' ];
+		$class		= empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'module' ];
+
+		$processId	= $caller['object']->id;
+		$processIds = divide( $processId );
+		$moduleId	= encode( array($processId, $package, $module, ++$allocCounter), $processIds['extended'] );
+
+
+
+
+
+
+		// INFO: Search path construction
 		$moduleSearchPaths = array();
-
-		$moduleSearchPaths[] = "modules.{$chiefModule}";
-		$moduleSearchPaths[] = "modules.{$chiefModule}.{$moduleName}";
-
-		$moduleSearchPaths[] = "share.modules.{$chiefModule}";
-		$moduleSearchPaths[] = "share.modules.{$chiefModule}.{$moduleName}";
-
-		$moduleSearchPaths[] = "data.modules.{$chiefModule}";
-		$moduleSearchPaths[] = "data.modules.{$chiefModule}.{$moduleName}";
-
-		$moduleSearchPaths[] = "service.{$chiefModule}";
-		$moduleSearchPaths[] = "service.{$chiefModule}.{$moduleName}";
-
+		$moduleSearchPaths[] = "service.";
+		$moduleSearchPaths[] = "modules.";
+		$moduleSearchPaths[] = "data.modules.";
+		$moduleSearchPaths[] = "share.modules.";
+		$moduleSearchPaths[] = ""; // Use global identifier
 
 		if ( defined("MODULE_PATH") )
-			$custModulePath = MODULE_PATH;
+			$moduleSearchPaths[] = MODULE_PATH . ".";
 		else
 		if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v1.4.0
-			$custModulePath = "service." . __MODULE_PATH__;
-		else
-			$custModulePath = NULL;
+			$moduleSearchPaths[] = "service." . __MODULE_PATH__ . ".";
 
-		if ( !empty($custModulePath) )
+		foreach ( $this->_moduleSearchPaths as $path ) $moduleSearchPaths[] = "{$path}.";
+
+
+
+
+
+
+		// INFO: Candidate paths
+		$candidateComps = array();
+		$candidateComps[] = $module;
+		if ( empty( $package ) ) $candidateComps[] = "{$module}.{$module}";
+
+
+
+		$hitPath = '';
+		$subPkg	 = (!empty($package)) ? "{$package}." : "";
+		foreach ( $moduleSearchPaths as $searchPath )
 		{
-			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}";
-			$moduleSearchPaths[] = "{$custModulePath}.{$chiefModule}.{$moduleName}";
+			$searchPath = "{$searchPath}{$subPkg}";
+			foreach ( $candidateComps as $component )
+			{
+				$path = "{$searchPath}{$component}";
+
+				if ( available($path) )
+				{
+					using($path);
+					$hitPath = $path;
+				}
+			}
 		}
 
 
 
-		foreach ( $this->_moduleSearchPaths as $path )
-		{
-			$moduleSearchPaths[] = "{$path}.{$chiefModule}";
-			$moduleSearchPaths[] = "{$path}.{$chiefModule}.{$moduleName}";
-		}
+		if ( empty( $hitPath ) || !class_exists( $class ) )
+			throw(new Exception("Module {$class} doesn't exist!"));
 
 
 
-		$hitPath = NULL;
-		foreach ( $moduleSearchPaths as $path )
-		{
-			if ( empty($path) || !available($path) ) continue;
-
-			using($path);
-			$hitPath = $path;
-		}
-
-		if ( empty($hitPath) )
-		{
-			if ( $exception )
-				throw(new Exception("Module doesn't exist!"));
-			else
-				return NULL;
-		}
-
-
-
-		$invokeModule = "{$moduleName}";
-		$module		  = new $invokeModule();
-		if(!is_subclass_of($module, 'PBModule'))
+		$invokeModule = "{$class}";
+		$moduleObj		  = new $invokeModule();
+		if(!is_subclass_of($moduleObj, 'PBModule'))
 			throw(new Exception("Requested service is not a valid module"));
 
-		$module->__moduleId = $moduleId;
+		$moduleObj->__moduleId = $moduleId;
 
-		return $module;
+		return $moduleObj;
 	}
 
 	public function validateChild($childrenId) {
