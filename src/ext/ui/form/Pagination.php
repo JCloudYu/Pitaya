@@ -11,8 +11,8 @@
 		
 		public function __construct( $current = 0, $total = 0, $visibleSize = Pagination::DEFAULT_VISIBLE_SIZE )
 		{
-			$this->_total		= $_total;
-			$this->_current		= $_current;
+			$this->_total		= $total;
+			$this->_current		= $current;
 			$this->_visibleSize	= $visibleSize;
 		}
 
