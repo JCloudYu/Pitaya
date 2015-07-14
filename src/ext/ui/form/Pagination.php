@@ -9,7 +9,7 @@
 	{
 		const DEFAULT_VISIBLE_SIZE = 10;
 		
-		public function __construct( $_current = 0, $_total = 0, $visibleSize = Pagination::DEFAULT_VISIBLE_SIZE )
+		public function __construct( $current = 0, $total = 0, $visibleSize = Pagination::DEFAULT_VISIBLE_SIZE )
 		{
 			$this->_total		= $_total;
 			$this->_current		= $_current;
@@ -35,6 +35,10 @@
 		public $_boundaryJumpers = FALSE;
 		public function __set_boundaryJumpers( $value )	{ $this->_boundaryJumpers = ( $value ? TRUE: FALSE ); }
 		public function __get_boundaryJumpers()			{ return $this->_boundaryJumpers; }
+
+		public $_shiftJumpers = FALSE;
+		public function __set_shiftJumpers( $value )	{ $this->_shiftJumpers = ( $value ? TRUE: FALSE ); }
+		public function __get_shiftJumpers()			{ return $this->_shiftJumpers; }
 
 		public $_itemGenerator = NULL;
 		public function __set_generator( $delegate ) { $this->_itemGenerator = is_callable( $delegate ) ? $delegate : NULL; }
@@ -80,6 +84,12 @@
 			{
 				if ( $from != 1 )			 array_unshift( $pageItems, @$callable( 1, FALSE, 'begin' ) );
 				if ( $to != $this->_total )  array_push( $pageItems, @$callable( $this->_total, FALSE, 'end' ) );
+			}
+
+			if ( $this->_shiftJumpers )
+			{
+				if ( $this->_current > 1 )				array_unshift( $pageItems, @$callable( $this->_current - 1, FALSE, 'prev' ) );
+				if ( $this->_current < $this->_total )	array_push( $pageItems, @$callable( $this->_current + 1, FALSE, 'next' ) );
 			}
 
 
