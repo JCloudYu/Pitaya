@@ -9,10 +9,11 @@
 	{
 		const DEFAULT_VISIBLE_SIZE = 10;
 		
-		public function __construct( $_current = 0, $_total = 0 )
+		public function __construct( $_current = 0, $_total = 0, $visibleSize = Pagination::DEFAULT_VISIBLE_SIZE )
 		{
-			$this->_total	= $_total;
-			$this->_current = $_current;
+			$this->_total		= $_total;
+			$this->_current		= $_current;
+			$this->_visibleSize	= $visibleSize;
 		}
 
 		private $_visibleSize = self::DEFAULT_VISIBLE_SIZE;
