@@ -71,15 +71,15 @@
 
 			$pageItems = array();
 			for ( $pNum = $from; $pNum <= $to; $pNum++ )
-				$pageItems[] = $callable( $pNum, $pNum == $this->_current );
+				$pageItems[] = @$callable( $pNum, $pNum == $this->_current );
 
 
 
 
 			if ( $this->_boundaryJumpers )
 			{
-				if ( $from != 1 )			 array_unshift( $pageItems, $callable( 1, FALSE, 'begin' ) );
-				if ( $to != $this->_total )  array_push( $pageItems, $callable( $this->_total, FALSE, 'end' ) );
+				if ( $from != 1 )			 array_unshift( $pageItems, @$callable( 1, FALSE, 'begin' ) );
+				if ( $to != $this->_total )  array_push( $pageItems, @$callable( $this->_total, FALSE, 'end' ) );
 			}
 
 
