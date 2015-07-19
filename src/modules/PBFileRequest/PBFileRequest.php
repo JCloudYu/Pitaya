@@ -42,7 +42,7 @@
 
 			$filePath	 = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
 			$ext		 = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
-			$this->_mime = ( empty($this->_mime) ) ? $this->_mime : @$this->_acceptableExt[ $ext ];
+			$this->_mime = ( empty($this->_mime) ) ? @$this->_acceptableExt[ $ext ] : $this->_mime;
 
 
 			if ( !is_readable($filePath) || empty($this->_mime) )
