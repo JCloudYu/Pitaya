@@ -27,6 +27,9 @@
 		public function __set_allowRangeRequest($value) { $this->_allowRagneRequest = !empty($value); }
 		public function __get_allowRangeRequest() { return $this->_allowRagneRequest; }
 
+		private $_mime = "";
+		public function __set_defaultMime( $value ) { $this->_mime = $value; }
+		public function __get_defaultMime() { return $this->_mime; }
 
 
 		public function prepare($moduleRequest) {
@@ -37,10 +40,12 @@
 		{
 			$CONSTANT = PBConstant::Constant();
 
-			$filePath = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
-			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
+			$filePath	 = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
+			$ext		 = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
+			$this->_mime = ( empty($this->_mime) ) ? $this->_mime : @$this->_acceptableExt[ $ext ];
 
-			if (!is_readable($filePath) || !in_array($ext, array_keys($this->_acceptableExt)))
+
+			if ( !is_readable($filePath) || empty($this->_mime) )
 			{
 				header('HTTP/1.1 404 Not Found');
 				exit(0);
@@ -82,7 +87,7 @@
 				}
 
 				header("HTTP/1.1 200 OK");
-				header("Content-Type: {$this->_acceptableExt[$ext]}");
+				header("Content-Type: {$this->_mime}");
 				header("Content-Length: {$fileSize}");
 				header("Last-Modified: {$fileTime}");
 				header("ETag: \"{$fileETag}\"");
@@ -106,7 +111,6 @@
 		public function multiRanges($filePath, $ranges)
 		{
 			$fileSize = filesize($filePath);
-			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
 			$boundaryToken	= '--pb-' . sha1(uniqid('', TRUE));
 			$rangeSize = 0;
 
@@ -142,7 +146,7 @@
 
 				$ranges[$idx] = array('from' => $from, 'to' => $to);
 				$rangeSize += strlen(CRLF . "--{$boundaryToken}" . CRLF);
-				$rangeSize += strlen("Content-Type: {$this->_acceptableExt[$ext]}" . CRLF);
+				$rangeSize += strlen("Content-Type: {$this->_mime}" . CRLF);
 				$rangeSize += strlen("Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}" . CRLF . CRLF);
 
 				$rangeSize += ($to - $from) + 1;
@@ -170,7 +174,7 @@
 			{
 				echo CRLF . "--{$boundaryToken}" . CRLF;
 
-				echo "Content-Type: {$this->_acceptableExt[$ext]}" . CRLF;
+				echo "Content-Type: {$this->_mime}" . CRLF;
 				echo "Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}" . CRLF . CRLF;
 
 				PBStreaming::ChunkStream($outStream, $fileStream, $range);
@@ -185,7 +189,6 @@
 		public function singleRange($filePath, $ranges)
 		{
 			$fileSize = filesize($filePath);
-			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
 			$endByte  = $fileSize - 1;
 
 
@@ -235,7 +238,7 @@
 
 			header('HTTP/1.1 206 Partial Content');
 			header("Accept-Ranges: 0-{$endByte}");
-			header("Content-Type: {$this->_acceptableExt[$ext]}");
+			header("Content-Type: {$this->_mime}");
 			header("Content-Length: {$rangeSize}");
 			header("Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}");
 
