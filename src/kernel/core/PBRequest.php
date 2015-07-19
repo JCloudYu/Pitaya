@@ -172,7 +172,21 @@
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
 		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
 		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
-		public function __get_files()		{ return $this->_incomingRecord['request']['files']; }
+
+		private $_filesCache = NULL;
+		public function __get_files()		{
+			if ( $this->_filesCache !== NULL ) return $this->_filesCache;
+
+			$this->_filesCache = array();
+			$files = TO( $this->_incomingRecord['request']['files'], 'array' );
+			if ( !empty( $files ) )
+			{
+				foreach ( $files as $fieldName => $fieldValue )
+				foreach ( $fieldValue as $id => $value )
+					$this->_filesCache[ $id ][ $fieldName ] = $value;
+			}
+			return $this->_filesCache;
+		}
 		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
 		public function __get_method_upper(){ return strtoupper( "{$this->method}" ); }
 		public function __get_method_lower(){ return strtolower( "{$this->method}" ); }
