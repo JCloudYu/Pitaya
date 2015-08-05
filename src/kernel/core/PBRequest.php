@@ -181,9 +181,10 @@
 			$files = TO( $this->_incomingRecord['request']['files'], 'array' );
 			if ( !empty( $files ) )
 			{
-				foreach ( $files as $fieldName => $fieldValue )
+				foreach ( $files as $uploadName => $fileContent )
+				foreach ( $fileContent as $fieldName => $fieldValue )
 				foreach ( $fieldValue as $id => $value )
-					$this->_filesCache[ $id ][ $fieldName ] = $value;
+					$this->_filesCache[ $uploadName ][ $id ][ $fieldName ] = $value;
 			}
 			return $this->_filesCache;
 		}
