@@ -123,7 +123,7 @@
 
 			foreach ( $replacements as $key => $replace )
 			{
-				$result = strtr( $pattern, $mapper($replace) );
+				$result = strtr( $pattern, $mapper($replace, $key) );
 				$collector[$key] = $result;
 			}
 
