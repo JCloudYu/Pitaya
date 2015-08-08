@@ -12,6 +12,9 @@
 		public function __set_apiKey( $value ) {
 			$this->_apiKey = TO( $value, 'string' );
 		}
+		public function __get_apiKey() {
+			return $this->_apiKey;
+		}
 
 
 
@@ -19,6 +22,9 @@
 		public function __set_receivers( $value ) {
 			if ( !is_array( $value ) ) return;
 			$this->_receivers = $value;
+		}
+		public function __get_receivers( $value ) {
+			return $this->_receivers;
 		}
 
 
@@ -43,12 +49,6 @@
 			{
 				$this->_raiseError( self::ERROR_NO_API_KEY );
 				return self::ERROR_NO_API_KEY;
-			}
-
-			if ( empty( $this->_receivers ) )
-			{
-				$this->_raiseError( self::ERROR_NO_RECEIVER );
-				return self::ERROR_NO_RECEIVER;
 			}
 
 			if ( !is_array( $data ) )
@@ -82,6 +82,9 @@
 
 
 			// Verify receiver number
+			if ( !is_array($receivers) )
+				throw new Exception( "Parameter `receivers` must be an array", self::ERROR_INVALID_RECEIVER );
+
 			$receiverNum = count( $receivers );
 			if ( $receiverNum < 1 )
 				throw new Exception( "There's no receiver!", self::ERROR_NO_RECEIVER );
@@ -149,9 +152,10 @@
 		// region [ Error Handler ]
 		const NO_ERROR					=  0;
 		const ERROR_NO_API_KEY			= -1;
-		const ERROR_NO_RECEIVER			= -2;
-		const ERROR_TOO_MANY_RECEIVERS	= -3;
-		const ERROR_INVALID_DATA		= -4;
+		const ERROR_INVALID_RECEIVER	= -2;
+		const ERROR_NO_RECEIVER			= -3;
+		const ERROR_TOO_MANY_RECEIVERS	= -4;
+		const ERROR_INVALID_DATA		= -5;
 		const ERROR_UNKNOWN				= -999;
 		private function _raiseError( $errCode ){
 			switch ( $errCode )
