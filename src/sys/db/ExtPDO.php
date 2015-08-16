@@ -223,12 +223,13 @@ SQL
 			return $this->queryRemove( $table, $WHERE );
 		}
 
-		public function queryInsert($table, $data)
+		public function queryInsert($table, $data, $duplicated = '')
 		{
 			if ( !is_array($data) ) return FALSE;
 			if ( !is_array( reset($data) ) ) $data = array( $data );
 
 			$indices = array();
+			$DUPLICATED = empty( $duplicated ) ? "" : "ON DUPLICATE KEY {$duplicated}";
 
 			foreach ( $data as $value )
 			{
@@ -240,7 +241,7 @@ SQL
 
 				$param	= array();
 				$SET	= PBDBCtrl::SET( $value, $param );
-				$this->query( "INSERT INTO `{$table}` SET {$SET}", $param );
+				$this->query( "INSERT INTO `{$table}` SET {$SET} {$DUPLICATED}", $param );
 				$indices[] = $this->lastInsertId();
 			}
 
