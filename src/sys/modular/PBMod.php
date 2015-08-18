@@ -5,7 +5,7 @@
 	 **/
 	using( 'kernel.core.PBModule' );
 
-	final class PBMod extends PBModule
+	class PBMod extends PBModule
 	{
 		public function prepare( $moduleRequest )
 		{
