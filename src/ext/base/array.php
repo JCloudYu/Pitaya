@@ -220,7 +220,10 @@
 			$result = $filter($item, $idx);
 			if ( $skipMode && ($result === $skipVal) ) continue;
 
-			$collected[$idx] = $result;
+			if ( $idx === NULL )
+				$collected[] = $result;
+			else
+				$collected[$idx] = $result;
 		}
 
 		return $collected;
