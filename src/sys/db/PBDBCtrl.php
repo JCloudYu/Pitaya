@@ -168,10 +168,14 @@
 
 			while ( ($row = $stmt->fetch()) !== FALSE )
 			{
-				$filtered = $filterFunc($row);
+				$index = NULL;
+				$filtered = $filterFunc($row, $index);
 
 				if ( !empty($field) )
 					$result[$filtered["{$field}"]] = $filtered;
+				else
+				if ( $index !== NULL )
+					$result[$index] = $filtered;
 				else
 					$result[] = $filtered;
 			}
