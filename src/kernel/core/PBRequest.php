@@ -479,7 +479,7 @@
 			$attributeContainer = array('flag' => array(), 'variable' => array());
 			foreach($attributes as $attr)
 			{
-				$buffer = preg_split('/[=:]/', $attr);
+				$buffer = preg_split('/[=]/', $attr);
 
 				if(count($buffer) <= 1)
 				{
