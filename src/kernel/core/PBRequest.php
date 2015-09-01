@@ -183,8 +183,13 @@
 			{
 				foreach ( $files as $uploadName => $fileContent )
 				foreach ( $fileContent as $fieldName => $fieldValue )
-				foreach ( $fieldValue as $id => $value )
-					$this->_filesCache[ $uploadName ][ $id ][ $fieldName ] = $value;
+				{
+					if ( !is_array($fieldValue) )
+						$fieldValue = array( $fieldValue );
+
+					foreach ( $fieldValue as $id => $value )
+						$this->_filesCache[ $uploadName ][ $id ][ $fieldName ] = $value;
+				}
 			}
 			return $this->_filesCache;
 		}
