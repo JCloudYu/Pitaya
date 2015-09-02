@@ -53,13 +53,13 @@ class PBModule extends PBObject
 
 
 	// INFO: Boot Sequence Manipulating
-	protected function _assignBootSeq( $value ) {
+	protected function _setBootSeq( $value ) {
 		$this->_bootstrap = ( !is_array($value) ) ? array() : $value;
 	}
 	protected function &_getBootSeq() { return $this->_bootstrap; }
-	protected function __set_bootstrap($value){ $this->_assignBootSeq($value); }
+	protected function __set_bootstrap($value){ $this->_setBootSeq($value); }
 	protected function &__get_bootstrap() { return $this->_getBootSeq(); }
-	protected function __set_boot($value){ $this->_assignBootSeq($value); }
+	protected function __set_boot($value){ $this->_setBootSeq($value); }
 	protected function &__get_boot() { return $this->_getBootSeq(); }
 
 
