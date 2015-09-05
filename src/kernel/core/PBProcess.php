@@ -14,9 +14,9 @@ class PBProcess extends PBObject
 	private $_attachedModules = array();
 	private $_system = NULL;
 
-	private $_processState = 'waiting';
-
-	private $_bootSequence = NULL;
+	private $_processState	= 'waiting';
+	private $_bootSequence	= NULL;
+	private $_entryModule	= NULL;
 
 	/**
 	 * Get the process with specified process id
@@ -29,6 +29,10 @@ class PBProcess extends PBObject
 
 	public static function Module( $moduleName, $reusable = TRUE, $pId = NULL ) {
 		return SYS::Process( $pId )->getModule( $moduleName, $reusable );
+	}
+
+	public static function ServiceModule( $pId = NULL ){
+		return SYS::Process( $pId )->_entryModule;
 	}
 
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
@@ -301,8 +305,8 @@ class PBProcess extends PBObject
 
 
 		// NOTE: Service Entry Module
-		$entryModule = $this->_acquireModule($moduleName, TRUE);
-		$this->_mainModuleId = $entryModule->id;
+		$this->_entryModule = $this->_acquireModule($moduleName, TRUE);
+		$this->_mainModuleId = $this->_entryModule->id;
 		PBLList::PUSH($this->_bootSequence, array('prepared' => FALSE, 'data' => $this->_mainModuleId, 'request' => $moduleRequest), $this->_mainModuleId);
 
 
