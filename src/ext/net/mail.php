@@ -6,6 +6,13 @@
 
 	function smtp_mail( $account, $password, $server, $port, $to, $subject, $message, $headers = '' )
 	{
+		PBLog::ShareLog( $account);
+		PBLog::ShareLog( $password );
+		PBLog::ShareLog( $server );
+		PBLog::ShareLog( $port );
+		PBLog::ShareLog( $to );
+		PBLog::ShareLog( $subject );
+
 		$recipients = explode( ',', $to );
 		$user       = "{$account}";
 		$pass       = "{$password}";
@@ -15,9 +22,10 @@
 		$smtp_port = $port;
 
 
-		if ( !( $socket = fsockopen( $smtp_host, $smtp_port, $errno, $errstr, 15 ) ) ) {
-			return FALSE;
-//			echo "Error connecting to '$smtp_host' ($errno) ($errstr)";
+		if ( !( $socket = fsockopen( $smtp_host, $smtp_port, $errno, $errstr, 15 ) ) )
+		{
+			$msg = "Error connecting to '$smtp_host' ($errno) ($errstr)";
+			PBLog::ShareLog( $msg );
 		}
 
 		server_parse( $socket, '220' );
@@ -63,12 +71,16 @@
 	{
 		$server_response = '';
 		while ( substr( $server_response, 3, 1 ) != ' ' ) {
-			if ( !( $server_response = fgets( $socket, 256 ) ) ) {
-				echo 'Error while fetching server response codes.', __FILE__, __LINE__;
+			if ( !( $server_response = fgets( $socket, 256 ) ) )
+			{
+				$msg = 'Error while fetching server response codes.' . __FILE__ . __LINE__;
+				PBLog::ShareLog( $msg );
 			}
 		}
 
-		if ( !( substr( $server_response, 0, 3 ) == $expected_response ) ) {
-			echo 'Unable to send e-mail."' . $server_response . '"', __FILE__, __LINE__;
+		if ( !( substr( $server_response, 0, 3 ) == $expected_response ) )
+		{
+			$msg = 'Unable to send e-mail."' . $server_response . '"' . __FILE__ . __LINE__;
+			PBLog::ShareLog( $msg );
 		}
 	}
