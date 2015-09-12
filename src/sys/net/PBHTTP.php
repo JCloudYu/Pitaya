@@ -14,9 +14,7 @@
 			header("HTTP/1.1 {$status} {$statusMsg}");
 			header("Status: {$status} {$statusMsg}");
 		}
-
 		public static function ResponseJSON( $obj, $status = NULL ) { self::ResponseContent( json_encode($obj), "application/json", $status ); }
-
 		public static function ResponseContent( $content, $contentType = "text/plain", $status = NULL )
 		{
 			if ( $status !== NULL ) self::ResponseStatus( $status );
@@ -26,8 +24,7 @@
 		}
 
 
-
-
+		// region [ HTTP Status Code ]
 		//SEC: Information
 		const STATUS_100_CONTINUE								= 100;
 		const STATUS_101_SWITCHING_PROTOCOLS					= 101;
@@ -112,6 +109,7 @@
 		const STATUS_511_NETWORK_AUTHENTICATION_REQUIRED		= 511;
 		const STATUS_598_NETWORK_READ_TIMEOUT					= 598;
 		const STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			= 599;
+		// endregion
 
 		public static function GetStatusString($status)
 		{
