@@ -116,7 +116,7 @@
 			else $registeredInclusions[($referencingContext)] = FALSE;
 
 			if($important) require($completePath);
-			else include($completePath);
+			else @include($completePath);
 		}
 
 		return $registeredInclusions[($referencingContext)];
