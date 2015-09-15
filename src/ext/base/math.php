@@ -8,7 +8,7 @@
 
 
 	function EXPR_INT($val) 			{ return (preg_match('/^[-+]{0,1}\d+$/', "{$val}") > 0); }
-	function EXPR_UINT($val) 			{ return (preg_match('/^{0,1}\d+$/', "{$val}") > 0); }
+	function EXPR_UINT($val) 			{ return (preg_match('/^\d+$/', "{$val}") > 0); }
 	function EXPR_FLOAT($val)			{ return EXPR_FLOAT_DOT($val) || EXPR_FLOAT_SCIENCE($val); }
 	function EXPR_FLOAT_DOT($val)		{ return (preg_match('/^[-+]{0,1}((\d*\.\d+)|(\d+\.\d*))$/', "{$val}") > 0); }
 	function EXPR_FLOAT_SCIENCE($val)
