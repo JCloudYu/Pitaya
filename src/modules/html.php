@@ -42,7 +42,7 @@
 				$js['file prepend'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
 
 			$this->_jsFiles[ 'append' ] = array_unique( $this->_jsFiles[ 'append' ] );
-			foreach ($this->_jsFiles[ 'prepend' ] as $filePath)
+			foreach ($this->_jsFiles[ 'append' ] as $filePath)
 				$js['file append'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
 
 
