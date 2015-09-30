@@ -113,7 +113,7 @@ HTML;
 			switch (strtolower($type[0]))
 			{
 				case 'js':
-					$this->_jsFiles[ $order ] = $path;
+					$this->_jsFiles[ $order ][] = $path;
 					break;
 
 				case 'css':
