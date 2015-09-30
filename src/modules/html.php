@@ -11,8 +11,9 @@
 
 		private $_js = array('prepend' => array(), 'append' => array(), 'last' => array());
 		private $_css = array();
+
+		private $_jsFiles = array( 'preprend' => array(), 'append' => array() );
 		private $_cssFiles = array();
-		private $_jsFiles = array();
 
 		private $_header = array();
 
@@ -20,7 +21,7 @@
 
 		public function exec($param)
 		{
-			$js = array('prepend' => '', 'append' => '', 'file' => '');
+			$js = array('prepend' => '', 'append' => '', 'file prepend' => '', 'file append' => '');
 			$css = array('inline' => '', 'file' => '');
 			$header = '';
 
@@ -36,9 +37,13 @@
 			$js['last']    = (!empty($js['last'])) ? "<script type='application/javascript'>{$js['last']}</script>" : '';
 
 
-			$this->_jsFiles = array_unique( $this->_jsFiles );
-			foreach ($this->_jsFiles as $filePath)
-				$js['file'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
+			$this->_jsFiles[ 'prepend' ] = array_unique( $this->_jsFiles[ 'prepend' ] );
+			foreach ($this->_jsFiles[ 'prepend' ] as $filePath)
+				$js['file prepend'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
+
+			$this->_jsFiles[ 'append' ] = array_unique( $this->_jsFiles[ 'append' ] );
+			foreach ($this->_jsFiles[ 'prepend' ] as $filePath)
+				$js['file append'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
 
 
 			// INFO: Process CSS
@@ -52,21 +57,23 @@
 			$header = implode("\r\n", $this->_header);
 
 
-			$bodyClass = empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
-			$bodyContent = (empty($this->_prop['page'])) ? 	"{$param}{$js['append']}{$js['last']}" :
-															"<div class='{$this->_prop['page']}'>{$param}{$js['append']}{$js['last']}</div>";
 
-			$htmlClass = empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
 
-			$lang = empty($this->_prop['lang']) ? '' : "lang='{$this->_prop['lang']}'";
+			// INFO: Prepare html contents
+			$baseBody = "{$param}{$js['append']}{$js['file append']}{$js['last']}";
+			$bodyContent = (empty($this->_prop['page'])) ? 	$baseBody : "<div class='{$this->_prop['page']}'>{$baseBody}</div>";
 
+
+			$lang		= empty($this->_prop['lang']) ? '' : "lang='{$this->_prop['lang']}'";
+			$bodyClass	= empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
+			$htmlClass	= empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
 			echo <<<HTML
 <!DOCTYPE html>
 <HTML {$lang} {$htmlClass}>
 	<head>
 		{$header}
 
-		{$js['file']}
+		{$js['file prepend']}
 		{$js['prepend']}
 		{$css['file']}
 		{$css['inline']}
@@ -101,11 +108,12 @@ HTML;
 		{
 			$type = explode(' ', strtolower($type));
 			$path = in_array('external', $type) ? "{$name}" : "{$this->_baseRCPath}{$name}";
+			$order = in_array( 'append', $type ) ? 'append' : 'prepend';
 
 			switch (strtolower($type[0]))
 			{
 				case 'js':
-					$this->_jsFiles[] = $path;
+					$this->_jsFiles[ $order ] = $path;
 					break;
 
 				case 'css':
@@ -124,10 +132,11 @@ HTML;
 			switch (strtolower($type[0]))
 			{
 				case 'js':
-					foreach ( $this->_jsFiles as $idx => $fPath )
+					foreach ( array( 'prepend', 'append' ) as $order )
+					foreach ( $this->_jsFiles[ $order ] as $idx => $fPath )
 					{
 						if ( $fPath == $path )
-							unset( $this->_jsFiles[ $idx ] );
+							unset( $this->_jsFiles[ $order ][ $idx ] );
 					}
 					break;
 
@@ -152,8 +161,9 @@ HTML;
 			switch (strtolower($type[0]))
 			{
 				case 'js':
-					foreach ( $this->_jsFiles as $idx => $fPath )
-						if ( $fPath == $path ) $this->_jsFiles[ $idx ] = $rep;
+					foreach ( array( 'prepend', 'append' ) as $order )
+					foreach ( $this->_jsFiles[ $order ] as $idx => $fPath )
+						if ( $fPath == $path ) $this->_jsFiles[ $order ][ $idx ] = $rep;
 					break;
 
 				case 'css':
@@ -166,6 +176,8 @@ HTML;
 			}
 		}
 		public function __get_jsFiles() { return $this->_jsFiles; }
+		public function __get_jsFilesAppended() { return $this->_jsFiles['append']; }
+		public function __get_jsFilesPrepended() { return $this->_jsFiles['prepend']; }
 		public function __get_cssFiles() { return $this->_cssFiles; }
 		public function __set_jsFile($value) { $this->addFile($value, 'js'); }
 		public function __set_cssFile($value) { $this->addFile($value, 'css'); }
