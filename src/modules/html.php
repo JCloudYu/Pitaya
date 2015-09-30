@@ -33,7 +33,7 @@
 			$js['append']  = implode("\r\n", $this->_js['append']);
 			$js['append']  = (!empty($js['append'])) ? "<script type='application/javascript'>{$js['append']}</script>" : '';
 
-			$js['last']	   = implode("\r\n", $this->_js['last']);
+			$js['last']	   = implode("\r\n", array_reverse($this->_js['last']));
 			$js['last']    = (!empty($js['last'])) ? "<script type='application/javascript'>{$js['last']}</script>" : '';
 
 
