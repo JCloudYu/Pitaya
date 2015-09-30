@@ -12,7 +12,7 @@
 		private $_js = array('prepend' => array(), 'append' => array(), 'last' => array());
 		private $_css = array();
 
-		private $_jsFiles = array( 'preprend' => array(), 'append' => array() );
+		private $_jsFiles = array( 'prepend' => array(), 'append' => array() );
 		private $_cssFiles = array();
 
 		private $_header = array();
