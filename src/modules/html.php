@@ -69,9 +69,12 @@
 				if ( empty($elm['page']) || !is_array( $elm['page'] ) ) return $baseBody;
 
 				$attributes = ary_filter( $elm['page'], function( $val, $attr ){
-					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					$attr	= strip_tags( $attr );
 
+					if ( is_bool($val) )
+						return ($val) ? "{$attr}" : FALSE;
+
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					return "{$attr}=\"{$val}\"";
 				}, FALSE);
 
@@ -86,9 +89,12 @@
 				if ( empty($elm['body']) || !is_array( $elm['body'] ) ) return  '';
 
 				$attributes = ary_filter( $elm['body'], function( $val, $attr ){
-					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					$attr	= strip_tags( $attr );
 
+					if ( is_bool($val) )
+						return ($val) ? "{$attr}" : FALSE;
+
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					return "{$attr}=\"{$val}\"";
 				}, FALSE);
 
@@ -101,9 +107,12 @@
 				if ( empty($elm['html']) || !is_array( $elm['html'] ) ) return  '';
 
 				$attributes = ary_filter( $elm['html'], function( $val, $attr ){
-					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					$attr	= strip_tags( $attr );
 
+					if ( is_bool($val) )
+						return ($val) ? "{$attr}" : FALSE;
+
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					return "{$attr}=\"{$val}\"";
 				}, FALSE);
 
