@@ -58,10 +58,7 @@
 			$header = implode("", $this->_header);
 			// endregion
 
-
-
-
-			// INFO: Prepare html contents
+			// region [ Prepare HTML contents ]
 			$baseBody = "{$param}{$js['append']}{$js['file append']}{$js['last']}";
 			$elm = $this->_elm;
 
@@ -119,6 +116,7 @@
 
 				return trim(implode( ' ', $attributes ));
 			});
+			// endregion
 			// endregion
 
 			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}</body></html>";
