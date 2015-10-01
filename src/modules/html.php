@@ -17,7 +17,8 @@
 
 		private $_header = array();
 
-		private $_prop = array();
+		private $_prop	= array();
+		private $_elm	= array();
 
 		public function exec($param)
 		{
@@ -54,33 +55,63 @@
 			foreach ($this->_cssFiles as $filePath)
 				$css['file'] .= "<link href='{$filePath}' type='text/css' rel='stylesheet' />\r\n";
 
-			$header = implode("\r\n", $this->_header);
+			$header = implode("", $this->_header);
 
 
 
 
 			// INFO: Prepare html contents
 			$baseBody = "{$param}{$js['append']}{$js['file append']}{$js['last']}";
-			$bodyContent = (empty($this->_prop['page'])) ? 	$baseBody : "<div class='{$this->_prop['page']}'>{$baseBody}</div>";
+			$elm = $this->_elm;
 
+			// region [ Generate Page Wrapper ]
+			$contentWrapper = call_user_func(function() use($baseBody, $elm) {
+				if ( empty($elm['page']) || !is_array( $elm['page'] ) ) return $baseBody;
 
-			$lang		= empty($this->_prop['lang']) ? '' : "lang='{$this->_prop['lang']}'";
-			$bodyClass	= empty($this->_prop['body']) ? '' : "class='{$this->_prop['body']}'";
-			$htmlClass	= empty($this->_prop['html']) ? '' : "class='{$this->_prop['html']}'";
-			echo <<<HTML
-<!DOCTYPE html>
-<HTML {$lang} {$htmlClass}>
-	<head>
-		{$header}
+				$attributes = ary_filter( $elm['page'], function( $val, $attr ){
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
+					$attr	= strip_tags( $attr );
 
-		{$js['file prepend']}
-		{$js['prepend']}
-		{$css['file']}
-		{$css['inline']}
-	</head>
-	<body {$bodyClass}>{$bodyContent}</body>
-</HTML>
-HTML;
+					return "{$attr}=\"{$val}\"";
+				}, FALSE);
+
+				$attributes = trim(implode( ' ', $attributes ));
+
+				return empty( $attributes ) ? $baseBody : "<div {$attributes}>{$baseBody}</div>";
+			});
+			// endregion
+
+			// region [ Generate body Attributes ]
+			$bodyAttr = call_user_func(function() use($elm) {
+				if ( empty($elm['body']) || !is_array( $elm['body'] ) ) return  '';
+
+				$attributes = ary_filter( $elm['body'], function( $val, $attr ){
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
+					$attr	= strip_tags( $attr );
+
+					return "{$attr}=\"{$val}\"";
+				}, FALSE);
+
+				return trim(implode( ' ', $attributes ));
+			});
+			// endregion
+
+			// region [ Generate html Attributes ]
+			$htmlAttr = call_user_func(function() use($elm) {
+				if ( empty($elm['html']) || !is_array( $elm['html'] ) ) return  '';
+
+				$attributes = ary_filter( $elm['html'], function( $val, $attr ){
+					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
+					$attr	= strip_tags( $attr );
+
+					return "{$attr}=\"{$val}\"";
+				}, FALSE);
+
+				return trim(implode( ' ', $attributes ));
+			});
+			// endregion
+
+			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}</body></html>";
 
 			return NULL;
 		}
@@ -185,12 +216,34 @@ HTML;
 
 		public function __get_rcPath() { return $this->_baseRCPath; }
 		public function __set_rcPath($value) { $this->_baseRCPath = (is_string($value)) ? $value : ''; }
+		public function __set_header($value) { $this->_header[] = $value; }
 
-		public function __set_header($value) {$this->_header[] = $value;}
+		public function &__get_body() {
+			if ( empty($this->_elm[ 'body' ]) )
+				$this->_elm[ 'body' ] = array();
+
+			return $this->_elm[ 'body' ];
+		}
+
+		public function &__get_page() {
+			if ( empty($this->_elm[ 'page' ]) )
+				$this->_elm[ 'page' ] = array();
+
+			return $this->_elm[ 'page' ];
+		}
+
+		public function &__get_html() {
+			if ( empty($this->_elm[ 'html' ]) )
+				$this->_elm[ 'html' ] = array();
+
+			return $this->_elm[ 'html' ];
+		}
+
 
 		public function property($name, $value)
 		{
-			switch (strtolower($name))
+			$name = strtolower($name);
+			switch ( $name )
 			{
 				case 'title':
 					$this->_header[] = "<title>{$value}</title>";
@@ -205,12 +258,19 @@ HTML;
 				case 'viewport':
 					$this->_header[] = "<meta name='viewport' content='{$value}' />";
 					break;
+
+
 				case 'lang':
+					$this->_elm[ 'html' ][ 'lang' ] = "{$value}";
+					break;
+
 				case 'page':
 				case 'body':
 				case 'html':
+					$this->_elm[ $name ][ 'class' ] = "{$value}";
+
 				default:
-					$this->_prop[$name] = $value;
+					$this->_prop[ $name ] = $value;
 					break;
 			}
 		}
