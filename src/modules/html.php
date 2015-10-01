@@ -27,7 +27,7 @@
 			$header = '';
 
 
-			// INFO: Process JS
+			// region [ JS Processing ]
 			$js['prepend'] = implode("\r\n", $this->_js['prepend']);
 			$js['prepend'] = (!empty($js['prepend'])) ? "<script type='application/javascript'>{$js['prepend']}</script>" : '';
 
@@ -45,9 +45,9 @@
 			$this->_jsFiles[ 'append' ] = array_unique( $this->_jsFiles[ 'append' ] );
 			foreach ($this->_jsFiles[ 'append' ] as $filePath)
 				$js['file append'] .= "<script type='application/javascript' src='{$filePath}'></script>\r\n";
+			// endregion
 
-
-			// INFO: Process CSS
+			// region [ CSS Processing ]
 			$css['inline'] = implode("\r\n", $this->_css);
 			$css['inline'] = (!empty($css['inline'])) ? "<style type='text/css'>{$css['inline']}</style>" : '';
 
@@ -56,6 +56,7 @@
 				$css['file'] .= "<link href='{$filePath}' type='text/css' rel='stylesheet' />\r\n";
 
 			$header = implode("", $this->_header);
+			// endregion
 
 
 
