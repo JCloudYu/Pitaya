@@ -43,15 +43,18 @@ class PBProcess extends PBObject
 		return $PROC->_execChain( $module, $request );
 	}
 
-	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
-
+	public static function PackExecution( $module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
 
 		$result = self::Execute($module, $request, $reusable, $pId);
 		if ( !empty($module->ext->htmlClass) || !empty($module->ext->htmlAttr) )
-			echo "<div {$module->ext->htmlAttr} class='{$module->ext->htmlClass}' data-pb-mod='{$module->class}'>{$result}</div>";
-		else
-			echo $result;
+			$result = "<div {$module->ext->htmlAttr} class='{$module->ext->htmlClass}' data-pb-mod='{$module->class}'>{$result}</div>";
+
+		return $result;
+	}
+
+	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
+		echo self::PackExecution( $module, $request, $reusable, $pId );
 	}
 
 	public function __construct() {
