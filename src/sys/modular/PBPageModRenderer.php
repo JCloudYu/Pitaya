@@ -20,7 +20,7 @@
 				$moduleName		= @"{$moduleInfo['module']}";
 				$moduleRequest	= @$moduleInfo['request'];
 				$moduleReuse	= !empty($moduleInfo['reuse']);
-				$collectedHtml .= PBProcess::Execute( $moduleName, $moduleRequest, $moduleReuse );
+				$collectedHtml .= PBProcess::PackExecution( $moduleName, $moduleRequest, $moduleReuse );
 			}
 
 			return $collectedHtml;
@@ -29,7 +29,7 @@
 		public function __get_html() { return $this->render( FALSE ); }
 
 		public function offsetGet( $offset ){
-			return PBProcess::Execute( $offset );
+			return PBProcess::PackExecution( $offset );
 		}
 
 
