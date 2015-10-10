@@ -9,8 +9,8 @@
 	{
 		public function prepare( $moduleRequest )
 		{
-			$this->ext->htmlClass	= "{$this->class_lower}";
-			$this->ext->htmlAttr	= "data-viewId='{$this->id_medium}'";
+			$this->ext->htmlClass	= "module {$this->class_lower}";
+			$this->ext->htmlAttr	= "data-module-id='{$this->id_medium}'";
 		}
 	}
 
