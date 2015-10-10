@@ -59,7 +59,7 @@
 			// endregion
 
 			// region [ Prepare HTML contents ]
-			$baseBody = "{$param}{$js['append']}{$js['file append']}{$js['last']}";
+			$baseBody = "{$param}";
 			$elm = $this->_elm;
 
 			// region [ Generate Page Wrapper ]
@@ -119,7 +119,9 @@
 			// endregion
 			// endregion
 
-			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}</body></html>";
+
+			$appendedScript = "{$js['append']}{$js['file append']}{$js['last']}";
+			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>";
 
 			return NULL;
 		}
