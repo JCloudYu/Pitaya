@@ -28,7 +28,7 @@
 
 		public function __get_html() { return $this->render( FALSE ); }
 
-		public function &offsetGet( $offset ){
+		public function offsetGet( $offset ){
 			return PBProcess::Execute( $offset );
 		}
 
