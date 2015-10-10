@@ -7,7 +7,7 @@
 
 	class PBPageMod extends PBModule
 	{
-		public function prepare( $moduleRequest )
+		public function prepare( $moduleRequest = NULL )
 		{
 			$this->ext->htmlClass	= "module {$this->class_lower}";
 			$this->ext->htmlAttr	= "data-module-id='{$this->id_medium}'";
