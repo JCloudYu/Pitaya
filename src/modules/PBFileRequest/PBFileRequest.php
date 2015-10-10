@@ -31,6 +31,10 @@
 		public function __set_defaultMime( $value ) { $this->_mime = $value; }
 		public function __get_defaultMime() { return $this->_mime; }
 
+		private $_strict_mime = TRUE;
+		public function __set_strictMime( $value ) { $this->_strict_mime = empty($value); }
+		public function __get_strictMime() { return $this->_strict_mime; }
+
 
 		public function prepare($moduleRequest) {
 			$this->_targetPath = (is_array($moduleRequest)) ? implode('/', $moduleRequest) : "{$moduleRequest}";
@@ -43,6 +47,10 @@
 			$filePath	 = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
 			$ext		 = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
 			$this->_mime = ( empty($this->_mime) ) ? @$this->_acceptableExt[ $ext ] : $this->_mime;
+
+			if ( empty($this->_mime) && empty($this->_strict_mime) )
+				$this->_mime = "application/octet-stream";
+
 
 
 			if ( !is_readable($filePath) || empty($this->_mime) )
