@@ -389,16 +389,24 @@ class PBProcess extends PBObject
 
 	private function _acquireModule( $moduleIdentifier, $reusable = TRUE )
 	{
-		if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) && $reusable )
-			return $this->_attachedModules[ $moduleIdentifier ];
+		if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) )
+		{
+			$module = $this->_attachedModules[ $moduleIdentifier ];
+
+			// INFO: Given module identifier is in package format
+			if ( ($moduleIdentifier != $module->id) && !$reusable ) $module = NULL;
+		}
 
 
-		$module	= $this->_system->acquireModule( $moduleIdentifier );
-		$module->__processInst = $this;
-		$moduleId = $module->id;
-		$this->_attachedModules[ $moduleId ] = $module;
+		if ( empty($module) )
+		{
+			$module	= $this->_system->acquireModule( $moduleIdentifier );
+			$module->__processInst = $this;
+			$moduleId = $module->id;
+			$this->_attachedModules[ $moduleId ] = $module;
 
-		if ( $reusable ) $this->_attachedModules[ $moduleIdentifier ] = $module;
+			if ( $reusable ) $this->_attachedModules[ $moduleIdentifier ] = $module;
+		}
 
 		return $module;
 	}
