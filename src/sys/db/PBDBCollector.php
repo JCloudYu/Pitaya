@@ -17,14 +17,15 @@
 			return $result;
 		}
 
-		public static function CollectByFilter( PDOStatement $stmt, Callable $filterFunc, $skipValue = FALSE )
+		public static function CollectByFilter( PDOStatement $stmt, $filterFunc = NULL, $skipValue = FALSE )
 		{
 			$result	= array();
+			$func = (is_callable($filterFunc)) ? $filterFunc : function($item){ return $item; };
 
 			while ( ($row = $stmt->fetch()) !== FALSE )
 			{
 				$index = NULL;
-				$filterResult = $filterFunc($row, $index);
+				$filterResult = $func($row, $index);
 
 				if ( (func_num_args() > 2) && ($filterResult === $skipValue) ) continue;
 
