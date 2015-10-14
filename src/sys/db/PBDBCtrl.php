@@ -135,13 +135,9 @@
 			return $orderStmt;
 		}
 
-		/**
-		 * @param PDOStatement $stmt PDOStatement object
-		 * @param string $field Field name that is used. If empty values are provided,
-		 *                      array with continuous numeric indices are returned (append mode).
-		 *
-		 * @return array collected results
-		 */
+
+
+		// DEPRECATED: The following tools will be removed in v1.4.0
 		public static function FieldBasedDataCollector(PDOStatement $stmt, $field = 'id')
 		{
 			$result	= array();
@@ -154,14 +150,6 @@
 			return $result;
 		}
 
-		/**
-		 * @param PDOStatement $stmt PDOStatement object
-		 * @param callable | Closure $filterFunc Function that is used to filter the retrieved data.[ array function(array) ]
-		 * @param null $field Field name that is used. If empty values are provided,
-		 *                    array with continuous numeric indices are returned (append mode).
-		 *
-		 * @return array collected results
-		 */
 		public static function FilterBasedDataCollector(PDOStatement $stmt, $filterFunc, $field = NULL)
 		{
 			$result	= array();
