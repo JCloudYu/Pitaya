@@ -178,7 +178,7 @@
 		return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
 	}
 
-	function xml2json( $xmlString )
+	function xml2array( $xmlString )
 	{
 		static $ImprintFunc = NULL;
 		if ( $ImprintFunc === NULL )
