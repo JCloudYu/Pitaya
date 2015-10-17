@@ -177,3 +177,56 @@
 	function chr_utf8($u) {
 		return mb_convert_encoding('&#' . intval($u) . ';', 'UTF-8', 'HTML-ENTITIES');
 	}
+
+	function xml2json( $xmlString )
+	{
+		static $ImprintFunc = NULL;
+		if ( $ImprintFunc === NULL )
+		{
+			$ImprintFunc = function( SimpleXMLElement $imprint ) use ( &$ImprintFunc )
+			{
+				$attributes	 = array();
+				$collectData = NULL;
+
+				// INFO: Eat attributes
+				foreach ( $imprint->attributes() as $name => $value ) $attributes[ $name ] = (string) $value;
+
+				// INFO: Simple contents
+				if ( $imprint->count() <= 0 )
+					$returnVal = (string) $imprint;
+				else
+				{
+					$returnVal = $split = array();
+					foreach ( $imprint as $property => $content )
+					{
+						$result = $ImprintFunc( $content );
+
+						if ( !isset($returnVal[ $property ]) )
+							$returnVal[ $property ] = $result;
+						else
+						if ( in_array( $property, $split ) )
+							$returnVal[ $property ][] = $result;
+						else
+						{
+							$split[] = $property;
+							$returnVal[ $property ] = array( $returnVal[ $property ], $result );
+						}
+					}
+				}
+
+
+
+				if ( !is_array( $returnVal ) )
+					$returnVal = ( empty($attributes) ) ? $returnVal : array( $returnVal, '@type' => 'simple', '@attr' => $attributes );
+				else
+				if ( !empty($attributes) )
+					$returnVal[ '@attr' ] = $attributes;
+
+
+				return $returnVal;
+			};
+		}
+
+		$newsContents = simplexml_load_string( $xmlString );
+		return $ImprintFunc( $newsContents );
+	}
