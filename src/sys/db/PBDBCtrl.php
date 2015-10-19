@@ -123,12 +123,21 @@
 			if (!is_array($orderOpt)) return '';
 
 			$orderStmt = array();
+			$hasRandom = FALSE;
 			foreach ($orderOpt as $colName => $sequence)
 			{
-				$seq = (in_array(strtoupper("{$sequence}"), array('ASC', 'DESC'))) ? " $sequence" : "";
-				$orderStmt[] = "`{$colName}`{$seq}";
+				if ( $colName == "RANDOM" && $sequence == "RANDOM" )
+				{
+					$hasRandom = TRUE;
+					break;
+				}
+				else
+				{
+					$seq = (in_array(strtoupper("{$sequence}"), array('ASC', 'DESC'))) ? " $sequence" : "";
+					$orderStmt[] = "`{$colName}`{$seq}";
+				}
 			}
-			$orderStmt = implode(', ', $orderStmt);
+			$orderStmt = ($hasRandom) ? "RAND()" : implode(', ', $orderStmt);
 
 			if (empty($orderStmt)) return '';
 
