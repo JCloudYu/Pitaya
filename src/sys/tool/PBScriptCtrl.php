@@ -5,7 +5,7 @@
 	 **/
 	final class PBScriptCtrl
 	{
-		function Imprint($____path_of_the_file_to_be_imprinted = '')
+		public static function Imprint($____path_of_the_file_to_be_imprinted = '')
 		{
 			$____pre_cached_to_be_deleted_existing_variables = get_defined_vars();
 
@@ -22,7 +22,7 @@
 			return $____path_of_the_file_to_be_imprinted;
 		}
 
-		function Script($____path_of_the_script_to_be_executed, $____parameters_used_in_the_executed_script = array(), &$____script_defined_variables = NULL)
+		public static function Script($____path_of_the_script_to_be_executed, $____parameters_used_in_the_executed_script = array(), &$____script_defined_variables = NULL)
 		{
 			$____pre_cached_to_be_deleted_existing_variables = get_defined_vars();
 
@@ -49,7 +49,7 @@
 			return $____output_buffer_generated_by_executed_script;
 		}
 
-		function ScriptOut($____path_of_the_script_to_be_executed, $____parameters_used_in_the_executed_script = array(), &$____script_defined_variables = NULL)
+		public static function ScriptOut($____path_of_the_script_to_be_executed, $____parameters_used_in_the_executed_script = array(), &$____script_defined_variables = NULL)
 		{
 			$____pre_cached_to_be_deleted_existing_variables = get_defined_vars();
 
@@ -71,5 +71,4 @@
 
 			$____script_defined_variables = $____variables_that_are_used_in_executed_script;
 		}
-
 	}
