@@ -30,9 +30,9 @@
 				if ( (func_num_args() > 2) && ($filterResult === $skipValue) ) continue;
 
 				if ( $index !== NULL )
-					$result[ $index ] = $filtered;
+					$result[ $index ] = $filterResult;
 				else
-					$result[] = $filtered;
+					$result[] = $filterResult;
 			}
 
 			return $result;
