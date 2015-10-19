@@ -126,7 +126,7 @@
 			$hasRandom = FALSE;
 			foreach ($orderOpt as $colName => $sequence)
 			{
-				if ( $colName == "RANDOM" && $sequence == "RANDOM" )
+				if ( strtoupper($colName) == "RANDOM" && strtoupper($sequence) == "RANDOM" )
 				{
 					$hasRandom = TRUE;
 					break;
