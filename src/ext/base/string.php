@@ -181,8 +181,7 @@
 	function xml2ary( $xmlString )
 	{
 		static $ImprintFunc = NULL;
-		if ( $ImprintFunc === NULL )
-		{
+		if ( $ImprintFunc === NULL ) {
 			$ImprintFunc = function( SimpleXMLElement $imprint ) use ( &$ImprintFunc )
 			{
 				$attributes	 = array();
@@ -227,6 +226,6 @@
 			};
 		}
 
-		$newsContents = simplexml_load_string( $xmlString );
-		return $ImprintFunc( $newsContents );
+		$newsContents = @simplexml_load_string( $xmlString );
+		return ( empty($newsContents) ) ? NULL : $ImprintFunc( $newsContents );
 	}
