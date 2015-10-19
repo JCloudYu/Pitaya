@@ -42,18 +42,22 @@
 				$value = trim("$value");
 
 				if (in_array('strict', $illustrator))
-					return EXPR_INT($value) ? intval($value) : 0;
+					$value = EXPR_INT($value) ? $value : 0;
 				else
-					return EXPR_NUMERIC($value) ? intval($value) : 0;
+					$value = EXPR_NUMERIC($value) ? $value : 0;
+
+				return (in_array( 'format-only' )) ? $value : intval($value);
 
 			// INFO: float [strict]
 			case 'float':
 				$value = trim("$value");
 
 				if (in_array('strict', $illustrator))
-					return EXPR_FLOAT($value) ? floatval($value) : 0.0;
+					$value = EXPR_FLOAT($value) ? $value : 0.0;
 				else
-					return EXPR_NUMERIC($value) ? floatval($value) : 0.0;
+					$value = EXPR_NUMERIC($value) ? $value : 0.0;
+
+				return (in_array( 'format-only' )) ? $value : floatval($value);
 
 			// INFO: string [decode-url] [encode-url] [purge-html]
 			case 'string':
