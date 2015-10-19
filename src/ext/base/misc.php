@@ -184,6 +184,11 @@
 		return $data;
 	}
 
+
+
+
+
+	// DEPRECATED: Following APIs will be removed in v1.4.0
 	/**
 	 * Returns the global variables defined in target package
 	 *
