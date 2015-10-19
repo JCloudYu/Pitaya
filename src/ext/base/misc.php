@@ -46,7 +46,7 @@
 				else
 					$value = EXPR_NUMERIC($value) ? $value : 0;
 
-				return (in_array( 'format-only', $illustrator )) ? $value : @intval($value);
+				return (in_array( 'no-casting', $illustrator )) ? $value : @intval($value);
 
 			// INFO: float [strict]
 			case 'float':
@@ -57,7 +57,7 @@
 				else
 					$value = EXPR_NUMERIC($value) ? $value : 0.0;
 
-				return (in_array( 'format-only', $illustrator )) ? $value : @floatval($value);
+				return (in_array( 'no-casting', $illustrator )) ? $value : @floatval($value);
 
 			// INFO: string [decode-url] [encode-url] [purge-html]
 			case 'string':
