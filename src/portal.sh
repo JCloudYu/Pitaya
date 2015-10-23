@@ -9,4 +9,4 @@ for STMT in $@; do
     (( i++ ))
 done
 
-php -d auto_prepend_file=kernel/base.php -d error_reporting=30711 portal.php ${ARGS[@]}
+php -d error_reporting=30711 portal.php ${ARGS[@]}

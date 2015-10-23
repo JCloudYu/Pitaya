@@ -24,16 +24,13 @@ RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 # </IfModule>
 
 
-##### The most important thing....
-php_value auto_prepend_file kernel/base.php
-
 SetEnv session.use_cookies='0';
 
 
 
 ##### Environmental constants
-php_flag register_argc_argv On
-php_flag magic_quotes_gpc Off
+#php_flag register_argc_argv On
+#php_flag magic_quotes_gpc Off
 # php_value date.timezone "UTC"
 
 
