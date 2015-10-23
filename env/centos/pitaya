@@ -83,7 +83,7 @@ if [ "${mod}" == "-c" ]; then
 				echo "${command} is not a valid command!" | STDERR;
 			fi;
 
-			echo "Supported commands are create, unmount, and destroy!" | STDERR;
+			echo "Supported commands are create, unmount, showmount and destroy!" | STDERR;
 
 			exit 1;
 		;;
