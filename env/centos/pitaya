@@ -66,6 +66,12 @@ if [ "${mod}" == "-c" ]; then
 			exit 0;
 		;;
 
+		"showmount" )
+			mount_list=$( mount -l | grep $(pwd) );
+			echo "${mount_list[@]}";
+			exit 0;
+		;;
+
 		"destroy" )
 			UNMOUNT_PROJ
 			find "${WORKING_FOLDER}" -mindepth 1 -maxdepth 1 -not -name "." -not -name ".." -exec rm -rf \{\} \;
