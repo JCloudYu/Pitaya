@@ -1,10 +1,12 @@
 #!/bin/bash
 
-cd $( dirname "$0" )
 
-PITAYA_DIR="/var/git/Pitaya";
-#PITAYA_DIR="/Users/JCloudYu/Resources/Development/Stashes/0001.pitaya"
-WORKING_FOLDER=$(pwd);
+PITAYA_DIR="${PITAYA_LIB_PATH}";
+WORKING_FOLDER=$( pwd );
+
+
+
+
 
 
 ## FUNCTIONS
@@ -26,17 +28,18 @@ function STDERR { cat - 1>&2; }
 
 
 
-## Check is children
-LOOP_DIR="${WORKING_FOLDER}";
-while [ ! "${LOOP_DIR}" == "" ] && [ ! "${LOOP_DIR}" == "/" ]; do
-	LOOP_DIR=$( dirname "${LOOP_DIR}" );
-	if [ "${LOOP_DIR}" == "${PITAYA_DIR}" ]; then echo "SOURCE QUIT"; exit 1; fi;
-done
-
 ## Check command
 mod=$1;
 
 if [ "${mod}" == "-c" ]; then
+
+	## Check Pitaya Library Path
+	if [ "${PITAYA_DIR}" == "" ]; then
+		echo "PITAYA_LIB_PATH environmental variable is not defined!" | STDERR;
+		exit 1;
+	fi;
+
+
 	shift;
 	command=$1;
 	case "${command}" in
