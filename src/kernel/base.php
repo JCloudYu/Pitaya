@@ -1,4 +1,9 @@
 <?php
+	if ( defined( 'PITAYA_BASE_CORE_INITIALIZED' ) ) return
+	define( 'PITAYA_BASE_CORE_INITIALIZED', TRUE );
+
+
+
 	define("PITAYA_VERSION_MAJOR",	"1");
 	define("PITAYA_VERSION_MINOR",	"3");
 	define("PITAYA_VERSION_BUILD",	"7");
