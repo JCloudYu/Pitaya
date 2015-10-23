@@ -2,38 +2,32 @@ RewriteEngine on
 RewriteBase /
 RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 
-
-
-
-
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteCond %{REQUEST_FILENAME} !-d
-#<FilesMatch "\.(inc)$">
-#	Order allow,deny
-#	Deny from all
-#	Satisfy All
-#</FilesMatch>
-#<FilesMatch "\.(sh)$">
-#	Order allow,deny
-#	Deny from all
-#	Satisfy All
-# </FilesMatch>
-# SetEnv session.use_cookies='0';
-
-
-
-##### Environmental constants
-#php_flag register_argc_argv On
-#php_flag magic_quotes_gpc Off
-# php_value date.timezone "UTC"
-
-
-
 ##### File upload
 # php_value post_max_size 100M
 # php_value upload_max_filesize 100M
 # php_value max_execution_time 600
 
+
+
+##### URL Writing and skipping
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# <FilesMatch "\.(inc)$">
+#	Order allow,deny
+#	Deny from all
+#	Satisfy All
+# </FilesMatch>
+# <FilesMatch "\.(sh)$">
+# 	Order allow,deny
+# 	Deny from all
+# 	Satisfy All
+# </FilesMatch>
+# SetEnv session.use_cookies='0';
+
+##### Environmental constants
+# php_flag register_argc_argv On
+# php_flag magic_quotes_gpc Off
+# php_value date.timezone "UTC"
 
 ##### Error and Warning
 # php_flag display_startup_errors on
@@ -41,6 +35,4 @@ RewriteRule ^(.*) Pitaya/portal.php?__src_request=$1 [QSA,L]
 # php_flag html_errors on
 # php_flag log_errors on
 # php_value error_log /home/path/public_html/domain/PHP_errors.log
-
-## E_ALL &  ~E_NOTICE & ~E_STRICT
-# php_value error_reporting 30711
+# php_value error_reporting 30711 # E_ALL &  ~E_NOTICE & ~E_STRICT
