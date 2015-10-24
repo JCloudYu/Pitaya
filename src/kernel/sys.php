@@ -70,8 +70,9 @@ class SYS extends PBObject
 // endregion
 
 // region [ Path Control ]
-	private static $_cacheServicePath = NULL;
-	private static $_cacheRandomCert  = NULL;
+	private static $_cacheServicePath	= NULL;
+	private static $_cacheRandomCert	= NULL;
+	private static $_cachedRuntimeAttr	= NULL;
 
 	public static function __imprint_constants() {
 
@@ -79,8 +80,11 @@ class SYS extends PBObject
 
 		if($initialized) return;
 
-		SYS::$_cacheServicePath = $GLOBALS['servicePath'];
-		SYS::$_cacheRandomCert  = $GLOBALS['randomCert'];
+		SYS::$_cacheServicePath		= $GLOBALS['servicePath'];
+		SYS::$_cacheRandomCert		= $GLOBALS['randomCert'];
+		SYS::$_cachedRuntimeAttr	= array(
+			'standalone'	=> $GLOBALS['STANDALONE_EXEC']
+		);
 	}
 // endregion
 
@@ -201,7 +205,30 @@ class SYS extends PBObject
 
 
 		// INFO: Detect Main Service
+		// NOTE: If cli and standalone script has been assigned
 		$state = FALSE;
+
+		$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
+		if ( CLI_ENV && is_file($scriptFilePath) )
+		{
+			$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
+			$ext = substr( $module, -4 );
+			if ( in_array( $ext, array( '.php', '.pty' ) ) ) $module = substr( $module, 0, -4 );
+			$this->_entryService = 'PBStandaloneExecutor';
+
+			define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd'], TRUE);
+			define('__STANDALONE_MODULE__', $module );
+			self::DecideExecMode( $moduleRequest );
+
+
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = $moduleRequest;
+			return;
+		}
+
+
+
+
 		$state = $state || available("service.{$service}.{$service}", FALSE);
 
 		if ($state)
