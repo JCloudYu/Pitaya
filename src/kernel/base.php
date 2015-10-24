@@ -62,16 +62,30 @@
 	if ( php_sapi_name() == "cli" )
 	{
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
-
-		define('__ROOT__',			realpath( getcwd() ), TRUE);
+		define('__ROOT__',			realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, TRUE);
 		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
 		define('EOL',				"\n", TRUE);
 
 
-
-		// NOTE: Remove script file
+		// NOTE: Remove script file path
 		array_shift( $_SERVER['argv'] );
+
+
+		// NOTE: Special intialization
+		if ( "{$_SERVER['argv'][0]}" == "-entry" )
+		{
+			array_shift($_SERVER['argv']);
+			$GLOBALS['STANDALONE_EXEC'] = array(
+				'script' => "{$_SERVER['argv'][0]}",
+				'cwd'	 => getcwd()
+			);
+			array_shift( $_SERVER['argv'] );
+		}
+
+
+
+
 		$_SERVER['argc'] = count($_SERVER['argv']);
 	}
 	else
@@ -176,6 +190,7 @@
 	unset($GLOBALS['RUNTIME_CONF']);
 	unset($GLOBALS['RUNTIME_ARGC']);
 	unset($GLOBALS['RUNTIME_ARGV']);
+	unset($GLOBALS['STANDALONE_EXEC']);
 
 
 	// INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6

@@ -37,6 +37,8 @@
 				$GLOBALS['dataPath']	= $_cachedPath['data']	  = (empty($GLOBALS['dataPath'])) ?	   __WEB_ROOT__ . '/Data'	  : "{$GLOBALS['dataPath']}";
 										  $_cachedPath['root']	  = __WEB_ROOT__;
 
+				$_cachedPath['working'] = ( empty($GLOBALS['STANDALONE_EXEC']) ) ? $_cachedPath['service'] : $GLOBALS['STANDALONE_EXEC']['cwd'];
+
 
 
 				return function($package = 'root') use ($_cachedPath) {

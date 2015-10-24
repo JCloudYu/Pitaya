@@ -1,12 +1,6 @@
 #!/bin/bash
-
-cd $(dirname $0)
-# E_ALL & ~E_WARNING & ~E_STRICT
+SCRIPT_PATH=$(dirname $0);
 
 i=0
-for STMT in $@; do
-    ARGS[$i]=$( echo "$STMT" )
-    (( i++ ))
-done
-
-php -d error_reporting=30711 portal.php ${ARGS[@]}
+for STMT in $@; do ARGS[$i]=$( echo "$STMT" ); (( i++ )); done;
+php -d error_reporting=30711 "${SCRIPT_PATH}/portal.php" ${ARGS[@]}
