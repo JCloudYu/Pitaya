@@ -7,31 +7,33 @@
 
 	final class PBDBCtrl
 	{
-		/**
-		 * Prepare and return a database connection singleton.
-		 * This function will return NULL if there's no connection parameter given.
-		 *
-		 * @param null|array $param connection related parameter that is defined in env.ini
-		 * @param array $option addition parameters for database linkage initialization
-		 *
-		 * @return ExtPDO|null
-		 */
-		public static function DB($param = NULL, $option = array('CREATE_VAR'))
+		public static function DB( $identifier = NULL, $conInfo = NULL, $options = array( 'CREATE_VAR' ) )
 		{
-			static $__singleton_db = NULL;
+			static $_dbSources = array();
 
-			if ( $__singleton_db && !in_array('FORCE_CREATE', $option) )
-				return $__singleton_db;
-
-			if ($param)
+			if ( is_array($identifier) )
 			{
-				if ( $__singleton_db )
-				{
-					unset($__singleton_db);
-					$__singleton_db = NULL;
-				}
+				$key			= 0;
+				$connectInfo	= $identifier;
+				$createOpt		= is_array($conInfo) ? $conInfo : array( 'CREATE_VAR' );
+			}
+			else
+			{
+				$key			= empty($identifier) ? 0 : "_IDENTITY_{$identifier}";
+				$connectInfo	= is_array($conInfo) ? $conInfo : array();
+				$createOpt		= is_array($options) ? $options : array( 'CREATE_VAR' );
+			}
 
-				return ($__singleton_db = self::CONNECT( $param, $option ));
+
+			if ( !empty($_dbSources[ $key ]) && !in_array('FORCE_CREATE', $createOpt) )
+				return $_dbSources[ $key ];
+
+			if ( $connectInfo )
+			{
+				if ( !empty($_dbSources[ $key ]) )
+					unset($_dbSources[ $key ]);
+
+				return ( $_dbSources[ $key ] = self::CONNECT( $connectInfo, $createOpt ) );
 			}
 
 			return NULL;
