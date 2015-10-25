@@ -57,7 +57,7 @@
 			return $connection;
 		}
 
-		public static function LIMIT($SQL, $page = NULL, $pageSize = NULL, &$pageInfo = NULL)
+		public static function LIMIT($SQL, $page = NULL, $pageSize = NULL, &$pageInfo = NULL, &$DB = NULL)
 		{
 			if (is_array($SQL))
 			{
@@ -72,7 +72,8 @@
 
 			$sql = trim($sql);
 			$sql = preg_replace('/(select)(.|[\n])*(from([^;]|[\n])*);*/i', "$1 count(*) as count $3", $sql, -1);
-			$countResult = PBDBCtrl::DB()->fetch($sql, $param);
+			$DB_CONNECTION = empty($DB) ? PBDBCtrl::DB() : $DB;
+			$countResult = $DB_CONNECTION->fetch($sql, $param);
 
 
 			$totalCount = $countResult['count'];
