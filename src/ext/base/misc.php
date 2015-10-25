@@ -107,10 +107,13 @@
 				if ( !array_key_exists('delimiter', $options) || empty( $value ) ) return array();
 
 
-				if ( !empty( $options['regex'] ) || empty($options['delimiter']) )
-					return preg_split("/{$options['delimiter']}/", $value);
+				if ( !empty( $options['regex'] ) )
+					return preg_split("/{$options['regex']}/", $value);
 				else
+				if ( !empty($options['delimiter']) )
 					return explode( $options['delimiter'], $value );
+
+				return array();
 
 
 			// INFO: time string
