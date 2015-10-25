@@ -37,6 +37,17 @@
 			return NULL;
 		}
 
+		public static function GEN_CONNECT_INFO( $db, $account, $password, $host = "localhost", $port = 3306 )
+		{
+			return array(
+				'host'		=> $host,
+				'port'		=> $port,
+				'db'		=> $db,
+				'account'	=> $account,
+				'password'	=> $password
+			);
+		}
+
 		public static function CONNECT($param = NULL, $option = array('CREATE_VAR'))
 		{
 			$dsn = ExtPDO::DSN($param['host'], $param['db'], $param['port']);
