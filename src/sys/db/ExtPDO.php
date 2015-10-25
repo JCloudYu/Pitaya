@@ -266,7 +266,7 @@ SQL
 		{
 			$SQL = strtr( $baseSql, array(':fields' => '*') );
 			if ( $param ) $SQL = array('sql' => $SQL, 'param' => $param);
-			$LIMIT = PBDBCtrl::LIMIT( $SQL, @$pageInfo['page'], @$pageInfo['pageSize'], $pageInfo );
+			$LIMIT = PBDBCtrl::LIMIT( $SQL, @$pageInfo['page'], @$pageInfo['pageSize'], $pageInfo, $this );
 
 			$ARGS = self::CollectArgument( $options );
 			$SQL  = strtr( $baseSql, array(':fields' => $ARGS['FIELDS']) );
