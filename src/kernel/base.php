@@ -156,8 +156,8 @@
 	if ( file_exists( __WEB_ROOT__ . "/common.php" ) )
 		require_once __WEB_ROOT__ . "/common.php";
 
-	if ( __STANDALONE_EXEC_MODE__ && file_exists( "{$GLOBALS['STANDALONE_EXEC']}/runtime.php" ) )
-		require_once "{$GLOBALS['STANDALONE_EXEC']}/runtime.php";
+	if ( __STANDALONE_EXEC_MODE__ && file_exists( "{$GLOBALS['STANDALONE_EXEC']['cwd']}/runtime.php" ) )
+		require_once "{$GLOBALS['STANDALONE_EXEC']['cwd']}/runtime.php";
 
 
 
