@@ -69,14 +69,14 @@
 				if (in_array('decode-url', $illustrator))
 					$value = urldecode($value);
 
-				if (in_array('purge-html', $illustrator))
-					$value = htmlspecialchars($value);
-
 				if (in_array('lower-case', $illustrator))
 					$value = strtolower($value);
 				else
 				if (in_array('upper-case', $illustrator))
 					$value = strtoupper($value);
+
+				if (in_array('purge-html', $illustrator))
+					$value = htmlspecialchars($value);
 
 
 				
