@@ -24,7 +24,7 @@
 			return $this->_travel($offsets);
 		}
 
-		public function &set($offset, $value)
+		public function set($offset, $value)
 		{
 			if (is_a($value, 'PBDataTree'))
 				$value = $value->_storage;
