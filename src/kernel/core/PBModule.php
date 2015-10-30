@@ -32,6 +32,9 @@ class PBModule extends PBObject
 	public function auth($authData = NULL){ return true; }
 	public function __get_auth() { return $this->auth(); }
 
+	protected $_error = NULL;
+	public function __get_error() { return $this->_error; }
+
 
 
 	// INFO: Module information
