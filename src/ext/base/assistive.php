@@ -15,7 +15,7 @@
 	}
 
 	// INFO: System-wide and hierachical data storage (PBDataTree)
-	function D( $selector = NULL )
+	function& D( $selector = NULL )
 	{
 		static $_singleton = NULL;
 
@@ -23,7 +23,7 @@
 			$_singleton = new PBDataTree();
 
 		if ( $selector !== NULL )
-			return $_singleton[ $selector ];
+			return $_singleton->get( $selector );
 		else
 			return $_singleton;
 	}
