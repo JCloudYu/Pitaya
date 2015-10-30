@@ -15,17 +15,19 @@
 	}
 
 	// INFO: System-wide and hierachical data storage (PBDataTree)
-	function& D( $selector = NULL )
+	function& D( $selector = NULL, $value = NULL )
 	{
 		static $_singleton = NULL;
+		if ( $_singleton === NULL ) $_singleton = new PBDataTree();
 
-		if ($_singleton === NULL)
-			$_singleton = new PBDataTree();
 
-		if ( $selector !== NULL )
-			return $_singleton->get( $selector );
-		else
-			return $_singleton;
+
+		if ( $selector === NULL ) return $_singleton;
+
+		if ( func_num_args() > 1 )
+			$_singleton->set( $selector, $value );
+
+		return $_singleton->get( $selector );
 	}
 
 	function S( $selector = NULL ) { return D( $selector ); } // DEPRECATED: S will be deprecated in v1.4.0
