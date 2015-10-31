@@ -3,7 +3,7 @@
 	 ** 1027.BadmintonLa - PBShellPatch.php
 	 ** Created by JCloudYu on 2015/08/18 01:58
 	 **/
-	final class PBShellPatch extends PBModule
+	class PBShellPatch extends PBModule
 	{
 		public function prepareShell( $moduleRequest )
 		{
