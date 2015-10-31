@@ -162,6 +162,13 @@ SQL
 									   ':value' => $value));
 		}
 
+		public function __isset( $name ) {
+			static $table = ExtPDO::VARIABLE_TABLE;
+			$row = $this->fetch("SELECT * FROM `{$table}` WHERE `name` = '{$name}';");
+
+			return !empty($row);
+		}
+
 		public function setAttribute($name, $value) {
 
 			return parent::setAttribute($name, $value);
