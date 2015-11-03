@@ -30,7 +30,7 @@
 
 			$fields = TO( $payloads['options'], 'array' );
 			$fields[ 'to' ] = $token;
-			if ( !empty($payloads['data']) ) $fields[ 'notification' ] = $payloads['notification'];
+			if ( !empty($payloads['notification']) ) $fields[ 'notification' ] = $payloads['notification'];
 			if ( !empty($payloads['data']) ) $fields[ 'data' ] = $payloads['data'];
 
 
