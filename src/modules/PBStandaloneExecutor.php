@@ -7,6 +7,13 @@
 
 	class PBStandaloneExecutor extends PBModule
 	{
+		public function prepareEvent( $moduleRequest )
+		{
+			if ( !CLI_ENV ) return;
+
+			$this->prepareShell( $moduleRequest );
+		}
+
 		public function prepareShell( $moduleRequest )
 		{
 			$moduleName = "working." . __STANDALONE_MODULE__;

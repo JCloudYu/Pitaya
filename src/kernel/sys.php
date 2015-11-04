@@ -211,8 +211,8 @@ class SYS extends PBObject
 		$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
 		if ( CLI_ENV && is_file($scriptFilePath) )
 		{
-			array_unshift( $moduleRequest, $service );
-
+			if ( !empty($service) )
+				array_unshift( $moduleRequest, $service );
 
 			$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
 			$ext = substr( $module, -4 );
