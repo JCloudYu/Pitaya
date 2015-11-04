@@ -20,7 +20,7 @@
 			if ( $this->_kernel === NULL )
 				return NULL;
 
-			if ( empty( $msgContent ) ) return FALSE;
+			if ( empty( $msg ) ) return FALSE;
 			return $this->_kernel->send( $msg );
 		}
 
