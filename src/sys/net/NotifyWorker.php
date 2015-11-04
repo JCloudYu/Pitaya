@@ -15,7 +15,16 @@
 			$this->_kernel = $value;
 		}
 
-		public function send( $packages )
+		public function send( $msg )
+		{
+			if ( $this->_kernel === NULL )
+				return NULL;
+
+			if ( empty( $msgContent ) ) return FALSE;
+			return $this->_kernel->send( $msg );
+		}
+
+		public function batch( $packages )
 		{
 			if ( $this->_kernel === NULL )
 				return NULL;
