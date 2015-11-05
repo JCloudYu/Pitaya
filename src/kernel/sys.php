@@ -216,7 +216,7 @@ class SYS extends PBObject
 
 			$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
 			$ext = substr( $module, -4 );
-			if ( in_array( $ext, array( '.php', '.pty' ) ) ) $module = substr( $module, 0, -4 );
+			if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
 			$this->_entryService = 'PBStandaloneExecutor';
 
 			define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd'], TRUE);
