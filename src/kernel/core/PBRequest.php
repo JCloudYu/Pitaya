@@ -476,26 +476,39 @@
 			return $request;
 		}
 
-		public static function ParseAttribute($rawAttribute)
+		public static function ParseAttribute( $rawAttribute )
 		{
-			$attributes = explode('&', $rawAttribute);
+			$attributes = explode( '&', "{$rawAttribute}" );
 
-			if (empty($attributes)) return array();
-			$attributeContainer = array('flag' => array(), 'variable' => array());
-			foreach($attributes as $attr)
+			if ( empty($attributes) ) return array();
+
+			$attributeContainer = array(
+				'flag'		=> array(),
+				'variable'	=> array()
+			);
+
+			foreach ( $attributes as $attr )
 			{
-				$buffer = preg_split('/[=]/', $attr);
+				$buffer = explode( '=', $attr );
 
-				if(count($buffer) <= 1)
+				if ( count($buffer) <= 1 )
 				{
-					if($buffer[0] !== '') $attributeContainer['flag'][] = $buffer[0];
+					if ( $buffer[0] !== '' )
+						$attributeContainer['flag'][] = $buffer[0];
+				}
+				else
+				if ( !preg_match( '/^(.*)\[(.*)\]$/', $buffer[0], $matches ) )
+				{
+					$attributeContainer[ 'variable' ][ $buffer[0] ] = $buffer[1];
 				}
 				else
 				{
-					if($buffer[0] !== '')
-						$attributeContainer['variable'][$buffer[0]] = $buffer[1];
+					$node = &$attributeContainer[ 'variable' ][ $matches[1] ];
+
+					if ( empty($matches[2]) )
+						$node[] = $buffer[1];
 					else
-						$attributeContainer['flag'][] = $buffer[1];
+						$node[ $matches[2] ] = $buffer[1];
 				}
 			}
 
