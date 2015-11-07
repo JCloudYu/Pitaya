@@ -37,6 +37,10 @@
 
 
 
+	require_once __ROOT__ . '/kernel/api.tool.php';
+
+
+
 	// INFO:Some special initializations
 	call_user_func(function() {
 
