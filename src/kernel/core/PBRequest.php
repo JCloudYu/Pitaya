@@ -497,18 +497,51 @@
 						$attributeContainer['flag'][] = $buffer[0];
 				}
 				else
-				if ( !preg_match( '/^(.*)\[(.*)\]$/', $buffer[0], $matches ) )
 				{
-					$attributeContainer[ 'variable' ][ $buffer[0] ] = $buffer[1];
-				}
-				else
-				{
-					$node = &$attributeContainer[ 'variable' ][ $matches[1] ];
+					$varComps	= preg_split( '/(\[[^]]*\])/', $buffer[0], -1, PREG_SPLIT_DELIM_CAPTURE );
+					$varName	= @array_shift($varComps);
 
-					if ( empty($matches[2]) )
-						$node[] = $buffer[1];
+					if ( count($varComps) <= 0 )
+						$attributeContainer[ 'variable' ][ $varName ] = $buffer[1];
 					else
-						$node[ $matches[2] ] = $buffer[1];
+					{
+						$formatError = FALSE; $indices = array();
+						while ( count($varComps) > 0 )
+						{
+							$indices[]	= trim( substr( @array_shift( $varComps ), 1, -1 ) );
+							$emptyToken	= trim( @array_shift( $varComps ) );
+
+							$formatError = $formatError || !empty($emptyToken);
+						}
+
+						if ( !$formatError )
+						{
+							$lastIndex = @array_pop( $indices );
+
+
+
+							$currentLevel = &$attributeContainer[ 'variable' ][ $varName ];
+							while ( count($indices) > 0 )
+							{
+								$index = array_shift( $indices );
+
+								if ( $index === "" )
+								{
+									$currentLevel[] = array();
+									$index = max( array_filter( array_keys($currentLevel), 'is_int'));
+								}
+
+								$currentLevel = &$currentLevel[ $index ];
+							}
+
+
+
+							if ( $lastIndex === "" )
+								$currentLevel[] = $buffer[1];
+							else
+								$currentLevel[ $lastIndex ] = $buffer[1];
+						}
+					}
 				}
 			}
 
