@@ -37,10 +37,6 @@
 
 
 
-	require_once __ROOT__ . '/kernel/api.tool.php';
-
-
-
 	// INFO:Some special initializations
 	call_user_func(function() {
 
@@ -113,6 +109,13 @@
 	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
 		define( '__STANDALONE_EXEC_MODE__', FALSE, TRUE );
 
+
+
+
+
+
+
+	require_once __ROOT__ . '/kernel/api.tool.php';
 
 
 
