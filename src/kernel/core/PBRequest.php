@@ -520,6 +520,10 @@
 
 
 
+							if ( !is_array( $attributeContainer[ 'variable' ][ $varName ] ) )
+								$attributeContainer[ 'variable' ][ $varName ] = array();
+
+
 							$currentLevel = &$attributeContainer[ 'variable' ][ $varName ];
 							while ( count($indices) > 0 )
 							{
@@ -530,6 +534,10 @@
 									$currentLevel[] = array();
 									$index = max( array_filter( array_keys($currentLevel), 'is_int'));
 								}
+
+
+								if ( !is_array($currentLevel[$index]) )
+									$currentLevel[$index] = array();
 
 								$currentLevel = &$currentLevel[ $index ];
 							}
