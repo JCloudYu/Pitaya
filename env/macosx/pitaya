@@ -99,16 +99,14 @@ fi
 
 if [ -f "${mode}" ]; then
 	shift;
-	count=0;
-	for STMT in $@; do ARGS[$count]=$( echo "$STMT" ); (( count++ )); done;
-	"${PITAYA_DIR}/src/portal.sh" -entry "${mode}" ${ARGS[@]}
+	count=0; while [ "$#" -gt "0" ]; do ARGS[$count]=$( echo "$1" ); shift; (( count++ )); done;
+	"${PITAYA_DIR}/src/portal.sh" -entry "${mode}" "${ARGS[@]}"
 else
 	if [ ! -e "./Pitaya/portal.sh" ]; then
 		echo "Current directory is not a valid pitaya project directory!" | STDERR;
 		exit 1;
 	fi;
 
-	count=0;
-	for STMT in $@; do ARGS[$count]=$( echo "$STMT" ); (( count++ )); done;
-	./Pitaya/portal.sh ${ARGS[@]}
+	count=0; while [ "$#" -gt "0" ]; do ARGS[$count]=$( echo "$1" ); shift; (( count++ )); done;
+	./Pitaya/portal.sh "${ARGS[@]}"
 fi

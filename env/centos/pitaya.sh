@@ -60,6 +60,5 @@ if [ ! -e "./Pitaya/portal.sh" ]; then
 fi;
 
 
-count=0
-for STMT in $@; do ARGS[$count]=$( echo "$STMT" ); (( count++ )); done;
-./Pitaya/portal.sh ${ARGS[@]}
+count=0; while [ "$#" -gt "0" ]; do ARGS[$count]=$( echo "$1" ); shift; (( count++ )); done;
+./Pitaya/portal.sh "${ARGS[@]}"
