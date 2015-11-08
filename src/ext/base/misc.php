@@ -104,11 +104,12 @@
 					return $value;
 
 				$value = "{$value}";
-				if ( !array_key_exists('delimiter', $options) || empty( $value ) ) return array();
 
-
+				if ( empty($value) )
+					return array();
+				else
 				if ( !empty( $options['regex'] ) )
-					return preg_split("/{$options['regex']}/", $value);
+					return preg_split("{$options['regex']}", $value);
 				else
 				if ( !empty($options['delimiter']) )
 					return explode( $options['delimiter'], $value );
