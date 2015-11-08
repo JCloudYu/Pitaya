@@ -300,7 +300,10 @@
 					if($func === NULL) $func =  function($stream) {
 						$targetData = stream_get_contents($stream);
 
-						$data = PBRequest::ParseAttribute($targetData);
+						$data = PBRequest::ParseAttribute(
+							$targetData,
+							strtolower( "{$this->server['CONTENT_TYPE'] }" ) == "application/x-www-form-urlencoded"
+						);
 						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
 					};
 					break;
@@ -364,9 +367,6 @@
 			{
 				switch ($dataInfo['type'])
 				{
-					case 'application/x-www-form-urlencoded':
-						$data = iTrans($data, 'urlencoded');
-						break;
 					case 'application/base64':
 						$data = iTrans($data, 'base64');
 						break;
@@ -471,16 +471,19 @@
 			if (end($request['resource']) === '') array_pop($request['resource']);
 			reset($request['resource']);
 
-			$request['attribute'] = PBRequest::ParseAttribute($request['attribute']);
+			$request['attribute'] = PBRequest::ParseAttribute($request['attribute'], TRUE);
 
 			return $request;
 		}
 
-		public static function ParseAttribute( $rawAttribute )
+		public static function ParseAttribute( $rawAttribute, $urlDecode = FALSE )
 		{
 			$attributes = explode( '&', "{$rawAttribute}" );
 
 			if ( empty($attributes) ) return array();
+
+
+			$decodeFunc = ($urlDecode) ? 'urldecode' : function($val){ return $val; };
 
 			$attributeContainer = array(
 				'flag'		=> array(),
@@ -490,7 +493,7 @@
 			foreach ( $attributes as $attr )
 			{
 				$buffer 	= explode( '=', $attr );
-				$buffer[0]  = urldecode( $buffer[0] );
+				$buffer[0]  = $decodeFunc( $buffer[0] );
 
 				if ( count($buffer) <= 1 )
 				{
@@ -502,8 +505,8 @@
 					$varComps	= preg_split( '/(\[[^]]*\])/', $buffer[0], -1, PREG_SPLIT_DELIM_CAPTURE );
 					$varName	= @array_shift($varComps);
 
-					$varName  	= urldecode( $varName );
-					$buffer[1]  = urldecode( $buffer[1] );
+					$varName  	= $decodeFunc( $varName );
+					$buffer[1]  = $decodeFunc( $buffer[1] );
 
 					if ( count($varComps) <= 0 )
 						$attributeContainer[ 'variable' ][ $varName ] = $buffer[1];
@@ -520,7 +523,7 @@
 
 						if ( !$formatError )
 						{
-							$lastIndex = urldecode( @array_pop( $indices ) );
+							$lastIndex = $decodeFunc( @array_pop( $indices ) );
 
 
 
@@ -531,7 +534,7 @@
 							$currentLevel = &$attributeContainer[ 'variable' ][ $varName ];
 							while ( count($indices) > 0 )
 							{
-								$index = urldecode( array_shift( $indices ) );
+								$index = $decodeFunc( array_shift( $indices ) );
 
 								if ( $index === "" )
 								{
