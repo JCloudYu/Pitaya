@@ -297,12 +297,13 @@
 					$func = $dataFunction;
 				case 'raw':
 				default:
-					if($func === NULL) $func =  function($stream) {
+					$serverInfo = $this->server;
+					if($func === NULL) $func =  function($stream) use ( &$serverInfo ) {
 						$targetData = stream_get_contents($stream);
 
 						$data = PBRequest::ParseAttribute(
 							$targetData,
-							strtolower( "{$this->server['CONTENT_TYPE'] }" ) == "application/x-www-form-urlencoded"
+							strtolower( "{$serverInfo['CONTENT_TYPE'] }" ) == "application/x-www-form-urlencoded"
 						);
 						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
 					};
@@ -311,6 +312,8 @@
 
 			$result = $func($this->rawDataStream, $param);
 
+
+			// ISSUE: Fix me
 			$buff = $this->recursiveDecode($result);
 
 			$this->_parsedData = @$buff['data'];
