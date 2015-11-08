@@ -172,6 +172,8 @@
 
 		private function &_travel($offsets)
 		{
+			if (empty($offsets)) return $this->_storage;
+
 			$finalOffset = array_pop($offsets);
 
 
