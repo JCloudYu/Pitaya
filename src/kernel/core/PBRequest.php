@@ -253,6 +253,15 @@
 			$netRequestTime = $this->_incomingRecord['environment']['server']['REQUEST_TIME'];
 			return empty($netRequestTime) ? PBRequest::$_invokedTime : $netRequestTime;
 		}
+
+
+		private $_contentType = NULL;
+		public function __get_contentType() {
+			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
+		}
+
+
+
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
@@ -297,87 +306,76 @@
 					$func = $dataFunction;
 				case 'raw':
 				default:
-					$serverInfo = $this->server;
-					if($func === NULL) $func =  function($stream) use ( &$serverInfo ) {
-						$targetData = stream_get_contents($stream);
+					if ( $func === NULL )
+					{
 
-						$data = PBRequest::ParseAttribute(
-							$targetData,
-							strtolower( "{$serverInfo['CONTENT_TYPE'] }" ) == "application/x-www-form-urlencoded"
-						);
-						return array('data' => $data, 'variable' => $data['variable'], 'flag' => $data['flag']);
-					};
+						switch ( strtolower( @"{$this->contentType['type']}" ) )
+						{
+							case "application/x-www-form-urlencoded":
+								$func = function($stream) {
+									$targetData = stream_get_contents($stream);
+									$data = PBRequest::ParseAttribute( $targetData, TRUE );
+									return array(
+										'data'		=> $data,
+										'variable'	=> $data['variable'],
+										'flag'		=> $data['flag']
+									);
+								};
+								break;
+
+							case "application/base64":
+								$func = function($stream) {
+									$targetData = stream_get_contents($stream);
+									$data = base64_decode( $targetData );
+									return array(
+										'data'		=> $data,
+										'variable'	=> array(),
+										'flag'		=> array()
+									);
+								};
+								break;
+
+							default:
+								$func = function($stream) {
+									$data = stream_get_contents($stream);
+									return array(
+										'data'		=> $data,
+										'variable'	=> array(),
+										'flag'		=> array()
+									);
+								};
+								break;
+						}
+					}
 					break;
 			}
 
 			$result = $func($this->rawDataStream, $param);
-
-
-			// ISSUE: Fix me
-			$buff = $this->recursiveDecode($result);
-
-			$this->_parsedData = @$buff['data'];
-			$this->_dataVariable = @$buff['variable'];
-			$this->_dataFlag = @$buff['flag'];
+			$this->_parsedData = @$result['data'];
+			$this->_dataVariable = @$result['variable'];
+			$this->_dataFlag = @$result['flag'];
 
 			return $this;
 		}
 
-		private function recursiveDecode($content)
+		public static function ParseContentType( $contentType )
 		{
-			if (!is_array($content))
-				return @$this->decodeData($content, $this->server['CONTENT_TYPE']);
+			return ary_filter(explode(';', "{$contentType}"), function( $item, &$idx ){
+				$token = strtolower(trim($item));
 
-			$buff = array();
-			foreach ($content as $idx => $value)
-			{
-				if (is_array($value))
-					$buff[$idx] = $this->recursiveDecode($value);
+				// content-type
+				if (preg_match('/^.*\/.*$/', $token))
+					$idx = 'type';
 				else
-					@$buff[$idx] = $this->decodeData($value, $this->server['CONTENT_TYPE']);
-			}
+				if (preg_match('/^charset=.*/', $token))
+					$idx = 'charset';
+				else
+					$idx = NULL;
 
-			return $buff;
+				return $token;
+			});
 		}
 
-		private function decodeData($data, $encType)
-		{
-			static $dataInfo = NULL;
-
-			if ($dataInfo === NULL)
-			{
-				$dataInfo = array();
-				$encType = explode(';', $encType);
-				foreach ($encType as $token)
-				{
-					$token = strtolower(trim($token));
-
-					// content-type
-					if (preg_match('/^.*\/.*$/', $token))
-						$dataInfo['type'] = $token;
-					else
-					if (preg_match('/^charset=.*/', $token))
-						$dataInfo['charset'] = $token;
-				}
-			}
-
-			if (array_key_exists('charset', $dataInfo))
-			{
-				// ISSUE: There convert charset here....
-			}
-
-			if (array_key_exists('type', $dataInfo))
-			{
-				switch ($dataInfo['type'])
-				{
-					case 'application/base64':
-						$data = iTrans($data, 'base64');
-						break;
-				}
-			}
-
-			return $data;
-		}
 
 
 		private $_parsedQuery = NULL;
@@ -486,7 +484,8 @@
 			if ( empty($attributes) ) return array();
 
 
-			$decodeFunc = ($urlDecode) ? 'urldecode' : function($val){ return $val; };
+			$decodeFunc = ($urlDecode) ? 'urldecode' : function& ( &$val ){ return $val; };
+
 
 			$attributeContainer = array(
 				'flag'		=> array(),
@@ -506,9 +505,7 @@
 				else
 				{
 					$varComps	= preg_split( '/(\[[^]]*\])/', $buffer[0], -1, PREG_SPLIT_DELIM_CAPTURE );
-					$varName	= @array_shift($varComps);
-
-					$varName  	= $decodeFunc( $varName );
+					$varName	= $decodeFunc( @array_shift($varComps) );
 					$buffer[1]  = $decodeFunc( $buffer[1] );
 
 					if ( count($varComps) <= 0 )
