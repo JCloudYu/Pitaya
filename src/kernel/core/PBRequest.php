@@ -489,8 +489,9 @@
 
 			foreach ( $attributes as $attr )
 			{
-				$buffer 	= explode( '=', TO( $attr, 'string decode-url' ) );
-				
+				$buffer 	= explode( '=', $attr );
+				$buffer[0]  = urldecode( $buffer[0] );
+
 				if ( count($buffer) <= 1 )
 				{
 					if ( $buffer[0] !== '' )
@@ -500,6 +501,9 @@
 				{
 					$varComps	= preg_split( '/(\[[^]]*\])/', $buffer[0], -1, PREG_SPLIT_DELIM_CAPTURE );
 					$varName	= @array_shift($varComps);
+
+					$varName  	= urldecode( $varName );
+					$buffer[1]  = urldecode( $buffer[1] );
 
 					if ( count($varComps) <= 0 )
 						$attributeContainer[ 'variable' ][ $varName ] = $buffer[1];
@@ -516,7 +520,7 @@
 
 						if ( !$formatError )
 						{
-							$lastIndex = @array_pop( $indices );
+							$lastIndex = urldecode( @array_pop( $indices ) );
 
 
 
@@ -527,7 +531,7 @@
 							$currentLevel = &$attributeContainer[ 'variable' ][ $varName ];
 							while ( count($indices) > 0 )
 							{
-								$index = array_shift( $indices );
+								$index = urldecode( array_shift( $indices ) );
 
 								if ( $index === "" )
 								{
