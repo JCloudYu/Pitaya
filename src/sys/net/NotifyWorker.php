@@ -14,6 +14,10 @@
 		{
 			$this->_kernel = $value;
 		}
+		public function& __get_kernel()
+		{
+			return $this->_kernel;
+		}
 
 		public function send( $msg )
 		{
