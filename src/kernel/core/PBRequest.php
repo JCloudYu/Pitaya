@@ -462,8 +462,8 @@
 		{
 			$rawRequest = explode('?', $rawRequest);
 
-			$request = array('resource' => $rawRequest[0], 'attribute' => NULL);
-			if(count($rawRequest) > 1) $request['attribute'] = $rawRequest[1];
+			$request = array( 'resource' => $rawRequest[0], 'attribute' => NULL );
+			if( count($rawRequest) > 1 ) $request['attribute'] = $rawRequest[1];
 
 			$request['resource'] = explode('/', $request['resource']);
 			if ($request['resource'][0] === '') $request['resource'] = array();
@@ -472,7 +472,13 @@
 			if (end($request['resource']) === '') array_pop($request['resource']);
 			reset($request['resource']);
 
-			$request['attribute'] = PBRequest::ParseAttribute($request['attribute'], TRUE);
+
+
+			$request['resource'] = ary_filter($request['resource'], function( $item ){
+				return urldecode( $item );
+			});
+
+			$request['attribute'] = PBRequest::ParseAttribute( $request['attribute'], TRUE );
 
 			return $request;
 		}
