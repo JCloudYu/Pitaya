@@ -116,6 +116,93 @@
 		}
 	}
 
+	// INFO: Extensions for UTF8 data processing
+	function utf8_filter( $string, $func = NULL )
+	{
+		$len = strlen( $string );
+		if ( $len <= 0 ) return;
+
+
+		$func = ( is_callable($func) ) ? $func : function( $codeVal, $bytes ) {
+			return ( $codeVal < 0 ) ? '' : $bytes;
+		};
+
+
+
+		$index = 0; $collected = '';
+		while( $index < $len )
+		{
+			$code = ord( $buff = $data = $string[ $index++ ] );
+			$codeValue = 0;
+			$hasError = FALSE;
+
+			if ( ($code & 128) == 0 )		// 0xxxxxxx
+			{
+				$codeValue = $code;
+				$numBytes = 0;
+			}
+			else
+			if ( ($code >> 1) == 126 )	// 1111110x
+			{
+				$codeValue = $code & 0x01;
+				$numBytes = 5;
+			}
+			else
+			if ( ($code >> 2) == 62 )	// 111110xx
+			{
+				$codeValue = $code & 0x03;
+				$numBytes = 4;
+			}
+			else
+			if ( ($code >> 3) == 30 )	// 11110xxx
+			{
+				$codeValue = $code & 0x07;
+				$numBytes = 3;
+			}
+			else
+			if ( ($code >> 4) == 14 )	// 1110xxxx
+			{
+				$codeValue = $code & 0x0F;
+				$numBytes = 2;
+			}
+			else
+			if ( ($code >> 5) == 6 )	// 110xxxxx
+			{
+				$codeValue = $code & 0x1F;
+				$numBytes = 1;
+			}
+			else
+			{
+				$hasError = $hasError || TRUE;
+				$numBytes = 0;
+			}
+
+
+
+			while ( $numBytes-- > 0 )
+			{
+				$code = ord( $data = $string[ $index++ ] );
+				$buff .= $data;
+
+
+				if ( $code >> 6 != 2 )
+				{
+					$hasError = $hasError || TRUE;
+					continue;
+				}
+
+				$code = $code & 0x3F;
+				$codeValue = ($codeValue << 6) | $code;
+			}
+
+
+
+			$collected .= $func( ($hasError ? -1 : $codeValue), $buff );
+		}
+
+		return $collected;
+	}
+
 	// INFO: Version Processing
 	function ParseVersion($verStr, $keepEmpty = FALSE)
 	{
