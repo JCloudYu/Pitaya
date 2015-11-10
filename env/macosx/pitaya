@@ -42,6 +42,14 @@ if [ "${mode}" == "-c" ]; then
 	case "${command}" in
 		"create" )
 			shift;
+			ProjDir="$1";
+			if [ "${ProjDir}" != "" ]; then
+				mkdir "${ProjDir}";
+				cd "${ProjDir}";
+			fi
+
+
+
 			if [ -e "./Pitaya" ]; then rm -rf ./Pitaya; fi;
 			if [ -e "./Services" ]; then rm -rf ./Services; fi;
 			if [ -e "./Share" ]; then rm -rf ./Share; fi;
