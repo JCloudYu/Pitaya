@@ -202,6 +202,68 @@
 
 		return $collected;
 	}
+	function big5_filter( $string, $func = NULL, $strict = FALSE )
+	{
+		$len = strlen( $string );
+		if ( $len <= 0 ) return;
+
+
+		$func = ( is_callable($func) ) ? $func : function( $codeVal, $bytes ) {
+			return ( $codeVal < 0 ) ? '' : $bytes;
+		};
+
+
+
+		$index = 0; $collected = '';
+		while( $index < $len )
+		{
+			$code		= ord( $buff = $data = $string[ $index++ ] );
+			$codeValue	= $code;
+			$numBytes	= ( $code < 128 ) ? 0 : 1;
+
+
+
+			$hasError = FALSE;
+			while ( $numBytes-- > 0 )
+			{
+				$code = ord( $data = $string[ $index++ ] );
+				$buff .= $data;
+				$codeValue = ($codeValue << 8) | $code;
+
+
+
+				if ( $codeValue < 128 )
+					continue;
+				else
+				if ( $codeValue >= 0x8140 && $codeValue <= 0xA0FE && !$strict )
+					continue;
+				else
+				if ( $codeValue >= 0xA140 && $codeValue <= 0xA3BF )
+					continue;
+				else
+				if ( $codeValue >= 0xA440 && $codeValue <= 0xC67E )
+					continue;
+				else
+				if ( $codeValue >= 0xC6A1 && $codeValue <= 0xC8FE && !$strict )
+					continue;
+				else
+				if ( $codeValue >= 0xC940 && $codeValue <= 0xF9D5 )
+					continue;
+				else
+				if ( $codeValue >= 0xF9D6 && $codeValue <= 0xFEFE && !$strict )
+					continue;
+
+
+				$hasError = $hasError || TRUE;
+			}
+
+
+
+			$collected .= $func( ($hasError ? -1 : $codeValue), $buff );
+		}
+
+		return $collected;
+	}
 
 	// INFO: Version Processing
 	function ParseVersion($verStr, $keepEmpty = FALSE)
