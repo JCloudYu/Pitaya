@@ -120,7 +120,7 @@
 	function utf8_filter( $string, $func = NULL )
 	{
 		$len = strlen( $string );
-		if ( $len <= 0 ) return;
+		if ( $len <= 0 ) return NULL;
 
 
 		$func = ( is_callable($func) ) ? $func : function( $codeVal, $bytes ) {
@@ -205,7 +205,7 @@
 	function big5_filter( $string, $func = NULL, $strict = FALSE )
 	{
 		$len = strlen( $string );
-		if ( $len <= 0 ) return;
+		if ( $len <= 0 ) return NULL;
 
 
 		$func = ( is_callable($func) ) ? $func : function( $codeVal, $bytes ) {
