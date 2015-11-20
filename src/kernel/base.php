@@ -180,6 +180,7 @@
 
 	// INFO: Include configurations according working environment
 	require_once __ROOT__ . "/kernel/" . ( (SYS_WORKING_ENV == SYS_ENV_CLI) ? "cli.config.php" : "net.config.php" );
+	require_once __ROOT__ . "/kernel/env.const.php";
 
 
 

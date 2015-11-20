@@ -17,6 +17,9 @@
 
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
 		{
+			if ( empty($this->_logStream) ) return FALSE;
+
+
 			if (!is_array($options)) $options = array();
 
 			if (!is_string($message)) $message = print_r($message, TRUE);
@@ -57,7 +60,7 @@
 
 		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('data.log', (empty($logFileName) ? "service.log" : $logFileName));
+			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "service.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, '', $options);
@@ -65,7 +68,7 @@
 
 		public static function ERRLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('data.log', (empty($logFileName) ? "error.log" : $logFileName));
+			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "error.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'ERROR', $options);
@@ -73,7 +76,7 @@
 
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('data.log', (empty($logFileName) ? "system.log" : $logFileName));
+			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "system.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SYS', $options);
@@ -81,7 +84,7 @@
 
 		public static function ShareLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('data.log', (empty($logFileName) ? "share.log" : $logFileName));
+			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "share.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SHARE', $options);
@@ -89,7 +92,7 @@
 
 		public static function CustomLog($message, $cate = 'CUSTOM', $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path('data.log', (empty($logFileName) ? "custom.log" : $logFileName));
+			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "custom.log" : $logFileName));
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, empty($cate) ? 'CUSTOM' : "{$cate}", $options);
@@ -266,7 +269,7 @@ SQL
 					$logFilePath = "{$logFilePath}/default.log";
 
 				$logPath = dirname($logFilePath);
-				if (!is_dir($logPath)) mkdir($logPath);
+				if (!is_dir($logPath)) @mkdir($logPath);
 
 
 
@@ -282,7 +285,13 @@ SQL
 					}
 				}
 
-				$_fileStream[$pathKey] = fopen($logFilePath, 'a+b');
+
+				$hLog = @fopen($logFilePath, 'a+b');
+				if ( empty( $hLog ) ) return NULL;
+
+
+
+				$_fileStream[$pathKey] = $hLog;
 			}
 
 			return $_fileStream[$pathKey];
