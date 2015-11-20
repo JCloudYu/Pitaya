@@ -466,7 +466,7 @@ class SYS extends PBObject
 
 		// INFO: Search path construction
 		$moduleSearchPaths = array();
-		$moduleSearchPaths[] = "service.";
+		$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
 		$moduleSearchPaths[] = "modules.";
 		$moduleSearchPaths[] = "data.modules.";
 		$moduleSearchPaths[] = "share.modules.";
