@@ -26,6 +26,7 @@
 		{
 			$msg = "Error connecting to '$smtp_host' ($errno) ($errstr)";
 			PBLog::ShareLog( $msg );
+			return FALSE;
 		}
 
 		server_parse( $socket, '220' );
