@@ -22,7 +22,7 @@
 		$smtp_port = $port;
 
 
-		if ( !( $socket = fsockopen( $smtp_host, $smtp_port, $errno, $errstr, 15 ) ) )
+		if ( !( $socket = fsockopen( $smtp_host, $smtp_port, $errno, $errstr, 5 ) ) )
 		{
 			$msg = "Error connecting to '$smtp_host' ($errno) ($errstr)";
 			PBLog::ShareLog( $msg );
