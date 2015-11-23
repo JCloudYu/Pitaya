@@ -8,6 +8,9 @@
 
 	class NotifyWorker extends PBObject
 	{
+		/**
+		 * @var INotifyKernel Notification Kernel Interface
+		 */
 		private $_kernel = NULL;
 
 		public function __set_kernel( INotifyKernel $value )

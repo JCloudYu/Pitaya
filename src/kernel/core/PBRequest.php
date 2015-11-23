@@ -188,7 +188,10 @@
 						$fieldValue = array( $fieldValue );
 
 					foreach ( $fieldValue as $id => $value )
+					{
+						$value = ( $fieldName == "name" ) ? urldecode( $value ) : $value;
 						$this->_filesCache[ $uploadName ][ $id ][ $fieldName ] = $value;
+					}
 				}
 			}
 			return $this->_filesCache;
