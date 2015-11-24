@@ -172,12 +172,6 @@
 					return !(empty($value));
 			// endregion
 
-			// region uint [strict]
-			case 'uint':
-				$targetType = ( in_array( 'strict', $opt ) ) ? 'int strict' : 'int';
-				return unpack( 'Q', pack( 'q', CAST( $value, $targetType ) ) );
-			// endregion
-
 			case 'raw':
 			default:
 				return $value;
@@ -301,13 +295,6 @@
 			case 'range':
 				if (!is_array($criteria)) $criteria = array();
 				return (in_array($value, $criteria)) ? $value : $default;
-
-
-
-			// INFO: Experimental Conversions
-			case 'uint':
-				if (!is_numeric($value)) return 0;
-				return (float)sprintf('%u', $value);
 
 			case 'raw':
 			default:
