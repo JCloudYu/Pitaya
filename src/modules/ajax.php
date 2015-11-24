@@ -29,8 +29,9 @@
 
 			if ($param === NULL) return;
 
-			$ajaxReturn = array();
 
+
+			$ajaxReturn = array();
 			if (!is_array($param))
 			{
 				$ajaxReturn['status'] 	= self::STATUS_NORMAL;
@@ -40,7 +41,6 @@
 			{
 				$ajaxReturn['status'] = (is_int(@$param['status'])) ? intval($param['status']) : self::STATUS_NORMAL;
 				$ajaxReturn['msg'] = (@$param['msg']) ? $param['msg'] : '';
-
 				unset($param['status']); unset($param['msg']);
 
 				$ajaxReturn = array_merge($ajaxReturn, $param);
