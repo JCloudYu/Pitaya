@@ -119,6 +119,9 @@
 					$defaultVal = ($nArgs > 3) ? $filter : array();
 
 
+
+				if ( $value === "" ) return $defaultVal;
+
 				if ( is_array($value) )
 					$converted = $value;
 				else
