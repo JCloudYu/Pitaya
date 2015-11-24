@@ -8,9 +8,25 @@
 		const STATUS_NORMAL	=  0;
 		const STATUS_ERROR 	= -1;
 
+
+		private $_noWrap = FALSE;
+		public function __get_noWrap(){
+			return $this->_noWrap;
+		}
+		public function __set_noWrap( $value ){
+			$this->_noWrap = ($value === TRUE);
+		}
+
+
 		public function event($event) { $this->exec($event); }
 		public function exec($param)
 		{
+			if ( $this->_noWrap )
+			{
+				PBHTTP::ResponseJSON( $param );
+				return;
+			}
+
 			if ($param === NULL) return;
 
 			$ajaxReturn = array();
