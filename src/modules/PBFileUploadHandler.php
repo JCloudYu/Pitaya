@@ -42,6 +42,7 @@
 
 
 		private $_status = PBEXECState::NORMAL;
+		private $_fields = array();
 
 
 
@@ -49,6 +50,8 @@
 		{
 			if ( PBRequest::Request()->method_upper !== "POST" )
 				$this->_status = PBEXECState::INVALID_METHOD;
+
+			$this->_fields = TO( $moduleRequest, 'array' );
 		}
 
 		public function exec( $param )
@@ -56,13 +59,19 @@
 			if ( $this->_status !== PBEXECState::NORMAL )
 				return FALSE;
 
-
+			$param = TO( $param, 'array' );
 
 			$uploadedFiles	= PBRequest::Request()->files;
 			$purgeError		= $this->_purgeError;
 			$storagePath	= $this->_storagePath;
 			$procFlag		= $this->_procFlag;
-			$targetFields	= ( empty( $param ) || !is_array($param) ) ? array_keys( $uploadedFiles ) : $param;
+
+			$targetFields	= $this->_fields;
+			if ( empty($targetFields) )
+			{
+				$targetFields	= ( empty( $param ) ) ? array_keys( $uploadedFiles ) : $param;
+			}
+
 
 
 
