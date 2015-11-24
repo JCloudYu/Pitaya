@@ -104,4 +104,19 @@
 			$pageItems = implode('', $pageItems);
 			return "<ul class='{$pageWrapperClass}'>{$pageItems}</ul>";
 		}
+
+		public static function UploadBtn( $destPath, $text="Upload File", $identifier="", $multipleFiles = FALSE,  $dataName="files[]", $class="upload-btn" ){
+			$baseStyle = "position:absolute;opacity:0;top:0;right:0;bottom:0;left:0;";
+			$btnTpl = '<div data-comp-identifier=":identifier" class=":class" style="overflow:hidden;position:relative;">:btnText<input style=":style" data-url=":url" id=":identifier" type="file" name=":dataName" :multiple /></div>';
+
+			return strtr( $btnTpl, array(
+				':identifier'	=> preg_replace( '/\"/', '\"', $identifier ),
+				':class'		=> preg_replace( '/\"/', '\"', $class ),
+				':btnText'		=> htmlentities( $text ),
+				':url'			=> htmlentities( $destPath ),
+				':dataName'		=> preg_replace( '/\"/', '\"', $dataName ),
+				':multiple'		=> ($multipleFiles === TRUE) ? 'multiple' : '',
+				':style'		=> $baseStyle
+			));
+		}
 	}
