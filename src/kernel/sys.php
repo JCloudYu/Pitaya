@@ -83,7 +83,7 @@ class SYS extends PBObject
 		SYS::$_cacheServicePath		= $GLOBALS['servicePath'];
 		SYS::$_cacheRandomCert		= $GLOBALS['randomCert'];
 		SYS::$_cachedRuntimeAttr	= array(
-			'standalone'	=> $GLOBALS['STANDALONE_EXEC']
+			'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
 		);
 	}
 // endregion
@@ -517,7 +517,7 @@ class SYS extends PBObject
 
 
 		$invokeModule = "{$class}";
-		$moduleObj		  = new $invokeModule();
+		$moduleObj	  = new $invokeModule();
 		if(!is_subclass_of($moduleObj, 'PBModule'))
 			throw(new Exception("Requested service is not a valid module"));
 
