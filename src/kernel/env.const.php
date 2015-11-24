@@ -5,4 +5,4 @@
 	 **/
 
 	s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", __STANDALONE_EXEC_MODE__ ? 'working.plog' : 'data.log', TRUE );
-	s_define( "DEFAULT_SYSTEM_LOG_DIR",	path( SYSTEM_LOG_PACKAGE ), TRUE );
+	s_define( "DEFAULT_SYSTEM_LOG_DIR",	path( DEFAULT_SYSTEM_LOG_PACKAGE ), TRUE );
