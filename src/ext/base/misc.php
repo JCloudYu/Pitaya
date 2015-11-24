@@ -120,16 +120,18 @@
 
 
 
-				if ( $value === "" ) return $defaultVal;
+				if ( trim("{$value}") === "" ) return $defaultVal;
+
+
 
 				if ( is_array($value) )
 					$converted = $value;
 				else
 				if ( in_array( 'delimiter', $opt ) )
-					$converted = explode( "{$filter}", $value );
+					$converted = @explode( "{$filter}", "{$value}" );
 				else
 				if ( in_array( 'regex', $opt ) )
-					$converted = preg_split( "{$filter}", $value );
+					$converted = @preg_split( "{$filter}", "{$value}" );
 				else
 					$converted = $defaultVal;
 
