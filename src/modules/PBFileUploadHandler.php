@@ -40,6 +40,14 @@
 			$this->_procFlag = TO( $value, 'int strict' );
 		}
 
+		private $_fileProc = NULL;
+		public function __get_fileProc(){
+			return $this->_fileProc;
+		}
+		public function __set_fileProc( $value ){
+			$this->_fileProc = is_callable($value) ? $value : NULL;
+		}
+
 
 		private $_status = PBEXECState::NORMAL;
 		private $_fields = array();
@@ -65,30 +73,28 @@
 			$purgeError		= $this->_purgeError;
 			$storagePath	= $this->_storagePath;
 			$procFlag		= $this->_procFlag;
+			$procFnuc		= !empty($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
 
 			$targetFields	= $this->_fields;
 			if ( empty($targetFields) )
-			{
 				$targetFields	= ( empty( $param ) ) ? array_keys( $uploadedFiles ) : $param;
-			}
 
 
 
-
-			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag )
+			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFnuc )
 			{
 				if ( empty($item) || !@is_array($uploadedFiles[$item]) ) return NULL;
 
 				$fieldName = $item;
 
-				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$purgeError, &$storagePath, &$procFlag )
+				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$purgeError, &$storagePath, &$procFlag, &$procFnuc )
 				{
 					$fileInfo = array(
 						'name'		=> $info['name'],
-						'tmpPath'	=> $info[ 'tmp_name' ]
+						'tmpPath'	=> "{$info[ 'tmp_name' ]}"
 					);
 
-
+					// region [ Skipping condition of PHP file error ]
 					if ( !empty( $info[ 'error' ] ) )
 					{
 						if ( $purgeError ) return NULL;
@@ -96,47 +102,40 @@
 						$fileInfo[ 'error' ] = $info[ 'error' ];
 						return $fileInfo;
 					}
+					// endregion
+
+					// region [ Exract information from original input file ]
+					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_MD5_CHECKSUM )
+						$fileInfo[ 'md5' ] = md5_file( $info['tmp_name'] );
+
+					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA1_CHECKSUM )
+						$fileInfo[ 'sha1' ] = sha1_file( $info['tmp_name'] );
+					// endregion
 
 					$token = sha1( uniqid() . "{$info['name']}" );
+					// region [ Move file to file stroage ]
 					if ( !empty($storagePath) )
 					{
 						if ( !is_dir( $storagePath ) )
-						{
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_CANT_PROC_MOVE;
-							return $fileInfo;
-						}
 
 						if ( !is_uploaded_file( $info['tmp_name'] ) )
-						{
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_GENERATED;
-							return $fileInfo;
-						}
 
 
 						$dstPath = "{$storagePath}/{$token}";
 						$result	 = @move_uploaded_file( $info['tmp_name'], $dstPath );
 						if ( empty($result) )
-						{
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_CANT_PROC_MOVE;
-							return $fileInfo;
-						}
-
 
 						unset( $fileInfo['tmpPath'] );
-
-
-
-
-						// INFO: Post Processing
-						if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_MD5_CHECKSUM )
-							$fileInfo[ 'md5' ] = md5_file( $dstPath );
-
-						if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA1_CHECKSUM )
-							$fileInfo[ 'sha1' ] = sha1_file( $dstPath );
 					}
+					// endregion
 
+					// NOTE: If purge error is on...
+					if ( !empty($fileInfo[ 'error' ]) && $purgeError ) return NULL;
 
-
+					// region [ Collect remaining input file infomation ]
 					$mime = $info['type'];
 					list( $mimeMajor, $mimeMinor ) = explode( '/', $mime );
 
@@ -148,8 +147,11 @@
 						'minor'		=> $mimeMinor,
 					);
 					$fileInfo['size']	= $info['size'];
+					// endregion
 
-					return $fileInfo;
+
+
+					return $procFnuc( $fileInfo );
 				}, NULL);
 			}, NULL);
 
