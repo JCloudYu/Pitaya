@@ -19,7 +19,10 @@
 			$getTarget = self::$_getPrefix.$name;
 			$setTarget = self::$_setPrefix.$name;
 			if(method_exists($this, $getTarget))
-				return $this->{$getTarget}();
+			{
+				$result = &$this->{$getTarget}();
+				return $result;
+			}
 			else
 			if(method_exists($this, $setTarget))
 				throw(new Exception("Getting value from an set-only property '{$name}'."));
