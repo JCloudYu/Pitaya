@@ -111,9 +111,9 @@
 			 */
 			case 'array':
 				$typingOptions	= array( 'delimiter', 'regex' );
-				$typingMode		= (CAST( $threeBase, 'range', $opt ) === NULL);
+				$typingMode		= (CAST( $typingOptions, 'range', $opt ) === NULL);
 
-				if ( $paramMode === NULL )	// INFO: TYPING MODE
+				if ( $typingMode === NULL )	// INFO: TYPING MODE
 					$defaultVal = ($nArgs > 2) ? $filter : array();
 				else						// INFO: SPLIT MODE
 					$defaultVal = ($nArgs > 3) ? $filter : array();
