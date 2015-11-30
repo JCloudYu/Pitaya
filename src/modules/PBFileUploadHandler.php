@@ -10,9 +10,12 @@
 
 	final class PBFileUploadHandler extends PBModule
 	{
-		const UPLOAD_PROC_NOOP			= 0;
-		const UPLOAD_PROC_MD5_CHECKSUM	= 1;
-		const UPLOAD_PROC_SHA1_CHECKSUM	= 2;
+		const UPLOAD_PROC_NOOP				=  0;
+		const UPLOAD_PROC_MD5_CHECKSUM		=  1;
+		const UPLOAD_PROC_SHA1_CHECKSUM		=  2;
+		const UPLOAD_PROC_SHA256_CHECKSUM	=  4;
+		const UPLOAD_PROC_SHA512_CHECKSUM	=  8;
+		const UPLOAD_PROC_CRC_CHECKSUM		= 16;
 
 
 
@@ -73,7 +76,7 @@
 			$purgeError		= $this->_purgeError;
 			$storagePath	= $this->_storagePath;
 			$procFlag		= $this->_procFlag;
-			$procFnuc		= !empty($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
+			$procFunc		= !empty($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
 
 			$targetFields	= $this->_fields;
 			if ( empty($targetFields) )
@@ -81,13 +84,13 @@
 
 
 
-			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFnuc )
+			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
 			{
 				if ( empty($item) || !@is_array($uploadedFiles[$item]) ) return NULL;
 
 				$fieldName = $item;
 
-				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$purgeError, &$storagePath, &$procFlag, &$procFnuc )
+				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$purgeError, &$storagePath, &$procFlag, &$procFunc )
 				{
 					$fileInfo = array(
 						'name'		=> $info['name'],
@@ -106,10 +109,19 @@
 
 					// region [ Exract information from original input file ]
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_MD5_CHECKSUM )
-						$fileInfo[ 'md5' ] = md5_file( $info['tmp_name'] );
+						$fileInfo[ 'md5' ] = hash( 'md5', $info['tmp_name'] );
 
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA1_CHECKSUM )
-						$fileInfo[ 'sha1' ] = sha1_file( $info['tmp_name'] );
+						$fileInfo[ 'sha1' ] = hash( 'sha1', $info['tmp_name'] );
+
+					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA256_CHECKSUM )
+						$fileInfo[ 'sha256' ] = hash( 'sha256', $info['tmp_name'] );
+
+					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA512_CHECKSUM )
+						$fileInfo[ 'sha256' ] = hash( 'sha512', $info['tmp_name'] );
+
+					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_CRC_CHECKSUM )
+						$fileInfo[ 'crc32' ] = hash( 'crc32', $info['tmp_name'] );
 					// endregion
 
 					$token = sha1( uniqid() . "{$info['name']}" );
@@ -151,7 +163,7 @@
 
 
 
-					return $procFnuc( $fileInfo );
+					return $procFunc( $fileInfo );
 				}, NULL);
 			}, NULL);
 
