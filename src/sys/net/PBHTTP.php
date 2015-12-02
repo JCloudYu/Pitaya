@@ -18,9 +18,19 @@
 		public static function ResponseContent( $content, $contentType = "text/plain", $status = NULL )
 		{
 			if ( $status !== NULL ) self::ResponseStatus( $status );
-
 			header("Content-type: {$contentType}");
-			echo "{$content}";
+
+
+
+			if ( !is_resource($content) )
+			{
+				echo "{$content}";
+				return;
+			}
+
+			$output = fopen( "php://output", "a+b" );
+			stream_copy_to_stream( $content, $output );
+			fclose($output);
 		}
 
 
