@@ -288,7 +288,7 @@ class PBProcess extends PBObject
 	}
 
 	// MARK: Friend(SYS)
-	public function attachMainService($moduleName, $moduleRequest) {
+	public function attachMainService($moduleName, $instParam, $moduleRequest) {
 
 		if(!$this->friend('SYS')) throw(new Exception("Calling an inaccessible function PBProcess::attachMainModule()."));
 
@@ -308,7 +308,7 @@ class PBProcess extends PBObject
 
 
 		// NOTE: Service Entry Module
-		$this->_entryModule = $this->_acquireModule($moduleName, TRUE);
+		$this->_entryModule = $this->_acquireModule($moduleName, $instParam, TRUE);
 		$this->_mainModuleId = $this->_entryModule->id;
 		PBLList::PUSH($this->_bootSequence, array('prepared' => FALSE, 'data' => $this->_mainModuleId, 'request' => $moduleRequest), $this->_mainModuleId);
 
@@ -390,8 +390,16 @@ class PBProcess extends PBObject
 		}
 	}
 
-	private function _acquireModule( $moduleIdentifier, $reusable = TRUE )
+	private function _acquireModule( $moduleIdentifier, $instParam = NULL, $reusable = TRUE )
 	{
+		if ( func_num_args() == 2 )
+		{
+			$reusable = $instParam;
+			$instParam = NULL;
+		}
+
+
+
 		if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) )
 		{
 			$module = $this->_attachedModules[ $moduleIdentifier ];
@@ -403,7 +411,7 @@ class PBProcess extends PBObject
 
 		if ( empty($module) )
 		{
-			$module	= $this->_system->acquireModule( $moduleIdentifier );
+			$module	= $this->_system->acquireModule( $moduleIdentifier, $instParam );
 			$module->__processInst = $this;
 			$moduleId = $module->id;
 			$this->_attachedModules[ $moduleId ] = $module;

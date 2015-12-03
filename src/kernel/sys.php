@@ -90,6 +90,7 @@ class SYS extends PBObject
 
 // region [ System Instance ]
 	private $_entryService		= NULL;
+	private $_entryServiceParam	= NULL;
 	private $_systemId			= NULL;
 	private $_moduleSearchPaths	= array();
 
@@ -246,6 +247,37 @@ class SYS extends PBObject
 			return;
 		}
 
+
+
+		// INFO: Default basis chainning mode
+		s_define( 'DEFAULT_BASIS_CHAIN_DESCRIPTOR',		'', TRUE );
+		s_define( 'DEFAULT_BASIS_CHAIN_WORKING_DIR',	'', TRUE );
+
+		$basisChain	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
+		if ( !empty( $basisChain ) && is_file( $basisChain ) )
+		{
+			$chainConf = @json_decode( file_get_contents($basisChain), TRUE );
+			if ( !empty($chainConf) && !empty($chainConf[$service]) )
+			{
+				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
+
+				$this->_entryService		= "PBSYSBasisChainner";
+				$this->_entryServiceParam	= $chainConf[$service];
+
+
+				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir(), TRUE );
+				self::DecideExecMode( $moduleRequest );
+
+
+
+				$GLOBALS['service'] = $service;
+				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				return;
+			}
+		}
+
+
+
 		if (__DEFAULT_SERVICE_DEFINED__)
 		{
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
@@ -341,7 +373,7 @@ class SYS extends PBObject
 		if ( is_callable($custInit) ) $custInit();
 
 		chdir( __WORKING_ROOT__ );
-		$process->attachMainService($service, $moduleRequest);
+		$process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
 	}
 
 	private function __killProcess($processId) {
