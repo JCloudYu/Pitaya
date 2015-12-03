@@ -1,11 +1,11 @@
 <?php
 	/**
-	 ** 0001.pitaya - PBStandaloneExecutor.php
+	 ** 0001.pitaya - PBSYSStandaloneExecutor.php
 	 ** Created by JCloudYu on 2015/10/24 15:04
 	 **/
 	using( 'kernel.core.PBModule' );
 
-	class PBStandaloneExecutor extends PBModule
+	class PBSYSStandaloneExecutor extends PBModule
 	{
 		public function prepareEvent( $moduleRequest )
 		{
