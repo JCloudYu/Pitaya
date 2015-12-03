@@ -436,7 +436,7 @@ class SYS extends PBObject
 		);
 	}
 
-	public function acquireModule( $identifier, $module = '' ) {
+	public function acquireModule( $identifier, $instParam = NULL ) {
 
 		static $allocCounter = 0;
 
@@ -517,7 +517,7 @@ class SYS extends PBObject
 
 
 		$invokeModule = "{$class}";
-		$moduleObj	  = new $invokeModule();
+		$moduleObj	  = new $invokeModule( $instParam );
 		if(!is_subclass_of($moduleObj, 'PBModule'))
 			throw(new Exception("Requested service is not a valid module"));
 
