@@ -78,9 +78,14 @@ class PBProcess extends PBObject
 	public function addSearchPath( $package ) { return $this->_system->addModuleSearchPath( $package ); }
 	public function removeSearchPath( $package ) { return $this->_system->removeModuleSearchPath( $package ); }
 
-	public function getModule($moduleName, $reusable = TRUE) {
+	public function getModule($moduleName, $instParam = NULL, $reusable = TRUE) {
+		if ( func_num_args() == 2 )
+		{
+			$reusable = $instParam;
+			$instParam = NULL;
+		}
 
-		return $this->_acquireModule($moduleName, $reusable);
+		return $this->_acquireModule($moduleName, $instParam, $reusable);
 	}
 
 	public function getNextModule()
