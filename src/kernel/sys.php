@@ -250,7 +250,7 @@ class SYS extends PBObject
 
 
 		// INFO: Default basis chaining mode
-		$basisChain = array();
+		$basisChain = @json_decode( @file_get_contents( path( 'defaults', 'basis-chain.json' ) ), TRUE );
 
 
 		s_define( 'DEFAULT_BASIS_CHAIN_DESCRIPTOR',		'', TRUE );
