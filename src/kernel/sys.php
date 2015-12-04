@@ -218,7 +218,7 @@ class SYS extends PBObject
 			$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
 			$ext = substr( $module, -4 );
 			if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
-			$this->_entryService = 'PBSYSStandaloneExecutor';
+			$this->_entryService		= "PBSystem.PBExecCtrl#PBVectorChain";
 
 			define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd'], TRUE);
 			define('__STANDALONE_MODULE__', $module );
@@ -249,31 +249,37 @@ class SYS extends PBObject
 
 
 
-		// INFO: Default basis chainning mode
+		// INFO: Default basis chaining mode
+		$basisChain = array();
+
+
 		s_define( 'DEFAULT_BASIS_CHAIN_DESCRIPTOR',		'', TRUE );
 		s_define( 'DEFAULT_BASIS_CHAIN_WORKING_DIR',	'', TRUE );
 
-		$basisChain	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
-		if ( !empty( $basisChain ) && is_file( $basisChain ) )
+		$basisChainPath	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
+		if ( !empty( $basisChainPath ) && is_file( $basisChainPath ) )
 		{
-			$chainConf = @json_decode( file_get_contents($basisChain), TRUE );
-			if ( !empty($chainConf) && !empty($chainConf[$service]) )
-			{
-				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
-
-				$this->_entryService		= "PBSYSBasisChainner";
-				$this->_entryServiceParam	= $chainConf[$service];
+			$custChain = @json_decode( @file_get_contents($basisChainPath), TRUE );
+			$basisChain = array_merge( $basisChain, $custChain );
+		}
 
 
-				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir(), TRUE );
-				self::DecideExecMode( $moduleRequest );
+		if ( !empty($basisChain[ $service ]) )
+		{
+			$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
+
+			$this->_entryService		= "PBSystem.PBExecCtrl#PBBasisChain";
+			$this->_entryServiceParam	= $basisChain[$service];
+
+
+			define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir(), TRUE );
+			self::DecideExecMode( $moduleRequest );
 
 
 
-				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
-				return;
-			}
+			$GLOBALS['service'] = $service;
+			$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+			return;
 		}
 
 
