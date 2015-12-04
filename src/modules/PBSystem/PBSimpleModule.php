@@ -27,7 +27,7 @@
 
 
 			$hStream = fopen( "php://output", "wb" );
-			fwrite( $hStream, $version );
+			fwrite( $hStream, "{$version}\n" );
 			fclose( $hStream );
 		}
 	}
