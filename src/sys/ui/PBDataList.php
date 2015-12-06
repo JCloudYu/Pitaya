@@ -98,6 +98,7 @@
 
 
 		public function __get_html() { return $this->render(); }
+		public function __toString() { return $this->render(); }
 		public function render( $updateCache = FALSE )
 		{
 			if ( $this->_resultCache !== NULL && !$updateCache ) return $this->_resultCache;
