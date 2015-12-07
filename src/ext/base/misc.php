@@ -183,7 +183,7 @@
 		}
 	}
 
-	// DEPRECATED: This api will be removed from v1.5.0
+	// DEPRECATED: This api will be removed from v2.0.0
 	function TO($value, $type, $options = NULL)
 	{
 		if (is_array($type))
