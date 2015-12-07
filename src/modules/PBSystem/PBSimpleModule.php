@@ -7,13 +7,22 @@
 
 	class PBKernelVersion extends PBModule
 	{
+		private $_request = NULL;
+
 		public function prepare( $moduleRequest ) {
-			$this->prepareShell( PBRequest::Request()->parseQuery()->query['resource'] );
+			$request = is_array( $moduleRequest ) ? $moduleRequest : PBRequest::Request()->parseQuery()->query['resource'];
+			$this->prepareShell( $request );
 		}
 
-		public function prepareShell( $moduleRequest )
-		{
-			$reqVer = CAST( @array_shift( $moduleRequest ), 'string upper-case' );
+		public function prepareShell( $moduleRequest ) {
+			$this->_request = $moduleRequest;
+		}
+
+
+
+		public function exec( $param ) { return $this->shell( $param ); }
+		public function shell( $param ) {
+			$reqVer = CAST( @array_shift( $this->_request ), 'string upper-case' );
 			$verMap = array(
 				"MAJOR"		=> PITAYA_VERSION_MAJOR,
 				"MINOR"		=> PITAYA_VERSION_MINOR,
@@ -24,10 +33,6 @@
 				"DETAIL"	=> PITAYA_VERSION_DETAIL
 			);
 			$version = empty($verMap[$reqVer]) ? $verMap['DETAIL'] : $verMap[$reqVer];
-
-
-			$hStream = fopen( "php://output", "wb" );
-			fwrite( $hStream, "{$version}\n" );
-			fclose( $hStream );
+			return $version;
 		}
 	}
