@@ -572,4 +572,66 @@
 			return $attributeContainer;
 		}
 		// endregion
+
+
+
+		public function PickAttribute( $fields, $callableDelegate = NULL )
+		{
+			if( !is_array( $fields ) ) return '';
+
+
+
+			static $_callableDelegate = NULL;
+
+			if ( func_num_args() == 2 )
+				$_callableDelegate = $callableDelegate;
+			else
+				$callableDelegate = $_callableDelegate;
+
+
+
+			$queryVariable 	= $this->_queryVariable;
+			$queryFlag 		= $this->_queryFlag;
+
+			if ( !is_callable( $callableDelegate ) )
+				$callableDelegate = function( $variable, $value ) { return $value; };
+
+
+
+			$data = ary_filter( $queryVariable, function( $item, &$idx ) use( $fields, $callableDelegate ) {
+
+				if( in_array( $idx, $fields ) )
+				{
+					$item 	= urlencode( $callableDelegate( $idx, $item ) );
+					$idx 	= urlencode( $idx );
+					return "{$idx}={$item}";
+				}
+				else
+					return NULL;
+
+			}, NULL );
+
+
+			$flag = ary_filter( $queryFlag, function( $item, $idx ) use( $fields, $callableDelegate ) {
+
+				if( in_array( $item, $fields ) )
+				{
+					$item 	= urlencode( $callableDelegate( "{$idx}", $item ) );
+					return "{$item}";
+				}
+				else
+					return NULL;
+
+			}, NULL );
+
+
+
+			$resultData = implode( "&", $data );
+			$resultFlag = implode( "&", $flag );
+
+			$result = empty( $resultData ) ? "{$resultFlag}" : "{$resultData}";
+			$result = empty( $resultData ) || empty( $resultFlag ) ? "{$result}" : "{$result}&{$resultFlag}";
+
+			return "{$result}";
+		}
 	}
