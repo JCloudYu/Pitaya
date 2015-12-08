@@ -575,63 +575,63 @@
 
 
 
-		public function PickAttribute( $fields, $callableDelegate = NULL )
+		public function pickAttribute( $fields = array(), $customFilter = NULL )
 		{
-			if( !is_array( $fields ) ) return '';
+			static $_lastFilter	= NULL, $_defaultFilter	= NULL;
+			if ( $_defaultFilter === NULL ) $_defaultFilter = function( $key, $val ){ return $val; };
 
 
 
-			static $_callableDelegate = NULL;
+			// INFO: Specialization for invoke chaining
+			if ( is_callable($fields) )
+			{
+				$_lastFilter = $fields;
+				return $this;
+			}
 
-			if ( func_num_args() == 2 )
-				$_callableDelegate = $callableDelegate;
-			else
-				$callableDelegate = $_callableDelegate;
 
 
 
+			// INFO: Store input customFilter if given
+			// INFO: This step goes first to allow overwrting of the default filter
+			if ( func_num_args() > 1 )
+				$_lastFilter = ( is_callable($customFilter) ) ? $customFilter : NULL;
+
+
+			// INFO: Normalize input fields and return empty if nothing given
+			$fields = is_array($fields) ? $fields : array();
+			if( empty($fields) ) return '';
+
+
+
+			$filterFunc		= is_callable($_lastFilter) ? $_lastFilter : $_defaultFilter;
 			$queryVariable 	= $this->_queryVariable;
 			$queryFlag 		= $this->_queryFlag;
 
-			if ( !is_callable( $callableDelegate ) )
-				$callableDelegate = function( $variable, $value ) { return $value; };
+			$filtered = array();
+			ary_filter( $fields, function( $item ) use( &$filtered, &$filterFunc, $queryFlag, $queryVariable )
+			{
+				$encodedKey = urlencode( $item );
 
-
-
-			$data = ary_filter( $queryVariable, function( $item, &$idx ) use( $fields, $callableDelegate ) {
-
-				if( in_array( $idx, $fields ) )
+				// INFO: Search incoming variables
+				call_user_func(function() use( &$filtered, &$filterFunc, $queryVariable, $item, $encodedKey )
 				{
-					$item 	= urlencode( $callableDelegate( $idx, $item ) );
-					$idx 	= urlencode( $idx );
-					return "{$idx}={$item}";
-				}
-				else
-					return NULL;
+					$varVal = $filterFunc($item, @$queryVariable[ $item ], isset($queryVariable[$item]));
+					if ( $varVal === NULL ) return;
 
-			}, NULL );
+					$value = urlencode( $varVal );
+					$filtered[] = "{$encodedKey}={$value}";
+				});
 
-
-			$flag = ary_filter( $queryFlag, function( $item, $idx ) use( $fields, $callableDelegate ) {
-
-				if( in_array( $item, $fields ) )
+				// INFO: Search incoming flags
+				call_user_func(function() use( &$filtered, $queryFlag, $item, $encodedKey )
 				{
-					$item 	= urlencode( $callableDelegate( "{$idx}", $item ) );
-					return "{$item}";
-				}
-				else
-					return NULL;
+					if ( !in_array( $item, $queryFlag ) ) return;
 
-			}, NULL );
+					$filtered[] = $encodedKey;
+				});
+			});
 
-
-
-			$resultData = implode( "&", $data );
-			$resultFlag = implode( "&", $flag );
-
-			$result = empty( $resultData ) ? "{$resultFlag}" : "{$resultData}";
-			$result = empty( $resultData ) || empty( $resultFlag ) ? "{$result}" : "{$result}&{$resultFlag}";
-
-			return "{$result}";
+			return implode( '&', $filtered );
 		}
 	}
