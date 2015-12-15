@@ -35,6 +35,10 @@
 		public function __set_strictMime( $value ) { $this->_strict_mime = empty($value); }
 		public function __get_strictMime() { return $this->_strict_mime; }
 
+		private $_custExtensionMap = array();
+		public function __set_extensionMap( $value ) { $this->_custExtensionMap = is_array( $value ) ? $value : array(); }
+		public function __get_extensionMap( ) { return $this->_custExtensionMap; }
+
 
 		public function prepare($moduleRequest) {
 			$this->_targetPath = (is_array($moduleRequest)) ? implode('/', $moduleRequest) : "{$moduleRequest}";
@@ -44,9 +48,13 @@
 		{
 			$CONSTANT = PBConstant::Constant();
 
-			$filePath	 = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
-			$ext		 = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
-			$this->_mime = ( empty($this->_mime) ) ? @$this->_acceptableExt[ $ext ] : $this->_mime;
+			$extensionMap	= array_merge( $this->_acceptableExt, $this->_custExtensionMap );
+			$filePath		= (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
+
+
+
+			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
+			$this->_mime = ( empty($this->_mime) ) ? @$extensionMap[ $ext ] : $this->_mime;
 
 			if ( empty($this->_mime) && empty($this->_strict_mime) )
 				$this->_mime = "application/octet-stream";
