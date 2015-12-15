@@ -58,7 +58,7 @@
 		{
 			$CONSTANT = PBConstant::Constant();
 
-			$extensionMap = $_acceptableExt;
+			$extensionMap = self::$_acceptableExt;
 			ary_filter( $this->_custExtensionMap, function( $item, $idx ) use( &$extensionMap ) {
 				$idx = strtolower( "{$idx}" );
 				$extensionMap[ $idx ] = $item;
