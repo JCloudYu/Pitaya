@@ -9,10 +9,16 @@
 	class PBFileRequest extends PBModule
 	{
 		private $_targetPath	= '';
-		private $_acceptableExt	= '';
+		private static $_acceptableExt	= NULL;
 
 		public function __construct() {
-			$this->_acceptableExt = json_decode(file_get_contents(path("modules.PBFileRequest", "acceptableExts.json")), TRUE);
+			if ( empty(self::$_acceptableExt) )
+			{
+				self::$_acceptableExt = ary_filter(
+					json_decode(file_get_contents(path("defaults", "extension-map.json")), TRUE),
+					function( $item, &$idx ){ $idx = strtolower($idx); return $item; }
+				);
+			}
 		}
 
 		private $_relPath		= '';
@@ -52,11 +58,15 @@
 		{
 			$CONSTANT = PBConstant::Constant();
 
-			$extensionMap	= array_merge( $this->_acceptableExt, $this->_custExtensionMap );
-			$filePath		= (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
+			$extensionMap = $_acceptableExt;
+			ary_filter( $this->_custExtensionMap, function( $item, $idx ) use( &$extensionMap ) {
+				$idx = strtolower( "{$idx}" );
+				$extensionMap[ $idx ] = $item;
+			});
+			$filePath = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
 
 
-			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
+			$ext = @strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 			$this->_mime = ( empty($this->_mime) ) ? @$extensionMap[ $ext ] : $this->_mime;
 
 			if ( empty($this->_mime) && empty($this->_strict_mime) )

@@ -61,6 +61,8 @@
 	"TGZ":		"application/gzip",
 	"RAR":		"application/rar",
 
-
-	"SWF":		"application/x-shockwave-flash"
+	"SWF":		"application/x-shockwave-flash",
+	"IPA":		"application/octet-stream",
+	"PLIST":	"text/xml",
+	"APK":		"application/vnd.android.package-archive"
 }
