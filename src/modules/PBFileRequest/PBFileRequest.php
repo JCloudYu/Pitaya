@@ -64,7 +64,7 @@
 
 
 
-			if ( !is_file($file) || !is_readable($filePath) || empty($this->_mime) )
+			if ( !is_file($filePath) || !is_readable($filePath) || empty($this->_mime) )
 			{
 				header('HTTP/1.1 404 Not Found');
 				exit(0);
@@ -109,7 +109,7 @@
 				header("HTTP/1.1 200 OK");
 				header("Content-Type: {$this->_mime}");
 				header("Content-Length: {$fileSize}");
-				if ( empty($this->_downloadName) )
+				if ( !empty($this->_downloadName) )
 					header( "Content-Disposition: attachement; filename=\"{$this->_downloadName}\"" );
 
 				header("Last-Modified: {$fileTime}");
