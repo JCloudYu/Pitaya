@@ -39,6 +39,10 @@
 		public function __set_extensionMap( $value ) { $this->_custExtensionMap = is_array( $value ) ? $value : array(); }
 		public function __get_extensionMap( ) { return $this->_custExtensionMap; }
 
+		private $_downloadName = "";
+		public function __set_downloadName( $value ) { $this->_downloadName = @"{$value}"; }
+		public function __get_downloadName() { return $this->_downloadName; }
+
 
 		public function prepare($moduleRequest) {
 			$this->_targetPath = (is_array($moduleRequest)) ? implode('/', $moduleRequest) : "{$moduleRequest}";
@@ -52,7 +56,6 @@
 			$filePath		= (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
 
 
-
 			$ext = @strtoupper(pathinfo($filePath, PATHINFO_EXTENSION));
 			$this->_mime = ( empty($this->_mime) ) ? @$extensionMap[ $ext ] : $this->_mime;
 
@@ -61,7 +64,7 @@
 
 
 
-			if ( !is_readable($filePath) || empty($this->_mime) )
+			if ( !is_file($file) || !is_readable($filePath) || empty($this->_mime) )
 			{
 				header('HTTP/1.1 404 Not Found');
 				exit(0);
@@ -94,7 +97,8 @@
 			{
 				$fileStream	= fopen($filePath, "rb");
 				$outStream	= fopen("php://output", "wb");
-				$fileSize = filesize($filePath);
+				$fileSize	= filesize($filePath);
+
 
 				if (empty($fileStream))
 				{
@@ -105,6 +109,9 @@
 				header("HTTP/1.1 200 OK");
 				header("Content-Type: {$this->_mime}");
 				header("Content-Length: {$fileSize}");
+				if ( empty($this->_downloadName) )
+					header( "Content-Disposition: attachement; filename=\"{$this->_downloadName}\"" );
+
 				header("Last-Modified: {$fileTime}");
 				header("ETag: \"{$fileETag}\"");
 
