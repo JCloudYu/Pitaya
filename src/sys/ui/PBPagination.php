@@ -81,19 +81,17 @@
 
 
 
-
-			if ( $this->_boundaryJumpers )
-			{
-				if ( $from != 1 )			 array_unshift( $pageItems, @$callable( 1, FALSE, 'begin' ) );
-				if ( $to != $this->_total )  array_push( $pageItems, @$callable( $this->_total, FALSE, 'end' ) );
-			}
-
 			if ( $this->_shiftJumpers )
 			{
 				if ( $this->_current > 1 )				array_unshift( $pageItems, @$callable( $this->_current - 1, FALSE, 'prev' ) );
 				if ( $this->_current < $this->_total )	array_push( $pageItems, @$callable( $this->_current + 1, FALSE, 'next' ) );
 			}
 
+			if ( $this->_boundaryJumpers )
+			{
+				if ( $from != 1 )			 array_unshift( $pageItems, @$callable( 1, FALSE, 'begin' ) );
+				if ( $to != $this->_total )  array_push( $pageItems, @$callable( $this->_total, FALSE, 'end' ) );
+			}
 
 
 			return $this->_renderedCache = implode( '', $pageItems );
