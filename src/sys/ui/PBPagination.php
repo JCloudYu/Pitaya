@@ -105,6 +105,7 @@
 			if ( $this->_sliding )
 			{
 				$lowCount = floor( ($this->_visibleSize - 1.0 ) / 2.0 );
+				if ( $lowCount == 0 ) $lowCount = 1;
 				$upCount  = $this->_visibleSize - $lowCount;
 
 				// Bounday conditions
