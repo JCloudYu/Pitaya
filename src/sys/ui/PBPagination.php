@@ -104,26 +104,27 @@
 			// INFO: Sliding Window
 			if ( $this->_sliding )
 			{
-				$lowCount = floor( ($this->_visibleSize - 1.0 ) / 2.0 );
-				if ( $lowCount == 0 ) $lowCount = 1;
-				$upCount  = $this->_visibleSize - $lowCount;
+				$visibleSize = $this->_visibleSize < 3 ? 3 : $this->_visibleSize;
+
+				$lowCount = floor( ( $visibleSize - 1.0 ) / 2.0 );
+				$upCount  = $visibleSize - $lowCount;
 
 				// Bounday conditions
 				if ( $this->_current <= $lowCount )
 				{
 					$from = 1;
-					$to	  = $this->_visibleSize;
+					$to	  = $visibleSize;
 				}
 				else
 				if ( $this->_current > ( $this->_total - $upCount ) )
 				{
 					$to	  = $this->_total;
-					$from = $to - $this->_visibleSize + 1;
+					$from = $to - $visibleSize + 1;
 				}
 				else
 				{
 					$from = $this->_current - $lowCount;
-					$to	  = $from + $this->_visibleSize - 1;
+					$to	  = $from + $visibleSize - 1;
 				}
 			}
 			// INFO: Section Based Window
