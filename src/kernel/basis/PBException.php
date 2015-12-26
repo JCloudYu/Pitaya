@@ -1,21 +1,40 @@
 <?php
-/*
- * File: PBException.php
- * Created by Cloud.
- * DateTime: 13/2/10 PM12:16
- */
+	using( 'ext.base.misc' );
 
-class PBException extends Exception
-{
-	public $_statusCode;
-
-	public function __construct($code, $message = '', Exception $previous = null)
+	class PBException extends Exception
 	{
-		// In php version above 5.3, $previous is added for tracing back usage
-		// See the official document http://www.php.net/manual/en/exception.construct.php
-		if(strnatcmp(phpversion(),'5.3') >= 0)
-			parent::__construct($message, $code, $previous);
-		else
-			parent::__construct($message, $code);
+		private $_errDescriptor = NULL;
+
+		public function __get( $varName )
+		{
+			$target = "__get_{$varName}";
+			switch ( $varName )
+			{
+				case "descriptor":
+					return $this->_errDescriptor;
+				default:
+					break;
+			}
+
+			throw(new Exception("Getting value from an undefined property '{$name}'."));
+			return NULL;
+		}
+
+		public function __get_descriptor() {
+			return $this->_errDescriptor;
+		}
+
+		public function __construct( $descriptor, $code = 0, $prevExcept = NULL )
+		{
+			$message = $descriptor;
+
+			if ( is_array( $descriptor ) )
+			{
+				$this->_errDescriptor = $descriptor;
+				$code		= CAST( @$descriptor['code'], 'int strict' );
+				$message	= $descriptor['msg'];
+			}
+
+			parent::__construct( $message, $code, $prevExcept );
+		}
 	}
-}
