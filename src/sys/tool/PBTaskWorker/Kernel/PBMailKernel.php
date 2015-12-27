@@ -194,7 +194,7 @@
 
 
 
-				// INFO: Write message redirection headers
+				// INFO: Write envelope info
 				self::WriteContent( $this->_conSocket, "MAIL FROM: <{$this->_account}>" );
 				self::EatResponse( $this->_conSocket, 250, __LINE__ );
 
@@ -214,6 +214,7 @@
 				// INFO: Write mail body
 				self::WriteContent( $this->_conSocket, "Subject: {$subject}" );
 
+				// region [ Headers ]
 				// TO receivers
 				if ( !empty($to) )
 					self::WriteContent( $this->_conSocket, "TO: " . implode( ', ', $to ) );
@@ -221,6 +222,7 @@
 				// CC receivers
 				if ( !empty($cc) )
 					self::WriteContent( $this->_conSocket, "CC: " . implode( ' ', $cc ) );
+				// endregion
 
 				// Message Body
 				self::WriteContent( $this->_conSocket, $content );
