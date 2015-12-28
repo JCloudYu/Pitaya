@@ -138,6 +138,8 @@
 		}
 		public function __get_js() { return $this->_js; }
 		public function __set_js($value) { $this->addJS($value, TRUE); }
+		public function __set_jsBegin($value) { $this->addJS($value, FALSE); }
+		public function __set_jsEnd( $value ) { $this->addJS($value, "LAST"); }
 		public function __set_jsLast($value) { $this->addJS($value, "LAST"); }
 
 		public function addCSS($css) { $this->_css[] = $css; }
