@@ -45,7 +45,7 @@
 
 			return CAST( self::$_cachedConstants[$name], $type, $default );
 		}
-		public function map( $target ) {
+		public function imprint( $target ) {
 			return strtr( "{$target}", self::$_cachedConstants );
 		}
 
