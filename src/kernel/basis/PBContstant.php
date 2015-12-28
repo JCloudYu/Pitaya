@@ -3,45 +3,50 @@
  * 1003.IMSIS - PBContstant.php
  * Created by JCloudYu on 2014/03/25 15:35
  */
+ 	using( 'ext.base.misc' );
+
 	final class PBConstant implements ArrayAccess
 	{
 		private static $_cachedConstants = NULL;
+		private static $_singleton = NULL;
 
 		public static function Constant($updateCache = FALSE)
 		{
-			static $_singleton = NULL;
-
-			if ($updateCache || (self::$_cachedConstants === NULL))
+			if ( $updateCache || (self::$_cachedConstants === NULL) )
 				self::UpdateCache();
 
-			if ($_singleton)
-				return $_singleton;
+			if ( self::$_singleton === NULL )
+				self::$_singleton = new PBConstant();
 
-			$_singleton = new PBConstant();
-			return $_singleton;
+
+			return self::$_singleton;
+		}
+		private static function UpdateCache() {
+			self::$_cachedConstants = get_defined_constants();
 		}
 
-		private static function UpdateCache() { self::$_cachedConstants = get_defined_constants(); }
 
 
-
-		public function __construct() {}
-
-		public function set($name, $val, $caseSensitive = TRUE)
+		// INFO: Content accessors
+		public function set( $name, $val, $caseSensitive = TRUE )
 		{
 			self::UpdateCache();
 
-			if (!empty(self::$_cachedConstants[$name]))
+			if ( array_key_exists($name, self::$_cachedConstants) )
 				return FALSE;
 
-			define($name, $val, !empty($caseSensitive));
+			define( $name, (self::$_cachedConstants[ $name ] = $val), $caseSensitive === FALSE );
 			return TRUE;
 		}
-
-		public function get($name, $type = 'raw', $default = NULL)
+		public function get( $name, $type = 'raw', $default = NULL )
 		{
-			return (array_key_exists($name, self::$_cachedConstants)) ? TO(self::$_cachedConstants[$name], $type) :
-				$default;
+			if ( !array_key_exists($name, self::$_cachedConstants) )
+				return $default;
+
+			return CAST( self::$_cachedConstants[$name], $type, $default );
+		}
+		public function map( $target ) {
+			return strtr( "{$target}", self::$_cachedConstants );
 		}
 
 
@@ -58,4 +63,9 @@
 		public function offsetGet($offset) { return $this->get($offset); }
 		public function offsetSet($offset, $val) { $this->set($offset, $val); }
 		public function offsetUnset($offset) {}
+
+
+
+		// INFO: Private logics
+		private function __construct() {}
 	}
