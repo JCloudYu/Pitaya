@@ -59,11 +59,24 @@
 				if ( __LOG_EXCEPTION__ === TRUE )
 				{
 					PBLog::SYSLog( print_r($e, TRUE), FALSE, "system.exception.log" );
-					$extMsg = "See log files for more information!";
+					$extMsg = "See exception log for more information!";
 				}
 
-				PBLog::ERRLog( "{$errMsg}\n{$extMsg}" );
-				PBStdIO::STDERR( "{$errMsg}\n{$extMsg}" );
+				PBLog::ERRLog( $errMsg );
+				if (!empty($extMsg)) PBLog::ERRLog( $extMsg );
+
+
+
+				if ( CLI_ENV )
+				{
+					PBStdIO::STDERR( $errMsg );
+					if (!empty($extMsg)) PBStdIO::STDERR( $extMsg );
+				}
+				else
+				{
+					error_log( $errMsg );
+					if (!empty($extMsg)) error_log( $extMsg );
+				}
 
 
 
