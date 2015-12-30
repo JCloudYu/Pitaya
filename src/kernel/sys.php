@@ -341,6 +341,7 @@
 
 
 
+			$defaultBasis = "NULL";
 			if (__DEFAULT_SERVICE_DEFINED__)
 			{
 				if ( !empty($service) ) array_unshift($moduleRequest, $service);
@@ -376,9 +377,11 @@
 					$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
 					return;
 				}
+
+				$defaultBasis = $service;
 			}
 
-			throw(new Exception("Cannot locate the target entry module!"));
+			throw(new Exception("Cannot locate default basis ({$defaultBasis}) !"));
 		}
 
 		private static function DecideExecMode( &$moduleRequest )
