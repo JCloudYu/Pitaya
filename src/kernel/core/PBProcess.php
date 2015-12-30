@@ -306,8 +306,8 @@ class PBProcess extends PBObject
 		// NOTE: Leading Module
 		if ( defined('LEADING_MODULE') )
 		{
-			$leadingModule = $this->_acquireModule(LEADING_MODULE, TRUE);
-			$moduleId =  $leadingModule->id;
+			$module = $this->_acquireModule(LEADING_MODULE, TRUE);
+			$moduleId = $module->id;
 			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $moduleRequest), $moduleId);
 		}
 
@@ -316,6 +316,15 @@ class PBProcess extends PBObject
 		$this->_entryModule = $this->_acquireModule($moduleName, $instParam, TRUE);
 		$this->_mainModuleId = $this->_entryModule->id;
 		PBLList::PUSH($this->_bootSequence, array('prepared' => FALSE, 'data' => $this->_mainModuleId, 'request' => $moduleRequest), $this->_mainModuleId);
+
+
+		// NOTE: Tailing Module
+		if ( defined('TAILING_MODULE') )
+		{
+			$module = $this->_acquireModule(TAILING_MODULE, TRUE);
+			$moduleId = $module->id;
+			PBLList::PUSH($this->_bootSequence,  array('prepared' => FALSE, 'data' => $moduleId, 'request' => $moduleRequest), $moduleId);
+		}
 
 
 		PBLList::HEAD($this->_bootSequence);
