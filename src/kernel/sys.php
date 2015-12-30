@@ -384,7 +384,7 @@
 				$defaultBasis = $service;
 			}
 
-			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: ({$reqResource})) !"));
+			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: {$reqResource}) !"));
 		}
 
 		private static function DecideExecMode( &$moduleRequest )
