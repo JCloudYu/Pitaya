@@ -74,8 +74,8 @@
 				}
 				else
 				{
-					error_log( $errMsg );
-					if (!empty($extMsg)) error_log( $extMsg );
+					error_log( preg_replace( '/(\n|\s)+/', ' ', $errMsg) );
+					if (!empty($extMsg)) error_log( preg_replace( '/(\n|\s)+/', ' ', $errMsg) );
 				}
 
 
