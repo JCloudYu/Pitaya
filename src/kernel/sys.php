@@ -9,7 +9,7 @@
 
 	class PBSysKernel extends PBObject
 	{
-	// region [ System Boot Loader ]
+		// region [ System Boot Loader ]
 		/**
 		 * @var PBSysKernel
 		 */
@@ -70,9 +70,9 @@
 				}
 			}
 		}
-	// endregion
+		// endregion
 
-	// region [ Path Control ]
+		// region [ Path Control ]
 		private static $_cacheServicePath	= NULL;
 		private static $_cacheRandomCert	= NULL;
 		private static $_cachedRuntimeAttr	= NULL;
@@ -89,9 +89,9 @@
 				'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
 			);
 		}
-	// endregion
+		// endregion
 
-	// region [ System Instance ]
+		// region [ System Instance ]
 		private $_entryService		= NULL;
 		private $_entryServiceParam	= NULL;
 		private $_systemId			= NULL;
@@ -361,9 +361,9 @@
 
 			return $this->_systemId;
 		}
-	// endregion
+		// endregion
 
-	// region [ System Workflow Control ]
+		// region [ System Workflow Control ]
 		// INFO: In this version of system, there will be only one process instance in the system (main process)
 		private $_processQueue = array();
 
@@ -414,9 +414,9 @@
 				}
 			}
 		}
-	// endregion
+		// endregion
 
-	// region [ Module Control ]
+		// region [ Module Control ]
 		public function addModuleSearchPath( $package = "" )
 		{
 			if ( empty( $package ) ) return FALSE;
@@ -574,9 +574,9 @@
 
 			return $selfId['base'] === $childrenId['extended'];
 		}
-	// endregion
+		// endregion
 
-	// region [ Process Management API ]
+		// region [ Process Management API ]
 		/**
 		 * Get the process with specified process id
 		 *
@@ -588,5 +588,5 @@
 		{
 			return ($id === NULL) ? reset(self::$_SYS_INSTANCE->_processQueue) : @self::$_SYS_INSTANCE->_processQueue[$id];
 		}
-	// endregion
+		// endregion
 	}
