@@ -342,9 +342,12 @@
 
 
 			$defaultBasis = "NULL";
+			$reqResource  = "{$service}";
+
 			if (__DEFAULT_SERVICE_DEFINED__)
 			{
-				if ( !empty($service) ) array_unshift($moduleRequest, $service);
+				if ( !empty($service) )
+					array_unshift($moduleRequest, $service);
 
 				// DEPRECATED: The constants __DEFAULT_SERVICE__ will be removed in v1.4.0
 				$service = (defined('DEFAULT_SERVICE')) ? DEFAULT_SERVICE : __DEFAULT_SERVICE__;
@@ -381,7 +384,7 @@
 				$defaultBasis = $service;
 			}
 
-			throw(new Exception("Cannot locate default basis ({$defaultBasis}) !"));
+			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: ({$reqResource})) !"));
 		}
 
 		private static function DecideExecMode( &$moduleRequest )
