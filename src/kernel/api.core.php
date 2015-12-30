@@ -194,7 +194,7 @@
 	function s_define($name, $value, $sensitive = TRUE, $REPETITIVE_EXCEPTION = FALSE)
 	{
 		if (!defined($name))
-			define($name, $value, $sensitive);
+			define($name, $value, $sensitive === FALSE);
 		else
 		if ($REPETITIVE_EXCEPTION)
 			throw(new Exception("Constant {$name} has been defined!"));
