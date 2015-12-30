@@ -62,6 +62,7 @@
 					$extMsg = "See log files for more information!";
 				}
 
+				PBLog::ERRLog( "{$errMsg}\n{$extMsg}" );
 				PBStdIO::STDERR( "{$errMsg}\n{$extMsg}" );
 
 
