@@ -191,7 +191,7 @@
 	using('kernel.core.*');
 	using('kernel.sys');
 
-	SYS::__imprint_constants();
+	PBSysKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
 	PBRunTime::__ImprintEnvironment();
 

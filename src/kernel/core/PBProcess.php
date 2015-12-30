@@ -25,26 +25,26 @@ class PBProcess extends PBObject
 	 *
 	 * @return PBProcess | null the specified PBProcess object
 	 */
-	public static function Process($id = NULL) { return SYS::Process($id); }
+	public static function Process($id = NULL) { return PBSysKernel::Process( $id); }
 
 	public static function Module( $moduleName, $reusable = TRUE, $pId = NULL ) {
-		return SYS::Process( $pId )->getModule( $moduleName, $reusable );
+		return PBSysKernel::Process( $pId )->getModule( $moduleName, $reusable );
 	}
 
 	public static function ServiceModule( $pId = NULL ){
-		return SYS::Process( $pId )->_entryModule;
+		return PBSysKernel::Process( $pId )->_entryModule;
 	}
 
 	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
 
-		$PROC = SYS::Process($pId);
+		$PROC = PBSysKernel::Process( $pId);
 
 		if (!is_a($module, "PBModule")) $module = $PROC->getModule("{$module}", $reusable);
 		return $PROC->_execChain( $module, $request );
 	}
 
 	public static function PackExecution( $module, $request = NULL, $reusable = FALSE, $pId = NULL) {
-		if (!is_a($module, "PBModule")) $module = SYS::Process($pId)->getModule("{$module}", $reusable);
+		if (!is_a($module, "PBModule")) $module = PBSysKernel::Process( $pId)->getModule( "{$module}", $reusable);
 
 		$result = self::Execute($module, $request, $reusable, $pId);
 		if ( !empty($module->ext->htmlClass) || !empty($module->ext->htmlAttr) )
@@ -226,10 +226,10 @@ class PBProcess extends PBObject
 	}
 //END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// MARK: Friend(SYS)
+	// MARK: Friend(PBSysKernel)
 	public function run() {
 
-		if(!$this->friend('SYS'))
+		if(!$this->friend('PBSysKernel'))
 			throw(new Exception("Calling an inaccessible method PBProcess::run()."));
 
 		if($this->_processId === NULL)
@@ -292,10 +292,10 @@ class PBProcess extends PBObject
 		return 'terminated';
 	}
 
-	// MARK: Friend(SYS)
+	// MARK: Friend(PBSysKernel)
 	public function attachMainService($moduleName, $instParam, $moduleRequest) {
 
-		if(!$this->friend('SYS')) throw(new Exception("Calling an inaccessible function PBProcess::attachMainModule()."));
+		if(!$this->friend('PBSysKernel')) throw(new Exception("Calling an inaccessible function PBProcess::attachMainModule()."));
 
 		if($this->_mainModuleId != NULL) throw(new Exception("Reattachment of main module is not allowed"));
 
@@ -345,19 +345,19 @@ class PBProcess extends PBObject
 		PBLinkedList::HEAD($this->_bootSequence);
 	}
 
-	// MARK: Friend(SYS)
+	// MARK: Friend(PBSysKernel)
 	public function __set___processId($value) {
 
-		if(!$this->friend('SYS'))
+		if(!$this->friend('PBSysKernel'))
 			throw(new Exception("Setting value to an undefined property __processId."));
 
 		$this->_processId = $value;
 	}
 
-	// MARK: Friend(SYS)
+	// MARK: Friend(PBSysKernel)
 	public function __set___sysAPI($value) {
 
-		if(!$this->friend('SYS'))
+		if(!$this->friend('PBSysKernel'))
 			throw(new Exception("Setting value to an undefined property __sysAPI."));
 
 		$this->_system = $value;

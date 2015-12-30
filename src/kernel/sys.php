@@ -7,14 +7,14 @@
 
 using( 'ext.base.array' );
 
-class SYS extends PBObject
+class PBSysKernel extends PBObject
 {
 // region [ System Boot Loader ]
 	private static $_SYS_INSTANCE = NULL;
 	public static function boot($argc = 0, $argv = NULL) {
 
 		// INFO: Avoid repeated initialization
-		if(SYS::$_SYS_INSTANCE) return;
+		if(PBSysKernel::$_SYS_INSTANCE) return;
 
 		try
 		{
@@ -32,9 +32,9 @@ class SYS extends PBObject
 
 
 			// INFO: Keep booting
-			SYS::$_SYS_INSTANCE = new SYS();
-			SYS::$_SYS_INSTANCE->__initialize($argc, $argv);
-			SYS::$_SYS_INSTANCE->__jobDaemonRun();
+			PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
+			PBSysKernel::$_SYS_INSTANCE->__initialize( $argc, $argv);
+			PBSysKernel::$_SYS_INSTANCE->__jobDaemonRun();
 
 			Termination::NORMALLY();
 		}
@@ -80,9 +80,9 @@ class SYS extends PBObject
 
 		if($initialized) return;
 
-		SYS::$_cacheServicePath		= $GLOBALS['servicePath'];
-		SYS::$_cacheRandomCert		= $GLOBALS['randomCert'];
-		SYS::$_cachedRuntimeAttr	= array(
+		PBSysKernel::$_cacheServicePath  = $GLOBALS['servicePath'];
+		PBSysKernel::$_cacheRandomCert   = $GLOBALS['randomCert'];
+		PBSysKernel::$_cachedRuntimeAttr = array(
 			'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
 		);
 	}
@@ -100,8 +100,8 @@ class SYS extends PBObject
 	// INFO: System workflow initialization
 	private function __initialize($argc = 0, $argv = NULL) {
 		// INFO: Preserve path of system container
-		$sysEnvPath		= path('root', 'sys.php');
-		$serviceEnvPath = path("service", 'common.php'); // NOTE: This line should executed before __judgeMainService
+		$sysEnvPath		= path('root',		'sys.php');
+		$serviceEnvPath = path("service",	'common.php'); // NOTE: This line should executed before __judgeMainService
 
 
 
@@ -238,7 +238,7 @@ class SYS extends PBObject
 		{
 			$this->_entryService = $service;
 
-			define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+			define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}", TRUE);
 			self::DecideExecMode( $moduleRequest );
 
 
@@ -296,7 +296,7 @@ class SYS extends PBObject
 			{
 				$this->_entryService = $service;
 
-				define('__WORKING_ROOT__', SYS::$_cacheServicePath."/{$this->_entryService}", TRUE);
+				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}", TRUE);
 				self::DecideExecMode( $moduleRequest );
 
 
@@ -480,7 +480,7 @@ class SYS extends PBObject
 
 		$caller = $this->caller;
 		if($caller['class'] != 'PBProcess')
-			throw(new Exception("Calling an inaccessible function SYS::acquireServiceModule()."));
+			throw(new Exception("Calling an inaccessible function PBSysKernel::acquireServiceModule()."));
 
 
 

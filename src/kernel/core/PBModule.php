@@ -69,21 +69,21 @@ class PBModule extends PBObject
 
 	// INFO: Friend functions
 	public function __get___bootSequence() {
-		if(!$this->friend('SYS', 'PBProcess', get_class($this)))
+		if(!$this->friend('PBSysKernel', 'PBProcess', get_class($this)))
 			throw(new Exception("Setting value to an undefined property __bootstrap."));
 
 		return $this->_bootstrap;
 	}
 	public function __set___moduleId($value) {
 
-		if(!$this->friend('SYS'))
+		if(!$this->friend('PBSysKernel'))
 			throw(new Exception("Setting value to an undefined property __moduleId."));
 
 		$this->_moduleId = $value;
 	}
 	public function __set___processInst($value) {
 
-		if(!$this->friend('SYS', 'PBProcess'))
+		if(!$this->friend('PBSysKernel', 'PBProcess'))
 			throw(new Exception("Setting value to an undefined property __processInst."));
 
 		$this->_process = $value;
