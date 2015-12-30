@@ -81,7 +81,7 @@
 		{
 			if (feof($this->_stream)) return FALSE;
 
-			$rawData = fgetcsv($rawData);
+			$rawData = fgetcsv($this->_stream);
 
 			if ($this->_dataEncoding != $encoding)
 				foreach ($rawData as $idx => $val) $rawData[$idx] = iconv($this->_dataEncoding, $encoding, "{$val}");
@@ -114,7 +114,7 @@
 		public function fetchAll($fetchOptions = IDataFetcher::FETCH_BOTH, $encoding = 'UTF-8')
 		{
 			$data = array();
-			while (($raw = $this->fetch()) !== FALSE) $data[] = $data;
+			while ( ($raw = $this->fetch( $fetchOptions, $encoding )) !== FALSE ) $data[] = $raw;
 
 			return $data;
 		}
