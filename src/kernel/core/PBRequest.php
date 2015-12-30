@@ -56,15 +56,21 @@
 			$this->_incomingRecord['environment']['env']	 = $_ENV;
 			$this->_incomingRecord['environment']['server']	 = $_SERVER;
 
-			// INFO: GET information is not kept since it may contains error parsed parameters
-			// INFO: This means that the main module have to parse its own parameters from request
-			unset($_GET); 		unset($HTTP_GET_VARS);
-			unset($_POST); 		unset($HTTP_POST_VARS);
-			unset($_FILES);		unset($HTTP_POST_FILES);
-			unset($_ENV); 		unset($HTTP_ENV_VARS);
-			unset($_SERVER);	unset($HTTP_SERVER_VARS);
 
-			unset($_REQUEST);
+
+			if ( KEEP_PHP_ENVIRONMENTAL_VARIABLES == FALSE )
+			{
+				// INFO: GET information is not kept since it may contains error parsed parameters
+				// INFO: This means that the main module have to parse its own parameters from request
+				unset($_GET); 		unset($HTTP_GET_VARS);
+				unset($_POST); 		unset($HTTP_POST_VARS);
+				unset($_FILES);		unset($HTTP_POST_FILES);
+				unset($_ENV); 		unset($HTTP_ENV_VARS);
+				unset($_SERVER);	unset($HTTP_SERVER_VARS);
+				unset($_REQUEST);
+			}
+
+
 			unset($GLOBALS['rawRequest']);
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
@@ -231,6 +237,22 @@
 		public function __get_ssl() { return $this->is_ssl(); }
 
 		public function __get_remoteIP() { return RemoteIP($this->server); }
+
+		public function __get_nativeGet(){
+			return $this->_incomingRecord['request']['get'];
+		}
+		public function __get_nativePost(){
+			return $this->_incomingRecord['request']['post'];
+		}
+		public function __get_nativeFiles(){
+			return $this->_incomingRecord['request']['files'];
+		}
+		public function __get_nativeEnv(){
+			return $this->_incomingRecord['environment']['env'];
+		}
+		public function __get_nativeServer(){
+			return $this->_incomingRecord['environment']['server'];
+		}
 
 		public function is_ssl($checkStdPorts = FALSE)
 		{

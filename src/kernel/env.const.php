@@ -5,6 +5,10 @@
 	 **/
 
 	call_user_func(function(){
+		s_define( 'KEEP_PHP_ENVIRONMENTAL_VARIABLES', FALSE, TRUE, TRUE );
+
+
+
 		if ( __STANDALONE_EXEC_MODE__ )
 			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPath = 'working.plog', TRUE );
 		else
