@@ -19,6 +19,8 @@
 			// INFO: Avoid repeated initialization
 			if ( PBSysKernel::$_SYS_INSTANCE ) return;
 
+
+
 			try
 			{
 				if ( is_dir($servicePath = path('service')) )
@@ -43,31 +45,69 @@
 			}
 			catch( Exception $e )
 			{
-				if ( __LOG_EXCEPTION__ === TRUE )
-					PBLog::SYSLog(print_r($e, TRUE), FALSE, "system.exception.log");
+				$errMsg = "Uncaught exception: " . $e->getMessage();
+				$extMsg = "";
 
-				if ( __THROW_EXCEPTION__ === TRUE )
-					throw($e);
-				else
+				if ( is_a( $e, 'PBException' ) )
 				{
-					if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-					{
-						PBStdIO::STDERR("Uncaught exception: " . $e->getMessage());
+					$descriptor = $e->descriptor;
 
-						if ( __LOG_EXCEPTION__ === TRUE )
-						{
-							PBStdIO::STDERR("See log file for more information");
-						}
-					}
-					else
-					if ( (SYS_EXEC_ENV == EXEC_ENV_HTTP) && (!headers_sent()) )
-					{
-						header("HTTP/1.1 500 Internal Server Error");
-						header("Status: 500 Internal Server Error");
-					}
-
-					Termination::WITH_STATUS(Termination::STATUS_ERROR);
+					if ( !empty($descriptor) )
+						$errMsg .= "\nData:\n" . print_r( $descriptor, TRUE );
 				}
+
+				if ( __LOG_EXCEPTION__ === TRUE )
+				{
+					PBLog::SYSLog( print_r($e, TRUE), FALSE, "system.exception.log" );
+					$extMsg = "See log files for more information!";
+				}
+
+				PBStdIO::STDERR( "{$errMsg}\n{$extMsg}" );
+
+
+
+				// INFO: Check vailidaty of default error processing module
+				$errProcObj = NULL;
+				if ( defined( "ERROR_MODULE" ) )
+				{
+					try
+					{
+						$errProcObj = PBSysKernel::$_SYS_INSTANCE->acquireModule( ERROR_MODULE );
+					}
+					catch( Exception $e )
+					{
+						$errProcObj = NULL;
+					}
+				}
+
+
+				if ( $errProcObj )
+				{
+					$errProcObj->prepareEvent( $e );
+					$errProcObj->event( $e );
+				}
+				else
+				if ( __THROW_EXCEPTION__ === TRUE )
+				{
+					throw( $e );
+				}
+				else
+				if ( NET_ENV && __DEBUG_MODE__ )
+				{
+					if ( !headers_sent() )
+					{
+						header( "HTTP/1.1 500 Internal Server Error" );
+						header( "Status: 500 Internal Server Error" );
+						header( "Content-Type: text/plain; charset=utf8" );
+						header( "Content-Length: " . strlen($errMsg) );
+					}
+
+					echo $errMsg;
+				}
+
+
+
+				Termination::WITH_STATUS(Termination::STATUS_ERROR);
 			}
 		}
 		// endregion
@@ -440,15 +480,15 @@
 		}
 
 
-			/**
-			 * Parse module identifier according to following syntax
-			 * 		 Syntax => leadingModule.subModule#class
-			 * 				=> module#class
-			 *
-			 * @param $moduleIdentifier
-			 *
-			 * @return array|bool
-			 */
+		/**
+		 * Parse module identifier according to following syntax
+		 * 		 Syntax => leadingModule.subModule#class
+		 * 				=> module#class
+		 *
+		 * @param $moduleIdentifier
+		 *
+		 * @return array|bool
+		 */
 		public static function ParseModuleIdentifier( $moduleIdentifier )
 		{
 			$moduleIdentifier = trim( "{$moduleIdentifier}" );
@@ -480,10 +520,10 @@
 		public function acquireModule( $identifier, $instParam = NULL ) {
 
 			static $allocCounter = 0;
-
 			$caller = $this->caller;
-			if($caller['class'] != 'PBProcess')
-				throw(new Exception("Calling an inaccessible function PBSysKernel::acquireServiceModule()."));
+
+			if ( !in_array($caller['class'], array('PBProcess', 'PBSysKernel')) )
+				throw(new Exception("Calling an inaccessible function PBSysKernel::acquireModule()."));
 
 
 
