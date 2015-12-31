@@ -10,14 +10,14 @@
 
 
 		if ( __STANDALONE_EXEC_MODE__ )
-			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPath = 'working.plog', TRUE );
+			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage = 'working.plog', TRUE );
 		else
 		{
-			if ( is_writable( $logPath = path( 'data.log' )) )
-				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPath, TRUE );
+			if ( is_writable( path( $logPackage = 'data.log' )) )
+				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
 			else
-			if ( is_writable( $logPath = path( 'root.log' )) )
-				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPath, TRUE );
+			if ( is_writable( path( $logPackage = 'root.log' )) )
+				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
 		}
 
 		if ( defined( 'DEFAULT_SYSTEM_LOG_PACKAGE' ) )
