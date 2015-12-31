@@ -58,7 +58,7 @@
 
 				if ( __LOG_EXCEPTION__ === TRUE )
 				{
-					PBLog::SYSLog( print_r($e, TRUE), FALSE, "system.exception.log" );
+					PBLog::SYSLog( print_r($e, TRUE), FALSE, "system.exception.pblog" );
 					$extMsg = "See exception log for more information!";
 				}
 
