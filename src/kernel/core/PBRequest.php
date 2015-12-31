@@ -174,6 +174,7 @@
 
 		public function __get_all() { return $this->_incomingRecord; }
 
+		public function __get_headers()		{ return (function_exists("getallheaders")) ? getallheaders() : apache_request_headers(); }
 		public function __get_request()		{ return $this->_incomingRecord['request']; }
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
 		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
