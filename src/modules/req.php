@@ -64,7 +64,7 @@ class req extends PBModule
 
 		if (is_string($moduleRequest))
 		{
-			$this->_request = PBRequest::ParseRequest($moduleRequest);
+			$this->_request = PBRequest::ParseRequestQuery( $moduleRequest);
 			$this->_request = $this->_request['resource'];
 		}
 		else

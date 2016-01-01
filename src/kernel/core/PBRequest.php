@@ -340,7 +340,7 @@
 							case "application/x-www-form-urlencoded":
 								$func = function($stream) {
 									$targetData = stream_get_contents($stream);
-									$data = PBRequest::ParseAttribute( $targetData, TRUE );
+									$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
 									return array(
 										'data'		=> $data,
 										'variable'	=> $data['variable'],
@@ -423,7 +423,7 @@
 			if ($this->_parsedQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
-				$data = PBRequest::ParseRequest($targetData);
+				$data = PBRequest::ParseRequestQuery( $targetData);
 				return array('data' => $data, 'variable' => $data['attribute']['variable'], 'flag' => $data['attribute']['flag']);
 			} : $dataFunction;
 
@@ -484,7 +484,7 @@
 		// endregion
 
 		// region [ Data Processing API ]
-		public static function ParseRequest($rawRequest)
+		public static function ParseRequestQuery( $rawRequest)
 		{
 			$rawRequest = explode('?', $rawRequest);
 
@@ -504,12 +504,12 @@
 				return urldecode( $item );
 			});
 
-			$request['attribute'] = PBRequest::ParseAttribute( $request['attribute'], TRUE );
+			$request['attribute'] = PBRequest::ParseQueryAttributes( $request['attribute'], TRUE );
 
 			return $request;
 		}
 
-		public static function ParseAttribute( $rawAttribute, $urlDecode = FALSE )
+		public static function ParseQueryAttributes( $rawAttribute, $urlDecode = FALSE )
 		{
 			$attributes = explode( '&', "{$rawAttribute}" );
 
