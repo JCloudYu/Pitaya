@@ -5,7 +5,7 @@
 	 **/
 
 	call_user_func(function(){
-		s_define( 'KEEP_PHP_ENVIRONMENTAL_VARIABLES', FALSE, TRUE, TRUE );
+		s_define( 'KEEP_PHP_ENVIRONMENTAL_VARIABLES', FALSE, TRUE, FALSE );
 
 
 
