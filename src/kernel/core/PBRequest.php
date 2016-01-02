@@ -484,27 +484,21 @@
 		// endregion
 
 		// region [ Data Processing API ]
-		public static function ParseRequestQuery( $rawRequest)
+		public static function ParseRequestQuery( $rawRequest )
 		{
-			$rawRequest = explode('?', $rawRequest);
-
-			$request = array( 'resource' => $rawRequest[0], 'attribute' => NULL );
-			if( count($rawRequest) > 1 ) $request['attribute'] = $rawRequest[1];
-
-			$request['resource'] = explode('/', $request['resource']);
-			if ($request['resource'][0] === '') $request['resource'] = array();
-
-			// INFO: In some cases with only one element, there will be a tailling empty string...
-			if (end($request['resource']) === '') array_pop($request['resource']);
-			reset($request['resource']);
+			$rawRequest = @"{$rawRequest}";
+			$rawRequest = ($rawRequest === "") ? array() : explode('?', $rawRequest);
+			$resource	= @array_shift( $rawRequest );
+			$attributes	= implode( '?', $rawRequest );
 
 
 
-			$request['resource'] = ary_filter($request['resource'], function( $item ){
-				return urldecode( $item );
-			});
-
-			$request['attribute'] = PBRequest::ParseQueryAttributes( $request['attribute'], TRUE );
+			$request = array(
+				'resource'	=> ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
+					return urldecode( $item );
+				}),
+				'attribute'	=> PBRequest::ParseQueryAttributes( $attributes, TRUE )
+			);
 
 			return $request;
 		}

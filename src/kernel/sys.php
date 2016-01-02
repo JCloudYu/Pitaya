@@ -194,64 +194,36 @@
 		{
 			if ( SYS_WORKING_ENV == SYS_ENV_NET )
 			{
-				// INFO: Parse URL
-				//SEC: REQUEST_URI Purge////////////////////////////////////////////////////////////////////////////////////////
 				// INFO: Purge redundant separators from the REQUEST_URI
 				// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
 				// INFO: 		  will be purged into
 				// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-				$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @$_SERVER['REQUEST_URI'])));
+				$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @"{$_SERVER['REQUEST_URI']}")));
 				$GLOBALS['rawRequest'] = $rawRequest;
-				//END SEC///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				// INFO: Extract the requested module from request string
-				$requestItems = explode('/', $rawRequest);;
-				if(count($requestItems) == 1)
-				{
-					// http://SERVER_HOST/
-					if($requestItems[0] == '')
-					{
-						$service = '';
-						$moduleRequest = '';
-					}
-					else
-					{
-						$tmpBuf = explode('?', $requestItems[0]);
-						// http://SERVER_HOST/RC
-						if(count($tmpBuf) == 1)
-						{
-							$service = $requestItems[0];
-							$moduleRequest = '';
-						}
-						else
-						// http://SERVER_HOST/?REQUEST_ATTR
-						if($tmpBuf[0] == '')
-						{
-							$service = '';
-							$moduleRequest = $requestItems[0];
-						}
-						else
-						// http://SERVER_HOST/RC?REQUEST_ATTR
-						{
-							$service = array_shift($tmpBuf);
-							$moduleRequest = "?".implode('?', $tmpBuf);
-						}
-					}
-				}
-				else
-				// http://SERVER_HOST/RC/REQUEST
-				{
-					$service = array_shift($requestItems);
-					$moduleRequest = implode('/', $requestItems);
-				}
 
-				$moduleRequest = explode('/', $moduleRequest);
+
+				$request	= ($rawRequest === "") ? array() : explode('?', $rawRequest);
+				$resource	= @array_shift( $request );
+				$attributes	= implode( '?', $request );
+
+				$resource	= ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
+					return urldecode( $item );
+				});
+
+
+
+				$service = @array_shift( $resource );
+				$moduleRequest = $resource;
+				$moduleRequest[] = "?{$attributes}";
 			}
 			else
 			{
 				$service = TO(@array_shift($argv), 'string');
 				$moduleRequest = $argv;
 			}
+
+
 
 			if ( strtoupper($service) == 'EVENT' )
 			{
