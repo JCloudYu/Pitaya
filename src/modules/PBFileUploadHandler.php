@@ -109,19 +109,19 @@
 
 					// region [ Exract information from original input file ]
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_MD5_CHECKSUM )
-						$fileInfo[ 'md5' ] = hash( 'md5', $info['tmp_name'] );
+						$fileInfo[ 'md5' ] = hash_file( 'md5', $info['tmp_name'] );
 
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA1_CHECKSUM )
-						$fileInfo[ 'sha1' ] = hash( 'sha1', $info['tmp_name'] );
+						$fileInfo[ 'sha1' ] = hash_file( 'sha1', $info['tmp_name'] );
 
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA256_CHECKSUM )
-						$fileInfo[ 'sha256' ] = hash( 'sha256', $info['tmp_name'] );
+						$fileInfo[ 'sha256' ] = hash_file( 'sha256', $info['tmp_name'] );
 
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_SHA512_CHECKSUM )
-						$fileInfo[ 'sha256' ] = hash( 'sha512', $info['tmp_name'] );
+						$fileInfo[ 'sha256' ] = hash_file( 'sha512', $info['tmp_name'] );
 
 					if ( $procFlag & PBFileUploadHandler::UPLOAD_PROC_CRC_CHECKSUM )
-						$fileInfo[ 'crc32' ] = hash( 'crc32', $info['tmp_name'] );
+						$fileInfo[ 'crc32' ] = hash_file( 'crc32', $info['tmp_name'] );
 					// endregion
 
 					$token = sha1( uniqid() . "{$info['name']}" );
