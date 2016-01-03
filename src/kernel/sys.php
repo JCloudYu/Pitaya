@@ -192,6 +192,9 @@
 
 		public function __judgeMainService($argc = 0, $argv = NULL)
 		{
+			$service = $attributes = '';
+			$moduleRequest = array();
+
 			if ( SYS_WORKING_ENV == SYS_ENV_NET )
 			{
 				// INFO: Purge redundant separators from the REQUEST_URI
@@ -215,7 +218,6 @@
 
 				$service = @array_shift( $resource );
 				$moduleRequest = $resource;
-				$moduleRequest[] = "?{$attributes}";
 			}
 			else
 			{
@@ -230,6 +232,14 @@
 				$service = '';
 				array_unshift($moduleRequest, 'EVENT');
 			}
+
+
+			$processReq = function( $moduleRequest, $attributes ) {
+				if ( CLI_ENV ) return $moduleRequest;
+
+				$request = implode('/', $moduleRequest);
+				return "{$request}?{$attributes}";
+			};
 
 
 
@@ -254,7 +264,7 @@
 				self::DecideExecMode( $moduleRequest );
 
 				$GLOBALS['service'] = $module;
-				$GLOBALS['request'] = $moduleRequest;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
 
@@ -272,7 +282,7 @@
 
 
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
 
@@ -307,7 +317,7 @@
 
 
 				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
 
@@ -334,7 +344,7 @@
 
 
 					$GLOBALS['service'] = $service;
-					$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 					return;
 				}
 
@@ -349,7 +359,7 @@
 
 
 					$GLOBALS['service'] = $service;
-					$GLOBALS['request'] = (SYS_WORKING_ENV == SYS_ENV_NET) ? implode('/', $moduleRequest) : $moduleRequest;
+					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 					return;
 				}
 
