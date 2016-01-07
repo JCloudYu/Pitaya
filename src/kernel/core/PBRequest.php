@@ -142,7 +142,7 @@
 			if ($requestedRange !== NULL) return $requestedRange;
 
 			$requestedRange = array();
-			list(,$range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
+			@list(,$range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
 			$range = trim($range);
 
 
