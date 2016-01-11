@@ -21,8 +21,11 @@
 			}
 		}
 
-		private $_relPath		= '';
-		public function __set_relPath($value) { $this->_relPath = "{$value}"; }
+		private $_relPath		= array();
+		public function __set_relPath($value) {
+			if ( !is_array( $value ) ) $value = array( "{$value}" );
+			$this->_relPath = $value;
+		}
 		public function __get_relPath() { return $this->_relPath; }
 
 		private $_multiByteRangeMode = FALSE;
@@ -63,18 +66,40 @@
 				$idx = strtolower( "{$idx}" );
 				$extensionMap[ $idx ] = $item;
 			});
-			$filePath = (empty($this->_relPath) ? "{$CONSTANT['__WORKING_ROOT__']}/{$this->_targetPath}" : "{$this->_relPath}/{$this->_targetPath}");
 
 
-			$ext = @strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+			// INFO: Check whether the mime is allowed
+			$ext = @strtolower(pathinfo("{$this->_targetPath}", PATHINFO_EXTENSION));
 			$this->_mime = ( empty($this->_mime) ) ? @$extensionMap[ $ext ] : $this->_mime;
 
 			if ( empty($this->_mime) && empty($this->_strict_mime) )
 				$this->_mime = "application/octet-stream";
 
+			if ( empty($this->_mime) )
+			{
+				header('HTTP/1.1 403 Forbidden');
+				exit(0);
+			}
 
 
-			if ( !is_file($filePath) || !is_readable($filePath) || empty($this->_mime) )
+
+			// INFO: Path validation
+			$searchPath = $this->_relPath;
+			array_unshift( $searchPath, "{$CONSTANT['__WORKING_ROOT__']}" );
+
+			$filePath = NULL; $targetPath = $this->_targetPath;
+			ary_filter( $searchPath, function( $pathDir ) use( $targetPath, &$filePath ) {
+				if ( $filePath !== NULL ) return;
+
+				$path = "{$pathDir}/{$targetPath}";
+				if ( is_file($path) && is_readable($path) )
+					$filePath = $path;
+
+
+			}, NULL);
+
+			if ( empty($filePath) )
 			{
 				header('HTTP/1.1 404 Not Found');
 				exit(0);
