@@ -237,8 +237,9 @@
 			$processReq = function( $moduleRequest, $attributes ) {
 				if ( CLI_ENV ) return $moduleRequest;
 
-				$request = implode('/', $moduleRequest);
-				return "{$request}?{$attributes}";
+				$moduleRequest	= implode('/', $moduleRequest);
+				$attributes		= empty($attributes) ? '' : "?{$attributes}";
+				return "{$moduleRequest}{$attributes}";
 			};
 
 
