@@ -30,13 +30,14 @@
 
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0;
+				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_INT" : "EXPR_NUMERIC";
 
-				if ( in_array('strict', $opt) )
-					$value = EXPR_INT($value) ? $value : $defaultVal;
-				else
-					$value = EXPR_NUMERIC($value) ? $value : $defaultVal;
 
-				return (in_array( 'no-casting', $opt )) ? $value : @intval($value);
+
+				if ( in_array( 'no-casting', $opt ) )
+					return $procFunc($value) ? $value : $defaultVal;
+
+				return $procFunc($value) ? @intval($value) : $defaultVal;
 			// endregion
 
 			// region float [strict] [no-casting]
@@ -49,13 +50,14 @@
 
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0.0;
+				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_FLOAT" : "EXPR_NUMERIC";
 
-				if (in_array('strict', $opt))
-					$value = EXPR_FLOAT($value) ? $value : $defaultVal;
-				else
-					$value = EXPR_NUMERIC($value) ? $value : $defaultVal;
 
-				return (in_array( 'no-casting', $opt )) ? $value : @floatval($value);
+
+				if ( in_array( 'no-casting', $opt ) )
+					return $procFunc($value) ? $value : $defaultVal;
+
+				return $procFunc($value) ? @floatval($value) : $defaultVal;
 			// endregion
 
 			// region string [force] [lower-case] [upper-case] [decode-url] [encode-url] [purge-html]
