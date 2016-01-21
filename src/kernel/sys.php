@@ -34,6 +34,8 @@
 				s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 				s_define('DEFAULT_SERVICE', 	'index', TRUE);
 
+				s_define( 'PITAYA_ENVIROMENTAL_ATTACH_LEVEL', 0, TRUE );
+
 
 
 				// INFO: Keep booting
@@ -197,22 +199,18 @@
 
 			if ( SYS_WORKING_ENV == SYS_ENV_NET )
 			{
-				// INFO: Purge redundant separators from the REQUEST_URI
-				// INFO: Example: http://SERVER_HOST////////RC//REQUEST/REQUEST///REQUEST?PARAMETERS=FDSAFDSAFDSADSA//
-				// INFO: 		  will be purged into
-				// INFO:		  http://SERVER_HOST/RC/REQUEST/REQUEST/REQUEST?PARAMETERS=FDSAFDSAFDSADSA
-				$rawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', @"{$_SERVER['REQUEST_URI']}")));
-				$GLOBALS['rawRequest'] = $rawRequest;
-
-
-
-				$request	= ($rawRequest === "") ? array() : explode('?', $rawRequest);
-				$resource	= @array_shift( $request );
+				$reqURI		= @"{$_SERVER['REQUEST_URI']}";
+				$request	= empty($reqURI) ? array() : explode('?', $reqURI);
+				$resource	= preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', CAST( @array_shift( $request ), 'string no-trim' ) )));
 				$attributes	= implode( '?', $request );
+
+
 
 				$resource	= ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
 					return urldecode( $item );
 				});
+				@array_splice( $resource, 0, PITAYA_ENVIROMENTAL_ATTACH_LEVEL );
+				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
 
 

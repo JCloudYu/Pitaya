@@ -69,7 +69,7 @@
 
 				if ( !is_string( $value ) && ($nArgs > 2) && !in_array( 'force', $opt ) ) return $default;
 
-				$value = trim("{$value}");
+				$value = in_array( 'no-trim', $opt ) ? "{$value}" : trim("{$value}");
 
 				if (in_array('encode-url', $opt))
 					$value = urlencode($value);
