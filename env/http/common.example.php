@@ -7,4 +7,4 @@
 	define( "__THROW_EXCEPTION__",				FALSE,			FALSE );
 
 	define( "__DEBUG_CONSOLE_WIDTH__",			350,			FALSE );
-	define( 'PITAYA_ENVIROMENTAL_ATTACH_LEVEL', 0,				FALSE );
+	define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL', 0,				FALSE );

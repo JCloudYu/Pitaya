@@ -34,7 +34,7 @@
 				s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 				s_define('DEFAULT_SERVICE', 	'index', TRUE);
 
-				s_define( 'PITAYA_ENVIROMENTAL_ATTACH_LEVEL', 0, TRUE );
+				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL', 0, TRUE );
 
 
 
@@ -209,7 +209,7 @@
 				$resource	= ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
 					return urldecode( $item );
 				});
-				@array_splice( $resource, 0, PITAYA_ENVIROMENTAL_ATTACH_LEVEL );
+				@array_splice( $resource, 0, PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
 				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
 
