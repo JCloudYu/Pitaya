@@ -259,7 +259,7 @@
 
 		if ( !defined('__DEBUG_MODE__') )
 		{
-			$ENV_DEBUG_MODE = IS_POSITIVE( $GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_DEBUG_MODE'] );
+			$ENV_DEBUG_MODE = IS_POSITIVE( @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_DEBUG_MODE'] );
 			define( '__DEBUG_MODE__', $ENV_DEBUG_MODE || FALSE, TRUE );
 		}
 
@@ -295,13 +295,13 @@
 			$result = date_default_timezone_set( __SYSTEM_TIMEZONE__ );
 		else
 		if ( isset( $GLOBALS['RUNTIME_CONF']['TZ'] ) )
-			$result = date_default_timezone_set( $GLOBALS['RUNTIME_CONF']['TZ'] );
+			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_CONF']['TZ'] );
 		else
 		if ( isset($GLOBALS['RUNTIME_ENV']['PITAYA_SYSTEM_TIMEZONE']) )
-			$result = date_default_timezone_set( $GLOBALS['RUNTIME_ENV']['PITAYA_SYSTEM_TIMEZONE'] );
+			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_ENV']['PITAYA_SYSTEM_TIMEZONE'] );
 		else
 		if ( isset($GLOBALS['RUNTIME_ENV']['TZ']) )
-			$result = date_default_timezone_set( $GLOBALS['RUNTIME_ENV']['TZ'] );
+			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_ENV']['TZ'] );
 		else
 		if ( ini_get('date.timezone') != "" )
 			$result = date_default_timezone_set( ini_get('date.timezone') );
