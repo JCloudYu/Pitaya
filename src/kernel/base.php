@@ -185,6 +185,15 @@
 
 
 
+	// INFO: Runtime Configuration Control
+	call_user_func(function(){
+		// INFO: Error Reporting Control
+		s_define( "PITAYA_SUPPRESS_EXPECTED_WARNINGS", TRUE, TRUE, FALSE );
+		error_reporting( PITAYA_SUPPRESS_EXPECTED_WARNINGS ? (E_ALL & ~E_STRICT & ~E_NOTICE) : E_ALL );
+	});
+
+
+
 	// INFO: Load system core libraries and prepare system constants
 	using('kernel.basis.PBObject');
 	using('kernel.basis.*');
