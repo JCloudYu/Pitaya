@@ -60,10 +60,14 @@
 
 
 	// INFO: Execution environment
+	if ( !defined( '__ROOT__' ) )
+		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
+
+
 	if ( php_sapi_name() == "cli" )
 	{
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
-		define('__ROOT__',			realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
+
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, TRUE);
 		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
 		define('EOL',				"\n", TRUE);
@@ -91,7 +95,6 @@
 	}
 	else
 	{
-		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
 		define('SYS_EXEC_ENV',	  EXEC_ENV_HTTP, TRUE);
 		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}", TRUE);
 
