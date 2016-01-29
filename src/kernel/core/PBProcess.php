@@ -273,6 +273,18 @@ class PBProcess extends PBObject
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
 
+			case "CORS":
+				$dataInput = NULL;
+
+				PBLList::HEAD($this->_bootSequence);
+				do
+				{
+					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->cors($dataInput);
+				}
+				while(PBLList::NEXT($this->_bootSequence));
+				break;
+
 			case 'NORMAL':
 			default:
 				$dataInput = NULL;
@@ -448,6 +460,10 @@ class PBProcess extends PBObject
 				$module->prepareShell($request);
 				break;
 
+			case "CORS":
+				$module->prepareCORS($request);
+				break;
+
 			case 'NORMAL':
 			default:
 				$module->prepare($request);
@@ -473,6 +489,12 @@ class PBProcess extends PBObject
 					$module->prepareShell($request);
 
 				return $module->shell(NULL);
+
+			case "CORS":
+				if ( func_num_args() > 1 )
+					$module->prepareCORS($request);
+
+				return $module->cors(NULL);
 
 			case "NORMAL":
 			default:

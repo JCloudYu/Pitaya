@@ -377,7 +377,8 @@
 
 				define( 'EVENT_CHAIN',	TRUE,	TRUE );
 				define( 'SHELL_CHAIN',	FALSE,	TRUE );
-				define( 'NORMAL_CHAIN', FALSE,	TRUE );
+				define( 'CORS_CHAIN',	FALSE,	TRUE );
+				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
 			}
 			else
 			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
@@ -386,7 +387,18 @@
 
 				define( 'EVENT_CHAIN',	FALSE,	TRUE );
 				define( 'SHELL_CHAIN',	TRUE,	TRUE );
-				define( 'NORMAL_CHAIN', FALSE,	TRUE );
+				define( 'CORS_CHAIN',	FALSE,	TRUE );
+				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
+			}
+			else
+			if ( REQUESTING_METHOD == "OPTIONS" && __ENABLE_CORS_MODE__ )
+			{
+				define('SERVICE_EXEC_MODE', 'CORS', TRUE);
+
+				define( 'EVENT_CHAIN',	FALSE,	TRUE );
+				define( 'SHELL_CHAIN',	FALSE,	TRUE );
+				define( 'CORS_CHAIN',	TRUE,	TRUE );
+				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
 			}
 			else
 			{
@@ -394,7 +406,8 @@
 
 				define( 'EVENT_CHAIN',	FALSE,	TRUE );
 				define( 'SHELL_CHAIN',	FALSE,	TRUE );
-				define( 'NORMAL_CHAIN', TRUE,	TRUE );
+				define( 'CORS_CHAIN',	FALSE,	TRUE );
+				define( 'NORMAL_CHAIN',	TRUE,	TRUE );
 			}
 		}
 

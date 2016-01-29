@@ -66,9 +66,10 @@
 
 	if ( php_sapi_name() == "cli" )
 	{
-		define('SYS_WORKING_ENV',	SYS_ENV_CLI, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+		define('SYS_WORKING_ENV',	SYS_ENV_CLI,	TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
-		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, TRUE);
+		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, 	TRUE);
+		define('REQUESTING_METHOD',	'',				TRUE);
 		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
 		define('EOL',				"\n", TRUE);
 
@@ -95,10 +96,11 @@
 	}
 	else
 	{
-		define('SYS_EXEC_ENV',	  EXEC_ENV_HTTP, TRUE);
-		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}", TRUE);
+		define('SYS_WORKING_ENV',	SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
 
-		define('SYS_WORKING_ENV', SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP,	TRUE);
+		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']),	TRUE);
+		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}", TRUE);
 
 		define('EOL', '<br />', TRUE);
 
