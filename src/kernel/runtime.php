@@ -275,7 +275,7 @@
 
 		if ( !defined('__LOG_EXCEPTION__') )		define('__LOG_EXCEPTION__',			TRUE,  TRUE);
 
-		if ( !defined( '__ENABLE_OPTIONS_MODE__' ) ) define( '__ENABLE_OPTIONS_MODE__', FALSE,  TRUE );
+		if ( !defined( '__ENABLE_CORS_MODE__' ) ) define( '__ENABLE_CORS_MODE__', FALSE,  TRUE );
 	});
 
 
