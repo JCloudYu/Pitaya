@@ -484,12 +484,21 @@
 		// endregion
 
 		// region [ Data Processing API ]
-		public static function ParseRequestQuery( $rawRequest )
-		{
+		public static function DecomposeQuery( $rawRequest ) {
 			$rawRequest = @"{$rawRequest}";
 			$rawRequest = ($rawRequest === "") ? array() : explode('?', $rawRequest);
 			$resource	= @array_shift( $rawRequest );
 			$attributes	= implode( '?', $rawRequest );
+
+			return array( 'resource' => $resource, 'attributes' => $attributes );
+		}
+
+		public static function ParseRequestQuery( $rawRequest )
+		{
+			$parts = self::DecomposeQuery( $rawRequest );
+
+			$resource	= $parts['resource'];
+			$attributes	= $parts['attributes'];
 
 
 
