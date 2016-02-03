@@ -583,7 +583,7 @@
 			// INFO: Candidate paths
 			$candidateComps = array();
 			$candidateComps[] = $module;
-			if ( empty( $package ) ) $candidateComps[] = "{$module}.{$module}";
+			$candidateComps[] = "{$module}.{$module}";
 
 
 
