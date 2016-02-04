@@ -27,8 +27,16 @@ class PBProcess extends PBObject
 	 */
 	public static function Process($id = NULL) { return PBSysKernel::Process( $id); }
 
-	public static function Module( $moduleName, $reusable = TRUE, $pId = NULL ) {
-		return PBSysKernel::Process( $pId )->getModule( $moduleName, $reusable );
+	public static function Module( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
+		try {
+			return PBSysKernel::Process( $pId )->getModule( $moduleName, $reusable );
+		}
+		catch( Exception $e ) {
+			if ( $noThrow )
+				return NULL;
+
+			throw $e;
+		}
 	}
 
 	public static function ServiceModule( $pId = NULL ){
