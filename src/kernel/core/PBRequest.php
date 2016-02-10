@@ -23,6 +23,7 @@
 		public static function __imprint_constants()
 		{
 			self::$_invokedTime = $GLOBALS['invokeTime'];
+			self::GetIncomingHeaders( $_SERVER );
 		}
 
 		private $_incomingRecord = array();
@@ -174,7 +175,7 @@
 
 		public function __get_all() { return $this->_incomingRecord; }
 
-		public function __get_headers()		{ return (function_exists("getallheaders")) ? getallheaders() : apache_request_headers(); }
+		public function __get_headers()		{ return self::GetIncomingHeaders(); }
 		public function __get_request()		{ return $this->_incomingRecord['request']; }
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
 		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
@@ -472,7 +473,6 @@
 			return ary_flag($flags, $name, $matchCase, $compareMode);
 		}
 
-
 		public function post($name, $type = 'raw', $default = NULL)
 		{
 			$var = $this->_incomingRecord['request']['post'];
@@ -480,6 +480,66 @@
 			if (!array_key_exists($name, $var)) return $default;
 
 			return TO($var[$name], $type);
+		}
+
+		public function pickAttribute( $fields = array(), $customFilter = NULL )
+		{
+			static $_lastFilter	= NULL, $_defaultFilter	= NULL;
+			if ( $_defaultFilter === NULL ) $_defaultFilter = function( $key, $val ){ return $val; };
+
+
+
+			// INFO: Specialization for invoke chaining
+			if ( is_callable($fields) )
+			{
+				$_lastFilter = $fields;
+				return $this;
+			}
+
+
+
+
+			// INFO: Store input customFilter if given
+			// INFO: This step goes first to allow overwrting of the default filter
+			if ( func_num_args() > 1 )
+				$_lastFilter = ( is_callable($customFilter) ) ? $customFilter : NULL;
+
+
+			// INFO: Normalize input fields and return empty if nothing given
+			$fields = is_array($fields) ? $fields : array();
+			if( empty($fields) ) return '';
+
+
+
+			$filterFunc		= is_callable($_lastFilter) ? $_lastFilter : $_defaultFilter;
+			$queryVariable 	= $this->_queryVariable;
+			$queryFlag 		= $this->_queryFlag;
+
+			$filtered = array();
+			ary_filter( $fields, function( $item ) use( &$filtered, &$filterFunc, $queryFlag, $queryVariable )
+			{
+				$encodedKey = urlencode( $item );
+
+				// INFO: Search incoming variables
+				call_user_func(function() use( &$filtered, &$filterFunc, $queryVariable, $item, $encodedKey )
+				{
+					$varVal = $filterFunc($item, @$queryVariable[ $item ], isset($queryVariable[$item]));
+					if ( $varVal === NULL ) return;
+
+					$value = urlencode( $varVal );
+					$filtered[] = "{$encodedKey}={$value}";
+				});
+
+				// INFO: Search incoming flags
+				call_user_func(function() use( &$filtered, $queryFlag, $item, $encodedKey )
+				{
+					if ( !in_array( $item, $queryFlag ) ) return;
+
+					$filtered[] = $encodedKey;
+				});
+			});
+
+			return implode( '&', $filtered );
 		}
 		// endregion
 
@@ -597,67 +657,21 @@
 
 			return $attributeContainer;
 		}
-		// endregion
+
+		private static function GetIncomingHeaders( $_SERVER_VAR = NULL ){
+			static $_incomingHeaders = NULL;
+			if ( $_incomingHeaders !== NULL ) return $_incomingHeaders;
 
 
-
-		public function pickAttribute( $fields = array(), $customFilter = NULL )
-		{
-			static $_lastFilter	= NULL, $_defaultFilter	= NULL;
-			if ( $_defaultFilter === NULL ) $_defaultFilter = function( $key, $val ){ return $val; };
-
-
-
-			// INFO: Specialization for invoke chaining
-			if ( is_callable($fields) )
+			$_incomingHeaders = array();
+			foreach ( $_SERVER_VAR as $header_name => $val )
 			{
-				$_lastFilter = $fields;
-				return $this;
+				if (substr( $header_name, 0, 5 ) !== 'HTTP_') continue;
+
+				$header_name = explode( '_', strtolower(substr( $header_name, 5 )));
+				$header_name = implode( '-', ary_filter( $header_name, function( $word ){ return ucfirst($word); } ) );
+				$_incomingHeaders[ $header_name ] = $val;
 			}
-
-
-
-
-			// INFO: Store input customFilter if given
-			// INFO: This step goes first to allow overwrting of the default filter
-			if ( func_num_args() > 1 )
-				$_lastFilter = ( is_callable($customFilter) ) ? $customFilter : NULL;
-
-
-			// INFO: Normalize input fields and return empty if nothing given
-			$fields = is_array($fields) ? $fields : array();
-			if( empty($fields) ) return '';
-
-
-
-			$filterFunc		= is_callable($_lastFilter) ? $_lastFilter : $_defaultFilter;
-			$queryVariable 	= $this->_queryVariable;
-			$queryFlag 		= $this->_queryFlag;
-
-			$filtered = array();
-			ary_filter( $fields, function( $item ) use( &$filtered, &$filterFunc, $queryFlag, $queryVariable )
-			{
-				$encodedKey = urlencode( $item );
-
-				// INFO: Search incoming variables
-				call_user_func(function() use( &$filtered, &$filterFunc, $queryVariable, $item, $encodedKey )
-				{
-					$varVal = $filterFunc($item, @$queryVariable[ $item ], isset($queryVariable[$item]));
-					if ( $varVal === NULL ) return;
-
-					$value = urlencode( $varVal );
-					$filtered[] = "{$encodedKey}={$value}";
-				});
-
-				// INFO: Search incoming flags
-				call_user_func(function() use( &$filtered, $queryFlag, $item, $encodedKey )
-				{
-					if ( !in_array( $item, $queryFlag ) ) return;
-
-					$filtered[] = $encodedKey;
-				});
-			});
-
-			return implode( '&', $filtered );
 		}
+		// endregion
 	}
