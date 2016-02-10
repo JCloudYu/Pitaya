@@ -1,13 +1,25 @@
 RewriteEngine on
 RewriteBase /
 RewriteRule ^(.*) Pitaya/portal.php [QSA,L]
+SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
 
 ##### File upload
 # php_value post_max_size 100M
 # php_value upload_max_filesize 100M
 # php_value max_execution_time 600
 
+##### Environmental constants
+# php_flag register_argc_argv On
+# php_flag magic_quotes_gpc Off
+# php_value date.timezone "UTC"
 
+##### Error and Warning
+# php_flag display_startup_errors on
+# php_flag display_errors on
+# php_flag html_errors on
+# php_flag log_errors on
+# php_value error_log /home/path/public_html/domain/PHP_errors.log
+# php_value error_reporting 30711 # E_ALL &  ~E_NOTICE & ~E_STRICT
 
 ##### URL Writing and skipping
 # RewriteCond %{REQUEST_FILENAME} !-f
@@ -23,16 +35,3 @@ RewriteRule ^(.*) Pitaya/portal.php [QSA,L]
 # 	Satisfy All
 # </FilesMatch>
 # SetEnv session.use_cookies='0';
-
-##### Environmental constants
-# php_flag register_argc_argv On
-# php_flag magic_quotes_gpc Off
-# php_value date.timezone "UTC"
-
-##### Error and Warning
-# php_flag display_startup_errors on
-# php_flag display_errors on
-# php_flag html_errors on
-# php_flag log_errors on
-# php_value error_log /home/path/public_html/domain/PHP_errors.log
-# php_value error_reporting 30711 # E_ALL &  ~E_NOTICE & ~E_STRICT
