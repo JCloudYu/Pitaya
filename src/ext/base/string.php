@@ -142,7 +142,6 @@
 
 		return $output;
 	}
-
 	function base32_decode( $input )
 	{
 		$input = strtolower($input);

@@ -7,29 +7,50 @@
 
 	final class PBFileCache extends PBCachePrototype
 	{
-		private static $_storages = array();
-		public static function Storage( $storagePath = NULL )
+		private static $_storages		= array();
+		private static $_defaultStorage	= NULL;
+
+		public static function Storage( $storageKey = '', $storagePath = NULL )
 		{
-			static $_defaultStorage = NULL;
+			$nArgs = func_num_args();
 
-			$storagePath = "{$storagePath}"; // Normalization
-
-
-			if ( empty($storagePath) )
-				return (!empty($_defaultStorage)) ? $_defaultStorage : NULL;
+			// INFO: Default storage retrieval
+			if ( $nArgs == 0 )
+				return self::$_defaultStorage;
 
 
-			if ( !is_dir( $storagePath ) || !is_readable( $storagePath ) || !is_writable( $storagePath ) ) return NULL;
 
-			$storageKey = md5(realpath($storagePath));
-			if ( !empty(self::$_storages[$storageKey]) ) return self::$_storages[$storageKey];
+			// INFO: Getter mode
+			$hashedKey = md5( @"{$storageKey}" );	// Normalization
+			if ( $nArgs == 1 )
+			{
+				if ( !empty(self::$_storages[ $hashedKey ]) )
+					return self::$_storages[ $hashedKey ];
 
 
-			self::$_storages[$storageKey] = $cacheObj = new PBFileCache( $storagePath );
-			if ( $_defaultStorage === NULL ) $_defaultStorage = $cacheObj;
+				// INFO: Setter mode with storage path
+				if ( !is_dir( $storageKey ) )
+					return NULL;
+
+				$storagePath = $storageKey;
+			}
+
+
+
+			// INFO: Setter mode
+			$storagePath = @"{$storagePath}";	// Normalization
+			if ( empty($storagePath) || !is_dir($storagePath) || !is_readable($storagePath) || !is_writable($storagePath) )
+				return NULL;
+
+
+
+			// INFO: Attach and return new stoage object
+			$cacheObj = self::$_storages[ $hashedKey ] = new PBFileCache( $storagePath );
+			if ( self::$_defaultStorage === NULL ) self::$_defaultStorage = $cacheObj;
 
 			return $cacheObj;
 		}
+
 
 
 		private $_fileStorageDir = NULL;
