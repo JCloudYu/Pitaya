@@ -25,11 +25,11 @@ class PBProcess extends PBObject
 	 *
 	 * @return PBProcess | null the specified PBProcess object
 	 */
-	public static function Process($id = NULL) { return PBSysKernel::Process( $id); }
+	public static function Process() { return PBSysKernel::Process(); }
 
 	public static function Module( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
 		try {
-			return PBSysKernel::Process( $pId )->getModule( $moduleName, $reusable );
+			return PBSysKernel::Process()->getModule( $moduleName, $reusable );
 		}
 		catch( Exception $e ) {
 			if ( $noThrow )

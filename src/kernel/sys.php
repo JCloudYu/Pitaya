@@ -420,9 +420,11 @@
 
 		// region [ System Workflow Control ]
 		// INFO: In this version of system, there will be only one process instance in the system (main process)
-		private $_processQueue = array();
+		private $_processQueue = NULL;
 
 		private function __forkProcess($service, $moduleRequest, $custInit = NULL) {
+			if ( $this->_processQueue ) return;
+
 
 			$systemIds = divide($this->_systemId);
 			$processId = encode(array($service, uniqid("", TRUE)), $systemIds['extended']);
@@ -431,7 +433,7 @@
 			$process->__processId = $processId;
 			$process->__sysAPI = $this;
 
-			$this->_processQueue[$processId] = $process;
+			$this->_processQueue = $process;
 
 
 			if ( is_callable($custInit) ) $custInit();
@@ -440,34 +442,8 @@
 			$process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
 		}
 
-		private function __killProcess($processId) {
-
-			if(array_key_exists($processId, $this->_processQueue))
-				unset($this->_processQueue[$processId]);
-		}
-
 		private function __jobDaemonRun() {
-
-			while(count($this->_processQueue) > 0)
-			{
-				foreach($this->_processQueue as $process)
-				{
-					$result = $process->run();
-					if(is_null($result))
-						$result = 'terminated';
-
-					switch($result)
-					{
-						case 'terminated':
-							$this->__killProcess($process->id);
-							break;
-						case 'exit':
-							return;
-						default:
-							break;
-					}
-				}
-			}
+			$result = $this->_processQueue->run();
 		}
 		// endregion
 
@@ -639,9 +615,9 @@
 		 *
 		 * @return PBProcess | null the specified PBProcess object
 		 */
-		public static function Process($id = NULL)
+		public static function Process()
 		{
-			return ($id === NULL) ? reset(self::$_SYS_INSTANCE->_processQueue) : @self::$_SYS_INSTANCE->_processQueue[$id];
+			return self::$_SYS_INSTANCE->_processQueue;
 		}
 		// endregion
 	}
