@@ -453,3 +453,22 @@
 
 		$____script_defined_variables = $____variables_that_are_used_in_executed_script;
 	}
+
+	/**
+	 * Singleton producer
+	 *
+	 * @param string $name the name of the object to be singleton
+	 *
+	 * @return mixed the singleton object
+	 */
+	function singleton($name)
+	{
+		static $singletons = array();
+
+		$name = trim($name);
+
+		if (array_key_exists($name, $singletons)) return $singletons[$name];
+
+		$singletons[$name] = new $name();
+		return $singletons[$name];
+	}
