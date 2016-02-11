@@ -39,30 +39,30 @@ class PBProcess extends PBObject
 		}
 	}
 
-	public static function ServiceModule( $pId = NULL ){
-		return PBSysKernel::Process( $pId )->_entryModule;
+	public static function ServiceModule(){
+		return PBSysKernel::Process()->_entryModule;
 	}
 
-	public static function Execute($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
+	public static function Execute($module, $request = NULL, $reusable = FALSE) {
 
-		$PROC = PBSysKernel::Process( $pId);
+		$PROC = PBSysKernel::Process();
 
 		if (!is_a($module, "PBModule")) $module = $PROC->getModule("{$module}", $reusable);
 		return $PROC->_execChain( $module, $request );
 	}
 
-	public static function PackExecution( $module, $request = NULL, $reusable = FALSE, $pId = NULL) {
-		if (!is_a($module, "PBModule")) $module = PBSysKernel::Process( $pId)->getModule( "{$module}", $reusable);
+	public static function PackExecution( $module, $request = NULL, $reusable = FALSE) {
+		if (!is_a($module, "PBModule")) $module = PBSysKernel::Process()->getModule( "{$module}", $reusable);
 
-		$result = self::Execute($module, $request, $reusable, $pId);
+		$result = self::Execute($module, $request, $reusable);
 		if ( !empty($module->ext->htmlClass) || !empty($module->ext->htmlAttr) )
 			$result = "<div {$module->ext->htmlAttr} class='{$module->ext->htmlClass}' data-pb-mod='{$module->class}'>{$result}</div>";
 
 		return $result;
 	}
 
-	public static function Render($module, $request = NULL, $reusable = FALSE, $pId = NULL) {
-		echo self::PackExecution( $module, $request, $reusable, $pId );
+	public static function Render($module, $request = NULL, $reusable = FALSE) {
+		echo self::PackExecution( $module, $request, $reusable );
 	}
 
 	public function __construct() {
