@@ -5,7 +5,7 @@
  */
 	using('kernel.basis.PBObject');
 
-	final class PBRunTime extends PBObject
+	final class PBRuntime extends PBObject
 	{
 		private static $_CURRENT_ENV	= array();
 		private static $_ARGC			= 0;
@@ -19,8 +19,7 @@
 			self::$_ARGC			= $GLOBALS['RUNTIME_ARGC'];
 			self::$_ARGV			= $GLOBALS['RUNTIME_ARGV'];
 		}
-
-		public static function RunTime()
+		public static function Runtime()
 		{
 			static $_SINGLETON = NULL;
 
