@@ -5,7 +5,7 @@
  */
 	using('kernel.basis.PBObject');
 
-	final class PBRuntime extends PBObject
+	final class PBRuntimeCtrl extends PBObject
 	{
 		private static $_CURRENT_ENV	= array();
 		private static $_ARGC			= 0;
@@ -38,3 +38,5 @@
 		public function __get_inputArgs()		{ return self::$_ARGV; }
 		public function __get_inputArgsCount()	{ return self::$_ARGC; }
 	}
+
+	class_alias( 'PBRuntimeCtrl', 'PBRuntime' );
