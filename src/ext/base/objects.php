@@ -65,7 +65,7 @@
 			else
 				$this->_container[ $offset ] = $value;
 		}
-		public function& offsetGet( $offset ) {
+		public function offsetGet( $offset ) {
 			return $this->_container[ $offset ];
 		}
 		public function offsetExists( $offset ) {
@@ -134,7 +134,7 @@
 
 	class PBJSONObject extends PBJSONContainer
 	{
-		public static function Object( $data = NULL ) {
+		public static function JSONObject( $data = NULL ) {
 			$obj = new PBJSONObject();
 
 			if ( func_num_args() > 1 && is_array($data) )
@@ -153,7 +153,7 @@
 
 	class PBJSONArray extends PBJSONContainer
 	{
-		public static function Array( $data = NULL ) {
+		public static function JSONArray( $data = NULL ) {
 			$obj = new PBJSONArray();
 
 			if ( func_num_args() > 1 && is_array($data) )
