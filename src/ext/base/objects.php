@@ -134,8 +134,13 @@
 
 	class PBJSONObject extends PBJSONContainer
 	{
-		public static function Object() {
-			return new PBJSONObject();
+		public static function Object( $data = NULL ) {
+			$obj = new PBJSONObject();
+
+			if ( func_num_args() > 1 && is_array($data) )
+				$obj->_container = $data;
+
+			return $obj;
 		}
 
 		public function safe_cast() {
@@ -148,8 +153,13 @@
 
 	class PBJSONArray extends PBJSONContainer
 	{
-		public static function Array() {
-			return new PBJSONArray();
+		public static function Array( $data = NULL ) {
+			$obj = new PBJSONArray();
+
+			if ( func_num_args() > 1 && is_array($data) )
+				$obj->_container = $data;
+
+			return $obj;
 		}
 
 		public function safe_cast() {
