@@ -59,7 +59,7 @@
 
 		abstract function safe_cast();
 
-		public function offsetSet( $offset, &$value ) {
+		public function offsetSet( $offset, $value ) {
 			if ( $offset === NULL )
 				$this->_container[] = $value;
 			else
@@ -78,7 +78,7 @@
 		public function& __get( $name ) {
 			return $this[$name];
 		}
-		public function __set( $name, &$value ) {
+		public function __set( $name, $value ) {
 			$this[ $name ] = $value;
 		}
 		public function __isset( $name ) {
