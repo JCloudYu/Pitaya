@@ -134,6 +134,10 @@
 
 	class PBJSONObject extends PBJSONContainer
 	{
+		public static function Object() {
+			return new PBJSONObject();
+		}
+
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
@@ -144,10 +148,14 @@
 
 	class PBJSONArray extends PBJSONContainer
 	{
+		public static function Array() {
+			return new PBJSONArray();
+		}
+
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
-				
+
 			return array_values($this->_container);
 		}
 	}
