@@ -228,3 +228,23 @@
 
 		return $collected;
 	}
+
+	function json_object( $input = NULL ) {
+		if ( func_num_args() == 0 ) return new stdClass();
+
+		return ( !is_array($input) ) ? $input : (object)$input;
+	}
+
+	function json_array( $input = NULL ) {
+		if ( func_num_args() == 0 ) return array();
+
+		return ( !is_array($input) ) ? $input : array_values($input);
+	}
+
+	function is_assoc_ary( &$arr ) {
+    	return array_keys($arr) !== range(0, count($arr) - 1);
+	}
+
+	function is_normal_ary( &$arr ) {
+    	return array_keys($arr) === range(0, count($arr) - 1);
+	}
