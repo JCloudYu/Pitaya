@@ -59,13 +59,13 @@
 
 		abstract function safe_cast();
 
-		public function offsetSet( $offset, $value ) {
+		public function offsetSet( $offset, $value ) {DEBUG::VarDump($offset);
 			if ( $offset === NULL )
 				$this->_container[] = $value;
 			else
 				$this->_container[ $offset ] = $value;
 		}
-		public function offsetGet( $offset ) {
+		public function& offsetGet( $offset ) {
 			return $this->_container[ $offset ];
 		}
 		public function offsetExists( $offset ) {
@@ -137,7 +137,7 @@
 		public static function JSONObject( $data = NULL ) {
 			$obj = new PBJSONObject();
 
-			if ( func_num_args() > 1 && is_array($data) )
+			if ( func_num_args() > 0 && is_array($data) )
 				$obj->_container = $data;
 
 			return $obj;
@@ -156,7 +156,7 @@
 		public static function JSONArray( $data = NULL ) {
 			$obj = new PBJSONArray();
 
-			if ( func_num_args() > 1 && is_array($data) )
+			if ( func_num_args() > 0 && is_array($data) )
 				$obj->_container = $data;
 
 			return $obj;
