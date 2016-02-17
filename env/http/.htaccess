@@ -1,6 +1,9 @@
 RewriteEngine on
-RewriteBase /
-RewriteRule ^(.*) Pitaya/portal.php [QSA,L]
+RewriteCond gateway.php -f
+	RewriteRule .* gateway.php
+RewriteCond gateway.php !-f
+	RewriteRule .* Pitaya/portal.php
+
 SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
 
 ##### File upload
