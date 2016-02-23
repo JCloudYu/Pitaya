@@ -59,7 +59,7 @@
 
 		abstract function safe_cast();
 
-		public function offsetSet( $offset, $value ) {DEBUG::VarDump($offset);
+		public function offsetSet( $offset, $value ) {
 			if ( $offset === NULL )
 				$this->_container[] = $value;
 			else
