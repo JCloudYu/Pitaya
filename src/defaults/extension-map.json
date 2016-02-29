@@ -1,5 +1,5 @@
 {
-	"js":		"text/javascript",
+	"js":		"application/javascript",
 	"css":		"text/css",
 	"txt":		"text/plain",
 	"rif":		"application/rtf",
