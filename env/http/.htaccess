@@ -1,10 +1,15 @@
 RewriteEngine on
-RewriteCond gateway.php -f
-	RewriteRule .* gateway.php
-RewriteCond gateway.php !-f
-	RewriteRule .* Pitaya/portal.php
 
+# gateway.php does exist
+RewriteRule .* gateway.php
+
+# ateway.php doesn't exist
+# RewriteRule .* Pitaya/portal.php
+
+# Put authorization header back
 SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
+
+
 
 ##### File upload
 # php_value post_max_size 100M
