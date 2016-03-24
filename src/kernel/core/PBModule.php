@@ -17,16 +17,16 @@ class PBModule extends PBObject
 
 
 	// INFO: Main APIs
-	public function prepare($moduleRequest, $taggingFlag = NULL) {}
-	public function exec($param, $taggingFlag = NULL) { return $param; }
+	public function prepare($moduleRequest) {}
+	public function exec($param) { return $param; }
 
-	public function prepareCORS($moduleRequest, $taggingFlag = NULL) {}
-	public function cors($param, $taggingFlag = NULL) { return $param; }
+	public function prepareCORS($moduleRequest) {}
+	public function cors($param) { return $param; }
 
-	public function prepareShell($moduleRequest, $taggingFlag = NULL) {}
-	public function shell($param, $taggingFlag = NULL) { return $param; }
+	public function prepareShell($moduleRequest) {}
+	public function shell($param) { return $param; }
 
-	public function prepareEvent($moduleRequest, $targetFlag = NULL) {}
+	public function prepareEvent($moduleRequest) {}
 	public function event($event) { return $event; }
 
 
