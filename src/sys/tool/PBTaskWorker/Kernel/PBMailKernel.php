@@ -76,7 +76,7 @@
 			return $this->_timeout;
 		}
 		public function __set_conTimeout( $value ) {
-			return $this->_relayPort = CAST( 'int strict', $value, 5 );
+			return $this->_relayPort = CAST( $value, 'int strict', 5 );
 		}
 
 		protected $_debugOutput = FALSE;
