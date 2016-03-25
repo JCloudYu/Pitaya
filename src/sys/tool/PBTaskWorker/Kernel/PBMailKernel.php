@@ -155,7 +155,7 @@
 						else
 						{
 							$addr = "<{$email['email']}>";
-							$name = "{$name} ";
+							$name = "{$email['name']} ";
 						}
 
 						$recipients[] = $addr;
