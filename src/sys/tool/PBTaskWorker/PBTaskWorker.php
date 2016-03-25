@@ -20,7 +20,7 @@
 			$result = array();
 			foreach ( $this->_kernels as $idx => $task )
 				$result[$idx] = $task->doProcess( $msg );
-			return $result;
+			return count($result) <= 1 ? array_shift($result) : $result;
 		}
 
 		public function batch( $msgPackages ) {

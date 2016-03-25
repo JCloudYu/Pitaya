@@ -31,6 +31,22 @@
 			$this->_password = "{$value}";
 		}
 
+		protected $_fromName = "";
+		public function __get_fromName() {
+			return $this->_fromName;
+		}
+		public function __set_fromName( $value ) {
+			$this->_fromName = "{$value}";
+		}
+
+		protected $_fromAddr = "";
+		public function __get_fromAddr() {
+			return $this->_fromAddr;
+		}
+		public function __set_fromAddr( $value ) {
+			$this->_fromAddr = "{$value}";
+		}
+
 		protected $_relayAddr = "";
 		public function __get_relayAddr() {
 			return $this->_relayAddr;
@@ -52,7 +68,7 @@
 			return $this->_relayPort;
 		}
 		public function __set_relayPort( $value ) {
-			return $this->_relayPort = CAST( 'int strict', $value, 25 );
+			return $this->_relayPort = CAST( $value, 'int strict', 25 );
 		}
 
 		protected $_timeout = 15;
@@ -62,6 +78,15 @@
 		public function __set_conTimeout( $value ) {
 			return $this->_relayPort = CAST( 'int strict', $value, 5 );
 		}
+
+		protected $_debugOutput = FALSE;
+		public function __get_debugOutput() {
+			return $this->_debugOutput;
+		}
+		public function __set_debugOutput( $value ) {
+			$this->_debugOutput = !empty($value);
+		}
+
 
 
 
@@ -88,7 +113,7 @@
 		}
 
 
-		protected static function EatResponse( $socket, $expectedCode )
+		protected static function EatResponse( $socket, $expectedCode, $debugOutput = FALSE )
 		{
 			$lastResponse = '';
 			while ( substr( $lastResponse, 3, 1 ) != ' ' )
@@ -102,6 +127,8 @@
 				}
 			}
 
+			if ( $debugOutput ) echo trim($lastResponse) . EON;
+
 			$statusCode = CAST( @substr( $lastResponse, 0, 3 ), 'int', 0 );
 			if ( ($statusCode != $expectedCode) )
 			{
@@ -114,7 +141,9 @@
 			}
 		}
 
-		protected static function WriteContent( $socket, $content ) {
+		protected static function WriteContent( $socket, $content, $debugOutput = FALSE ) {
+			if ( $debugOutput ) echo trim($content) . EON;
+
 			fwrite( $socket, "{$content}\r\n" );
 		}
 
@@ -144,7 +173,9 @@
 				ary_filter( array( 'to', 'cc', 'bcc' ), function( $field, &$idx ) use( &$msg, &$recipients ) {
 					$idx = $field;
 
-					return (!is_array(@$msg[$field])) ? array() : ary_filter( $msg[$field], function( $email ) use( &$recipients ) {
+					$fieldData = empty($msg[$field]) ? array() : $msg[$field];
+					$receivers = is_array($fieldData) ? $fieldData : array($fieldData);
+					return ary_filter( $receivers, function( $email ) use( &$recipients ) {
 
 
 						if ( !is_array($email) )
@@ -155,7 +186,7 @@
 						else
 						{
 							$addr = "<{$email['email']}>";
-							$name = "{$email['name']} ";
+							$name = "\"{$email['name']}\" ";
 						}
 
 						$recipients[] = $addr;
@@ -173,70 +204,78 @@
 				$this->_connect();
 
 				// region [ ESMTP Negotiation ]
-				self::EatResponse( $this->_conSocket, 220, __LINE__ );
+				self::EatResponse( $this->_conSocket, 220, $this->_debugOutput );
 
 
 				// INFO: Initiate ESMTP mode
-				self::WriteContent( $this->_conSocket, "EHLO {$this->_relayAddr}" );
-				self::EatResponse( $this->_conSocket, 250, __LINE__ );
+				self::WriteContent( $this->_conSocket, "EHLO {$this->_relayAddr}", $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 
 
 
 				// INFO: AUTH Login Authentication protocol
-				self::WriteContent( $this->_conSocket, "AUTH LOGIN" );
-				self::EatResponse( $this->_conSocket, 334, __LINE__ );
+				self::WriteContent( $this->_conSocket, "AUTH LOGIN", $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
 
-				self::WriteContent( $this->_conSocket, base64_encode( $this->_account ) );
-				self::EatResponse( $this->_conSocket, 334, __LINE__ );
+				self::WriteContent( $this->_conSocket, base64_encode( $this->_account ), $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
 
-				self::WriteContent( $this->_conSocket, base64_encode( $this->_password ) );
-				self::EatResponse( $this->_conSocket, 235, __LINE__ );
+				self::WriteContent( $this->_conSocket, base64_encode( $this->_password ), $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 235, $this->_debugOutput );
 
 
 
 				// INFO: Write envelope info
-				self::WriteContent( $this->_conSocket, "MAIL FROM: <{$this->_account}>" );
-				self::EatResponse( $this->_conSocket, 250, __LINE__ );
+				self::WriteContent( $this->_conSocket, "MAIL FROM: <{$this->_fromAddr}>", $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 
 				foreach ( $recipients as $email ) {
-					self::WriteContent( $this->_conSocket, "RCPT TO: {$email}" );
-					self::EatResponse( $this->_conSocket, 250, __LINE__ );
+					self::WriteContent( $this->_conSocket, "RCPT TO: {$email}", $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 				}
 
 
 
 				// INFO: Start mail contents
-				self::WriteContent( $this->_conSocket, "DATA" );
-				self::EatResponse( $this->_conSocket, 354, __LINE__ );
+				self::WriteContent( $this->_conSocket, "DATA", $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 354, $this->_debugOutput );
+
+
+
+				// region [ Headers ]
+				$fromName = empty($this->_fromName) ? "" : "\"{$this->_fromName}\" ";
+				self::WriteContent( $this->_conSocket, "From: {$fromName}<{$this->_fromAddr}>", $this->_debugOutput );
+
+				// TO receivers
+				if ( !empty($to) )
+					self::WriteContent( $this->_conSocket, "To: " . implode( ', ', $to ), $this->_debugOutput );
+
+				// CC receivers
+				if ( !empty($cc) )
+					self::WriteContent( $this->_conSocket, "Cc: " . implode( ' ', $cc ), $this->_debugOutput );
+
+				// Date
+				self::WriteContent( $this->_conSocket, "Date: " . date( "r" ), $this->_debugOutput );
+				// endregion
 
 
 
 				// INFO: Write mail body
-				self::WriteContent( $this->_conSocket, "Subject: {$subject}" );
-
-				// region [ Headers ]
-				// TO receivers
-				if ( !empty($to) )
-					self::WriteContent( $this->_conSocket, "TO: " . implode( ', ', $to ) );
-
-				// CC receivers
-				if ( !empty($cc) )
-					self::WriteContent( $this->_conSocket, "CC: " . implode( ' ', $cc ) );
-				// endregion
+				self::WriteContent( $this->_conSocket, "Subject: {$subject}", $this->_debugOutput );
 
 				// Message Body
-				self::WriteContent( $this->_conSocket, $content );
+				self::WriteContent( $this->_conSocket, $content, $this->_debugOutput );
 
 
 
 				// INFO: Finish writing
-				self::WriteContent( $this->_conSocket, '.' );
-				self::EatResponse( $this->_conSocket, 250, __LINE__ );
+				self::WriteContent( $this->_conSocket, '.', $this->_debugOutput );
+				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 
 
 
 				// INFO: Quit session
-				self::WriteContent( $this->_conSocket, 'QUIT' );
+				self::WriteContent( $this->_conSocket, 'QUIT', $this->_debugOutput );
 				// endregion
 
 				$this->_disconnect();
