@@ -150,7 +150,7 @@
 		public static function STDOUT()
 		{
 			if ( self::$_OUT_STREAM ) return self::$_OUT_STREAM;
-			return ( self::$_OUT_STREAM = new PBStream( STDIN ) );
+			return ( self::$_OUT_STREAM = new PBStream( STDOUT ) );
 		}
 
 
