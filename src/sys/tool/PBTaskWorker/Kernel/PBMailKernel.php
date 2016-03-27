@@ -136,7 +136,7 @@
 					'status'	=> PBMailKernel::ERROR_UNEXPECTED_RESPONSE,
 					'code'		=> $statusCode,
 					'expected'	=> $expectedCode,
-					'response'	=> @substr( $lastResponse, 3 )
+					'response'	=> trim(@substr( $lastResponse, 3 ))
 				));
 			}
 		}
