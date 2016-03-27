@@ -15,6 +15,7 @@
 		const ERROR_UNEXPECTED_RESPONSE	= -4;
 
 
+		// region [ Properties ]
 		protected $_account = "";
 		public function __get_account() {
 			return $this->_account;
@@ -86,6 +87,7 @@
 		public function __set_debugOutput( $value ) {
 			$this->_debugOutput = !empty($value);
 		}
+		// endregion
 
 
 
@@ -103,7 +105,6 @@
 				));
 			}
 		}
-
 		protected function _disconnect()
 		{
 			if ( $this->_conSocket )
@@ -111,7 +112,6 @@
 
 			$this->_conSocket = NULL;
 		}
-
 
 		protected static function EatResponse( $socket, $expectedCode, $debugOutput = FALSE )
 		{
@@ -140,146 +140,48 @@
 				));
 			}
 		}
-
 		protected static function WriteContent( $socket, $content, $debugOutput = FALSE ) {
 			if ( $debugOutput ) echo trim($content) . EON;
 
 			fwrite( $socket, "{$content}\r\n" );
 		}
-
-
 	}
 
 	class PBSMTPKernel extends PBMailKernel
 	{
-		public function process( $msg = NULL )
-		{
+		public function link() {
+			// region [ Start of SMTP Session ]
 			try
 			{
-				// region [ Process email information ]
-				if ( !is_array( $msg ) )
-				{
-					throw new PBException(array(
-						'status' => PBMailKernel::ERROR_INCORRECT_GIVEN_MSG,
-						'msg'	 => "Given message is invalid"
-					));
-				}
-
-				$subject	= "{$msg['subject']}";
-				$content	= "{$msg['content']}";
-				$recipients	= array();
-
-				$parsed =
-				ary_filter( array( 'to', 'cc', 'bcc' ), function( $field, &$idx ) use( &$msg, &$recipients ) {
-					$idx = $field;
-
-					$fieldData = empty($msg[$field]) ? array() : $msg[$field];
-					$receivers = is_array($fieldData) ? $fieldData : array($fieldData);
-					return ary_filter( $receivers, function( $email ) use( &$recipients ) {
-
-
-						if ( !is_array($email) )
-						{
-							$addr = "<$email>";
-							$name = "";
-						}
-						else
-						{
-							$addr = "<{$email['email']}>";
-							$name = "\"{$email['name']}\" ";
-						}
-
-						$recipients[] = $addr;
-						return "{$name}{$addr}";
-					});
-				});
-
-				$to	 = $parsed[ 'to' ];
-				$cc  = $parsed[ 'cc' ];
-				// endregion
-
-
-
-				// region [ SMTP Session ]
 				$this->_connect();
-
-				// region [ ESMTP Negotiation ]
 				self::EatResponse( $this->_conSocket, 220, $this->_debugOutput );
 
 
-				// INFO: Initiate ESMTP mode
-				self::WriteContent( $this->_conSocket, "EHLO {$this->_relayAddr}", $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 
-
-
-				// INFO: AUTH Login Authentication protocol
-				self::WriteContent( $this->_conSocket, "AUTH LOGIN", $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
-
-				self::WriteContent( $this->_conSocket, base64_encode( $this->_account ), $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
-
-				self::WriteContent( $this->_conSocket, base64_encode( $this->_password ), $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 235, $this->_debugOutput );
-
-
-
-				// INFO: Write envelope info
-				self::WriteContent( $this->_conSocket, "MAIL FROM: <{$this->_fromAddr}>", $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
-
-				foreach ( $recipients as $email ) {
-					self::WriteContent( $this->_conSocket, "RCPT TO: {$email}", $this->_debugOutput );
+				if ( empty($this->_account) && empty($this->_password) )
+				{
+					// INFO: Initiate Normal SMTP mode
+					self::WriteContent( $this->_conSocket, "HELO {$this->_relayAddr}", $this->_debugOutput );
 					self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 				}
+				else
+				{
+					// INFO: Initiate ESMTP mode
+					self::WriteContent( $this->_conSocket, "EHLO {$this->_relayAddr}", $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
 
 
 
-				// INFO: Start mail contents
-				self::WriteContent( $this->_conSocket, "DATA", $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 354, $this->_debugOutput );
+					// INFO: AUTH Login Authentication protocol
+					self::WriteContent( $this->_conSocket, "AUTH LOGIN", $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
 
+					self::WriteContent( $this->_conSocket, base64_encode( $this->_account ), $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 334, $this->_debugOutput );
 
-
-				// region [ Headers ]
-				$fromName = empty($this->_fromName) ? "" : "\"{$this->_fromName}\" ";
-				self::WriteContent( $this->_conSocket, "From: {$fromName}<{$this->_fromAddr}>", $this->_debugOutput );
-
-				// TO receivers
-				if ( !empty($to) )
-					self::WriteContent( $this->_conSocket, "To: " . implode( ', ', $to ), $this->_debugOutput );
-
-				// CC receivers
-				if ( !empty($cc) )
-					self::WriteContent( $this->_conSocket, "Cc: " . implode( ' ', $cc ), $this->_debugOutput );
-
-				// Date
-				self::WriteContent( $this->_conSocket, "Date: " . date( "r" ), $this->_debugOutput );
-				// endregion
-
-
-
-				// INFO: Write mail body
-				self::WriteContent( $this->_conSocket, "Subject: {$subject}", $this->_debugOutput );
-
-				// Message Body
-				self::WriteContent( $this->_conSocket, $content, $this->_debugOutput );
-
-
-
-				// INFO: Finish writing
-				self::WriteContent( $this->_conSocket, '.', $this->_debugOutput );
-				self::EatResponse( $this->_conSocket, 250, $this->_debugOutput );
-
-
-
-				// INFO: Quit session
-				self::WriteContent( $this->_conSocket, 'QUIT', $this->_debugOutput );
-				// endregion
-
-				$this->_disconnect();
-				// endregion
+					self::WriteContent( $this->_conSocket, base64_encode( $this->_password ), $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 235, $this->_debugOutput );
+				}
 
 				return TRUE;
 			}
@@ -291,7 +193,158 @@
 
 				return $descriptor;
 			}
+			// endregion
+		}
+		public function unlink() {
+			// region [ End of SMTP Session ]
+			try
+			{
+				if ( $this->_conSocket )
+				{
+					self::WriteContent( $this->_conSocket, 'QUIT', $this->_debugOutput );
+					$this->_disconnect();
+				}
 
+				return TRUE;
+			}
+			catch( PBException $e )
+			{
+				$descriptor = $e->descriptor;
+				if ( $descriptor['status'] != PBMailKernel::ERROR_CONNECTION )
+					$this->_disconnect();
+
+				return $descriptor;
+			}
+			// endregion
+		}
+
+		public function process( $msg = NULL )
+		{
+			try
+			{
+				if ( empty($this->_conSocket) )
+				{
+					throw new PBException(array(
+						'status' => PBMailKernel::ERROR_CONNECTION,
+						'msg'	 => "Connection to remote server has not been established!"
+					));
+				}
+
+				if ( !is_array( $msg ) )
+				{
+					throw new PBException(array(
+						'status' => PBMailKernel::ERROR_INCORRECT_GIVEN_MSG,
+						'msg'	 => "Given message is invalid"
+					));
+				}
+
+				$senderInfo = array( "addr" => $this->_fromAddr, "name" => $this->_fromName );
+				self::sendMail( $this->_conSocket, $senderInfo, $msg, $this->_debugOutput );
+
+				return TRUE;
+			}
+			catch( PBException $e )
+			{
+				if ( $this->_conSocket )
+				{
+					self::WriteContent( $this->_conSocket, 'RSET', $this->_debugOutput );
+					self::EatResponse( $this->_conSocket, 250, $debugOutput );
+				}
+
+				return $e->descriptor;
+			}
+
+		}
+
+		public static function sendMail( $socket, $from, $msg, $debugOutput = FALSE )
+		{
+			// INFO: Parse and collect receipient information
+			$recipients	= array();
+			$parsed = ary_filter( array( 'to', 'cc', 'bcc' ), function( $field, &$idx ) use( &$msg, &$recipients ) {
+				$fieldData = @$msg[ $idx = $field ];
+				if ( empty($fieldData) ) return array();
+
+
+
+				return ary_filter(
+					is_array($fieldData) ? $fieldData : array($fieldData),
+					function( $email ) use( &$recipients ) {
+						$result = $addr = "<$email>";
+
+
+						if ( is_array($email) )
+						{
+							$addr	= "<{$email['email']}>";
+							$result = "\"{$email['name']}\" {$addr}";
+						}
+
+						$recipients[] = $addr;
+						return $result;
+					}
+				);
+			});
+
+
+
+			$subject	= "{$msg['subject']}";
+			$content	= "{$msg['content']}";
+			$to			= $parsed[ 'to' ];
+			$cc			= $parsed[ 'cc' ];
+
+
+
+			if ( !is_array($from) )
+			{
+				$senderAddr = "{$from}";
+				$senderName = "";
+			}
+			else
+			{
+				$senderAddr	= "{$from['addr']}";
+				$senderName = trim("{$from['name']}");
+			}
+
+			$senderInfo = (empty( $senderName ) ? "" : "\"{$senderName}\" " ) . "<{$senderAddr}>";
+
+
+
+			// INFO: Write envelope info
+			self::WriteContent( $socket, "MAIL FROM: <{$senderAddr}>", $debugOutput );
+			self::EatResponse( $socket, 250, $debugOutput );
+
+			foreach ( $recipients as $email ) {
+				self::WriteContent( $socket, "RCPT TO: {$email}", $debugOutput );
+				self::EatResponse( $socket, 250, $debugOutput );
+			}
+
+
+
+
+
+			// region [ Start writing email ]
+			self::WriteContent( $socket, "DATA", $debugOutput );
+			self::EatResponse( $socket, 354, $debugOutput );
+
+
+
+			// INFO: Headers
+			self::WriteContent( $socket, "From: {$senderInfo}", $debugOutput );
+			self::WriteContent( $socket, "To: " . implode( ', ', $to ), $debugOutput );
+			if ( !empty($cc) ) self::WriteContent( $socket, "Cc: " . implode( ' ', $cc ), $debugOutput );
+			self::WriteContent( $socket, "Date: " . date( "r" ), $debugOutput );
+			self::WriteContent( $socket, "Subject: {$subject}", $debugOutput );
+
+
+
+			// INFO: Body
+			self::WriteContent( $socket, $content, $debugOutput );
+
+
+
+			// INFO: Finishing
+			self::WriteContent( $socket, '.', $debugOutput );
+			self::EatResponse( $socket, 250, $debugOutput );
+			// endregion
 		}
 	}
 
