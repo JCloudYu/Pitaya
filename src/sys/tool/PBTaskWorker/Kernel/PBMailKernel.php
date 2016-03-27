@@ -97,7 +97,7 @@
 		protected $_conSocket = NULL;
 		protected function _connect()
 		{
-			if ( !($this->_conSocket = fsockopen("{$this->_protocol}{$this->_relayAddr}", $this->_relayPort, $errno, $errstr, $this->_timeout)) )
+			if ( !($this->_conSocket = @fsockopen("{$this->_protocol}{$this->_relayAddr}", $this->_relayPort, $errno, $errstr, $this->_timeout)) )
 			{
 				throw new PBException( array(
 					'status' => PBMailKernel::ERROR_CONNECTION,
