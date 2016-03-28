@@ -56,6 +56,7 @@
 			$connection = new ExtPDO($dsn, $param['account'], $param['password'], $option);
 			$connection->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			$connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
 			return $connection;
 		}
 
