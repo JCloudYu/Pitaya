@@ -4,23 +4,24 @@
 	 * Created by JCloudYu on 2014/03/17 07:04
 	 */
 
-	function redir($targetAddr, $addHistory = FALSE)
-	{
+	function redir($targetAddr, $addHistory = FALSE) {
+		$targetAddr = "{$targetAddr}";
+
 		if ( $addHistory )
 		{
-			echo "<script> window.location.href = '{$targetAddr}'; </script>"; ob_flush();
+			$targetAddr = json_encode( $targetAddr );
+			echo "<script>(function(){setTimeout(function(){ window.location.href = {$targetAddr}; }, $delay );})();</script>"; ob_flush();
 			Termination::NORMALLY();
 		}
 
 
 
-		if (headers_sent())
-		{
-			echo "<script> window.location.replace('{$targetAddr}'); </script>"; ob_flush();
-		}
+		if ( !headers_sent() && $delay == 0 )
+			header("Location: {$targetAddr}");
 		else
 		{
-			header("Location: {$targetAddr}");
+			$targetAddr = json_encode( $targetAddr );
+			echo "<script>(function(){setTimeout(function(){ window.location.replace('{$targetAddr}'); }, $delay );})();</script>"; ob_flush();
 		}
 
 
