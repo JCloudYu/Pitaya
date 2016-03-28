@@ -258,7 +258,7 @@ SQL
 		public function queryAll( $table, $options = array(), &$pageInfo = NULL )
 		{
 			$BASE_SQL = "SELECT :fields FROM `{$table}` WHERE 1";
-			return $this->querySelect( $BASE_SQL, array(':id' => $val), $options, $pageInfo);
+			return $this->querySelect( $BASE_SQL, NULL, $options, $pageInfo);
 		}
 
 		public function queryPicking( $table, $val, $field = 'id', $options = array(), &$pageInfo = NULL )
