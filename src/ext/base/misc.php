@@ -62,7 +62,7 @@
 
 			// region string [force] [lower-case] [upper-case] [decode-url] [encode-url] [purge-html]
 			/*
-			 *	CAST( $value, 'int strict no-casting', $default )
+			 *	CAST( $value, 'string purge-html', $default )
 			 */
 			case 'string':
 				$default = $filter;
