@@ -21,13 +21,11 @@
 		if ( $_singleton === NULL ) $_singleton = new PBDataTree();
 
 
+		$numArgs = func_num_args();
+		if ( $numArgs == 0 ) return $_singleton;
 
-		if ( $selector === NULL ) return $_singleton;
 
-		if ( func_num_args() > 1 )
-			$_singleton->set( $selector, $value );
-
-		return $_singleton->get( $selector );
+		return ( $numArgs > 1 ) ? $_singleton->set( $selector, $value ) : $_singleton->get( $selector );
 	}
 
 	function S( $selector = NULL ) { return D( $selector ); } // DEPRECATED: S will be deprecated in v1.4.0
