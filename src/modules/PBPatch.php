@@ -49,6 +49,7 @@
 				$patchDir = $this->_patchDir;
 			}
 
+
 			$patchList = array();
 			$dh  = opendir($patchDir);
 			while ( ($filename = readdir($dh)) !== FALSE )
@@ -79,6 +80,13 @@
 			usort($patchList, "CompareVersion");
 
 
+			$preprocessor = "{$patchDir}/preprocess.php";
+			if ( is_file($preprocessor) && is_readable($preprocessor) )
+			{
+				PBStdIO::STDOUT( "Loading preprocessor..." );
+				require_once $preprocessor;
+			}
+
 			$CWD = getcwd();
 			foreach ($patchList as $version)
 			{
@@ -99,5 +107,12 @@
 				PBStdIO::STDOUT("Patch done!");
 			}
 			chdir($CWD);
+
+			$postprocessor = "{$patchDir}/postprocess.php";
+			if ( is_file($postprocessor) && is_readable($postprocessor) )
+			{
+				PBStdIO::STDOUT( "Loading postprocessor..." );
+				require_once $postprocessor;
+			}
 		}
 	}
