@@ -347,7 +347,10 @@
 			$this->_mime = "{$value}";
 		}
 
-
+		public function prepare( $moduleRequest ) {
+			$mime = trim("{$moduleRequest['mime']}");
+			if ( !empty($mime) ) $this->_mime = $mime;
+		}
 
 		public function exec( $param ) {
 			PBHTTP::ResponseContent( $param, $this->_mime );
