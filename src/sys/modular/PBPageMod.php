@@ -16,5 +16,5 @@
 
 
 
-	// DEPRECATED: PBMod class will be removed in v1.4.0
+	// DEPRECATED: PBMod class will be removed in v2.0.0
 	class_alias( 'PBPageMod', 'PBMod' );

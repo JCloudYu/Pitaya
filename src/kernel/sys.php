@@ -32,7 +32,7 @@
 				}
 
 				s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
-				s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+				s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v2.0.0
 				s_define('DEFAULT_SERVICE', 	'index', TRUE);
 
 				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL', 0, TRUE );
@@ -331,7 +331,7 @@
 				if ( !empty($service) )
 					array_unshift($moduleRequest, $service);
 
-				// DEPRECATED: The constants __DEFAULT_SERVICE__ will be removed in v1.4.0
+				// DEPRECATED: The constants __DEFAULT_SERVICE__ will be removed in v2.0.0
 				$service = (defined('DEFAULT_SERVICE')) ? DEFAULT_SERVICE : __DEFAULT_SERVICE__;
 				$state = $state || available("service.{$service}.{$service}", FALSE);
 
@@ -547,7 +547,7 @@
 			if ( defined("MODULE_PATH") )
 				$moduleSearchPaths[] = MODULE_PATH . ".";
 			else
-			if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v1.4.0
+			if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v2.0.0
 				$moduleSearchPaths[] = "service." . __MODULE_PATH__ . ".";
 
 			foreach ( $this->_moduleSearchPaths as $path ) $moduleSearchPaths[] = "{$path}.";

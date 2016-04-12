@@ -28,4 +28,4 @@
 		return ( $numArgs > 1 ) ? $_singleton->set( $selector, $value ) : $_singleton->get( $selector );
 	}
 
-	function S( $selector = NULL ) { return D( $selector ); } // DEPRECATED: S will be deprecated in v1.4.0
+	function S( $selector = NULL ) { return D( $selector ); } // DEPRECATED: S will be deprecated in v2.0.0

@@ -10,9 +10,9 @@
 
 
 	define("PITAYA_VERSION_MAJOR",	 1);
-	define("PITAYA_VERSION_MINOR",	 3);
-	define("PITAYA_VERSION_BUILD",	10);
-	define("PITAYA_VERSION_PATCH",	 1);
+	define("PITAYA_VERSION_MINOR",	 4);
+	define("PITAYA_VERSION_BUILD",	 0);
+	define("PITAYA_VERSION_PATCH",	 0);
 	define("PITAYA_VERSION_ID", PITAYA_VERSION_MAJOR * 10000 + PITAYA_VERSION_MINOR * 100 + PITAYA_VERSION_BUILD );
 	define('PITAYA_VERSION_SHORT', PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR);
 	define('PITAYA_VERSION', PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR . '.' . PITAYA_VERSION_BUILD);
@@ -23,7 +23,7 @@
 	$GLOBALS['invokeTime'] = $_SERVER['REQUEST_TIME'];
 
 
-	// DEPRECATED: The constants will be removed in v1.4.0
+	// DEPRECATED: The constants will be removed in v2.0.0
 	define('SYS_ENV_CLI', 'CMD', TRUE);
 	define('SYS_ENV_NET', 'NET', TRUE);
 
@@ -72,7 +72,7 @@
 
 	if ( php_sapi_name() == "cli" )
 	{
-		define('SYS_WORKING_ENV',	SYS_ENV_CLI,	TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+		define('SYS_WORKING_ENV',	SYS_ENV_CLI,	TRUE); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, 	TRUE);
 		define('REQUESTING_METHOD',	'',				TRUE);
@@ -102,7 +102,7 @@
 	}
 	else
 	{
-		define('SYS_WORKING_ENV',	SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v1.4.0
+		define('SYS_WORKING_ENV',	SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP,	TRUE);
 		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']),	TRUE);

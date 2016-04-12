@@ -161,7 +161,7 @@
 
 
 
-		// DEPRECATED: The following tools will be removed in v1.4.0
+		// DEPRECATED: The following tools will be removed in v2.0.0
 		public static function FieldBasedDataCollector(PDOStatement $stmt, $field = 'id')
 		{
 			$result	= array();

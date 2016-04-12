@@ -363,7 +363,7 @@
 
 
 
-	// DEPRECATED: Following APIs will be removed in v1.4.0
+	// DEPRECATED: Following APIs will be removed in v2.0.0
 	/**
 	 * Returns the global variables defined in target package
 	 *

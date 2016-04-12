@@ -4,7 +4,7 @@
  * Created by JCloudYu on 2013/09/25 22:37
  */
 
-	// DEPRECATED: The package along with APIs will be removed in v1.4.0
+	// DEPRECATED: The package along with APIs will be removed in v2.0.0
 
 	using('sys.db.ExtPDO');
 	using('sys.db.PBDBCtrl');

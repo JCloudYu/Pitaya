@@ -212,4 +212,4 @@
 		public function offsetExists($offset) { return $this->valid($offset); }
 	}
 
-	class_alias( 'PBDataTree', 'PBStorage' ); // DEPRECATED: PBStorage will be deprecated in v1.4.0
+	class_alias( 'PBDataTree', 'PBStorage' ); // DEPRECATED: PBStorage will be deprecated in v2.0.0

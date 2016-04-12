@@ -236,5 +236,5 @@
 		}
 
 
-		public static function RunCommand( $cmd, $msg = '' ) { PBShell::RunCommand( $cmd, $msg ); } // DEPRECATED: This api will be removed in v1.4.0
+		public static function RunCommand( $cmd, $msg = '' ) { PBShell::RunCommand( $cmd, $msg ); } // DEPRECATED: This api will be removed in v2.0.0
 	}

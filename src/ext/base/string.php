@@ -434,7 +434,7 @@
 
 
 
-	// DEPRECATED: Following apis will be removed in v1.4.0
+	// DEPRECATED: Following apis will be removed in v2.0.0
 	function CheckAccountSyntax($account) { return preg_match("/^[a-zA-Z0-9][a-zA-Z0-9._-]+$/i", $account) ? TRUE : FALSE; }
 	function CheckPasswordSyntax($password) { $pass = trim($password); return (strlen($pass) >= 8 && $password === $pass); }
 
