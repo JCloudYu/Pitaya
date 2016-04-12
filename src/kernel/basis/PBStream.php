@@ -153,6 +153,13 @@
 			return ( self::$_OUT_STREAM = new PBStream( STDOUT ) );
 		}
 
+		private static $_IN_STREAM = NULL;
+		public static function STDIN()
+		{
+			if ( self::$_IN_STREAM ) return self::$_IN_STREAM;
+			return ( self::$_IN_STREAM = new PBStream( STDIN ) );
+		}
+
 
 		private static $_ERR_STREAM = NULL;
 		public static function STDERR()

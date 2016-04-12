@@ -1,30 +1,19 @@
 <?php
 	/**
-	 * 1004.IMSLS - misc.php
-	 * Created by JCloudYu on 2014/03/17 07:04
+	 * @param String $targetAddr Target address
+	 * @param bool $addHistory Whether the redirection will add history to browser
+	 * @param int $delay Delay before adding history
 	 */
-
-	function redir($targetAddr, $addHistory = FALSE) {
-		$targetAddr = "{$targetAddr}";
-
-		if ( $addHistory )
+	function redir( $targetAddr, $addHistory = FALSE, $delay = 0 )
+	{
+		if ( headers_sent() || $addHistory || func_num_args() > 2 )
 		{
-			$targetAddr = json_encode( $targetAddr );
+			$targetAddr = json_encode( "{$targetAddr}" );
 			echo "<script>(function(){setTimeout(function(){ window.location.href = {$targetAddr}; }, $delay );})();</script>"; ob_flush();
 			Termination::NORMALLY();
 		}
 
 
-
-		if ( !headers_sent() && $delay == 0 )
-			header("Location: {$targetAddr}");
-		else
-		{
-			$targetAddr = json_encode( $targetAddr );
-			echo "<script>(function(){setTimeout(function(){ window.location.replace('{$targetAddr}'); }, $delay );})();</script>"; ob_flush();
-		}
-
-
-
+		header("Location: {$targetAddr}");
 		Termination::NORMALLY();
 	}

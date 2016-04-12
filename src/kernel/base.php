@@ -1,7 +1,7 @@
 <?php
 	// Detect minimum PHP Version
-	if ( PHP_VERSION_ID < 50304 )
-		die( "The system requires php 5.3.4 or higher!" );
+	if ( PHP_VERSION_ID < 50600 )
+		die( "The system requires php 5.6.0 or higher!" );
 
 
 	if ( defined( 'PITAYA_BASE_CORE_INITIALIZED' ) ) return
@@ -9,9 +9,9 @@
 
 
 
-	define("PITAYA_VERSION_MAJOR",	1);
-	define("PITAYA_VERSION_MINOR",	3);
-	define("PITAYA_VERSION_BUILD",	9);
+	define("PITAYA_VERSION_MAJOR",	 1);
+	define("PITAYA_VERSION_MINOR",	 3);
+	define("PITAYA_VERSION_BUILD",	10);
 	define("PITAYA_VERSION_PATCH",	"0");
 	define("PITAYA_VERSION_ID", PITAYA_VERSION_MAJOR * 10000 + PITAYA_VERSION_MINOR * 100 + PITAYA_VERSION_BUILD );
 	define('PITAYA_VERSION_SHORT', PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR);
@@ -213,7 +213,7 @@
 
 	PBSysKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
-	PBRunTime::__ImprintEnvironment();
+	PBRuntimeCtrl::__ImprintEnvironment();
 
 	// INFO: Clean up everything
 	unset($GLOBALS['randomCert']);
