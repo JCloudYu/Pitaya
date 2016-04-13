@@ -3,7 +3,7 @@
 	using('kernel.basis.PBObject');
 	using('ext.base.math');
 
-	define('AngleKM', 0.009026867286858, TRUE);
+	define('AngleKM', 0.009026867286858);
 	
 	final class GPSEarthModelID
 	{

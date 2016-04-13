@@ -243,13 +243,13 @@
 
 	if (__OS__ === 'WIN')
 	{
-		define('CMD_MOVE', 'move', TRUE);
-		define('CMD_COPY', 'copy', TRUE);
+		define('CMD_MOVE', 'move');
+		define('CMD_COPY', 'copy');
 	}
 	else
 	{
-		define('CMD_MOVE', 'mv', TRUE);
-		define('CMD_COPY', 'cp', TRUE);
+		define('CMD_MOVE', 'mv');
+		define('CMD_COPY', 'cp');
 	}
 
 
@@ -260,7 +260,7 @@
 		if ( !defined('__DEBUG_MODE__') )
 		{
 			$ENV_DEBUG_MODE = IS_POSITIVE( @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_DEBUG_MODE'] );
-			define( '__DEBUG_MODE__', $ENV_DEBUG_MODE || FALSE, TRUE );
+			define( '__DEBUG_MODE__', $ENV_DEBUG_MODE || FALSE);
 		}
 
 
@@ -269,13 +269,13 @@
 		if ( !defined('__THROW_EXCEPTION__') )
 		{
 			$ENV_THROW_EXCEPTION = IS_POSITIVE( @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_THROW_EXCEPTION'] );
-			define( '__THROW_EXCEPTION__', $ENV_THROW_EXCEPTION || FALSE, TRUE );
+			define( '__THROW_EXCEPTION__', $ENV_THROW_EXCEPTION || FALSE);
 		}
 
 
-		if ( !defined('__LOG_EXCEPTION__') )		define('__LOG_EXCEPTION__',			TRUE,  TRUE);
+		if ( !defined('__LOG_EXCEPTION__') )		define('__LOG_EXCEPTION__',			TRUE);
 
-		if ( !defined( '__ENABLE_CORS_MODE__' ) ) define( '__ENABLE_CORS_MODE__', FALSE,  TRUE );
+		if ( !defined( '__ENABLE_CORS_MODE__' ) ) define( '__ENABLE_CORS_MODE__', FALSE);
 	});
 
 
@@ -283,8 +283,8 @@
 
 
 
-	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16,		TRUE);
-	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'), TRUE);
+	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16);
+	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'));
 
 
 

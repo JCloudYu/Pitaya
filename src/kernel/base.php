@@ -24,23 +24,23 @@
 
 
 	// DEPRECATED: The constants will be removed in v2.0.0
-	define('SYS_ENV_CLI', 'CMD', TRUE);
-	define('SYS_ENV_NET', 'NET', TRUE);
+	define('SYS_ENV_CLI', 'CMD');
+	define('SYS_ENV_NET', 'NET');
 
 
 
-	define('EXEC_ENV_CLI',	'CLI', TRUE);
-	define('EXEC_ENV_HTTP', 'HTTP', TRUE);
+	define('EXEC_ENV_CLI',	'CLI');
+	define('EXEC_ENV_HTTP', 'HTTP');
 
-	define('EON',	"\n",	TRUE);
-	define('EOR',	"\r",	TRUE);
-	define('EORN',	"\r\n",	TRUE);
-	define('EOB',	'<br>',	TRUE);
+	define('EON',	"\n");
+	define('EOR',	"\r");
+	define('EORN',	"\r\n");
+	define('EOB',	'<br>');
 
-	define('LF',	"\n",	TRUE);
-	define('CR',	"\r",	TRUE);
-	define('CRLF',	"\r\n",	TRUE);
-	define('BR',	'<br>',	TRUE);
+	define('LF',	"\n");
+	define('CR',	"\r");
+	define('CRLF',	"\r\n");
+	define('BR',	'<br>');
 
 
 
@@ -48,7 +48,7 @@
 	call_user_func(function() {
 
 		// Detect operating system information
-		(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX', TRUE);
+		(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX');
 
 		$GLOBALS['RUNTIME_ENV'] = array();
 
@@ -66,20 +66,20 @@
 
 
 	if ( !defined( '__ROOT__' ) )
-		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
+		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ));
 
 
 	if ( php_sapi_name() == "cli" )
 	{
-		define('__WEB_ROOT__',	getcwd(), TRUE);
+		define('__WEB_ROOT__',	getcwd());
 
 
-		define('SYS_WORKING_ENV',	SYS_ENV_CLI,	TRUE); // DEPRECATED: The constants will be removed in v2.0.0
+		define('SYS_WORKING_ENV',	SYS_ENV_CLI); // DEPRECATED: The constants will be removed in v2.0.0
 
-		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, 	TRUE);
-		define('REQUESTING_METHOD',	'',				TRUE);
-		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}", TRUE);
-		define('EOL',				"\n", TRUE);
+		define('SYS_EXEC_ENV',		EXEC_ENV_CLI);
+		define('REQUESTING_METHOD',	'');
+		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}");
+		define('EOL',				"\n");
 
 
 		// NOTE: Remove script file path
@@ -96,7 +96,7 @@
 			);
 			array_shift( $_SERVER['argv'] );
 
-			define( '__STANDALONE_EXEC_MODE__', TRUE, TRUE );
+			define( '__STANDALONE_EXEC_MODE__', TRUE);
 		}
 
 
@@ -104,15 +104,15 @@
 	}
 	else
 	{
-		define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
+		define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)));
 
-		define('SYS_WORKING_ENV',	SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v2.0.0
+		define('SYS_WORKING_ENV',	SYS_ENV_NET); // DEPRECATED: The constants will be removed in v2.0.0
 
-		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP,	TRUE);
-		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']),	TRUE);
-		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}", TRUE);
+		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP);
+		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']));
+		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}");
 
-		define('EOL', '<br />', TRUE);
+		define('EOL', '<br />');
 
 		$_SERVER['argv'] = array(); $_SERVER['argc'] = 0;
 	}
@@ -124,7 +124,7 @@
 
 
 	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
-		define( '__STANDALONE_EXEC_MODE__', FALSE, TRUE );
+		define( '__STANDALONE_EXEC_MODE__', FALSE);
 
 
 
@@ -139,8 +139,8 @@
 	// ISSUE: We need to verify the configuration data...
 	if ( SYS_EXEC_ENV === EXEC_ENV_CLI )
 	{
-		define( 'CLI_ENV',	TRUE,	TRUE );
-		define( 'NET_ENV',	FALSE,	TRUE );
+		define( 'CLI_ENV',	TRUE);
+		define( 'NET_ENV',	FALSE);
 
 		if ( file_exists(__WEB_ROOT__ . "/cli.php") )
 		{
@@ -150,8 +150,8 @@
 	}
 	else
 	{
-		define( 'CLI_ENV',	FALSE,	TRUE );
-		define( 'NET_ENV',	TRUE,	TRUE );
+		define( 'CLI_ENV',	FALSE);
+		define( 'NET_ENV',	TRUE);
 
 		if ( PITAYA_HOST != "" && file_exists( __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
 		{

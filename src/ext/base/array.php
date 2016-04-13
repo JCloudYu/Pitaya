@@ -84,11 +84,11 @@
 	}
 
 
-	define('IN_ARY_MODE_AND', 			1 << 0, TRUE);
-	define('IN_ARY_MODE_OR', 			0 << 0, TRUE);
+	define('IN_ARY_MODE_AND', 			1 << 0);
+	define('IN_ARY_MODE_OR', 			0 << 0);
 
-	define('IN_ARY_MODE_STRICT', 		1 << 1, TRUE);
-	define('IN_ARY_MODE_NONE_STRICT', 	0 << 1, TRUE);
+	define('IN_ARY_MODE_STRICT', 		1 << 1);
+	define('IN_ARY_MODE_NONE_STRICT', 	0 << 1);
 
 	function in_ary($needle, $candidates, $mode = IN_ARY_MODE_OR)
 	{

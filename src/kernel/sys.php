@@ -172,7 +172,7 @@
 
 
 			// INFO: Define runtime constants
-			define('__SERVICE__', $this->_entryService, TRUE);
+			define('__SERVICE__', $this->_entryService);
 
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
@@ -259,7 +259,7 @@
 				if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
 				$this->_entryService		= "PBSystem.PBExecCtrl#PBVectorChain";
 
-				define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd'], TRUE);
+				define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
 				define('__STANDALONE_MODULE__', $module );
 				self::DecideExecMode( $moduleRequest );
 
@@ -277,7 +277,7 @@
 			{
 				$this->_entryService = $service;
 
-				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}", TRUE);
+				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
 				self::DecideExecMode( $moduleRequest );
 
 
@@ -311,7 +311,7 @@
 				$this->_entryServiceParam	= $basisChain[$service];
 
 
-				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir(), TRUE );
+				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
 				self::DecideExecMode( $moduleRequest );
 
 
@@ -339,7 +339,7 @@
 				{
 					$this->_entryService = $service;
 
-					define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}", TRUE);
+					define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
 					self::DecideExecMode( $moduleRequest );
 
 
@@ -354,7 +354,7 @@
 				{
 					$this->_entryService = $service;
 
-					define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}", TRUE);
+					define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}");
 					self::DecideExecMode( $moduleRequest );
 
 
@@ -374,41 +374,41 @@
 			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
 			{
 				array_shift($moduleRequest);
-				define( 'SERVICE_EXEC_MODE', 'EVENT', TRUE );
+				define( 'SERVICE_EXEC_MODE', 'EVENT');
 
-				define( 'EVENT_CHAIN',	TRUE,	TRUE );
-				define( 'SHELL_CHAIN',	FALSE,	TRUE );
-				define( 'CORS_CHAIN',	FALSE,	TRUE );
-				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
+				define( 'EVENT_CHAIN',	TRUE);
+				define( 'SHELL_CHAIN',	FALSE);
+				define( 'CORS_CHAIN',	FALSE);
+				define( 'NORMAL_CHAIN',	FALSE);
 			}
 			else
 			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
 			{
-				define('SERVICE_EXEC_MODE', 'SHELL', TRUE);
+				define('SERVICE_EXEC_MODE', 'SHELL');
 
-				define( 'EVENT_CHAIN',	FALSE,	TRUE );
-				define( 'SHELL_CHAIN',	TRUE,	TRUE );
-				define( 'CORS_CHAIN',	FALSE,	TRUE );
-				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
+				define( 'EVENT_CHAIN',	FALSE);
+				define( 'SHELL_CHAIN',	TRUE);
+				define( 'CORS_CHAIN',	FALSE);
+				define( 'NORMAL_CHAIN',	FALSE);
 			}
 			else
 			if ( REQUESTING_METHOD == "OPTIONS" && __ENABLE_CORS_MODE__ )
 			{
-				define('SERVICE_EXEC_MODE', 'CORS', TRUE);
+				define('SERVICE_EXEC_MODE', 'CORS');
 
-				define( 'EVENT_CHAIN',	FALSE,	TRUE );
-				define( 'SHELL_CHAIN',	FALSE,	TRUE );
-				define( 'CORS_CHAIN',	TRUE,	TRUE );
-				define( 'NORMAL_CHAIN',	FALSE,	TRUE );
+				define( 'EVENT_CHAIN',	FALSE);
+				define( 'SHELL_CHAIN',	FALSE);
+				define( 'CORS_CHAIN',	TRUE);
+				define( 'NORMAL_CHAIN',	FALSE);
 			}
 			else
 			{
-				define('SERVICE_EXEC_MODE', 'NORMAL', TRUE);
+				define('SERVICE_EXEC_MODE', 'NORMAL');
 
-				define( 'EVENT_CHAIN',	FALSE,	TRUE );
-				define( 'SHELL_CHAIN',	FALSE,	TRUE );
-				define( 'CORS_CHAIN',	FALSE,	TRUE );
-				define( 'NORMAL_CHAIN',	TRUE,	TRUE );
+				define( 'EVENT_CHAIN',	FALSE);
+				define( 'SHELL_CHAIN',	FALSE);
+				define( 'CORS_CHAIN',	FALSE);
+				define( 'NORMAL_CHAIN',	TRUE);
 			}
 		}
 

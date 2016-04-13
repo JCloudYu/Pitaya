@@ -2,14 +2,14 @@
 	using( 'ext.base.math' );
 	using( 'ext.base.array' );
 
-	define('KB', 	  1024.0, TRUE);	// KiloByte
-	define('MB', KB * 1024.0, TRUE);	// MegaByte
-	define('GB', MB * 1024.0, TRUE);	// GigaByte
-	define('TB', GB * 1024.0, TRUE);	// TeraByte
-	define('PB', TB * 1024.0, TRUE);	// PetaByte
-	define('EB', PB * 1024.0, TRUE);	// ExaByte
-	define('ZB', EB * 1024.0, TRUE);	// ZetaByte
-	define('YB', ZB * 1024.0, TRUE);	// YotaByte
+	define('KB', 	  1024.0);	// KiloByte
+	define('MB', KB * 1024.0);	// MegaByte
+	define('GB', MB * 1024.0);	// GigaByte
+	define('TB', GB * 1024.0);	// TeraByte
+	define('PB', TB * 1024.0);	// PetaByte
+	define('EB', PB * 1024.0);	// ExaByte
+	define('ZB', EB * 1024.0);	// ZetaByte
+	define('YB', ZB * 1024.0);	// YotaByte
 
 
 	function CAST( $value, $type, $filter = NULL, $default = NULL )
