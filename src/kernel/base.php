@@ -65,13 +65,15 @@
 	});
 
 
-	// INFO: Execution environment
 	if ( !defined( '__ROOT__' ) )
 		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ), TRUE);
 
 
 	if ( php_sapi_name() == "cli" )
 	{
+		define('__WEB_ROOT__',	getcwd(), TRUE);
+
+
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI,	TRUE); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI, 	TRUE);
@@ -102,6 +104,8 @@
 	}
 	else
 	{
+		define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
+
 		define('SYS_WORKING_ENV',	SYS_ENV_NET, TRUE); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP,	TRUE);
@@ -113,9 +117,10 @@
 		$_SERVER['argv'] = array(); $_SERVER['argc'] = 0;
 	}
 
-	define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)), TRUE);
-	chdir( __WEB_ROOT__ );
 
+
+	// INFO: Change current working environment space root
+	chdir( __WEB_ROOT__ );
 
 
 	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
