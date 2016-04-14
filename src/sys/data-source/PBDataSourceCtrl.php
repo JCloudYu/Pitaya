@@ -9,11 +9,12 @@
 		public static function Source( $identifier = '', $DSURI = '', $options = array(), $driverOpt = array(), $FORCE_CREATE = FALSE )
 		{
 			static $_dataSources = array();
+			$matches = NULL;
 
 
 
 			// INFO: Check whether the identifier is skipped
-			if ( is_string($identifier) && preg_match( '/^[A-Za-z][A-Za-z0-9]*:\/\/.*$/', $identifier ) )
+			if ( is_string($identifier) && preg_match( '/^([A-Za-z][A-Za-z0-9]*):\/\/.*$/', $identifier, $matches ) )
 			{
 				$FORCE_CREATE	= $driverOpt;
 				$driverOpt		= $options;
@@ -23,7 +24,8 @@
 			}
 
 
-			// INFO: Data Normalization
+
+			// INFO: Paramter Normalization
 			$FORCE_CREATE	= !empty($FORCE_CREATE);
 			$driverOpt		= is_array($driverOpt) ? $driverOpt : [];
 			$options		= is_array($options) ? $options : [];
@@ -36,6 +38,14 @@
 			if ( !empty( $_dataSources[ $key ] ) && empty($FORCE_CREATE) )
 				return $_dataSources[ $key ];
 
+
+
+
+
+			// INFO: Check URI
+			if ( empty($matches) && !preg_match( '/^([A-Za-z][A-Za-z0-9]*):\/\/.*$/', $DSURI, $matches ) )
+				return NULL;
+
 			// INFO: Create source if DSURI is not empty
 			if ( !empty($DSURI) )
 			{
@@ -43,16 +53,17 @@
 					unset( $_dataSources[ $key ] );
 
 
-				$URI	= PBDataSource::ParseURI( $DSURI );
+
 				$source = NULL;
-				switch ( @"{$URI[ 'scheme' ]}" )
+				switch ( @"{$matches[1]}" )
 				{
 					case "mysql":
+						$URI	= PBDataSource::ParseURI( $DSURI );
 						$source = new PBMySQLSource( $URI, $options, $driverOpt );
 						break;
 
 					case "mongodb":
-						$source = new PBMongoSource( $URI, $options, $driverOpt );
+						$source = new PBMongoSource( $DSURI, $options, $driverOpt );
 						break;
 
 					default:
