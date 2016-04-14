@@ -58,11 +58,13 @@
 				switch ( @"{$matches[1]}" )
 				{
 					case "mysql":
+						using( 'sys.data-source.PBMySQLSource' );
 						$URI	= PBDataSource::ParseURI( $DSURI );
 						$source = new PBMySQLSource( $URI, $options, $driverOpt );
 						break;
 
 					case "mongodb":
+						using( 'sys.data-source.PBMongoSource' );
 						$source = new PBMongoSource( $DSURI, $options, $driverOpt );
 						break;
 
