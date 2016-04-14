@@ -12,8 +12,16 @@
 			$URI = parse_url( $sourceURI );
 			if ( $URI === FALSE ) return NULL;
 
+
+
+			foreach( [ 'user', 'pass', 'fragment' ] as $field )
+				$URI[ $field ] = urldecode( "{$URI[$field]}" );
+
 			$URI[ 'path' ] = @substr( trim( "{$URI['path']}" ), 1 );
-			$URI[ 'path' ] = ( $URI[ 'path' ] !== "" ) ? explode('/', $URI['path']) : [];
+			$URI[ 'path' ] = ary_filter( 
+				( $URI[ 'path' ] !== ""  ? explode( '/', $URI['path'] ) : []),
+				function( $item ){ return urldecode($item); }
+			);
 			return $URI;
 		}
 
