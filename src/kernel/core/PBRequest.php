@@ -366,11 +366,15 @@
 								if( $this->method_upper === "POST" )
 								{
 									$func = function() {
-										$data = $this->nativePost;
+										$data = array(
+											'variable'	=> $this->nativePost,
+											'flag'		=> array()
+										);
+
 										return array(
 											'data' 		=> $data,
-											'variable' 	=> $data,
-											'flag' 		=> array()
+											'variable'	=> $data['variable'],
+											'flag'		=> $data['flag']
 										);
 									};
 									break;
