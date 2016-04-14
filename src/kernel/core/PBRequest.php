@@ -363,16 +363,18 @@
 								break;
 
 							case "multipart/form-data":
-								$func = function()
+								if( $this->method_upper === "POST" )
 								{
-									$data = $this->nativePost;
-									return array(
-										'data' 		=> $data,
-										'variable' 	=> $data,
-										'flag' 		=> array()
-									);
-								};
-								break;
+									$func = function() {
+										$data = $this->nativePost;
+										return array(
+											'data' 		=> $data,
+											'variable' 	=> $data,
+											'flag' 		=> array()
+										);
+									};
+									break;
+								}
 
 							default:
 								$func = function($stream) {
