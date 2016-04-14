@@ -362,6 +362,18 @@
 								};
 								break;
 
+							case "multipart/form-data":
+								$func = function()
+								{
+									$data = $this->nativePost;
+									return array(
+										'data' 		=> $data,
+										'variable' 	=> $data,
+										'flag' 		=> array()
+									);
+								};
+								break;
+
 							default:
 								$func = function($stream) {
 									$data = stream_get_contents($stream);
