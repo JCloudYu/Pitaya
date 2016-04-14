@@ -19,14 +19,21 @@
 				$driverOpt		= $options;
 				$options		= $DSURI;
 				$DSURI			= $identifier;
-				$identifier		= 0;
+				$identifier		= "";
 			}
+
+
+			// INFO: Data Normalization
+			$FORCE_CREATE	= !empty($FORCE_CREATE);
+			$driverOpt		= is_array($driverOpt) ? $driverOpt : [];
+			$options		= is_array($options) ? $options : [];
+			$DSURI			= "{$DSURI}";
 
 
 			
 			// INFO: If source exists
 			$key = md5( empty($identifier) ? "0" : "_IDENTITY_{$identifier}" );
-			if ( !empty( $_dataSources[ $key ] ) && !$FORCE_CREATE )
+			if ( !empty( $_dataSources[ $key ] ) && empty($FORCE_CREATE) )
 				return $_dataSources[ $key ];
 
 			// INFO: Create source if DSURI is not empty
