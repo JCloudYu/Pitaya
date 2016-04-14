@@ -12,18 +12,10 @@
 
 		public function __construct( $DSURI = "//127.0.0.1:27017/db", $options = array(), $driverOpt = array() )
 		{
-			if ( !is_array($DSURI) )
-				$DSURI = parse_url( "{$DSURI}" );
+			if ( !preg_match( '/^([A-Za-z][A-Za-z0-9]*:)*(\/\/.*)$/', $DSURI, $matches ) )
+				throw new PBException( "Given data source URI is incorrect!" );
 
-			$host = @"{$DSURI['host']}";
-			$port = CAST( @$DSURI[ 'port' ], 'int strict', 27017 );
-			$port = empty( $port ) ? 27017 : $port;
-			$db   = @"{$DSURI['path'][0]}";
-			$db	  = empty($db) ? "" : "/{$db}";
-
-
-
-			$URI = "mongodb://{$host}:{$port}{$db}";
+			$URI = @"mongodb:{$matches[2]}";
 			$this->_mongoConnection = new \MongoDB\Driver\Manager( $URI, $options, $driverOpt );
 		}
 
