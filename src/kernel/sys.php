@@ -160,8 +160,9 @@
 		// INFO: System workflow initialization
 		private function __initialize($argc = 0, $argv = NULL) {
 			// INFO: Preserve path of system container
-			$sysEnvPath		= path('root',		'sys.php');
-			$serviceEnvPath = path("service",	'common.php'); // NOTE: This line should executed before __judgeMainService
+			$sysEnvPath			= path('root',		'sys.php');
+			$serviceEnvPath		= path("service",	'common.php'); // NOTE: This line should executed before __judgeMainService
+			$standaloneEnvPath	= __STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): "";
 
 
 
@@ -177,20 +178,26 @@
 			// INFO: Generate the unique system execution Id
 			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use($sysEnvPath, $serviceEnvPath) {
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use($sysEnvPath, $serviceEnvPath, $standaloneEnvPath) {
 
-					if (file_exists($sysEnvPath))
-					{
-						chdir( dirname($sysEnvPath) );
-						require_once($sysEnvPath);
-					}
+				if (file_exists($sysEnvPath))
+				{
+					chdir( dirname($sysEnvPath) );
+					require_once($sysEnvPath);
+				}
 
-					if (file_exists($serviceEnvPath))
-					{
-						chdir( dirname($sysEnvPath) );
-						require_once($serviceEnvPath);
-					}
-				});
+				if (file_exists($serviceEnvPath))
+				{
+					chdir( dirname($sysEnvPath) );
+					require_once($serviceEnvPath);
+				}
+
+				if ( !empty($standaloneEnvPath) && file_exists($standaloneEnvPath) )
+				{
+					chdir( dirname($sysEnvPath) );
+					require_once $standaloneEnvPath;
+				}
+			});
 		}
 
 		public function __judgeMainService($argc = 0, $argv = NULL)
