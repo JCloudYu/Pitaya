@@ -50,11 +50,9 @@ if [ "${mode}" == "-c" ]; then
 
 
 
-			if [ -e "./Pitaya" ]; then rm -rf ./Pitaya; fi;
-			if [ -e "./Services" ]; then rm -rf ./Services; fi;
-			if [ -e "./Share" ]; then rm -rf ./Share; fi;
-
-			mkdir ./Pitaya ./Services ./Share;
+			ln -s "${PITAYA_DIR}/src" "./Pitaya"
+			if [ ! -e "./Services" ]; then mkdir Services; fi;
+			if [ ! -e "./Share" ]; then mkdir Share; fi;
 
 			find "${PITAYA_DIR}/env/http" -type f -exec cp \{\} ./ \;
 			find "${PITAYA_DIR}/env/macosx" -type f -not -name "pitaya" -exec cp \{\} ./ \;
@@ -69,7 +67,6 @@ if [ "${mode}" == "-c" ]; then
 				fi;
 			fi;
 
-			cp -rf ${PITAYA_DIR}/src/* ./Pitaya/
 			exit 0;
 		;;
 

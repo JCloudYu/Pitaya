@@ -50,9 +50,11 @@ if [ "${mode}" == "-c" ]; then
 
 
 
-			if [ ! -e "./Pitaya" ]; then mkdir Pitaya; fi;
+			ln -s "${PITAYA_DIR}/src" "./Pitaya"
 			if [ ! -e "./Services" ]; then mkdir Services; fi;
 			if [ ! -e "./Share" ]; then mkdir Share; fi;
+
+
 
 			find "${PITAYA_DIR}/env/http" -type f -exec cp \{\} ./ \;
 			find "${PITAYA_DIR}/env/centos" -type f -not -name "pitaya" -exec cp \{\} ./ \;
@@ -68,7 +70,6 @@ if [ "${mode}" == "-c" ]; then
 				fi;
 			fi;
 
-			echo -e "\n\nmount -o bind \"${PITAYA_DIR}/src\" \"./Pitaya\"\n" >> "./.boot.sh";
 			exit 0;
 		;;
 
