@@ -71,7 +71,7 @@
 
 	if ( php_sapi_name() == "cli" )
 	{
-		define('__WEB_ROOT__',	getcwd());
+		define('__SPACE_ROOT__',	getcwd());
 
 
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI); // DEPRECATED: The constants will be removed in v2.0.0
@@ -92,7 +92,7 @@
 			array_shift($_SERVER['argv']);
 			$GLOBALS['STANDALONE_EXEC'] = array(
 				'script' => "{$_SERVER['argv'][0]}",
-				'cwd'	 => __WEB_ROOT__
+				'cwd'	 => __SPACE_ROOT__
 			);
 			array_shift( $_SERVER['argv'] );
 
@@ -104,7 +104,7 @@
 	}
 	else
 	{
-		define('__WEB_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)));
+		define('__SPACE_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)));
 
 		define('SYS_WORKING_ENV',	SYS_ENV_NET); // DEPRECATED: The constants will be removed in v2.0.0
 
@@ -118,9 +118,10 @@
 	}
 
 
+	define( '__WEB_ROOT__', __SPACE_ROOT__, FALSE );
 
 	// INFO: Change current working environment space root
-	chdir( __WEB_ROOT__ );
+	chdir( __SPACE_ROOT__ );
 
 
 	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
@@ -142,9 +143,9 @@
 		define( 'CLI_ENV',	TRUE);
 		define( 'NET_ENV',	FALSE);
 
-		if ( file_exists(__WEB_ROOT__ . "/cli.php") )
+		if ( file_exists(__SPACE_ROOT__ . "/cli.php") )
 		{
-			require_once __WEB_ROOT__ . "/cli.php";
+			require_once __SPACE_ROOT__ . "/cli.php";
 			define( 'CONFIG_MODE', 'CLI' );
 		}
 	}
@@ -153,9 +154,9 @@
 		define( 'CLI_ENV',	FALSE);
 		define( 'NET_ENV',	TRUE);
 
-		if ( PITAYA_HOST != "" && file_exists( __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
+		if ( PITAYA_HOST != "" && file_exists( __SPACE_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
 		{
-			require_once __WEB_ROOT__ . "/config-" . PITAYA_HOST . ".php";
+			require_once __SPACE_ROOT__ . "/config-" . PITAYA_HOST . ".php";
 			define( 'CONFIG_MODE', 'HOST' );
 		}
 	}
@@ -163,9 +164,9 @@
 
 	if ( !defined( 'CONFIG_MODE' ) )
 	{
-		if ( file_exists( __WEB_ROOT__ . "/config.php" ) )
+		if ( file_exists( __SPACE_ROOT__ . "/config.php" ) )
 		{
-			require_once __WEB_ROOT__ . "/config.php";
+			require_once __SPACE_ROOT__ . "/config.php";
 			define( 'CONFIG_MODE', 'DEFAULT' );
 		}
 		else
@@ -177,8 +178,8 @@
 
 
 	// INFO: Common configurations...
-	if ( file_exists( __WEB_ROOT__ . "/common.php" ) )
-		require_once __WEB_ROOT__ . "/common.php";
+	if ( file_exists( __SPACE_ROOT__ . "/common.php" ) )
+		require_once __SPACE_ROOT__ . "/common.php";
 
 
 
