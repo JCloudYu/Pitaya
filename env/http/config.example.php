@@ -1,7 +1,7 @@
 <?php
-	$GLOBALS['servicePath']		= __DIR__ . '/Services';
-	$GLOBALS['sharePath']		= __DIR__ . '/Share';
-	$GLOBALS['dataPath']		= __DIR__ . '/Data';
+	$GLOBALS['servicePath']		= __SPACE_ROOT__ . '/Services';
+	$GLOBALS['sharePath']		= __SPACE_ROOT__ . '/Share';
+	$GLOBALS['dataPath']		= __SPACE_ROOT__ . '/Data';
 	$GLOBALS['extPath']			= array();
 
 	define( 'DEFAULT_SERVICE',					'index',	FALSE );
