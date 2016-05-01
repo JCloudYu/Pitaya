@@ -33,8 +33,31 @@
 				array_merge( $options, $driverOpt )
 			);
 		}
-
 		public function __get_source(){
 			return $this->_pdoConnection;
+		}
+
+
+
+		public function get( $dataNS, $filter, &$additional = [] ) {
+
+		}
+		public function insert( $dataNS, $insertData, $additional = [] ) {
+
+		}
+		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
+
+		}
+		public function delete( $dataNS, $filter, $additional = [] ) {
+
+		}
+
+
+
+		public function count( $dataNS, $filter ) {
+
+		}
+		public function range( $dataNS, $filter, &$additional = [] ) {
+
 		}
 	}
