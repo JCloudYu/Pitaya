@@ -20,6 +20,17 @@ function UNMOUNT_PROJ {
 }
 
 function STDERR { cat - 1>&2; }
+
+function UNPACK_SAMPLE {
+	SAMPLE_NAME="$1"
+	if [ -e "${SAMPLE_NAME}.example.php" ]; then
+		if [ ! -e "${SAMPLE_NAME}.php" ]; then
+			mv "${SAMPLE_NAME}.example.php" "${SAMPLE_NAME}.php";
+		else
+			rm "${SAMPLE_NAME}.example.php"
+		fi;
+	fi;
+}
 ###
 
 
@@ -50,7 +61,7 @@ if [ "${mode}" == "-c" ]; then
 
 
 
-			ln -s "${PITAYA_DIR}/src" "./Pitaya"
+			if [ ! -e "./Pitaya" ]; then ln -s "${PITAYA_DIR}/src" "./Pitaya"; fi;
 			if [ ! -e "./Services" ]; then mkdir Services; fi;
 			if [ ! -e "./Share" ]; then mkdir Share; fi;
 
@@ -59,17 +70,14 @@ if [ "${mode}" == "-c" ]; then
 			find "${PITAYA_DIR}/env/http" -type f -exec cp \{\} ./ \;
 			find "${PITAYA_DIR}/env/centos" -type f -not -name "pitaya" -exec cp \{\} ./ \;
 
-			if [ -e "cli.example.php" ]; then mv "cli.example.php" "cli.php"; fi;
-			if [ -e "config.example.php" ]; then mv "config.example.php" "config.php"; fi;
-			if [ -e "common.example.php" ]; then mv "common.example.php" "common.php"; fi;
-			if [ -e "config-host.example.php" ]; then
-				if [ "$1" == "--host-base" ] || [ "$1" == "-h" ]; then shift;
-					mv "config-host.example.php" "config-host.php";
-				else
-					rm "config-host.example.php";
-				fi;
-			fi;
+			UNPACK_SAMPLE "cli";
+			UNPACK_SAMPLE "config";
+			UNPACK_SAMPLE "common";
 
+			UNPACK_SAMPLE "config-host";
+			if [ ! "$1" == "--host-base" ] && [ ! "$1" == "-host" ]; then rm "config-host.php"; else shift; fi;
+
+			rm pitaya.bat
 			exit 0;
 		;;
 
