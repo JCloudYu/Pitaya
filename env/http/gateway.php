@@ -1,3 +1,3 @@
 <?php
-	define( '__ROOT__', dirname( __FILE__ ) . "/Pitaya", FALSE );
+	define( '__ROOT__', dirname( "{$_SERVER['SCRIPT_FILENAME']}" ) . "/Pitaya", FALSE );
 	require_once __ROOT__ . "/portal.php";
