@@ -6,6 +6,7 @@
 
 	use \MongoDB\Driver\Query;
 	use \MongoDB\Driver\BulkWrite;
+	use \MongoDB\Driver\Command;
 
 
 
@@ -41,7 +42,7 @@
 
 
 			// INFO: Query and collect results
-			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( [], $queryOpt ) );
+			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( $filter, $queryOpt ) );
 			return PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' );
 		}
 		public function insert( $dataNS, $insertData, $additional = [] ) {
@@ -101,7 +102,7 @@
 
 
 		public function count( $dataNS, $filter ) {
-			$ns = self::ResolveNameSpace( $namespace );
+			$ns = self::ResolveNameSpace( $dataNS );
 
 			$cursor = $this->_mongoConnection->executeCommand(
 				$ns['database'],
