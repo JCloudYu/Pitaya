@@ -10,6 +10,8 @@
 	{
 		abstract public function __get_source();
 
+
+
 		abstract public function get( $dataNS, $filter, &$additional = [] );
 		abstract public function insert( $dataNS, $insertData, $additional = [] );
 		abstract public function update( $dataNS, $filter, $updatedData = [], $additional = [] );

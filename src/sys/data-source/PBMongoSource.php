@@ -7,6 +7,7 @@
 	use \MongoDB\Driver\Query;
 	use \MongoDB\Driver\BulkWrite;
 	use \MongoDB\Driver\Command;
+	use \MongoDB\BSON\ObjectID;
 
 
 
@@ -43,7 +44,7 @@
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( $filter, $queryOpt ) );
-			return PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' );
+			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
 		}
 		public function insert( $dataNS, $insertData, $additional = [] ) {
 
@@ -160,5 +161,12 @@
 		public static function MongoCollect( $document, &$idx ) {
 			$idx = "{$document->_id}";
 			return $document;
+		}
+		public static function ObjectID( $hexStr ) {
+			try{
+				return new ObjectID( "{$hexStr}" );
+			} catch(Exception $e) {
+				return NULL;
+			}
 		}
 	}
