@@ -38,7 +38,7 @@
 			];
 
 			if ( $additional[ 'order' ] )
-				$queryOpt[ 'order' ] = $additional[ 'order' ];
+				$queryOpt[ 'sort' ] = $additional[ 'order' ];
 
 
 
