@@ -202,7 +202,7 @@
 
 	function ary_filter( $array, $filter = NULL, $skipVal = FALSE )
 	{
-		if ( !is_array($array) ) return FALSE;
+		if ( !is_array($array) && !($array instanceof Traversable) ) return FALSE;
 
 		$arguments	= func_get_args();
 		$skipMode	= count($arguments) != 2;
