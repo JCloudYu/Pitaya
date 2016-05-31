@@ -37,9 +37,12 @@
 				'limit'	=> $range[ 'limit' ]
 			];
 
+			if ( !empty($additional[ 'order' ]) )
+				$queryOpt[ 'sort' ] = $additional[ 'order' ];
+
 			foreach( $additional as $option => $value )
 			{
-				if ( in_array($option, ["page", "pageSize", "pageAmt", "total"]) ) continue;
+				if ( in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
 				$queryOpt[ $option ] = $value;
 			}
 
