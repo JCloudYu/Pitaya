@@ -61,7 +61,7 @@
 			{
 				unset( $insertData['_id'] );
 				$id = $bulkWrite->insert( $insertData );
-				$sessionId = "{$id}";
+				$sessionId = (empty($additional['cast-object-id'])) ? $id : "{$id}";
 			}
 			else
 			{
@@ -70,7 +70,7 @@
 				{
 					unset( $doc['_id'] );
 					$id = $bulkWrite->insert( $doc );
-					$sessionId[] = "{$id}";
+					$sessionId[] = (empty($additional['cast-object-id'])) ? $id : "{$id}";
 				}
 			}
 
