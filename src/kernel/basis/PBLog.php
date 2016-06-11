@@ -60,7 +60,7 @@
 
 		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "service.pblog" : $logFileName));
+			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "service.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, '', $options);
@@ -69,7 +69,7 @@
 
 		public static function ERRLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path( DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "error.pblog" : $logFileName));
+			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "error.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'ERROR', $options);
@@ -77,7 +77,7 @@
 
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "system.pblog" : $logFileName));
+			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "system.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SYS', $options);
@@ -85,7 +85,7 @@
 
 		public static function ShareLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "share.pblog" : $logFileName));
+			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "share.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, 'SHARE', $options);
@@ -93,7 +93,7 @@
 
 		public static function CustomLog($message, $cate = 'CUSTOM', $logPos = FALSE, $logFileName = '', $options = array())
 		{
-			$logPath = path(DEFAULT_SYSTEM_LOG_PACKAGE, (empty($logFileName) ? "custom.pblog" : $logFileName));
+			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "custom.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
 			return $log->logMsg($message, $logPos, empty($cate) ? 'CUSTOM' : "{$cate}", $options);
