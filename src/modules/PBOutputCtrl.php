@@ -10,16 +10,16 @@
 	{
 		private $_baseRCPath = '';
 
-		private $_js = array('prepend' => array(), 'append' => array(), 'last' => array());
-		private $_css = array();
+		private $_js = array('prepend' => [], 'append' => [], 'last' => []);
+		private $_css = [];
 
-		private $_jsFiles = array( 'prepend' => array(), 'append' => array() );
-		private $_cssFiles = array();
+		private $_jsFiles = array( 'prepend' => [], 'append' => [] );
+		private $_cssFiles = [];
 
-		private $_header = array();
+		private $_header = [];
 
-		private $_prop	= array();
-		private $_elm	= array();
+		private $_prop	= [];
+		private $_elm	= [];
 		private $_meta	= [];
 
 		public function exec($param)
@@ -94,9 +94,7 @@
 					$val	= htmlentities( $val, ENT_QUOTES | ENT_IGNORE, 'UTF-8' );
 					return "{$attr}=\"{$val}\"";
 				}, FALSE);
-
 				$attributes = trim(implode( ' ', $attributes ));
-
 				return empty( $attributes ) ? $baseBody : "<div {$attributes}>{$baseBody}</div>";
 			});
 			// endregion
@@ -249,25 +247,25 @@
 		public function __set_rcPath($value) { $this->_baseRCPath = (is_string($value)) ? $value : ''; }
 		public function __set_header($value) { $this->_header[] = $value; }
 
+
 		public function &__get_body() {
 			if ( empty($this->_elm[ 'body' ]) )
-				$this->_elm[ 'body' ] = array();
+				$this->_elm[ 'body' ] = [];
 
 			return $this->_elm[ 'body' ];
 		}
-
 		public function &__get_page() {
 			if ( empty($this->_elm[ 'page' ]) )
-				$this->_elm[ 'page' ] = array();
+				$this->_elm[ 'page' ] = [];
 
 			return $this->_elm[ 'page' ];
 		}
-
 		public function &__get_html() {
 			if ( empty($this->_elm[ 'html' ]) )
-				$this->_elm[ 'html' ] = array();
+				$this->_elm[ 'html' ] = [];
 
 			return $this->_elm[ 'html' ];
+		}
 		public function &__get_meta() {
 			return $this->_meta;
 		}
@@ -338,7 +336,7 @@
 
 
 
-			$ajaxReturn = array();
+			$ajaxReturn = [];
 			if (!is_array($param))
 			{
 				$ajaxReturn['status'] 	= self::STATUS_NORMAL;
