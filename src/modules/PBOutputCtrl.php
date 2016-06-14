@@ -20,6 +20,7 @@
 
 		private $_prop	= array();
 		private $_elm	= array();
+		private $_meta	= [];
 
 		public function exec($param)
 		{
@@ -56,7 +57,24 @@
 			foreach ($this->_cssFiles as $filePath)
 				$css['file'] .= "<link href='{$filePath}' type='text/css' rel='stylesheet' />\r\n";
 
-			$header = implode("", $this->_header);
+			$header	 = implode("", $this->_header);
+			$metaTag = implode('', ary_filter( $this->_meta, function( $meta, &$idx ) {
+				if ( !empty($meta['property']) )
+					$idx = "property:{$meta['property']}";
+				else
+				if ( !empty($meta['name']) )
+					$idx = "name:{$meta['name']}";
+				else
+					$idx = NULL;
+
+
+
+				$attributes = [];
+				foreach( $meta as $attr => $value )
+					$attributes[] = "{$attr}=\"" . htmlentities($value) . "\"";
+				$attributes = implode( ' ', $attributes );
+				return "<meta {$attributes}/>";
+			}));
 			// endregion
 
 			// region [ Prepare HTML contents ]
@@ -122,7 +140,7 @@
 
 
 			$appendedScript = "{$js['append']}{$js['file append']}{$js['last']}";
-			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>";
+			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>";
 
 			return NULL;
 		}
@@ -250,6 +268,8 @@
 				$this->_elm[ 'html' ] = array();
 
 			return $this->_elm[ 'html' ];
+		public function &__get_meta() {
+			return $this->_meta;
 		}
 
 
@@ -265,11 +285,11 @@
 					$this->_header[] = "<link rel='shortcut icon' href='{$this->_baseRCPath}{$value}' />";
 					break;
 				case 'charset':
-//					$this->_header[] = "<meta http-equiv='Content-Type' content='text/html; charset={$value}'/>";
-					$this->_header[] = "<meta charset='{$value}'>";
+					$this->_meta[] = [ "charset" => $value ];
+//					$this->_meta[] = [ "http-equiv" => "Content-Type" "content" => "text/html; charset={$value}" ];
 					break;
 				case 'viewport':
-					$this->_header[] = "<meta name='viewport' content='{$value}' />";
+					$this->_meta[] = [ "name" => "viewport", "content" => $value ];
 					break;
 
 
