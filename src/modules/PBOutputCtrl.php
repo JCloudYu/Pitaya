@@ -248,6 +248,12 @@
 		public function __set_header($value) { $this->_header[] = $value; }
 
 
+		public function &__get_html() {
+			if ( empty($this->_elm[ 'html' ]) )
+				$this->_elm[ 'html' ] = [];
+
+			return $this->_elm[ 'html' ];
+		}
 		public function &__get_body() {
 			if ( empty($this->_elm[ 'body' ]) )
 				$this->_elm[ 'body' ] = [];
@@ -259,12 +265,6 @@
 				$this->_elm[ 'page' ] = [];
 
 			return $this->_elm[ 'page' ];
-		}
-		public function &__get_html() {
-			if ( empty($this->_elm[ 'html' ]) )
-				$this->_elm[ 'html' ] = [];
-
-			return $this->_elm[ 'html' ];
 		}
 		public function &__get_meta() {
 			return $this->_meta;
