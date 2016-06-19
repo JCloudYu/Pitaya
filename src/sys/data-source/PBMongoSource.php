@@ -15,6 +15,22 @@
 
 	class PBMongoSource extends PBDataSource
 	{
+		const AGGREGATION_OPRATORS = [
+			'$project',
+			'$match',
+			'$redact',
+			'$limit',
+			'$skip',
+			'$unwind',
+			'$group',
+			'$sample',
+			'$sort',
+			'$geoNear',
+			'$loopup',
+			'$out',
+			'$indexStats'
+		];
+
 		private $_mongoConnection = NULL;
 
 		public function __construct( $DSURI = "//127.0.0.1:27017/db", $options = array(), $driverOpt = array() ) {
@@ -30,28 +46,71 @@
 
 
 		public function get( $dataNS, $filter, &$additional = [] ) {
-
-			$range		= $this->range( $dataNS, $filter, $additional );
-			$queryOpt	= [
-				'skip'	=> $range[ 'skip' ],
-				'limit'	=> $range[ 'limit' ]
-			];
+			if ( empty($additional[ 'aggregation' ]) )
+				return $this->getQuery( $dataNS, $filter, $additional );
+			else
+				return $this->getAggregate( $dataNS, $filter, $additional );
+		}
+		public function getQuery( $dataNS, $filter, &$additional = [] ) {
+			$queryOpt = [];
+			if ( !empty($additional[ 'page' ]) )
+			{
+				$range = $this->range( $dataNS, $filter, $additional );
+				$queryOpt[ 'skip' ]		= $range[ 'skip' ];
+				$queryOpt[ 'limit' ]	= $range[ 'limit' ];
+			}
 
 			if ( !empty($additional[ 'order' ]) )
 				$queryOpt[ 'sort' ] = $additional[ 'order' ];
 
 			foreach( $additional as $option => $value )
 			{
-				if ( in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
+				if ( !in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
 				$queryOpt[ $option ] = $value;
 			}
-
 
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( $filter, $queryOpt ) );
 			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
 		}
+		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
+			$aggregation = $queryOpt = [];
+			$aggregation[] = [ '$match' => $baseQuery ];
+
+			if ( !empty($additional[ 'order' ]) )
+				$aggregation[] = [ '$sort' => $additional[ 'order' ] ];
+
+			if ( !empty($additional[ 'projection' ]) )
+				$aggregation[] = [ '$project' => $additional[ 'projection' ] ];
+
+			if ( !empty($additional[ 'aggregation' ]) )
+			{
+				foreach( $additional[ 'aggregation' ] as $op )
+				{
+					if ( !in_array(key($op), self::AGGREGATION_OPRATORS) ) continue;
+					$aggregation[] = $op;
+				}
+			}
+
+			if ( !empty($additional['page']) )
+			{
+				$range = $this->range( $dataNS, $aggregation, $additional, TRUE );
+				$aggregation[] = [ '$skip'	=> $range[ 'skip' ] ];
+				$aggregation[] = [ '$limit' => $range[ 'limit' ] ];
+			}
+
+
+			// INFO: Query and collect results
+			$ns = self::ResolveNameSpace( $dataNS );
+			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns['collection'],
+				'pipeline'	=> $aggregation,
+				'cursor'	=> (object)[]
+			]));
+			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
+		}
+
 		public function insert( $dataNS, $insertData, $additional = [] ) {
 
 			// INFO: Prepare write info
@@ -118,11 +177,24 @@
 
 			return $cursor->toArray()[0]->n;
 		}
-		public function range( $dataNS, $filter, &$additional = [] ) {
+		public function countAggregate( $dataNS, $baseAggregation ) {
+			$ns = self::ResolveNameSpace( $dataNS );
+
+			$baseAggregation[] = ['$group' => ['_id' => NULL, 'count' => ['$sum' => 1]]];
+
+
+			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns['collection'],
+				'pipeline'	=> $baseAggregation,
+				'cursor'	=> (object)[]
+			]));
+			return $cursor->toArray()[0]->count;
+		}
+		public function range( $dataNS, $filter, &$additional = [], $aggregate = FALSE ) {
 
 			$page 		= CAST( @$additional['page'], 'int' );
 			$pageSize 	= CAST( @$additional['pageSize'], 'int' );
-			$totalCount = $this->count( $dataNS, $filter );
+			$totalCount = empty($aggregate) ? $this->count($dataNS, $filter) : $this->countAggregate($dataNS, $filter);
 
 
 
@@ -146,16 +218,14 @@
 			if ( !is_array($additional) ) $additional = [];
 
 			$additional[ 'page' ]		= $page;
-			$additional[ 'pageSize' ] = $pageSize;
+			$additional[ 'pageSize' ]	= $pageSize;
 			$additional[ 'pageAmt' ]	= $totalPages;
-			$additional[ 'total' ]	= $totalCount;
+			$additional[ 'total' ]		= $totalCount;
 
 
 
 			return $range;
 		}
-
-
 
 		private static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
