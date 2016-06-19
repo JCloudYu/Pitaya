@@ -26,7 +26,7 @@
 			'$sample',
 			'$sort',
 			'$geoNear',
-			'$loopup',
+			'$lookup',
 			'$out',
 			'$indexStats'
 		];
