@@ -76,20 +76,20 @@
 		}
 		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
 			$aggregation = $queryOpt = [];
-			$aggregation[] = [ '$match' => $baseQuery ];
+			$aggregation[] = [ '$match' => (object)$baseQuery ];
 
 			if ( !empty($additional[ 'order' ]) )
-				$aggregation[] = [ '$sort' => $additional[ 'order' ] ];
+				$aggregation[] = [ '$sort' => (object)$additional[ 'order' ] ];
 
 			if ( !empty($additional[ 'projection' ]) )
-				$aggregation[] = [ '$project' => $additional[ 'projection' ] ];
+				$aggregation[] = [ '$project' => (object)$additional[ 'projection' ] ];
 
 			if ( !empty($additional[ 'aggregation' ]) )
 			{
 				foreach( $additional[ 'aggregation' ] as $op )
 				{
 					if ( !in_array(key($op), self::AGGREGATION_OPRATORS) ) continue;
-					$aggregation[] = $op;
+					$aggregation[] = (object)$op;
 				}
 			}
 
