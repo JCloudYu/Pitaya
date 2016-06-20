@@ -71,7 +71,7 @@
 
 
 			// INFO: Query and collect results
-			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( $filter, $queryOpt ) );
+			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
 			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
 		}
 		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
@@ -141,10 +141,15 @@
 		}
 		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
 
+			$compoundUpdate	= !empty($additional[ 'compound-update' ]);
+			$multipleUpdate	= (!array_key_exists( 'multiple-update', $additional)) ? TRUE : !!$additional[ 'multiple-update' ];
+
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
 			unset( $updatedData['_id'] );
-			$bulkWrite->update( $filter, [ '$set' => $updatedData ], [ 'multi' => TRUE ] );
+
+			$updateData = $compoundUpdate ? (object)$updatedData : (object)[ '$set' => (object)$updatedData ];
+			$bulkWrite->update( (object)$filter, $updateData, [ 'multi' => $multipleUpdate ] );
 
 
 
@@ -154,9 +159,11 @@
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
 
+			$multipleDelete	= (!array_key_exists( 'multiple-delete', $additional)) ? TRUE : !!$additional[ 'multiple-delete' ];
+
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite();
-			$bulkWrite->delete( $filter, [ 'multi' => TRUE ] );
+			$bulkWrite->delete( (object)$filter, [ 'multi' => $multipleDelete ] );
 
 
 
