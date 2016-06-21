@@ -163,7 +163,7 @@
 
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite();
-			$bulkWrite->delete( (object)$filter, [ 'multi' => $multipleDelete ] );
+			$bulkWrite->delete( (object)$filter, [ 'limit' => !$multipleDelete ] );
 
 
 
