@@ -40,7 +40,7 @@
 
 
 		public function get( $dataNS, $filter, &$additional = [] ) {
-
+			
 		}
 		public function insert( $dataNS, $insertData, $additional = [] ) {
 
@@ -51,7 +51,9 @@
 		public function delete( $dataNS, $filter, $additional = [] ) {
 
 		}
+		public function bulk( $dataNS, $batchedOps ) {
 
+		}
 
 
 		public function count( $dataNS, $filter ) {

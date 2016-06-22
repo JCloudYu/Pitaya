@@ -16,6 +16,7 @@
 		abstract public function insert( $dataNS, $insertData, $additional = [] );
 		abstract public function update( $dataNS, $filter, $updatedData = [], $additional = [] );
 		abstract public function delete( $dataNS, $filter, $additional = [] );
+		abstract public function bulk( $dataNS, $batchedOps );
 		abstract public function count( $dataNS, $filter );
 		abstract public function range( $dataNS, $filter, &$additional = [] );
 

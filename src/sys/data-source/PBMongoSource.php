@@ -171,6 +171,38 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result->getDeletedCount(): FALSE );
 		}
+		public function bulk( $dataNS, $batchedOps, $additional = [] ) {
+			// INFO: Prepare delete info
+			$bulkWrite = new BulkWrite( [ 'ordered' => !empty($additional[ 'ordered' ]) ] );
+			foreach( $batchedOps as $bulkOp )
+			foreach( $bulkOp as $op => $content )
+			{
+				switch( $op )
+				{
+					case "insert":
+						$bulkWrite->insert( $content[ 'data' ] );
+						break;
+
+					case "update":
+						$multiple = array_key_exists( 'multiple', $content ) ? !empty($content['multiple']) : TRUE;
+						$bulkWrite->update( $content['filter'], $content['data'], [ 'multi' => $multiple ] );
+						break;
+
+					case "delete":
+						$multiple = array_key_exists( 'multiple', $content ) ? !empty($content['multiple']) : TRUE;
+						$bulkWrite->delete( $content['filter'], [ 'multi' => !$multiple ] );
+						break;
+
+					default: break;
+				}
+			}
+
+
+
+			// INFO: Delete and collect results
+			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
+			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result: FALSE );
+		}
 
 
 
