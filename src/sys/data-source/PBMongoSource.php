@@ -190,7 +190,7 @@
 
 					case "delete":
 						$multiple = array_key_exists( 'multiple', $content ) ? !empty($content['multiple']) : TRUE;
-						$bulkWrite->delete( $content['filter'], [ 'multi' => !$multiple ] );
+						$bulkWrite->delete( $content['filter'], [ 'limit' => !$multiple ] );
 						break;
 
 					default: break;
