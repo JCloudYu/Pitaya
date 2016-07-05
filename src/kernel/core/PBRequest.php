@@ -476,7 +476,7 @@
 			if ( is_array($type) )
 			{
 				$options = @$type['options'];
-				$options = @$type['type'];
+				$type	 = @$type['type'];
 			}
 
 			return TO($vars[$name], $type, $options);
