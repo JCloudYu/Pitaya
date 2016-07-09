@@ -65,7 +65,7 @@
 
 			foreach( $additional as $option => $value )
 			{
-				if ( !in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
+				if ( in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
 				$queryOpt[ $option ] = $value;
 			}
 
