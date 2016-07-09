@@ -159,15 +159,31 @@
 
 		// INFO: System workflow initialization
 		private function __initialize($argc = 0, $argv = NULL) {
+
 			// INFO: Preserve path of system container
+			// DANGER: Make sure that this line will be excuted before __judgeMainService ( "service" will be different )
 			$preprocessEnvPaths = [
+				path( 'root',	 'boot.php' ),
+				path( 'service', 'boot.php' )
+			];
+			
+			$postprocessEnvPaths = [
 				path('root', 'sys.php'),
 				path('root', 'service.php'),
-				path("service",	'common.php'), // NOTE: This line should executed before __judgeMainService
+				path("service",	'common.php'),
 				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
 			];
 
 
+
+			foreach ( $preprocessEnvPaths as $path )
+			{
+				if (is_File($path) && is_readable($path))
+				{
+					chdir( dirname($path) );
+					require_once $path;
+				}
+			}
 
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService($argc, $argv);
@@ -186,8 +202,8 @@
 
 
 			// INFO: Bring up the main process
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use(&$preprocessEnvPaths) {
-				foreach ( $preprocessEnvPaths as $path )
+			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use(&$postprocessEnvPaths) {
+				foreach ( $postprocessEnvPaths as $path )
 				{
 					if (is_File($path) && is_readable($path))
 					{
@@ -275,6 +291,26 @@
 
 
 
+			// INFO: Customized service decision logics
+			if ( defined( 'DEFAULT_BOOT_RESOLVER' ) )
+			{
+				try{
+					$module = $this->acquireModule( DEFAULT_BOOT_RESOLVER );
+				}
+				catch( Exception $e ){
+					throw(new Exception( "Target default boot resolver is invalid!" ));
+				}
+
+				$result = $module->coreResolve( $service, $moduleRequest, $attributes );
+				if ( !empty($result) )
+				{
+					$service		= $result[ 'service' ];
+					$moduleRequest	= $result[ 'request' ];
+				}
+			}
+			
+
+
 
 			$state = $state || available("service.{$service}.{$service}", FALSE);
 
@@ -349,7 +385,7 @@
 
 
 					$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 					return;
 				}
 
@@ -543,7 +579,10 @@
 
 			// INFO: Search path construction
 			$moduleSearchPaths = array();
-			$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
+
+			if ( defined( '__SERVICE__' ) )
+				$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
+			
 			$moduleSearchPaths[] = "modules.";
 			$moduleSearchPaths[] = "data.modules.";
 			$moduleSearchPaths[] = "share.modules.";
@@ -553,7 +592,10 @@
 				$moduleSearchPaths[] = MODULE_PATH . ".";
 			else
 			if ( defined("__MODULE_PATH__") )	// DEPRECATED: The constants will be removed in v2.0.0
-				$moduleSearchPaths[] = "service." . __MODULE_PATH__ . ".";
+			{
+				if ( defined( '__SERVICE__' ) )
+					$moduleSearchPaths[] = "service." . __MODULE_PATH__ . ".";
+			}
 
 			foreach ( $this->_moduleSearchPaths as $path ) $moduleSearchPaths[] = "{$path}.";
 
@@ -596,7 +638,7 @@
 			$invokeModule = "{$class}";
 			$moduleObj	  = new $invokeModule( $instParam );
 			if(!is_subclass_of($moduleObj, 'PBModule'))
-				throw(new Exception("Requested service is not a valid module"));
+				throw(new Exception("Requested class is not a valid module"));
 
 			$moduleObj->__moduleId = $moduleId;
 

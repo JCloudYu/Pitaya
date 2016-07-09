@@ -31,6 +31,12 @@ class PBModule extends PBObject
 
 
 
+
+	// INFO: Interfaces that will be used in system core
+	public function coreResolve() { return NULL; }
+
+
+
 	// INFO: Supportive APIs
 	public function auth($authData = NULL){ return true; }
 	public function __get_auth() { return $this->auth(); }
