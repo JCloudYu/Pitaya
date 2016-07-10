@@ -46,6 +46,7 @@
 
 
 		public function get( $dataNS, $filter, &$additional = [] ) {
+
 			if ( empty($additional[ 'aggregation' ]) )
 				return $this->getQuery( $dataNS, $filter, $additional );
 			else
@@ -118,6 +119,7 @@
 
 			if ( empty($additional['multiple']) )
 			{
+				$insertData = (array)$insertData;
 				unset( $insertData['_id'] );
 				$id = $bulkWrite->insert( $insertData );
 				$sessionId = (empty($additional['cast-object-id'])) ? $id : "{$id}";
@@ -127,6 +129,7 @@
 				$sessionId = [];
 				foreach ( $insertData as $doc )
 				{
+					$doc = (array)$doc;
 					unset( $doc['_id'] );
 					$id = $bulkWrite->insert( $doc );
 					$sessionId[] = (empty($additional['cast-object-id'])) ? $id : "{$id}";
@@ -146,6 +149,8 @@
 
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
+			
+			$updatedData = (array)$updatedData;
 			unset( $updatedData['_id'] );
 
 			$updateData = $compoundUpdate ? (object)$updatedData : (object)[ '$set' => (object)$updatedData ];
