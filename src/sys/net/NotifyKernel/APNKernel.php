@@ -50,7 +50,7 @@
 				"ssl://{$this->_serverAddr}:2195",
 				$error, $errorStr,
 				$this->_conTimeout,
-				STREAM_CLIENT_CONNECT | STREAM_CLIENT_PERSISTENT,
+				STREAM_CLIENT_CONNECT,
 				$context
 			);
 
