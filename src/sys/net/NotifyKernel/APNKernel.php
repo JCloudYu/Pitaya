@@ -43,7 +43,7 @@
 
 			$context = stream_context_create();
 			stream_context_set_option( $context, 'ssl', 'local_cert', $this->_certPath );
-			if ( !empty( $certPath ) )
+			if ( !empty( $certPass ) )
 				stream_context_set_option( $context, 'ssl', 'passphrase', $this->_certPass );
 
 			$fCon = stream_socket_client(
