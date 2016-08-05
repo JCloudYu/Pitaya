@@ -91,38 +91,106 @@
 			if ( !$this->isConnected )
 				return NULL;
 
-			$token      = $msgContent[ 'token' ];
-			$expire     = TO( $msgContent[ 'expire' ], 'int strict' );
-			$expire     = ( $expire <= 0 ) ? 0 : $expire;
-			$payloads   = TO( $msgContent[ 'payload' ], 'array' );
-			$identifier = time();
+
+			$microTime	= microtime( TRUE );
+			$currTime	= $microTime | 0;
+			$microTime	= (microtime( TRUE ) * 1000) | 0;
+			
+			
+			$token			= $msgContent[ 'token' ];
+			$background		= CAST( $msgContent[ 'background' ], 'int strict', 0 );
+			$expire			= TO( $msgContent[ 'expire' ], 'int strict' );
+			$priority		= TO( $msgContent[ 'priority' ], 'int strict' );
+			$identifier		= $microTime % MONTH_SEC;
+			
 
 
-			$payloads[ 'data' ][ 'aps' ] = $payloads[ 'notification' ];
-			$payload                     = json_encode( $payloads[ 'data' ] );
-			$payloadLen                  = strlen( $payload );
+			$payload = $msgContent[ 'data' ];
+			
+			$payload[ 'aps' ] = [
+				'alert' => [
+					'title' 	=> $msgContent[ 'notification' ][ 'title' ],
+					'body'		=> $msgContent[ 'notification' ][ 'body' ],
+				],
+				'sound'		=> $msgContent[ 'notification' ][ 'sound' ],
+				'badge'		=> $msgContent[ 'notification' ][ 'badge' ]
+			];
+			
+			if ( $background > 0 ) $payload[ 'aps' ][ 'content-available' ] = 1;
+				
+			
+			
+			$response = self::__SEND( $this->_connection, $token, $payload, [
+				'identifier' => $identifier,
+				'expire'	 => ( $expire < 0 || (4294967295.0 - floatval($expire)) < 0 ) ? ($currTime + MONTH_SEC) : $expire,
+				'priority'	 => in_array( $priority, [ 5, 10 ] ) ? $priority : 10
+			]);
 
 
-			$binaryHeader = ( empty( $expire ) ) ?	pack( 'CNNnH*n', 1, $identifier, $expire, 32, $token, $payloadLen ) :
-													pack( 'CnH*n', 0, 32, $token, $payloadLen );
-
-			$data = $binaryHeader . $payload;
-			fwrite( $this->_connection, $data );
-
-
-
-			// INFO: Retrieve processing status
-			$response = fread( $this->_connection, 6 );
-			if ( !empty( $response ) ) {
-				list( $command, $status, $identifier ) = unpack( "CCN", $response );
-				$this->reconnect();
-
-				return array(
-					'status'     => $status,
-					'identifier' => $identifier
-				);
+			if ( $response === TRUE )
+			{
+				return [
+					'status'		=> TRUE,
+					'identifier'	=> $identifier
+				];
 			}
-
-			return TRUE;
+			else
+			{
+				$this->reconnect();
+			
+				$response[ 'status' ] = FALSE;
+				return $response;
+			}
+		}
+		
+		private static function __SEND( $stream, $token, $payload, $options = [], $blockTime = 0.5 ) {
+			$frames = "";
+		
+			// Token Frame
+			$data = pack( "H*", $token );
+			$frames .= pack( "Cn", 1, strlen($data) ) . $data;
+			
+			// Payload
+			$data = json_encode( $payload );
+			$frames .= pack( "Cn", 2, strlen($data) ) . $data;
+			
+			
+			
+			// Notification Identifier
+			if ( array_key_exists( 'identifier', $options ) )
+			{
+				$data = pack( "N", $options[ 'identifier' ] );
+				$frames .= pack( "Cn", 3, strlen($data) ) . $data;
+			}
+			
+			// Notification Expiration Date ( The end of the day )
+			if ( array_key_exists( 'expiration', $options ) )
+			{
+				$data = pack( "N", $options[ 'expiration' ] );
+				$frames .= pack( "Cn", 4, strlen($data) ) . $data;
+			}
+			
+			
+			// Message Priority
+			if ( array_key_exists( 'priority', $options ) )
+			{
+				$data = pack( "C", $options[ 'priority' ] );
+				$frames .= pack( "Cn", 5, strlen($data) ) . $data;
+			}
+			
+			
+			
+			// Pack everything together
+			$package = pack( "CN", 2, strlen($frames) ) . $frames;
+			fwrite( $stream, $package );
+			
+			
+			
+			if ( !empty($blockTime) ) usleep( $blockTime * 1000000 );
+			return self::__EatResponse( $stream );
+		}
+		private static function __EatResponse( $stream ) {
+			$response = fread( $stream, 6 );
+			return ( $response ) ? unpack( "Ccommand/Ccode/Nidentifier", $response ) : TRUE;
 		}
 	}
