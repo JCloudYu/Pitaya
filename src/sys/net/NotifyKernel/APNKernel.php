@@ -84,10 +84,7 @@
 			$this->connect( $this->_serverAddr, $this->_certPath, $this->_certPass, $this->_conTimeout );
 		}
 
-
-
-		public function send( $msgContent )
-		{
+		public function send( $msgContent ) {
 			if ( !$this->isConnected )
 				return NULL;
 
