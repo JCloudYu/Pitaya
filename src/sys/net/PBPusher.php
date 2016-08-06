@@ -31,12 +31,12 @@
 				}
 			}
 		}
-		public function send( $payload = [] ) {
+		public function push( $payload = [] ) {
 			$portal = @$this->_portals[ @"{$payload[ 'portal' ]}" ];
 			if ( empty($portal) ) {
 				return PBIPushPortal::__RESPOND_SEND_STATUS( FALSE, -1, [ "error" => "Invalid Portal!" ] );
 			}
-			return $portal->send( $payload );
+			return $portal->push( $payload );
 		}
 		
 		public static function BasicPayload( $portal, $target, $title, $body, $sound, $badge, $data = NULL, $options = [] ) {
@@ -63,7 +63,7 @@
 	abstract class PBIPushPortal extends PBObject {
 	
 		public abstract function connect( $connectInfo = [] );
-		public abstract function send( $payload = [] );
+		public abstract function push( $payload = [] );
 		
 		public function disconnect() { return TRUE; }
 		public function reconnect() { return TRUE; }
@@ -82,6 +82,20 @@
 		const DEFAULT_CONNECTION_TIMEOUT	= 100;
 		const DEVELOPMENT_PUSH_SERVER		= "gateway.sandbox.push.apple.com";
 		const PRODUCTION_PUSH_SERVER		= "gateway.push.apple.com";
+		const APNS_ERROR_MESSAGE_MAP		= [
+			0	=> "No errors encountered",
+			1	=> "Processing error",
+			2	=> "Missing device token",
+			3	=> "Missing topic",
+			4	=> "Missing payload",
+			5	=> "Invalid token size",
+			6	=> "Invalid topic size",
+			7	=> "Invalid payload size",
+			8	=> "Invalid token",
+			10	=> "Shutdown",
+			128	=> "Protocol error (APNs could not parse the notification)",
+			255	=> "None (unknown)"
+		];
 
 
 		private $_serverAddr = "";
@@ -159,7 +173,7 @@
 			
 			return TRUE;
 		}
-		public function send( $msgContent = [] ) {
+		public function push( $msgContent = [] ) {
 		
 			$identifier = parent::__IDENTIFIER();
 		
@@ -254,7 +268,15 @@
 		}
 		private static function __EatResponse( $stream ) {
 			$response = fread( $stream, 6 );
-			return ( $response ) ? unpack( "Ccommand/Ccode/Nidentifier", $response ) : TRUE;
+			
+			if ( $response )
+			{
+				$response = unpack( "Ccommand/Ccode/Nidentifier", $response );
+				$response[ 'reason' ] = self::APNS_ERROR_MESSAGE_MAP[ $response['code'] ];
+				return $response;
+			}
+			
+			return TRUE;
 		}
 	}
 	class PBGCMPortal extends PBIPushPortal {
@@ -287,7 +309,7 @@
 			
 			return $this->connect( $info );
 		}
-		public function send( $msgContent = [] ) {
+		public function push( $msgContent = [] ) {
 		
 			$currTime	= time();
 			$token		= $msgContent[ 'token' ];
