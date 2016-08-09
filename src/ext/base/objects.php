@@ -169,3 +169,21 @@
 			return array_values($this->_container);
 		}
 	}
+
+	class PBJSONCast {
+		public static function JSONCast() {
+			static $singleton = NULL;
+			if ( $singleton ) return $singleton;
+			
+			$singleton = new PBJSONCast();
+			return $singleton;
+		}
+		private function __construct() {}
+		
+		public function __invoke( $data ) {
+			if ( is_a( $data, 'PBJSONContainer' ) )
+				$data = $data->safe_cast();
+		
+			return json_encode( $data );
+		}
+	}
