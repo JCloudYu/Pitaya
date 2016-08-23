@@ -164,13 +164,15 @@
 			// DANGER: Make sure that this line will be excuted before __judgeMainService ( "service" will be different )
 			$preprocessEnvPaths = [
 				path( 'root',	 'boot.php' ),
-				path( 'service', 'boot.php' )
+				path( 'service', 'boot.php' ),
+				path( 'share',	 'boot.php' )
 			];
 			
 			$postprocessEnvPaths = [
-				path('root', 'sys.php'),
-				path('root', 'service.php'),
-				path("service",	'common.php'),
+				path( 'root',	 'sys.php'),
+				path( 'root',	 'service.php'),
+				path( "service", 'common.php'),
+				path( 'share',	 'share.php' ),
 				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
 			];
 
