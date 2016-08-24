@@ -28,6 +28,9 @@ class PBModule extends PBObject
 
 	public function prepareEvent($moduleRequest) {}
 	public function event($event) { return $event; }
+	
+	public function prepareCommon($moduleRequest) {}
+	public function common( $param ) { return $param; }
 
 
 

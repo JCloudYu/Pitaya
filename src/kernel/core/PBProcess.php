@@ -255,6 +255,7 @@ class PBProcess extends PBObject
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->event($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 					if ( !is_array($dataInput) )
 						$dataInput = array('propagation' => TRUE, 'data' => $dataInput);
 					else
@@ -277,6 +278,7 @@ class PBProcess extends PBObject
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->shell($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
@@ -289,6 +291,7 @@ class PBProcess extends PBObject
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->cors($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
@@ -302,6 +305,7 @@ class PBProcess extends PBObject
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
 					$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
 				break;
@@ -477,6 +481,8 @@ class PBProcess extends PBObject
 				$module->prepare($request);
 				break;
 		}
+		
+		$module->prepareCommon($request);
 
 		if ( $bootProcessing )
 			$this->_appendBootSequence( $module->bootstrap );
@@ -487,29 +493,41 @@ class PBProcess extends PBObject
 		switch ( SERVICE_EXEC_MODE )
 		{
 			case "EVENT":
-				if ( func_num_args() > 1 )
+				if ( func_num_args() > 1 ) {
 					$module->prepareEvent($request);
+					$module->prepareCommon($request);
+				}
 
-				return $module->event(NULL);
+				$result = $module->event(NULL);
+				break;
 
 			case "SHELL":
-				if ( func_num_args() > 1 )
+				if ( func_num_args() > 1 ) {
 					$module->prepareShell($request);
+					$module->prepareCommon($request);
+				}
 
-				return $module->shell(NULL);
+				$result = $module->shell(NULL);
+				break;
 
 			case "CORS":
-				if ( func_num_args() > 1 )
+				if ( func_num_args() > 1 ) {
 					$module->prepareCORS($request);
+					$module->prepareCommon($request);
+				}
 
-				return $module->cors(NULL);
+				$result = $module->cors(NULL);
+				break;
 
 			case "NORMAL":
 			default:
-				if ( func_num_args() > 1 )
+				if ( func_num_args() > 1 ) {
 					$module->prepare($request);
+					$module->prepareCommon($request);
+				}
 
-				return $module->exec(NULL);
+				$result = $module->exec(NULL);
+				break;
 		}
 	}
 }
