@@ -59,7 +59,7 @@
 				{
 					case "mysql":
 						using( 'sys.data-source.PBMySQLSource' );
-						$URI	= PBDataSource::ParseURI( $DSURI );
+						$URI	= PBIDataSource::ParseURI( $DSURI );
 						$source = new PBMySQLSource( $URI, $options, $driverOpt );
 						break;
 

@@ -11,9 +11,9 @@
 
 
 
-	using( 'sys.data-source.PBDataSource' );
+	using( 'sys.data-source.PBIDataSource' );
 
-	class PBMongoSource extends PBDataSource
+	class PBMongoSource extends PBIDataSource
 	{
 		const AGGREGATION_OPRATORS = [
 			'$project',
@@ -73,7 +73,7 @@
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
-			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
+			return empty($additional[ 'fetch-anchor' ]) ? PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
 		}
 		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
 			$aggregation = $queryOpt = [];
@@ -109,7 +109,7 @@
 				'pipeline'	=> $aggregation,
 				'cursor'	=> (object)[]
 			]));
-			return empty($additional[ 'fetch-anchor' ]) ? PBDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
+			return empty($additional[ 'fetch-anchor' ]) ? PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
 		}
 
 		public function insert( $dataNS, $insertData, $additional = [] ) {

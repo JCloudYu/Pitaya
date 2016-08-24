@@ -1,12 +1,12 @@
 <?php
 	/**
-	 ** 1024.QueueCounter - PBDataSource.php
+	 ** 1024.QueueCounter - PBIDataSource.php
 	 ** Created by JCloudYu on 2016/04/14 18:13
 	 **/
 
 	using( 'kernel.basis.PBObject' );
 
-	abstract class PBDataSource extends PBObject
+	abstract class PBIDataSource extends PBObject
 	{
 		abstract public function __get_source();
 
@@ -25,7 +25,7 @@
 		// INFO: Supportive APIs
 		public static function CollectData( $anchor, $map = NULL ) {
 
-			$mapFunc = ( is_callable($map) ) ? $map : "PBDataSource::NoProc";
+			$mapFunc = ( is_callable($map) ) ? $map : "PBIDataSource::NoProc";
 
 			$result	 = [];
 			foreach ( $anchor as $data )
