@@ -18,7 +18,6 @@
 			return self::$_reqInstance;
 		}
 
-
 		private static $_invokedTime = 0;
 		public static function __imprint_constants()
 		{
@@ -286,9 +285,6 @@
 		public function __get_contentType() {
 			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
 		}
-
-
-
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
@@ -402,7 +398,6 @@
 
 			return $this;
 		}
-
 		public static function ParseContentType( $contentType )
 		{
 			return ary_filter(explode(';', "{$contentType}"), function( $item, &$idx ){
@@ -453,7 +448,6 @@
 
 			return $this;
 		}
-
 		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
 		{
 			$qVar = is_array($this->_queryVariable) ? $this->_queryVariable : array();
@@ -481,7 +475,6 @@
 
 			return TO($vars[$name], $type, $options);
 		}
-
 		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 		{
 			$flags = array_merge(is_array($this->_queryFlag) ? $this->_queryFlag : array(),
@@ -490,7 +483,6 @@
 			$flags = array_unique($flags);
 			return ary_flag($flags, $name, $matchCase, $compareMode);
 		}
-
 		public function post($name, $type = 'raw', $default = NULL)
 		{
 			$var = $this->_incomingRecord['request']['post'];
@@ -499,7 +491,6 @@
 
 			return TO($var[$name], $type);
 		}
-
 		public function pickAttribute( $fields = array(), $customFilter = NULL )
 		{
 			static $_lastFilter	= NULL, $_defaultFilter	= NULL;
@@ -570,7 +561,6 @@
 
 			return array( 'resource' => $resource, 'attributes' => $attributes );
 		}
-
 		public static function ParseRequestQuery( $rawRequest )
 		{
 			$parts = self::DecomposeQuery( $rawRequest );
@@ -589,7 +579,6 @@
 
 			return $request;
 		}
-
 		public static function ParseQueryAttributes( $rawAttribute, $urlDecode = FALSE )
 		{
 			$attributes = explode( '&', "{$rawAttribute}" );
@@ -675,7 +664,6 @@
 
 			return $attributeContainer;
 		}
-
 		private static function GetIncomingHeaders( $_SERVER_VAR = NULL ){
 			static $_incomingHeaders = NULL;
 			if ( $_incomingHeaders !== NULL ) return $_incomingHeaders;

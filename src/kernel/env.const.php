@@ -9,16 +9,24 @@
 
 
 
-		if ( __STANDALONE_EXEC_MODE__ )
-			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage = 'working.plog', TRUE );
-		else
+		if ( __STANDALONE_EXEC_MODE__ && is_writable( path( $logPackage = 'working' )) )
 		{
-			if ( is_writable( path( $logPackage = 'data.log' )) )
-				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
-			else
-			if ( is_writable( path( $logPackage = 'root.log' )) )
-				s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
+			@mkdir( path( $logPackage = "{$logPackage}.plog" ), 0777, TRUE );
+			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
 		}
+		else
+		if ( is_writable( path( $logPackage = 'data' )) )
+		{
+			@mkdir( path( $logPackage = "{$logPackage}.log" ), 0777, TRUE );
+			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
+		}
+		else
+		if ( is_writable( path( $logPackage = 'root' )) )
+		{
+			@mkdir( path( $logPackage = "{$logPackage}.log" ), 0777, TRUE );
+			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
+		}
+		
 
 		if ( defined( 'DEFAULT_SYSTEM_LOG_PACKAGE' ) )
 			s_define( "DEFAULT_SYSTEM_LOG_DIR",	path( DEFAULT_SYSTEM_LOG_PACKAGE ), TRUE );

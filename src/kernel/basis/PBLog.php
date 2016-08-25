@@ -13,8 +13,6 @@
 		{
 			$this->_logStream = self::ObtainStream($logPath);
 		}
-
-
 		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
 		{
 			if ( empty($this->_logStream) ) return FALSE;
@@ -53,11 +51,6 @@
 
 
 
-
-
-
-
-
 		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "service.pblog" : $logFileName);
@@ -65,8 +58,6 @@
 
 			return $log->logMsg($message, $logPos, '', $options);
 		}
-
-
 		public static function ERRLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "error.pblog" : $logFileName);
@@ -74,7 +65,6 @@
 
 			return $log->logMsg($message, $logPos, 'ERROR', $options);
 		}
-
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "system.pblog" : $logFileName);
@@ -82,7 +72,6 @@
 
 			return $log->logMsg($message, $logPos, 'SYS', $options);
 		}
-
 		public static function ShareLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "share.pblog" : $logFileName);
@@ -90,7 +79,6 @@
 
 			return $log->logMsg($message, $logPos, 'SHARE', $options);
 		}
-
 		public static function CustomLog($message, $cate = 'CUSTOM', $logPos = FALSE, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "custom.pblog" : $logFileName);
