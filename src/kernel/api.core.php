@@ -127,20 +127,24 @@
 		
 			static $registeredInclusions = array();
 	
-			if($cache && isset($registeredInclusions[($referencingContext)])) return $registeredInclusions[($referencingContext)];
+			if ( $cache && isset($registeredInclusions[ $referencingContext ]) )
+				return $registeredInclusions[ $referencingContext ];
+	
+	
 	
 			$tokens = explode('.', $referencingContext);
-	
 			$completePath = ____________env_path(array_shift($tokens));
+			if ( empty($completePath) )
+				$result = FALSE;
+			else
+			{
+				array_unshift( $tokens, $completePath );
+				$completePath = implode( '/', $tokens ) . '.php';
+				$result = file_exists($completePath);
+			}
 	
-			foreach( $tokens as $token)
-				$completePath .= "/{$token}";
-			$completePath .= '.php';
-	
-			$result = file_exists($completePath);
-	
-			if ($cache)
-				$registeredInclusions[($referencingContext)] = $result;
+			if ( $cache )
+				$registeredInclusions[ $referencingContext ] = $result;
 	
 			return $result;
 		}
