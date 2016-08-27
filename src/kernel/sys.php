@@ -239,6 +239,7 @@
 
 
 				$service = @array_shift( $resource );
+				$service = trim( array_pop(explode('.', "{$service}")) ); // NOTE: Remove submodule syntax
 				$moduleRequest = $resource;
 			}
 			else
