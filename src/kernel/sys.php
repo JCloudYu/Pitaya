@@ -312,19 +312,19 @@
 					$moduleRequest	= $result[ 'request' ];
 				}
 			}
+
 			
 
 
 
-			$state = $state || available("service.{$service}.{$service}", FALSE);
 
-			if ($state)
-			{
+			// INFO: Detect Main Service
+			$state = available("service.{$service}.{$service}", FALSE);
+			if ($state) {
 				$this->_entryService = $service;
 
 				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
 				self::DecideExecMode( $moduleRequest );
-
 
 				$GLOBALS['service'] = $service;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -333,33 +333,29 @@
 
 
 
+
+
+
 			// INFO: Default basis chaining mode
-			$basisChain = @json_decode( @file_get_contents( path( 'defaults', 'basis-chain.json' ) ), TRUE );
-
-
+			// MARK: Developer customizable only
 			s_define( 'DEFAULT_BASIS_CHAIN_DESCRIPTOR',		'', TRUE );
 			s_define( 'DEFAULT_BASIS_CHAIN_WORKING_DIR',	'', TRUE );
-
+			
+			$basisChain = @json_decode( @file_get_contents( path( 'defaults', 'basis-chain.json' ) ), TRUE );
 			$basisChainPath	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
 			if ( !empty( $basisChainPath ) && is_file( $basisChainPath ) )
 			{
 				$custChain = @json_decode( @file_get_contents($basisChainPath), TRUE );
 				$basisChain = array_merge( $basisChain, $custChain );
 			}
-
-
 			if ( !empty($basisChain[ $service ]) )
 			{
 				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
-
 				$this->_entryService		= "PBSystem.PBExecCtrl#PBBasisChain";
 				$this->_entryServiceParam	= $basisChain[$service];
 
-
 				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
 				self::DecideExecMode( $moduleRequest );
-
-
 
 				$GLOBALS['service'] = $service;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -368,13 +364,15 @@
 
 
 
-			$defaultBasis = "NULL";
-			$reqResource  = "{$service}";
 
+
+
+			// INFO: If default basis is defined
+			// MARK: Developer customizable only
+			$defaultBasis = "NULL"; $reqResource = "{$service}";
 			if (__DEFAULT_SERVICE_DEFINED__)
 			{
-				if ( !empty($service) )
-					array_unshift($moduleRequest, $service);
+				if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
 				// DEPRECATED: The constants __DEFAULT_SERVICE__ will be removed in v2.0.0
 				$service = (defined('DEFAULT_SERVICE')) ? DEFAULT_SERVICE : __DEFAULT_SERVICE__;
@@ -410,6 +408,7 @@
 
 				$defaultBasis = $service;
 			}
+			// endregion
 
 			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: {$reqResource}) !"));
 		}

@@ -55,7 +55,7 @@
 		}
 		____________env_path();
 	
-		function using($referencingContext = '', $important = true) {
+		function using($referencingContext = '', $important = TRUE) {
 		
 			static $registeredInclusions = array();
 			if ( func_num_args() == 1 && $referencingContext === TRUE ) return $registeredInclusions;
