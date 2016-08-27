@@ -310,6 +310,22 @@
 				{
 					$service		= $result[ 'service' ];
 					$moduleRequest	= $result[ 'request' ];
+					$workingDir		= $result[ 'workingRoot' ];
+					
+					
+					
+					// INFO: Detect Main Service
+					$state = available("{$service}", FALSE);
+					if ($state) {
+						$this->_entryService = $service;
+		
+						define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
+						self::DecideExecMode( $moduleRequest );
+		
+						$GLOBALS['service'] = $service;
+						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+						return;
+					}
 				}
 			}
 
