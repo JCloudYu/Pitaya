@@ -268,28 +268,29 @@
 
 
 
-			// INFO: Detect Main Service
-			// NOTE: If cli and standalone script has been assigned
-			$state = FALSE;
-
-			$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
-			if ( CLI_ENV && is_file($scriptFilePath) )
+			// region [ Find the default basis ]
+			// INFO: If cli and standalone script has been assigned
+			// MARK: Developer customizable only
+			if ( CLI_ENV )
 			{
-				if ( !empty($service) )
-					array_unshift( $moduleRequest, $service );
-
-				$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
-				$ext = substr( $module, -4 );
-				if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
-				$this->_entryService		= "PBSystem.PBExecCtrl#PBVectorChain";
-
-				define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
-				define('__STANDALONE_MODULE__', $module );
-				self::DecideExecMode( $moduleRequest );
-
-				$GLOBALS['service'] = $module;
-				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-				return;
+				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
+				if ( is_readable($scriptFilePath) )
+				{
+					if ( !empty($service) ) array_unshift( $moduleRequest, $service );
+	
+					$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
+					$ext = substr( $module, -4 );
+					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
+					$this->_entryService		= "PBSystem.PBExecCtrl#PBVectorChain";
+	
+					define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
+					define('__STANDALONE_MODULE__', $module );
+					self::DecideExecMode( $moduleRequest );
+	
+					$GLOBALS['service'] = $module;
+					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+					return;
+				}
 			}
 
 
