@@ -326,9 +326,11 @@
 					$func = function($stream, $param) {
 						$targetData = stream_get_contents($stream);
 
-						$depth = intval(@$param['depth']);
-						$data = json_decode($targetData, TRUE, ($depth <= 0) ? 512 : $depth);
-						return array('data' => $data, 'variable' => $data, 'flag' => NULL);
+						$depth		= intval(@$param['depth']);
+						$data		= json_decode($targetData, FALSE, ($depth <= 0) ? 512 : $depth);
+						$variable	= is_a($data, stdClass::class) ? (array)$data : NULL;
+						
+						return array('data' => $data, 'variable' => $variable, 'flag' => NULL);
 					};
 					break;
 
