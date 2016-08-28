@@ -254,7 +254,9 @@ class PBProcess extends PBObject
 				do
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->preprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->event($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->postprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 					if ( !is_array($dataInput) )
 						$dataInput = array('propagation' => TRUE, 'data' => $dataInput);
@@ -277,7 +279,9 @@ class PBProcess extends PBObject
 				do
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->preprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->shell($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->postprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -290,7 +294,9 @@ class PBProcess extends PBObject
 				do
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->preprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->cors($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->postprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -304,7 +310,9 @@ class PBProcess extends PBObject
 				do
 				{
 					$moduleHandle = $this->_bootSequence->data['data'];
+					$dataInput = $this->_attachedModules[$moduleHandle]->preprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->exec($dataInput);
+					$dataInput = $this->_attachedModules[$moduleHandle]->postprocess($dataInput);
 					$dataInput = $this->_attachedModules[$moduleHandle]->common($dataInput);
 				}
 				while(PBLList::NEXT($this->_bootSequence));
@@ -462,6 +470,8 @@ class PBProcess extends PBObject
 
 	private function _prepareChain( PBModule $module, $request = NULL, $bootProcessing = TRUE )
 	{
+		$module->preparePreprocess($request);
+	
 		switch (SERVICE_EXEC_MODE)
 		{
 			case 'EVENT':
@@ -482,6 +492,7 @@ class PBProcess extends PBObject
 				break;
 		}
 		
+		$module->preparePostprocess($request);
 		$module->prepareCommon($request);
 
 		if ( $bootProcessing )
@@ -494,39 +505,59 @@ class PBProcess extends PBObject
 		{
 			case "EVENT":
 				if ( func_num_args() > 1 ) {
+					$module->preparePreprocess($request);
 					$module->prepareEvent($request);
+					$module->preparePostprocess($request);
 					$module->prepareCommon($request);
 				}
 
-				$result = $module->event(NULL);
+				$result = $module->preprocess(NULL);
+				$result = $module->event($result);
+				$result = $module->postprocess($result);
+				$result = $module->common($result);
 				break;
 
 			case "SHELL":
 				if ( func_num_args() > 1 ) {
+					$module->preparePreprocess($request);
 					$module->prepareShell($request);
+					$module->preparePostprocess($request);
 					$module->prepareCommon($request);
 				}
 
-				$result = $module->shell(NULL);
+				$result = $module->preprocess(NULL);
+				$result = $module->shell($result);
+				$result = $module->postprocess($result);
+				$result = $module->common($result);
 				break;
 
 			case "CORS":
 				if ( func_num_args() > 1 ) {
+					$module->preparePreprocess($request);
 					$module->prepareCORS($request);
+					$module->preparePostprocess($request);
 					$module->prepareCommon($request);
 				}
 
-				$result = $module->cors(NULL);
+				$result = $module->preprocess(NULL);
+				$result = $module->cors($result);
+				$result = $module->postprocess($result);
+				$result = $module->common($result);
 				break;
 
 			case "NORMAL":
 			default:
 				if ( func_num_args() > 1 ) {
+					$module->preparePreprocess($request);
 					$module->prepare($request);
+					$module->preparePostprocess($request);
 					$module->prepareCommon($request);
 				}
 
-				$result = $module->exec(NULL);
+				$result = $module->preprocess(NULL);
+				$result = $module->exec($result);
+				$result = $module->postprocess($result);
+				$result = $module->common($result);
 				break;
 		}
 	}
