@@ -12,27 +12,22 @@
 		public static function Verbose() { self::$_silent = FALSE; }
 
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
-
 		public static function VarDumpParent() {
 
 			echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET), TRUE);
 		}
-
 		public static function VarDump() {
 
 			echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET));
 		}
-
 		public static function VarDumpParentString() {
 
 			return self::VDump(func_get_args(), FALSE, TRUE);
 		}
-
 		public static function VarDumpString() {
 
 			return self::VDump(func_get_args(), FALSE);
 		}
-
 		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
 			if ( self::IS_SILENT() ) return '';
@@ -119,7 +114,6 @@
 
 			return $out;
 		}
-
 		public static function JSLog($outStr) {
 
 			if ( self::IS_SILENT() ) return;
@@ -129,7 +123,6 @@
 
 			echo "<script language='javascript'>console.log(".json_encode($outStr).");</script>";
 		}
-
 		public static function BackTrace($args = 0) {
 
 			if ( self::IS_SILENT() ) return NULL;
@@ -164,7 +157,6 @@
 
 			return $adjusted;
 		}
-
 		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
 	}
 
