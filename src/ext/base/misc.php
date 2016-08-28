@@ -27,17 +27,15 @@
 			case 'int':
 				$default = $filter;
 
-
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0;
 				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_INT" : "EXPR_NUMERIC";
 
 
-
-				if ( in_array( 'no-casting', $opt ) )
-					return $procFunc($value) ? $value : $defaultVal;
-
-				return $procFunc($value) ? @intval($value) : $defaultVal;
+				if ( !$procFunc($value) )
+					return $defaultVal;
+				else
+					return ( in_array( 'no-casting', $opt ) ) ? $value : @intval($value);
 			// endregion
 
 			// region float [strict] [no-casting]
@@ -46,18 +44,16 @@
 			 */
 			case 'float':
 				$default = $filter;
-
-
+				
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0.0;
 				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_FLOAT" : "EXPR_NUMERIC";
 
 
-
-				if ( in_array( 'no-casting', $opt ) )
-					return $procFunc($value) ? $value : $defaultVal;
-
-				return $procFunc($value) ? @floatval($value) : $defaultVal;
+				if ( !$procFunc($value) )
+					return $defaultVal;
+				else
+					return ( in_array( 'no-casting', $opt ) ) ? $value : @floatval($value);
 			// endregion
 
 			// region string [force] [lower-case] [upper-case] [decode-url] [encode-url] [purge-html]
