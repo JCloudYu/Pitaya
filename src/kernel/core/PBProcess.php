@@ -488,7 +488,6 @@ class PBProcess extends PBObject
 				break;
 		}
 		
-		$module->preparePostprocess($request);
 		$module->prepareCommon($request);
 
 		if ( $bootProcessing )
