@@ -32,25 +32,20 @@ class PBProcess extends PBObject
 			return PBSysKernel::Process()->getModule( $moduleName, $reusable );
 		}
 		catch( Exception $e ) {
-			if ( $noThrow )
-				return NULL;
-
+			if ( $noThrow ) return NULL;
 			throw $e;
 		}
 	}
-
 	public static function ServiceModule(){
 		return PBSysKernel::Process()->_entryModule;
 	}
-
+	
 	public static function Execute($module, $request = NULL, $reusable = FALSE) {
-
 		$PROC = PBSysKernel::Process();
 
 		if (!is_a($module, "PBModule")) $module = $PROC->getModule("{$module}", $reusable);
 		return $PROC->_execChain( $module, $request );
 	}
-
 	public static function PackExecution( $module, $request = NULL, $reusable = FALSE) {
 		if (!is_a($module, "PBModule")) $module = PBSysKernel::Process()->getModule( "{$module}", $reusable);
 
@@ -60,19 +55,15 @@ class PBProcess extends PBObject
 
 		return $result;
 	}
-
 	public static function Render($module, $request = NULL, $reusable = FALSE) {
 		echo self::PackExecution( $module, $request, $reusable );
 	}
 
 	public function __construct() {
-
 		$this->_bootSequence = PBLList::GENERATE();
 	}
-
 	public function __destruct() {
-
-
+	
 	}
 
 //SEC: Process API//////////////////////////////////////////////////////////////////////////////////////////////////////
