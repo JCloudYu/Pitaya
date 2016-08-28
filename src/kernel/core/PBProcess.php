@@ -547,5 +547,7 @@ class PBProcess extends PBObject
 				$result = $module->common($result);
 				break;
 		}
+		
+		return $result;
 	}
 }
