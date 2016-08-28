@@ -189,7 +189,7 @@
 
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService($argc, $argv);
-			PBRequest::Request();
+			PBRequest::Request()->__initialize();
 
 
 

@@ -285,30 +285,3 @@
 
 	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16);
 	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'));
-
-
-
-	// INFO: Set timezone
-	call_user_func(function() {
-		$result = FALSE;
-
-
-		if ( defined('__SYSTEM_TIMEZONE__') )
-			$result = date_default_timezone_set( __SYSTEM_TIMEZONE__ );
-		else
-		if ( isset( $GLOBALS['RUNTIME_CONF']['TZ'] ) )
-			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_CONF']['TZ'] );
-		else
-		if ( isset($GLOBALS['RUNTIME_ENV']['PITAYA_SYSTEM_TIMEZONE']) )
-			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_ENV']['PITAYA_SYSTEM_TIMEZONE'] );
-		else
-		if ( isset($GLOBALS['RUNTIME_ENV']['TZ']) )
-			$result = date_default_timezone_set( @$GLOBALS['RUNTIME_ENV']['TZ'] );
-		else
-		if ( ini_get('date.timezone') != "" )
-			$result = date_default_timezone_set( ini_get('date.timezone') );
-
-
-		if ( $result === FALSE ) date_default_timezone_set('UTC');
-	});
-

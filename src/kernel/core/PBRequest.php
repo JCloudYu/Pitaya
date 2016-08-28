@@ -18,16 +18,23 @@
 			return self::$_reqInstance;
 		}
 
-		private static $_invokedTime = 0;
-		public static function __imprint_constants()
-		{
-			self::$_invokedTime = $GLOBALS['invokeTime'];
+		public static function __imprint_constants() {
 			self::GetIncomingHeaders( $_SERVER );
 		}
+		
+		private function __construct() { }
 
+
+
+		private static $_initialized = FALSE;
 		private $_incomingRecord = array();
-		private function __construct()
+		public function __initialize()
 		{
+			if ( self::$_initialized ) return;
+			self::$_initialized = TRUE;
+		
+		
+		
 			if ( SYS_WORKING_ENV == SYS_ENV_CLI)
 			{
 				$this->_parsedQuery = array();
@@ -276,8 +283,8 @@
 
 		public function __get_requestTime()
 		{
-			$netRequestTime = $this->_incomingRecord['environment']['server']['REQUEST_TIME'];
-			return empty($netRequestTime) ? PBRequest::$_invokedTime : $netRequestTime;
+			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
+			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
 		}
 
 

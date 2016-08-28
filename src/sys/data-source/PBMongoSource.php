@@ -146,6 +146,7 @@
 
 			$compoundUpdate	= !empty($additional[ 'compound-update' ]);
 			$multipleUpdate	= (!array_key_exists( 'multiple-update', $additional)) ? TRUE : !!$additional[ 'multiple-update' ];
+			$shouldInsert	= (!array_key_exists( 'upsert', $additional )) ? FALSE : !!$additional[ 'upsert' ];
 
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
@@ -154,7 +155,7 @@
 			unset( $updatedData['_id'] );
 
 			$updateData = $compoundUpdate ? (object)$updatedData : (object)[ '$set' => (object)$updatedData ];
-			$bulkWrite->update( (object)$filter, $updateData, [ 'multi' => $multipleUpdate ] );
+			$bulkWrite->update( (object)$filter, $updateData, [ 'multi' => $multipleUpdate, 'upsert' => $shouldInsert ] );
 
 
 

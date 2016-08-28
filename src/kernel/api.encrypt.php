@@ -14,8 +14,9 @@
 		if(is_null($cacheRawRequest)) $cacheRawRequest = preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', @$_SERVER['REQUEST_URI']));
 		if(is_null($baseEncoding))
 		{
+			$REQUEST_TIME = PITAYA_BOOT_TIME;
 			@$baseEncoding = "#|#{$cacheServer['HTTP_USER_AGENT']}#|#{$cacheServer['REMOTE_ADDR']}#|#{$cacheServer['REMOTE_PORT']}#|#".
-							"{$cacheRawRequest}#|#{$cacheServer['REQUEST_TIME']}#|#".uniqid("", TRUE)."#|#";
+							"{$cacheRawRequest}#|#{$REQUEST_TIME}#|#".uniqid("", TRUE)."#|#";
 			$baseEncoding = hash('sha512', $baseEncoding);
 		}
 

@@ -1,4 +1,8 @@
 <?php
+	$GLOBALS[ 'BOOT_TIME' ] = microtime( TRUE );
+
+
+
 	// Detect minimum PHP Version
 	if ( PHP_VERSION_ID < 50600 )
 		die( "The system requires php 5.6.0 or higher!" );
@@ -17,10 +21,7 @@
 	define('PITAYA_VERSION_SHORT', PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR);
 	define('PITAYA_VERSION', PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR . '.' . PITAYA_VERSION_BUILD);
 	define('PITAYA_VERSION_DETAIL', PITAYA_VERSION . '-' . PITAYA_VERSION_PATCH);
-
-
-
-	$GLOBALS['invokeTime'] = $_SERVER['REQUEST_TIME'];
+	
 
 
 	// DEPRECATED: The constants will be removed in v2.0.0
@@ -183,6 +184,9 @@
 
 
 
+	// Calculate the time diff from begining... ( Theoretically... 0 )
+	$GLOBALS[ 'BOOT_TIME' ] = (microtime( TRUE ) - $GLOBALS[ 'BOOT_TIME' ])| 0;
+	require_once __ROOT__ . '/kernel/env.time.php';
 
 
 
@@ -224,7 +228,6 @@
 	unset($GLOBALS['sharePath']);
 	unset($GLOBALS['dataPath']);
 	unset($GLOBALS['extPath']);
-	unset($GLOBALS['invokeTime']);
 	unset($GLOBALS['RUNTIME_ENV']);
 	unset($GLOBALS['RUNTIME_CONF']);
 	unset($GLOBALS['RUNTIME_ARGC']);
