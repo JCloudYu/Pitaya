@@ -147,6 +147,7 @@
 			$compoundUpdate	= !empty($additional[ 'compound-update' ]);
 			$multipleUpdate	= (!array_key_exists( 'multiple-update', $additional)) ? TRUE : !!$additional[ 'multiple-update' ];
 			$shouldInsert	= (!array_key_exists( 'upsert', $additional )) ? FALSE : !!$additional[ 'upsert' ];
+			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
 
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
@@ -161,11 +162,14 @@
 
 			// INFO: Update and collect results
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
-			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result->getModifiedCount(): FALSE );
+			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
+			
+			return ($castResult) ? $result->getModifiedCount() : $result;
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
 
 			$multipleDelete	= (!array_key_exists( 'multiple-delete', $additional)) ? TRUE : !!$additional[ 'multiple-delete' ];
+			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
 
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite();
@@ -175,7 +179,9 @@
 
 			// INFO: Delete and collect results
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
-			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result->getDeletedCount(): FALSE );
+			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
+			
+			return ($castResult) ? $result->getDeletedCount() : $result;
 		}
 		public function bulk( $dataNS, $batchedOps, $additional = [] ) {
 			// INFO: Prepare delete info
