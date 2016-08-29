@@ -30,9 +30,22 @@
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0;
 				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_INT" : "EXPR_NUMERIC";
+				$status = $procFunc($value);
+				
+				if ( in_array( 'positive', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && !( $str[0] == "-" );
+				}
+				else
+				if ( in_array( 'negative', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && ( $str[0] == "-" );
+				}
 
-
-				if ( !$procFunc($value) )
+				
+				if ( !$status )
 					return $defaultVal;
 				else
 					return ( in_array( 'no-casting', $opt ) ) ? $value : @intval($value);
@@ -48,9 +61,22 @@
 				$value = trim("$value");
 				$defaultVal = ($nArgs > 2) ? $default : 0.0;
 				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_FLOAT" : "EXPR_NUMERIC";
+				$status = $procFunc($value);
+				
+				if ( in_array( 'positive', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && !( $str[0] == "-" );
+				}
+				else
+				if ( in_array( 'negative', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && ( $str[0] == "-" );
+				}
 
-
-				if ( !$procFunc($value) )
+				
+				if ( !$status )
 					return $defaultVal;
 				else
 					return ( in_array( 'no-casting', $opt ) ) ? $value : @floatval($value);

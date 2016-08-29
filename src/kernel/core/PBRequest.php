@@ -320,15 +320,18 @@
 
 			$func = NULL;
 
-			switch (strtolower($type))
+
+			$typeOpt = explode( ' ', strtolower("{$type}") );
+			$type = array_shift($typeOpt);
+			switch ( $type )
 			{
 				case 'json':
-					$func = function($stream, $param) {
+					$func = function($stream, $param) use ( $typeOpt ) {
 						$targetData = stream_get_contents($stream);
 
 						$depth		= intval(@$param['depth']);
-						$data		= json_decode($targetData, FALSE, ($depth <= 0) ? 512 : $depth);
-						$variable	= is_a($data, stdClass::class) ? (array)$data : NULL;
+						$data		= json_decode($targetData, in_array( 'force-array', $typeOpt ), ($depth <= 0) ? 512 : $depth);
+						$variable	= (is_a($data, stdClass::class) || in_array( 'force-array', $typeOpt )) ? (array)$data : NULL;
 						
 						return array('data' => $data, 'variable' => $variable, 'flag' => NULL);
 					};
