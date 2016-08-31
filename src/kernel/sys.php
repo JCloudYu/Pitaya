@@ -239,7 +239,6 @@
 
 
 				$service = @array_shift( $resource );
-				$service = trim( array_pop(explode('.', "{$service}")) ); // NOTE: Remove submodule syntax
 				$moduleRequest = $resource;
 			}
 			else
@@ -335,7 +334,8 @@
 
 
 			// INFO: Detect Main Service
-			$state = available("service.{$service}.{$service}", FALSE);
+			$serviceName = array_pop( explode( '.', "{$service}" ) );
+			$state = available("service.{$serviceName}.{$serviceName}", FALSE);
 			if ($state) {
 				$this->_entryService = $service;
 
