@@ -391,8 +391,12 @@ class PBProcess extends PBObject
 
 		foreach( $bootSequence as $illustrator )
 		{
-			if(!is_array($illustrator))
-				throw(new Exception("Error bootSequence structure definition"));
+			if ( is_a( $illustrator, stdClass::class ) )
+				$illustrator = (array)$illustrator;
+		
+			// Skipping none array
+			if (!is_array($illustrator)) continue;
+				
 
 			if(!array_key_exists('module', $illustrator))
 				throw(new Exception("Error bootSequence structure definition"));
