@@ -21,12 +21,12 @@
 			}
 		}
 
-		private $_relPath		= array();
+		private $_relPath = [];
 		public function __set_relPath($value) {
-			if ( !is_array( $value ) ) $value = array( "{$value}" );
+			if ( !is_array( $value ) ) $value = [ "{$value}" ];
 			$this->_relPath = $value;
 		}
-		public function __get_relPath() { return $this->_relPath; }
+		public function& __get_relPath() { return $this->_relPath; }
 
 		private $_multiByteRangeMode = FALSE;
 		public function __set_multiBytes($value) { $this->_multiByteRangeMode = !empty($value); }
