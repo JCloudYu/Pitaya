@@ -337,12 +337,12 @@
 			$serviceName = array_pop( explode( '.', "{$service}" ) );
 			$state = available("service.{$serviceName}.{$serviceName}", FALSE);
 			if ($state) {
-				$this->_entryService = $service;
+				$this->_entryService = $serviceName;
 
 				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
 				self::DecideExecMode( $moduleRequest );
 
-				$GLOBALS['service'] = $service;
+				$GLOBALS['service'] = $serviceName;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
