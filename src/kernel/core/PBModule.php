@@ -13,6 +13,9 @@ class PBModule extends PBObject
 	private $_bootstrap = array();
 
 	public function __construct() { $this->_ext = new stdClass(); }
+	public function __invoke() {
+		throw( new Exception( "PBModule::__invoke should not be invoked directly without overriding!" ) );
+	}
 
 
 

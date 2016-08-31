@@ -7,10 +7,36 @@
 
 	class PBPageMod extends PBModule
 	{
+		public static function ModCtrl(){
+			static $_singleton = NULL;
+			if ( $_singleton === NULL )
+				$_singleton = new PBPageMod();
+			
+			return $_singleton;
+		}
+	
 		public function prepare( $moduleRequest = NULL )
 		{
 			$this->ext->htmlClass	= "module {$this->class_lower}";
 			$this->ext->htmlAttr	= "data-module-id='{$this->id_medium}'";
+		}
+		
+		public function __invoke( $args )
+		{
+			$args = func_get_args();
+			
+			// Global Module Logic
+			if ( $this->class === PBPageMod::class )
+			{
+				$moduleName = @array_shift( $args );
+				$module = PBProcess::Module( "{$moduleName}" );
+				return @call_user_func_array( $module, $args );
+			}
+			
+			
+			
+			@call_user_func_array( [ $this, 'prepare' ], $args );
+			return $this->exec( NULL );
 		}
 	}
 
