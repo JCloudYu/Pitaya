@@ -230,10 +230,11 @@
 
 
 
-				$resource	= ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
+				$resource	 = ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
 					return urldecode( $item );
 				});
-				@array_splice( $resource, 0, PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
+				$attachPoint = @array_splice( $resource, 0, PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
+				$GLOBALS[ 'attachPoint' ] = empty($attachPoint) ? '' : '/' . implode( '/', $attachPoint );
 				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
 

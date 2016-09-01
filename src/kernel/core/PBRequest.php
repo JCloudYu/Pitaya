@@ -62,6 +62,10 @@
 
 			$this->_incomingRecord['environment']['env']	 = $_ENV;
 			$this->_incomingRecord['environment']['server']	 = $_SERVER;
+			$this->_incomingRecord['environment']['attachment'] = [
+				'level' => PITAYA_ENVIRONMENTAL_ATTACH_LEVEL,
+				'anchor' => $GLOBALS[ 'attachPoint' ]
+			];
 
 
 
@@ -81,6 +85,7 @@
 			unset($GLOBALS['rawRequest']);
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
+			unset($GLOBALS['attachPoint']);
 		}
 		// endregion
 
@@ -240,6 +245,8 @@
 		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
+		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
+		public function __get_attachAnchor() { return $this->_incomingRecord['environment']['attachment']['anchor']; }
 
 		public function __get_domain() { return @"{$this->server['SERVER_NAME']}"; }
 		public function __get_ssl() { return $this->is_ssl(); }

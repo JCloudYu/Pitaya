@@ -29,7 +29,7 @@
 			if ( $this->class === PBPageMod::class )
 			{
 				$moduleName = @array_shift( $args );
-				$module = PBProcess::Module( "{$moduleName}" );
+				$module = PBProcess::Module( "{$moduleName}", FALSE );
 				return @call_user_func_array( $module, $args );
 			}
 			
