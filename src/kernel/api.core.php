@@ -38,15 +38,16 @@
 					$GLOBALS['dataPath']	= $_cachedPath['data']	  = (empty($GLOBALS['dataPath'])) ?	   __WEB_ROOT__ . '/Data'	  : "{$GLOBALS['dataPath']}";
 	
 	
-					$_cachedPath['root']	= __WEB_ROOT__;
-					$_cachedPath['working']	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? $_cachedPath['service'] : $GLOBALS['STANDALONE_EXEC']['cwd'];
+					$_cachedPath[ 'srvroot' ]	= $_cachedPath['service'];
+					$_cachedPath[ 'root' ]		= __WEB_ROOT__;
+					$_cachedPath[ 'working' ]	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? $_cachedPath['service'] : $GLOBALS['STANDALONE_EXEC']['cwd'];
 	
 	
 	
 	
 					return function($package = 'root') use ($_cachedPath) {
-						$pCache = array_key_exists("{$package}", $_cachedPath) ? $_cachedPath[$package] : '';
-						return ($package == 'service' && defined('__WORKING_ROOT__')) ? __WORKING_ROOT__ : $pCache;
+						if ( $package == "service" && defined('__WORKING_ROOT__') ) return __WORKING_ROOT__;
+						return @"{$_cachedPath[$package]}";
 					};
 				});
 			}
