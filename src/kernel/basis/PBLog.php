@@ -13,15 +13,12 @@
 		{
 			$this->_logStream = self::ObtainStream($logPath);
 		}
-		public function logMsg($message, $logPos = FALSE, $logCate = '', $options = array())
+		public function genLogMsg( $message, $logPos = FALSE, $logCate = '', $options = [] )
 		{
-			if ( empty($this->_logStream) ) return FALSE;
+			if ( !is_array($options) ) $options = [];
 
-
-			if (!is_array($options)) $options = array();
-
-			if (!is_string($message)) $message = print_r($message, TRUE);
-			if (!is_array(@$options['tags'])) $options['tags'] = array();
+			if ( !is_string($message) ) $message = print_r( $message, TRUE );
+			if ( !is_array(@$options['tags']) ) $options['tags'] = array();
 			$info = self::PrepLogInfo($logCate, $options);
 
 
@@ -36,9 +33,17 @@
 			// INFO: Write file stream
 			$position = ($logPos) ? " {$info['position']}" : '';
 			$timeInfo = in_array('UNIX_TIMESTAMP', $options) ? $info['time'] : $info['timestamp'];
-			$msg = "[{$timeInfo}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}\n";
-			fwrite($this->_logStream, $msg);
-			fflush($this->_logStream);
+			$msg = "[{$timeInfo}][{$info['cate']}][{$info['service']}][{$info['module']}][{$info['route']}]{$tags} {$message}{$position}";
+			return $msg;
+		}
+		public function logMsg( $message, $logPos = FALSE, $logCate = '', $options = [] )
+		{
+			if ( empty($this->_logStream) ) return FALSE;
+
+
+			$msg = ( @$options[ 'row-output' ] === TRUE ) ? $message : $this->genLogMsg( $message, $logPos, $logCate, $options );
+			fwrite( $this->_logStream, "{$msg}\n" );
+			fflush( $this->_logStream );
 
 			if (!empty(PBLog::$LogDB))
 			{
@@ -63,7 +68,8 @@
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "error.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			return $log->logMsg($message, $logPos, 'ERROR', $options);
+			error_log( $msg = $log->genLogMsg( $message, $logPos, 'ERROR', $options ) );
+			return $log->logMsg( $msg, FALSE, '', [ 'raw-output' => TRUE ] );
 		}
 		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
 		{
