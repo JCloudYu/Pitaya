@@ -163,14 +163,20 @@ class PBProcess extends PBObject
 		while ( PBLinkedList::NEXT($this->_bootSequence) )
 		{
 			$moduleId = $this->_bootSequence->data['data'];
-			if (in_array( $this->_attachedModules[$moduleId]->class, $moduleName) )
+			$module = $this->_attachedModules[ $moduleId ];
+			
+			$valid = FALSE;
+			ary_filter( $moduleName, function( $name ) use( &$valid, &$module ) {
+				$name = "{$name}";
+				$valid = $valid || ( $module instanceof $name );
+			});
+			
+			if ( !$valid )
+				PBLinkedList::REMOVE($this->_bootSequence);
+			else
 			{
 				PBLinkedList::PREV($this->_bootSequence);
 				return;
-			}
-			else
-			{
-				PBLinkedList::REMOVE($this->_bootSequence);
 			}
 		}
 	}
