@@ -151,9 +151,77 @@ class PBProcess extends PBObject
 		return $status;
 	}
 
-	public function cancelFollowingModules() {
-		while (PBLList::NEXT($this->_bootSequence))
-			PBLList::REMOVE($this->_bootSequence);
+	public function cancelFollowingModules( $skips = NULL ) {
+	
+		if ( func_num_args() == 0 )
+		{
+			while( PBLinkedList::NEXT($this->_bootSequence) )
+				PBLinkedList::REMOVE($this->_bootSequence);
+		}
+		else
+		if ( is_numeric( $skips ) )
+		{
+			if ( $skips > 0 )
+			{
+				$skipCounter = $skips;
+				while( PBLinkedList::NEXT($this->_bootSequence) )
+				{
+					if ( $skipCounter <= 0 )
+						PBLinkedList::REMOVE($this->_bootSequence);
+					else
+						$skipCounter--;
+				}
+				
+				while( $skips-- > 0 )
+					PBLinkedList::PREV( $this->_bootSequence );
+			}
+			else
+			if ( $skips < 0 )
+			{
+				$skips = -$skips; $length = 0;
+				while( PBLinkedList::NEXT($this->_bootSequence) ) $length++;
+				
+				if ( $length <= $skips )
+				{
+					while( $length-- > 0 ) PBLinkedList::PREV( $this->_bootSequence );
+					return;
+				}
+				
+				
+				
+				$length -= $skips;
+				while( $skips-- > 0 ) PBLinkedList::PREV($this->_bootSequence);
+				
+				PBLinkedList::PREV($this->_bootSequence);
+				while( $length-- > 0 ) PBLinkedList::REMOVE( $this->_bootSequence );
+			}
+		}
+		else
+		{
+			if ( !is_array( $skips ) ) $skips = [ $skips ];
+		
+		
+			$skipCounter = 0;
+			while( PBLinkedList::NEXT($this->_bootSequence) )
+			{
+				$module = $this->_attachedModules[ $this->_bootSequence->data['data'] ];
+				
+				$valid = FALSE;
+				ary_filter( $skips, function( $name ) use( &$valid, &$module ) {
+					$name = "{$name}";
+					$valid = $valid || ( $module instanceof $name );
+				});
+				
+				if ( $valid )
+					$skipCounter++;
+				else
+					PBLinkedList::REMOVE($this->_bootSequence);
+			}
+			
+			
+			while( $skipCounter-- > 0 )
+				PBLinkedList::PREV( $this->_bootSequence );
+		}
 	}
 
 	public function cancelFollowingUntilClass( $moduleName ) {
