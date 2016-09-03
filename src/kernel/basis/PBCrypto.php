@@ -3,7 +3,9 @@
  * 1017.NeighborApp - PBCrypto.php
  * Created by JCloudYu on 2015/02/20 03:15
  */
-	class PBCrypto
+ 	using( 'kernel.basis.PBObject' );
+ 
+	final class PBCrypto
 	{
 		const CANDIDATES_LOWER_NO_SYM = "0123456789abcdefghijklmnopqrstuvwxyz";
 		const CANDIDATES_MIXED_NO_SYM = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -28,12 +30,10 @@
 
 			return $pass;
 		}
-
 		public static function GenTOTP( $raw_secret, $refTime = NULL, $length = 6, $alg = 'sha1', $timeQuantum = 30 ) {
 			$refTime = ( $refTime === NULL ) ? time() : $refTime;
 			return self::GenHOTP( $raw_secret, (($refTime * 1000) / ($timeQuantum * 1000)) | 0, $length, $alg );
 		}
-
 		public static function GenHOTP( $raw_secret, $counter, $length = 6, $alg = 'sha1' ) {
 			if ( PHP_VERSION_ID >= 50603 )
 				$counter = pack( 'J', $counter );
@@ -53,7 +53,7 @@
 
 			return str_pad( $otp, $length, "0", STR_PAD_LEFT );
 		}
-
+		
 		public static function ValidatePass($target, $caseSensitive = TRUE, $checkSymbol = TRUE)
 		{
 			$target	  = str_split($target);
@@ -84,4 +84,166 @@
 			return $result;
 		}
 	}
+	
+	final class PBRSA extends PBObject
+	{
+		const DEFAULT_KEY_LENGTH = 2048;
+		const DEFAULT_TAILING_SIZE = 11;
+	
+		public static function RSA( $idenity, $keyPath = NULL, $keyLen = PBRSA::DEFAULT_KEY_LENGTH ) {
+		
+			static $keyCache = [];
+			if ( $keyCache[ $idenity ] ) return $keyCache[ 'identity' ];
+			
+			
+			$keyInfo = PBRSA::ParseKey( $keyPath, $keyLen );
+			return ( $keyInfo === NULL ) ? NULL : ( $keyCache[ $idenity ] = new PBRSA( $keyInfo ) );
+		}
+		private static function ParseKey( $keyPath = NULL, $keyLen = PBRSA::DEFAULT_KEY_LENGTH ) {
+		
+			$keyType = [];
+			if ( $keyPath === NULL )
+			{
+				$keyInst = openssl_pkey_new([
+					'private_key_bits' => $keyLen,
+					'private_key_type' => OPENSSL_KEYTYPE_RSA
+				]);
+				
+				$keyType = 'private';
+			}
+			else
+			{
+				if ( is_file($keyPath) )
+				{
+					if ( !is_readable($keyPath) ) return NULL;
+					$keyContent = file_get_contents( $keyPath );
+				}
 
+			
+
+				$keyInst = openssl_pkey_get_private( $keyContent );
+				$keyType = 'private';
+				if ( !$keyInst )
+				{
+					$keyInst = openssl_pkey_get_public( $keyContent );
+					if ( !$keyContent ) return NULL;
+					
+					$keyType = 'public';
+				}
+			}
+			
+			return [ 'handle' => $keyInst, 'type' => $keyType ];
+		}
+
+
+
+		private $_hKey		= NULL;
+		private $_keyLen	= self::DEFAULT_KEY_LENGTH;
+		private $_keyType	= NULL;
+		private $_chunkSize	= 0;
+		private $_keyData	= NULL;
+
+		private function __construct( $RSAInfo ) {
+		
+			$keyInfo = openssl_pkey_get_details( $RSAInfo[ 'handle' ] );
+			
+			$this->_hKey		= $RSAInfo[ 'handle' ];
+			$this->_keyLen		= $keyInfo[ 'bits' ];
+			$this->_keyType		= $RSAInfo[ 'type' ];
+			$this->_chunkSize	= ($keyInfo[ 'bits' ] / 8.0) | 0;
+
+		}
+		public function __get_publicKey() {
+			static $keyCache = NULL;
+			if ( $keyCache === NULL )
+				$keyCache = @openssl_pkey_get_details( $this->_hKey );
+			
+			return $keyCache['key'];
+		}
+		public function __get_privateKey() {
+			static $keyCache = NULL;
+			
+			if ( $this->_keyType != "private" ) return NULL;
+			
+			
+			if ( $keyCache === NULL )
+				@openssl_pkey_export( $this->_hKey, $keyCache );
+			
+			return empty($keyCache) ? NULL : $keyCache;
+		}
+		public function __get_keyInfo() {
+			static $keyCache = NULL;
+			if ( $keyCache === NULL )
+			{
+				$keyCache = @openssl_pkey_get_details( $this->_hKey );
+				$keyCache[ 'key' ] = [ 'public' => $keyCache[ 'key' ] ];
+				$keyCache[ 'key' ][ 'private' ] = $this->__get_privateKey();
+			}
+		
+			return $keyCache;
+		}
+		public function __get_is_private() { return $this->_keyType === "private"; }
+		public function __get_bits() { return $this->_keyLen; }
+		public function __get_type() {
+			static $typeCache = NULL;
+			
+			if ( $typeCache === NULL )
+			{
+				$info = $this->keyInfo;
+				switch( $info['type'] )
+				{
+					case OPENSSL_KEYTYPE_RSA:
+						$typeCache = 'rsa'; break;
+					case OPENSSL_KEYTYPE_DSA:
+						$typeCache = 'dsa'; break;
+					case OPENSSL_KEYTYPE_DH:
+						$typeCache = 'dh'; break;
+					case OPENSSL_KEYTYPE_EC:
+						$typeCache = 'ec'; break;
+					default:
+						$typeCache = 'unknown'; break;
+				}
+			}
+			
+			return $typeCache;
+		}
+		
+		
+		
+		
+		/*
+		public function encrypt($data)
+		{
+			$chunks = str_split($data, $this->_chunkSize - self::DEFAULT_TAILING_SIZE);
+
+			$result = '';
+			foreach ($chunks as $chunk)
+			{
+				if (openssl_public_encrypt($chunk, $encrypted, $this->_hKeyAlt))
+					$result .= base64_encode($encrypted);
+				else
+					return '';
+			}
+
+			return $result;
+		}
+
+		public function decrypt($data)
+		{
+			if ($this->_keyType == 'public') return '';
+
+			$result = '';
+			$chunks = str_split($data, intval(ceil(floatval($this->_chunkSize) / 3.0) * 4));
+
+			foreach ($chunks as $chunk)
+			{
+				if (openssl_private_decrypt(base64_decode($chunk), $decrypted, $this->_hKey))
+					$result .= $decrypted;
+				else
+					return '';
+			}
+
+			return $result;
+		}
+		*/
+	}
