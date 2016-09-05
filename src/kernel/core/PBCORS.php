@@ -70,7 +70,8 @@
 		}
 		
 		public function acceptOrigin( $whiteList = [], &$status = TRUE ) {
-			$acceptedOrigin = $this->filterOrigin( $whiteList );
+		
+			$acceptedOrigin = ( is_array( $whiteList ) ) ? $this->filterOrigin( $whiteList ) : "{$whiteList}";
 			
 			if ( $acceptedOrigin )
 			{
