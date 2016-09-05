@@ -47,9 +47,9 @@
 
 	// INFO:Some special initializations
 	call_user_func(function() {
-
-		// Detect operating system information
-		(preg_match('/^win|^WIN/', PHP_OS) === 1) ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX');
+	
+		if ( !defined( '__OS__' ) )
+			(strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX');
 
 		$GLOBALS['RUNTIME_ENV'] = array();
 
@@ -72,7 +72,7 @@
 
 	if ( php_sapi_name() == "cli" )
 	{
-		define('__SPACE_ROOT__',	getcwd());
+		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', getcwd() );
 
 
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI); // DEPRECATED: The constants will be removed in v2.0.0
@@ -105,7 +105,7 @@
 	}
 	else
 	{
-		define('__SPACE_ROOT__',	($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)));
+		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', ($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)) );
 
 		define('SYS_WORKING_ENV',	SYS_ENV_NET); // DEPRECATED: The constants will be removed in v2.0.0
 

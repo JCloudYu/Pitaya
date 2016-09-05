@@ -1,6 +1,13 @@
 <?php
 	function fileMove($srcPath, $destPath) { exec(CMD_MOVE." {$srcPath} {$destPath}"); }
 	function fileCopy($srcPath, $destPath) { exec(CMD_COPY." {$srcPath} {$destPath}"); }
+	function resolveLnk( $lnkPath ) {
+		// Borrowed from http://www.witti.ws/blog/2011/02/21/extract-path-lnk-file-using-php
+		$linkContent = file_get_contents( $lnkPath );
+		return preg_replace( '@^.*\00([A-Z]:)(?:[\00\\\\]|\\\\.*?\\\\\\\\.*?\00)([^\00]+?)\00.*$@s', '$1\\\\$2', $linkContent );
+	}
+	
+	
 
 
 	// INFO: Path processing
@@ -33,18 +40,30 @@
 	
 	
 					// INFO: service and share are reserved keywords
-					$GLOBALS['servicePath'] = $_cachedPath['service'] = (empty($GLOBALS['servicePath'])) ? __WEB_ROOT__ . '/Services' : "{$GLOBALS['servicePath']}";
-					$GLOBALS['sharePath']	= $_cachedPath['share']	  = (empty($GLOBALS['sharePath'])) ?   __WEB_ROOT__ . '/Share'	  : "{$GLOBALS['sharePath']}";
-					$GLOBALS['dataPath']	= $_cachedPath['data']	  = (empty($GLOBALS['dataPath'])) ?	   __WEB_ROOT__ . '/Data'	  : "{$GLOBALS['dataPath']}";
-	
-	
+					$_cachedPath[ 'service' ]	= (empty($GLOBALS['servicePath'])) ? __SPACE_ROOT__ . '/Services' : "{$GLOBALS['servicePath']}";
+					$_cachedPath[ 'share' ]		= (empty($GLOBALS['sharePath'])) ?	 __SPACE_ROOT__ . '/Share'	  : "{$GLOBALS['sharePath']}";
+					$_cachedPath[ 'data' ]		= (empty($GLOBALS['dataPath'])) ?	 __SPACE_ROOT__ . '/Data'	  : "{$GLOBALS['dataPath']}";
 					$_cachedPath[ 'srvroot' ]	= $_cachedPath['service'];
-					$_cachedPath[ 'root' ]		= __WEB_ROOT__;
+					$_cachedPath[ 'root' ]		= __SPACE_ROOT__;
 					$_cachedPath[ 'working' ]	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? $_cachedPath['service'] : $GLOBALS['STANDALONE_EXEC']['cwd'];
 	
+					
+					if ( __OS__ === 'WIN' )
+					{
+						foreach( $_cachedPath as $key => $path )
+						{
+							$linkPath = "{$path}.lnk";
+							if ( is_dir( $path ) || !is_file( $linkPath ) ) continue;
+							
+							$_cachedPath[ $key ] = resolveLnk( $linkPath );
+						}
+					}
 	
 	
-	
+					$GLOBALS['servicePath'] = $_cachedPath['service'];
+					$GLOBALS['sharePath']	= $_cachedPath['share'];
+					$GLOBALS['dataPath']	= $_cachedPath['data'];
+					
 					return function($package = 'root') use ($_cachedPath) {
 						if ( $package == "service" && defined('__WORKING_ROOT__') ) return __WORKING_ROOT__;
 						return @"{$_cachedPath[$package]}";
