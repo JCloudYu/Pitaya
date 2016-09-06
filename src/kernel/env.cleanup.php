@@ -9,7 +9,7 @@
 		$scopeInfo = $trace[1];
 		$message = "{$message} @{$scopeInfo['file']}:{$scopeInfo['line']}";
 		
-		PBLog::ERRLog( $message, FALSE, 'warning.pblog' );
+		PBLog::ERRLog( $message, FALSE, 'deprecated.pblog' );
 		if ( $forceOutput )
 			echo $message . EOL;
 	}
