@@ -467,32 +467,64 @@
 
 			return $this;
 		}
+		
+		/*
+			PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
+			PBRequest::Request()->data( name, type, default, src );
+		*/
 		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
 		{
-			$qVar = is_array($this->_queryVariable) ? $this->_queryVariable : array();
-			$dVar = is_array($this->_dataVariable)  ? $this->_dataVariable  : array();
-
-			if ( $varSrc === "query" )
-				$vars = $qVar;
-			else
-			if ( $varSrc === "data" )
-				$vars = $dVar;
-			else
-				$vars = array_merge($qVar, $dVar);
-
-
-			
-
-			if (!array_key_exists($name, $vars)) return $default;
-
-			$options = NULL;
-			if ( is_array($type) )
+			$CAST_MODE = FALSE;
+		
+			if ( is_array( $type ) )
 			{
-				$options = @$type['options'];
-				$type	 = @$type['type'];
+				$varSrc = $default;
+				$default = NULL;
+				$CAST_MODE = TRUE;
+			}
+		
+		
+			
+			$qVar = is_array($this->_queryVariable) ? $this->_queryVariable : [];
+			$dVar = is_array($this->_dataVariable)  ? $this->_dataVariable  : [];
+
+			switch( strtolower($varSrc) )
+			{
+				case "query":
+					$vars = $qVar; break;
+				case "data":
+					$vars = $dVar; break;
+				case "post":
+					$vars = @$this->_incomingRecord['request']['post']; break;
+				case "get":
+					$vars = @$this->_incomingRecord['request']['get']; break;
+				case "all":
+				default:
+					$vars = array_merge( $qVar, $dVar );
+					break;
 			}
 
-			return TO($vars[$name], $type, $options);
+			if ( !$CAST_MODE )
+				return ( ( array_key_exists($name, $vars) ) ) ? CAST( $vars[$name], $type, $default ) : $default;
+				
+			
+			
+			if ( array_key_exists( 'options', $type ) )
+			{
+				$options = NULL;
+				if ( is_array($type) )
+				{
+					$options = @$type['options'];
+					$type	 = @$type['type'];
+				}
+	
+				return ( ( array_key_exists($name, $vars) ) ) ? TO( $vars[$name], $type, $options ) : $default;
+			}
+			
+			
+			$args = array_values( $type );
+			array_unshift( $args, @$vars[$name] );
+			return call_user_func_array( 'CAST', $args );
 		}
 		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 		{
@@ -504,11 +536,13 @@
 		}
 		public function post($name, $type = 'raw', $default = NULL)
 		{
-			$var = $this->_incomingRecord['request']['post'];
-
-			if (!array_key_exists($name, $var)) return $default;
-
-			return TO($var[$name], $type);
+			$args = func_get_args(); array_shift( $args );
+			return $this->data( $name, $args, 'post' );
+		}
+		public function get($name, $type = 'raw', $default = NULL)
+		{
+			$args = func_get_args(); array_shift( $args );
+			return $this->data( $name, $args, 'get' );
 		}
 		public function pickAttribute( $fields = array(), $customFilter = NULL )
 		{

@@ -57,7 +57,7 @@ class PBModule extends PBObject
 
 	// INFO: Module information
 	public function getId( $length = NULL ) {
-		$length = TO( $length, 'int strict' );
+		$length = CAST( $length, 'int strict', 0 );
 		return ( $length > 0 ) ? substr($this->_moduleId, 0, $length) : $this->_moduleId;
 	}
 	public function __get_id() { return $this->getId(); }

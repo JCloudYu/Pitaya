@@ -213,27 +213,14 @@
 
 
 	// INFO: Load system core libraries and prepare system constants
-	using('kernel.basis.PBObject');
-	using('kernel.basis.*');
-	using('kernel.core.*');
-	using('kernel.sys');
+	using( 'kernel.basis.PBObject' );
+	using( 'kernel.basis.*' );
+	using( 'kernel.core.*' );
+	using( 'kernel.sys' );
+	
 
 	PBSysKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
 	PBRuntimeCtrl::__ImprintEnvironment();
-
-	// INFO: Clean up everything
-	unset($GLOBALS['randomCert']);
-	unset($GLOBALS['servicePath']);
-	unset($GLOBALS['sharePath']);
-	unset($GLOBALS['dataPath']);
-	unset($GLOBALS['extPath']);
-	unset($GLOBALS['RUNTIME_ENV']);
-	unset($GLOBALS['RUNTIME_CONF']);
-	unset($GLOBALS['RUNTIME_ARGC']);
-	unset($GLOBALS['RUNTIME_ARGV']);
-	unset($GLOBALS['STANDALONE_EXEC']);
-
-
-	// INFO: There's no DEBUG_BACKTRACE_PROVIDE_OBJECT before PHP 5.3.6
-	s_define('DEBUG_BACKTRACE_PROVIDE_OBJECT', TRUE, TRUE);
+	
+	require_once __ROOT__ . "/kernel/env.cleanup.php";

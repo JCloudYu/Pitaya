@@ -210,6 +210,9 @@
 	// DEPRECATED: This api will be removed from v2.0.0
 	function TO($value, $type, $options = NULL)
 	{
+		DEPRECATION_WARNING( "Legacy API [TO] is invoked!" );
+	
+	
 		if (is_array($type))
 		{
 			$criteria	= @$type['criteria'];

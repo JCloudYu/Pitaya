@@ -223,8 +223,7 @@
 
 	}
 
-	function caller()
-	{
+	function caller() {
 		$backtrace = debug_backtrace(0);
 		return $backtrace[2]['class'];
 	}
