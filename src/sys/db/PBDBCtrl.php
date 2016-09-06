@@ -80,8 +80,8 @@
 
 
 			$totalCount = $countResult['count'];
-			$page		= TO($page,		'int');
-			$pageSize	= TO($pageSize,	'int');
+			$page		= CAST($page,		'int');
+			$pageSize	= CAST($pageSize,	'int');
 
 			if (!empty($pageSize))
 			{
