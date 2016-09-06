@@ -147,18 +147,20 @@
 
 						$checked = '';
 
-						if (is_array(@$rowData[$idx]))
+						if ( !is_array(@$rowData[$idx]) )
+							$value = CAST( @$rowData[$idx], $type );
+						else
 						{
-							$value		= (isset($rowData[$idx]['value'])) ? TO(@$rowData[$idx]['value'], $type) : '';
-							$checked	= (TO(@$rowData[$idx]['checked'], 'boolean')) ? 'checked' : '';
-							$disabled	= (TO(@$rowData[$idx]['disabled'], 'boolean')) ? 'disabled' : '';
+							$value		= (isset($rowData[$idx]['value'])) ? CAST( @$rowData[$idx]['value'], $type ) : '';
+							$checked	= (CAST( @$rowData[$idx]['checked'], 'bool' )) ? 'checked' : '';
+							$disabled	= (CAST( @$rowData[$idx]['disabled'], 'bool' )) ? 'disabled' : '';
 							$align		= (isset($rowData[$idx]['align'])) ? $rowData[$idx]['align'] : $align;
 							$style		= (isset($rowData[$idx]['style'])) ? $rowData[$idx]['style'] : $style;
 							$group		= (isset($rowData[$idx]['group'])) ? $rowData[$idx]['group'] : $group;
 							$attr		= (isset($rowData[$idx]['attr'])) ? $rowData[$idx]['attr'] : '';
 						}
-						else
-							$value = TO(@$rowData[$idx], $type);
+
+
 
 						if (!empty($style)) $style = "style='{$style}'";
 						if (empty($group))  $group = $this->_identifier;

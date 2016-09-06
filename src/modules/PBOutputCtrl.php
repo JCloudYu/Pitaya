@@ -145,7 +145,7 @@
 
 		public function addJS($script, $append = TRUE)
 		{
-			if ( is_string($append) && TO($append, 'string upper') == "LAST" )
+			if ( is_string($append) && CAST( $append, 'string upper-case' ) == "LAST" )
 				$pos = "last";
 			else
 				$pos = ($append) ? 'append' : 'prepend';

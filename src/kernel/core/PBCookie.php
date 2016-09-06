@@ -73,7 +73,12 @@
 			setcookie("{$name}", "{$value}", $cookieExpire, "/{$cookiePath}", $cookieDomain, $cookieSSLOnly, $cookieServerOnly);
 			return TRUE;
 		}
-		public function get($name, $type = 'raw', $default = NULL) { return (isset($_COOKIE[$name])) ? TO($_COOKIE[$name], $type) : $default; }
+		public function get($name, $type = 'raw', $default = NULL) {
+			if ( !array_key_exists( $name, $_COOKIE ) ) return $default;
+				
+			$args = func_get_args(); $args[0] = $_COOKIE[$name];
+			return call_user_func_array( 'CAST', $args );
+		}
 		public function is_set($name)	{ return isset($_COOKIE[$name]); }
 		public function delete($name)
 		{
