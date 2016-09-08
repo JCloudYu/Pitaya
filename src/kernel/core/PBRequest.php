@@ -289,14 +289,14 @@
 			$isForwardedSSL  = ( !!$checkForward ) && ( !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on' );
 			
 			$isHttps		 = in_array( strtolower( @"{$_SERVER['HTTPS']}" ), [ "on", "1" ] );
-			$isPort443		 = ( !!$checkStdPorts ) ? ( @"{$server['SERVER_PORT']}" === '443' ) : FALSE;
+			$isPort443		 = ( !!$checkStdPorts ) ? ( $this->port === 443 ) : FALSE;
 			
 			
 			
 			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
 		}
 
-		public function __get_port() { return TO($this->server['SERVER_PORT'], 'int'); }
+		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
 
 		public function __get_requestTime()
 		{
