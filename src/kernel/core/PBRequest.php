@@ -336,11 +336,23 @@
 			
 				$parsers = [
 					'json' => function( $stream, $param, $typeOpt ) {
+						$forceAssocArray = in_array( 'force-array', $typeOpt );
+						$legacyMode		 = in_array( '--legacy', $typeOpt );
+						
+						
+						
 						$targetData = stream_get_contents($stream);
 	
 						$depth		= intval(@$param['depth']);
-						$data		= json_decode($targetData, in_array( 'force-array', $typeOpt ), ($depth <= 0) ? 512 : $depth);
-						$variable	= (is_a($data, stdClass::class) || in_array( 'force-array', $typeOpt )) ? (array)$data : NULL;
+						$inconiming	= json_decode( $targetData, $forceAssocArray || $legacyMode, ($depth <= 0) ? 512 : $depth );
+						
+						if ( $legacyMode )
+							$data = $variable = $inconiming;
+						else
+						{
+							$variable = [];
+							$data = $inconiming;
+						}
 						
 						return [ 'data' => $data, 'variable' => $variable, 'flag' => [] ];
 					},
