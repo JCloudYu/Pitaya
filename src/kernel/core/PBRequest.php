@@ -321,99 +321,108 @@
 		 *
 		 * @return $this the PBRequest instance itself
 		 */
-		public function parseData($type = 'cust', $param = NULL, Closure $dataFunction = NULL)
-		{
-			if ($this->_parsedData !== NULL) return $this;
-
-			$func = NULL;
-
-
-			$typeOpt = explode( ' ', strtolower("{$type}") );
-			$type = array_shift($typeOpt);
-			switch ( $type )
+		 
+		 
+		public function parseData($type = 'cust', $param = NULL, Closure $dataFunction = NULL) {
+			static $parsers = NULL;
+		
+			if ( $this->_parsedData !== NULL ) return $this;
+			if ( $parsers === NULL )
 			{
-				case 'json':
-					$func = function($stream, $param) use ( $typeOpt ) {
+				$nativePost = $this->_incomingRecord[ 'request' ][ 'post' ];
+				$currMethod = strtoupper( "{$this->_incomingRecord['request']['method']}" );
+				
+				
+			
+				$parsers = [
+					'json' => function( $stream, $param, $typeOpt ) {
 						$targetData = stream_get_contents($stream);
-
+	
 						$depth		= intval(@$param['depth']);
 						$data		= json_decode($targetData, in_array( 'force-array', $typeOpt ), ($depth <= 0) ? 512 : $depth);
 						$variable	= (is_a($data, stdClass::class) || in_array( 'force-array', $typeOpt )) ? (array)$data : NULL;
 						
-						return array('data' => $data, 'variable' => $variable, 'flag' => NULL);
-					};
-					break;
-
-				case 'cust':
-					$func = $dataFunction;
-				case 'raw':
-				default:
-					if ( $func === NULL )
-					{
-
-						switch ( strtolower( @"{$this->contentType['type']}" ) )
-						{
-							case "application/x-www-form-urlencoded":
-								$func = function($stream) {
-									$targetData = stream_get_contents($stream);
-									$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
-									return array(
-										'data'		=> $data,
-										'variable'	=> $data['variable'],
-										'flag'		=> $data['flag']
-									);
-								};
-								break;
-
-							case "application/base64":
-								$func = function($stream) {
-									$targetData = stream_get_contents($stream);
-									$data = base64_decode( $targetData );
-									return array(
-										'data'		=> $data,
-										'variable'	=> array(),
-										'flag'		=> array()
-									);
-								};
-								break;
-
-							case "multipart/form-data":
-								if( $this->method_upper === "POST" )
-								{
-									$func = function() {
-										$data = array(
-											'variable'	=> $this->nativePost,
-											'flag'		=> array()
-										);
-
-										return array(
-											'data' 		=> $data,
-											'variable'	=> $data['variable'],
-											'flag'		=> $data['flag']
-										);
-									};
-									break;
-								}
-
-							default:
-								$func = function($stream) {
-									$data = stream_get_contents($stream);
-									return array(
-										'data'		=> $data,
-										'variable'	=> array(),
-										'flag'		=> array()
-									);
-								};
-								break;
-						}
+						return [ 'data' => $data, 'variable' => $variable, 'flag' => [] ];
+					},
+					'no-cast' => function($stream) {
+						$targetData = stream_get_contents($stream);
+						return [ 'data' => $targetData, 'variable' => [], 'flag' => [] ];
+					},
+					'base64' => function($stream) {
+						$targetData = stream_get_contents($stream);
+						$data = @base64_decode( $targetData );
+						return [ 'data' => $data, 'variable' => [], 'flag' => [] ];
+					},
+					'urlencoded' => function($stream) {
+						$targetData = stream_get_contents($stream);
+						$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
+						return [ 'data' => $data, 'variable' => $data[ 'variable' ], 'flag' => $data[ 'flag' ] ];
+					},
+					'form-multipart' => function($stream) use($nativePost) {
+						if ( $currMethod === "POST" )
+							return [ 'data' => $nativePost, 'variable' => $nativePost, 'flag' => [] ];
+					
+						return [ 'data' => [], 'variable' => [], 'flag' => [] ];
 					}
-					break;
+				];
 			}
 
-			$result = $func($this->rawDataStream, $param);
-			$this->_parsedData = @$result['data'];
-			$this->_dataVariable = @$result['variable'];
-			$this->_dataFlag = @$result['flag'];
+			
+
+
+			$typeOpt = explode( ' ', strtolower("{$type}") );
+			$type = array_shift( $typeOpt );
+			
+			switch ( $type ) {
+			
+				case 'json':
+					$func = $parsers[ 'json' ];
+					break;
+
+				case 'raw':
+					$func = $parsers[ 'no-cast' ];
+					break;
+
+				default:
+					$func = $dataFunction;
+					break;
+			}
+			
+			if ( $func === NULL )
+			{
+				switch ( strtolower( @"{$this->contentType[ 'type' ]}" ) ) {
+				
+					case "application/x-www-form-urlencoded":
+						$func = $parsers[ 'urlencoded' ];
+						break;
+
+					case "application/base64":
+						$func = $parsers[ 'base64' ];
+						break;
+						
+					case "application/json":
+						$func = $parsers[ 'json' ];
+						break;
+
+					case "multipart/form-data":
+						$func = $parsers[ 'form-multipart' ];
+						break;
+
+					default:
+						$func = $parsers[ 'no-cast' ];
+						break;
+				}
+			}
+			
+			
+			
+			
+			
+			
+			$result = @call_user_func( $func, $this->rawDataStream, $param , $typeOpt );
+			$this->_parsedData	 = @$result[ 'data' ];
+			$this->_dataVariable = @$result[ 'variable' ];
+			$this->_dataFlag	 = @$result[ 'flag' ];
 
 			return $this;
 		}
