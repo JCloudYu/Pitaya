@@ -484,43 +484,77 @@
 			PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
 			PBRequest::Request()->data( name, type, default, src );
 		*/
+		
+		private static function ___dataItr( $data, $path, &$hasData = TRUE ) {
+			$path = explode( '.', "{$path}" );
+		
+			$currLevel = $data; $hasData = TRUE;
+			while( count($path) > 0 )
+			{
+				$isArray = is_array($currLevel);
+				$isObject = ($currLevel instanceof stdClass);
+				if ( !$isArray && !$isObject ) return NULL;
+			
+			
+		
+				$index = array_shift( $path );
+				if ( $isArray )
+				{
+					$hasData = $hasData && ( $hit = array_key_exists( $index, $currLevel ) );
+					$currLevel = $hit ? $currLevel[ $index ] : NULL;
+				}
+				else
+				if ( $isObject )
+				{
+					$hasData = $hasData && ( $hit = property_exists( $currLevel, $index ) );
+					$currLevel = $hit ? $currLevel->{$index} : NULL;
+				}
+			}
+			
+			
+			return $currLevel;
+		}
+		
 		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
 		{
-			$CAST_MODE = FALSE;
+			$CUSTOM_CAST = FALSE;
 		
 			if ( is_array( $type ) )
 			{
 				$varSrc = $default;
 				$default = NULL;
-				$CAST_MODE = TRUE;
+				$CUSTOM_CAST = TRUE;
 			}
 		
-		
-			
-			$qVar = is_array($this->_queryVariable) ? $this->_queryVariable : [];
-			$dVar = is_array($this->_dataVariable)  ? $this->_dataVariable  : [];
-
+			$hasData = FALSE; $value = NULL;
 			switch( strtolower($varSrc) )
 			{
 				case "query":
-					$vars = $qVar; break;
+					$value = self::___dataItr( $this->_queryVariable, $name, $hasData );
+					break;
 				case "data":
-					$vars = $dVar; break;
+					$value = self::___dataItr( $this->_dataVariable, $name, $hasData );
+					break;
 				case "post":
-					$vars = @$this->_incomingRecord['request']['post']; break;
+					$value = self::___dataItr( @$this->_incomingRecord['request']['post'], $name, $hasData );
+					break;
 				case "get":
-					$vars = @$this->_incomingRecord['request']['get']; break;
+					$value = self::___dataItr( @$this->_incomingRecord['request']['get'], $name, $hasData );
+					break;
 				case "all":
 				default:
-					$vars = array_merge( $qVar, $dVar );
+					$value = self::___dataItr( $this->_dataVariable, $name, $hasData );
+					if ( !$hasData ) $value = self::___dataItr( $this->_queryVariable, $name, $hasData );
 					break;
 			}
 
-			if ( !$CAST_MODE )
-				return ( ( array_key_exists($name, $vars) ) ) ? CAST( $vars[$name], $type, $default ) : $default;
+
+
+
+
+
+			if ( !$CUSTOM_CAST ) return ($hasData) ? CAST( $value, $type, $default ) : $default;
 				
-			
-			
 			if ( array_key_exists( 'options', $type ) )
 			{
 				$options = NULL;
@@ -530,12 +564,13 @@
 					$type	 = @$type['type'];
 				}
 	
-				return ( ( array_key_exists($name, $vars) ) ) ? TO( $vars[$name], $type, $options ) : $default;
+				return ( $hasData ) ? TO( $value, $type, $options ) : $default;
 			}
 			
 			
+			
 			$args = array_values( $type );
-			array_unshift( $args, @$vars[$name] );
+			array_unshift( $args, $value );
 			return call_user_func_array( 'CAST', $args );
 		}
 		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
