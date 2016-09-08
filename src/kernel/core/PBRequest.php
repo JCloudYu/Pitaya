@@ -174,7 +174,6 @@
 
 			return $requestedRange;
 		}
-
 		public function __get_rangeUnit()
 		{
 			static $reqRangeType = NULL;
@@ -183,9 +182,7 @@
 			list($reqRangeType, $range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
 			return $reqRangeType;
 		}
-
 		public function __get_all() { return $this->_incomingRecord; }
-
 		public function __get_headers()		{ return self::GetIncomingHeaders(); }
 		public function __get_request()		{ return $this->_incomingRecord['request']; }
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
@@ -215,16 +212,15 @@
 			}
 			return $this->_filesCache;
 		}
+		
 		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
 		public function __get_method_upper(){ return strtoupper( "{$this->_incomingRecord['request']['method']}" ); }
 		public function __get_method_lower(){ return strtolower( "{$this->_incomingRecord['request']['method']}" ); }
-
 		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
 		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
 		public function __get_server()		{ return $this->_incomingRecord['environment']['server']; }
 		public function __get_cookie()		{ return $this->_incomingRecord['environment']['cookie']; }
 		public function __get_session()		{ return $this->_incomingRecord['environment']['session']; }
-
 		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
 		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
 		public function __get_rawData()		{
@@ -239,15 +235,12 @@
 
 			return $data;
 		}
-
 		public function __get_rawDataStream() { fseek($this->_incomingRecord['rawDataStream'], 0); return $this->_incomingRecord['rawDataStream']; }
-
 		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
 		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
 		public function __get_attachAnchor() { return $this->_incomingRecord['environment']['attachment']['anchor']; }
-
 		public function __get_domain() { return @"{$this->server[ 'SERVER_NAME' ]}"; }
 		public function __get_httpHost() { return  @"{$this->server[ 'HOST' ]}"; }
 		public function __get_httpProtocol() {
@@ -258,7 +251,6 @@
 		}
 		public function __get_ssl() { return $this->is_ssl(); }
 		public function __get_remoteIP() { return RemoteIP($this->server); }
-
 		public function __get_nativeGet(){
 			return $this->_incomingRecord['request']['get'];
 		}
@@ -274,6 +266,19 @@
 		public function __get_nativeServer(){
 			return $this->_incomingRecord['environment']['server'];
 		}
+		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
+		public function __get_requestTime()
+		{
+			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
+			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
+		}
+		
+		private $_contentType = NULL;
+		public function __get_contentType() {
+			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
+		}
+
+
 
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
@@ -296,19 +301,9 @@
 			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
 		}
 
-		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
-
-		public function __get_requestTime()
-		{
-			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
-			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
-		}
 
 
-		private $_contentType = NULL;
-		public function __get_contentType() {
-			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
-		}
+		
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
