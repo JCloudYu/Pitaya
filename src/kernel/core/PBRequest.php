@@ -327,8 +327,8 @@
 			static $parsers = NULL;
 		
 			if ( $this->_parsedData !== NULL ) return $this;
-			if ( $parsers === NULL )
-			{
+			if ( $parsers === NULL ) {
+			
 				$nativePost = $this->_incomingRecord[ 'request' ][ 'post' ];
 				$currMethod = strtoupper( "{$this->_incomingRecord['request']['method']}" );
 				
@@ -337,24 +337,12 @@
 				$parsers = [
 					'json' => function( $stream, $param, $typeOpt ) {
 						$forceAssocArray = in_array( 'force-array', $typeOpt );
-						$legacyMode		 = in_array( '--legacy', $typeOpt );
-						
-						
 						
 						$targetData = stream_get_contents($stream);
-	
 						$depth		= intval(@$param['depth']);
-						$inconiming	= json_decode( $targetData, $forceAssocArray || $legacyMode, ($depth <= 0) ? 512 : $depth );
+						$inconiming	= json_decode( $targetData, $forceAssocArray, ($depth <= 0) ? 512 : $depth );
 						
-						if ( $legacyMode )
-							$data = $variable = $inconiming;
-						else
-						{
-							$variable = [];
-							$data = $inconiming;
-						}
-						
-						return [ 'data' => $data, 'variable' => $variable, 'flag' => [] ];
+						return [ 'data' => $inconiming, 'variable' => $inconiming, 'flag' => [] ];
 					},
 					'no-cast' => function($stream) {
 						$targetData = stream_get_contents($stream);
@@ -370,10 +358,10 @@
 						$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
 						return [ 'data' => $data, 'variable' => $data[ 'variable' ], 'flag' => $data[ 'flag' ] ];
 					},
-					'form-multipart' => function($stream) use($nativePost) {
+					'form-multipart' => function($stream) use($currMethod, $nativePost) {
 						if ( $currMethod === "POST" )
 							return [ 'data' => $nativePost, 'variable' => $nativePost, 'flag' => [] ];
-					
+
 						return [ 'data' => [], 'variable' => [], 'flag' => [] ];
 					}
 				];
