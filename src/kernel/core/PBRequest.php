@@ -248,9 +248,15 @@
 		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
 		public function __get_attachAnchor() { return $this->_incomingRecord['environment']['attachment']['anchor']; }
 
-		public function __get_domain() { return @"{$this->server['SERVER_NAME']}"; }
+		public function __get_domain() { return @"{$this->server[ 'SERVER_NAME' ]}"; }
+		public function __get_httpHost() { return  @"{$this->server[ 'HOST' ]}"; }
+		public function __get_httpProtocol() {
+			return $this->is_ssl() ? 'https' : 'http';
+		}
+		public function __get_httpFullHost() {
+			return "{$this->http_protocol}://{$this->host}";
+		}
 		public function __get_ssl() { return $this->is_ssl(); }
-
 		public function __get_remoteIP() { return RemoteIP($this->server); }
 
 		public function __get_nativeGet(){
@@ -269,21 +275,25 @@
 			return $this->_incomingRecord['environment']['server'];
 		}
 
-		public function is_ssl($checkStdPorts = FALSE)
+		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
 			static $is_https = NULL;
 
 			if ($is_https !== NULL) return $is_https;
 
-			$server = $this->server;
-
-			if (in_array(@"{$server['HTTPS']}", array('on', '1')))
-				return ($is_https = TRUE);
-			else
-				if ($checkStdPorts && (@"{$server['SERVER_PORT']}" == '443'))
-					return ($is_https = TRUE);
-
-			return ($is_https = FALSE);
+			$_SERVER = $this->server;
+			
+			
+			
+			$isForwardedHttp = ( !!$checkForward ) && ( !empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https' );
+			$isForwardedSSL  = ( !!$checkForward ) && ( !empty($_SERVER['HTTP_X_FORWARDED_SSL']) && $_SERVER['HTTP_X_FORWARDED_SSL'] == 'on' );
+			
+			$isHttps		 = in_array( strtolower( @"{$_SERVER['HTTPS']}" ), [ "on", "1" ] );
+			$isPort443		 = ( !!$checkStdPorts ) ? ( @"{$server['SERVER_PORT']}" === '443' ) : FALSE;
+			
+			
+			
+			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
 		}
 
 		public function __get_port() { return TO($this->server['SERVER_PORT'], 'int'); }
