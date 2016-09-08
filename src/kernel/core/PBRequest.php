@@ -419,20 +419,23 @@
 		}
 		public static function ParseContentType( $contentType )
 		{
-			return ary_filter(explode(';', "{$contentType}"), function( $item, &$idx ){
-				$token = strtolower(trim($item));
+			$typeInfo = [];
+			ary_filter( explode(';', "{$contentType}"), function( $item, &$idx ) use( &$typeInfo ) {
+			
+				$token = trim( $item );
+				
 
 				// content-type
-				if (preg_match('/^.*\/.*$/', $token))
-					$idx = 'type';
+				if ( preg_match('/^.*\/.*$/i', $token) )
+					$typeInfo[ 'type' ] = $token;
 				else
-				if (preg_match('/^charset=.*/', $token))
-					$idx = 'charset';
+				if ( preg_match('/^(.*)=(.*)$/i', $token, $matches) )
+					$typeInfo[ strtolower(trim($matches[1])) ] = trim($matches[2]);
 				else
-					$idx = NULL;
-
-				return $token;
+					$typeInfo[ 'misc' ][] = $item;
 			});
+			
+			return $typeInfo;
 		}
 
 
