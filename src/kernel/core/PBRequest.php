@@ -216,8 +216,8 @@
 			return $this->_filesCache;
 		}
 		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
-		public function __get_method_upper(){ return strtoupper( "{$this->method}" ); }
-		public function __get_method_lower(){ return strtolower( "{$this->method}" ); }
+		public function __get_method_upper(){ return strtoupper( "{$this->_incomingRecord['request']['method']}" ); }
+		public function __get_method_lower(){ return strtolower( "{$this->_incomingRecord['request']['method']}" ); }
 
 		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
 		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
