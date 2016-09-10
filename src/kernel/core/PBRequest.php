@@ -492,13 +492,19 @@
 		
 		private static function ___dataItr( $data, $path, &$hasData = TRUE ) {
 			$path = explode( '.', "{$path}" );
+
+
 		
 			$currLevel = $data; $hasData = TRUE;
 			while( count($path) > 0 )
 			{
 				$isArray = is_array($currLevel);
 				$isObject = ($currLevel instanceof stdClass);
-				if ( !$isArray && !$isObject ) return NULL;
+				if ( !$isArray && !$isObject )
+				{
+					$hasData = FALSE;
+					return NULL;	
+				}
 			
 			
 		
