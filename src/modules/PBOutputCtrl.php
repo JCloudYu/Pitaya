@@ -241,6 +241,16 @@
 		public function __get_cssFiles() { return $this->_cssFiles; }
 		public function __set_jsFile($value) { $this->addFile($value, 'js'); }
 		public function __set_cssFile($value) { $this->addFile($value, 'css'); }
+		public function __set_file( $value ) {
+			if ( $value instanceof stdClass ) $value = (array)$value;
+			if ( !is_array($value) ) return;
+			
+			$this->addFile( @$value[ 'path' ], @$value[ 'type' ] );
+		}
+		public function ___set_files( $value ) {
+			if ( !is_array($value) ) return;
+			foreach( $value as $fileDes ) $this->file = $fileDes;
+		}
 
 
 		public function __get_rcPath() { return $this->_baseRCPath; }

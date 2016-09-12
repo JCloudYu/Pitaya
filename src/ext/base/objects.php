@@ -27,10 +27,12 @@
 
 		public function push( $item )
 		{
-			if ( func_num_args() < 1 )
+			$arguments = func_get_args();
+			if ( count($arguments) == 0 )
 				return FALSE;
 
-			array_push( $this->_scope_levels, $item );
+			foreach( $arguments as $item )
+				array_push( $this->_scope_levels, $item );
 			return TRUE;
 		}
 

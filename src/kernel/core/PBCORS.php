@@ -28,18 +28,24 @@
 		public function __get_headers(){ return $this->_CORS_Data[ 'headers' ]; }
 		
 		public function filterOrigin( $whiteList = [] ) {
-			if ( $this->_CORS_Data[ 'origin' ] === NULL ) return FALSE;
+			$origin = @$this->_CORS_Data[ 'origin' ];
+			$acceptNull = FALSE; $wildcard = FALSE;
 			
-			$key = array_search( "{$this->_CORS_Data[ 'origin' ]}", $whiteList );
-			if ( $key )
-				$acceptedOrigin = API_ORIGIN_WHITE_LIST[$key];
-			else
-			{
-				$key = array_search( '*', API_ORIGIN_WHITE_LIST );
-				$acceptedOrigin = ( $key === FALSE ) ? NULL : "{$this->_CORS_Data[ 'origin' ]}";
-			}
+			$filterd = ary_filter( $whiteList, function( $candidate ) use ( $origin, &$acceptNull, &$wildcard ) {
+				$acceptNull = $acceptNull || ( $candidate === NULL );
+				$wildcard = $wildcard || ($candidate === '*');
+				
+				if ( $origin === $candidate ) return TRUE;
+			}, FALSE );
 			
-			return $acceptedOrigin;
+			if ( $origin === NULL && $acceptNull ) return '*';
+			
+			
+			
+			$finalDomain = @array_shift( $filterd );
+			if ( $finalDomain === NULL && $wildcard ) return $origin;
+			
+			return $finalDomain;
 		}
 		public function filterMethod( $whiteList = [] ) {
 			if ( $this->_CORS_Data[ 'method' ] === NULL ) return FALSE;
