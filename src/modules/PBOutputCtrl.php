@@ -247,7 +247,7 @@
 			
 			$this->addFile( @$value[ 'path' ], @$value[ 'type' ] );
 		}
-		public function ___set_files( $value ) {
+		public function __set_files( $value ) {
 			if ( !is_array($value) ) return;
 			foreach( $value as $fileDes ) $this->file = $fileDes;
 		}
