@@ -250,7 +250,7 @@
 			return "{$this->http_protocol}://{$this->host}";
 		}
 		public function __get_ssl() { return $this->is_ssl(); }
-		public function __get_remoteIP() { return RemoteIP($this->server); }
+		public function __get_remoteIP() { return @$this->_incomingRecord['environment']['server']['REMOTE_ADDR']; }
 		public function __get_nativeGet(){
 			return $this->_incomingRecord['request']['get'];
 		}
