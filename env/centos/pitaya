@@ -33,7 +33,73 @@ function UNPACK_SAMPLE {
 }
 ###
 
+## Check command
+mode=$1;
 
+if [ "${mode}" == "-k" ]; then
+	shift;
+	
+	if [[ $EUID -ne 0 ]]; then
+		echo "Pitaya kernel mode must be run by root!" | STDERR;
+		exit 1;
+	fi
+	
+	command=$1;
+	case "${command}" in
+		"install" )
+			shift;
+			CANDIDATE_PITAYA_DIR=$( dirname $( dirname $(pwd) ) );
+			
+			echo -n "Enter Pitaya repo's local path: [${CANDIDATE_PITAYA_DIR}] ";
+			read PITAYA_PATH;
+			if [ "${PITAYA_PATH}" == "" ]; then
+				PITAYA_PATH="${CANDIDATE_PITAYA_DIR}";
+			fi
+			
+			if [ ! -d "${PITAYA_PATH}" ] || [ ! -x "${PITAYA_PATH}/env/centos/pitaya" ]; then
+				echo "Pitaya path is invalid!"; exit 1;
+			fi
+			
+			if [ ! -f "/bin/pitaya" ]; then
+				ln -s "${PITAYA_PATH}/env/centos/pitaya" /bin;
+			fi
+			
+			echo -n "Pitaya working timezone? [UTC] ";
+			read PITAYA_TIMEZONE;
+			if [ "${PITAYA_TIMEZONE}" == "" ]; then
+				PITAYA_TIMEZONE="UTC";
+			fi
+			
+			echo -n "Enable debug mode? [y/n] ";
+			read DECISION;
+			if [ "${DECISION}" == "y" ]; then
+				DEBUG_MODE=on
+			else
+				DEBUG_MODE=off
+			fi
+			
+			echo -n "Emmit runtime exception? [y/n] ";
+			read DECISION;
+			if [ "${DECISION}" == "y" ]; then
+				EXCEPTION=off
+			else
+				EXCEPTION=on
+			fi
+			
+			cat <<CONF >> /etc/profile
+
+
+export PITAYA_LIB_PATH="${PITAYA_PATH}";
+export PITAYA_SYSTEM_TIMEZONE="${PITAYA_TIMEZONE}";
+export PITAYA_EXEC_DEBUG_MODE=${DEBUG_MODE};
+export PITAYA_EXEC_THROW_EXCEPTION=${EXCEPTION};
+
+CONF
+	;;
+	esac
+	
+	exit 0;
+fi;
 
 
 
@@ -44,8 +110,6 @@ if [ "${PITAYA_DIR}" == "" ]; then
 	exit 1;
 fi;
 
-## Check command
-mode=$1;
 
 if [ "${mode}" == "-c" ]; then
 	shift;
