@@ -244,7 +244,7 @@
 			}
 			else
 			{
-				$service = TO(@array_shift($argv), 'string');
+				$service = CAST( @array_shift($argv), 'string' );
 				$moduleRequest = $argv;
 			}
 
