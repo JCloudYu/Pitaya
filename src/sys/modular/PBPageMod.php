@@ -21,7 +21,7 @@
 			$this->ext->htmlAttr	= "data-module-id='{$this->id_medium}'";
 		}
 		
-		public function __invoke( $args )
+		public function __invoke()
 		{
 			$args = func_get_args();
 			
