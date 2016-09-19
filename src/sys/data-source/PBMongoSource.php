@@ -73,7 +73,14 @@
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
-			return empty($additional[ 'fetch-anchor' ]) ? PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
+			
+			if ( !empty($additional[ 'fetch-anchor' ]) )
+				return $cursor;
+			else
+			{
+				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
+				return PBIDataSource::CollectData( $cursor, $mapFunc );
+			}
 		}
 		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
 			$aggregation = $queryOpt = [];
@@ -109,7 +116,14 @@
 				'pipeline'	=> $aggregation,
 				'cursor'	=> (object)[]
 			]));
-			return empty($additional[ 'fetch-anchor' ]) ? PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' ) : $cursor;
+			
+			if ( !empty($additional[ 'fetch-anchor' ]) )
+				return $cursor;
+			else
+			{
+				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
+				return PBIDataSource::CollectData( $cursor, $mapFunc );
+			}
 		}
 
 		public function insert( $dataNS, $insertData, $additional = [] ) {
