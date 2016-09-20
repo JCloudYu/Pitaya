@@ -271,7 +271,7 @@
 			// region [ Find the default basis ]
 			// INFO: If cli and standalone script has been assigned
 			// MARK: Developer customizable only
-			if ( CLI_ENV )
+			if ( CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) )
 			{
 				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
 				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
