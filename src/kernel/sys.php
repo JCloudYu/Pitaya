@@ -274,7 +274,7 @@
 			if ( CLI_ENV )
 			{
 				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
-				if ( is_readable($scriptFilePath) )
+				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
 				{
 					if ( !empty($service) ) array_unshift( $moduleRequest, $service );
 	
