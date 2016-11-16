@@ -277,3 +277,13 @@
 
 	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16);
 	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'));
+
+
+
+
+
+
+	// INFO: Error handling supportive apis
+	function PB_CODE( $baseCode, $extensionCode, $shift = 1000000 ){
+		return $baseCode * $shift + $extensionCode;
+	}
