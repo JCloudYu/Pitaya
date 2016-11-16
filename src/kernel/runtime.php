@@ -284,6 +284,6 @@
 
 
 	// INFO: Error handling supportive apis
-	function PB_CODE( $baseCode, $extensionCode, $shift = 1000000 ){
+	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
 		return $baseCode * $shift + $extensionCode;
 	}
