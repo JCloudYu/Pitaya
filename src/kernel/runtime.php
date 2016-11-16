@@ -287,3 +287,6 @@
 	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
 		return $baseCode * $shift + $extensionCode;
 	}
+	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
+		return -PB_CODE($baseCode, $extensionCode, $shift);
+	}
