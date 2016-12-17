@@ -50,6 +50,15 @@
 		public function __set_fileProc( $value ){
 			$this->_fileProc = is_callable($value) ? $value : NULL;
 		}
+		
+		private $_autoDirectroy = FALSE;
+		public function __get_autoDir(){
+			return $this->_autoDirectroy;
+		}
+		public function __set_autoDir( $value ){
+			$this->_autoDirectroy = !!$value;
+		}
+		
 
 
 		private $_status = PBEXECState::NORMAL;
@@ -76,6 +85,7 @@
 			$purgeError		= $this->_purgeError;
 			$storagePath	= $this->_storagePath;
 			$procFlag		= $this->_procFlag;
+			$autoDir		= $this->_autoDirectroy;
 			$procFunc		= !empty($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
 
 			$targetFields	= $this->_fields;
@@ -84,13 +94,13 @@
 
 
 
-			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
+			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$autoDir, &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
 			{
 				if ( empty($item) || !@is_array($uploadedFiles[$item]) ) return NULL;
 
 				$fieldName = $item;
 
-				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$purgeError, &$storagePath, &$procFlag, &$procFunc )
+				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$autoDir, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
 				{
 					$fileInfo = array(
 						'name'		=> $info['name'],
@@ -128,8 +138,13 @@
 					// region [ Move file to file stroage ]
 					if ( !empty($storagePath) )
 					{
+						if ( $autoDir ) 
+							@mkdir( $storagePath, 0777, TRUE );
+							
+					
+					
 						if ( !is_dir( $storagePath ) )
-							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_CANT_PROC_MOVE;
+							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_INVALID_TARGET_PATH;
 
 						if ( !is_uploaded_file( $info['tmp_name'] ) )
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_GENERATED;
