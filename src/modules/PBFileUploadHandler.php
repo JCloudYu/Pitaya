@@ -40,7 +40,7 @@
 			return $this->_procFlag;
 		}
 		public function __set_procFlag( $value ){
-			$this->_procFlag = TO( $value, 'int strict' );
+			$this->_procFlag = CAST( $value, 'int strict' );
 		}
 
 		private $_fileProc = NULL;
@@ -71,7 +71,7 @@
 			if ( PBRequest::Request()->method_upper !== "POST" )
 				$this->_status = PBEXECState::INVALID_METHOD;
 
-			$this->_fields = TO( $moduleRequest, 'array' );
+			$this->_fields = CAST( $moduleRequest, 'array' );
 		}
 
 		public function exec( $param )
@@ -79,7 +79,7 @@
 			if ( $this->_status !== PBEXECState::NORMAL )
 				return FALSE;
 
-			$param = TO( $param, 'array' );
+			$param = CAST( $param, 'array' );
 
 			$uploadedFiles	= PBRequest::Request()->files;
 			$purgeError		= $this->_purgeError;
