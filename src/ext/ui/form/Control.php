@@ -24,8 +24,8 @@
 			$pageWrapperClass = @"{$options['class']['wrapper']}";
 			$pageItemClass	  = @"{$options['class']['item']}";
 
-			$urlTpl		= TO(@$options['page-url'], 'string');
-			$rangeSize	= TO(@$options['page-range'], 'int');
+			$urlTpl		= CAST(@$options['page-url'], 'string purge-html');
+			$rangeSize	= CAST(@$options['page-range'], 'int sctrict');
 			if (empty($rangeSize)) $rangeSize = 5;
 
 
