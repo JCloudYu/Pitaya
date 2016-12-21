@@ -234,7 +234,7 @@
 					return urldecode( $item );
 				});
 				$attachPoint = @array_splice( $resource, 0, PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
-				$GLOBALS[ 'attachPoint' ] = empty($attachPoint) ? '' : '/' . implode( '/', $attachPoint );
+				$GLOBALS[ 'attachPoint' ] = $attachPoint;
 				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
 

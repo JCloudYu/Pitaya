@@ -194,7 +194,7 @@
 			if ( $this->_filesCache !== NULL ) return $this->_filesCache;
 
 			$this->_filesCache = array();
-			$files = TO( $this->_incomingRecord['request']['files'], 'array' );
+			$files = CAST( $this->_incomingRecord['request']['files'], 'array' );
 			if ( !empty( $files ) )
 			{
 				foreach ( $files as $uploadName => $fileContent )
@@ -240,14 +240,14 @@
 		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
 		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
-		public function __get_attachAnchor() { return $this->_incomingRecord['environment']['attachment']['anchor']; }
+		public function __get_attachAnchor() { static $anchor = NULL; if ( $anchor === NULL ) $anchor = $this->attachAnchor(); return $anchor; }
 		public function __get_domain() { return @"{$this->server[ 'SERVER_NAME' ]}"; }
-		public function __get_httpHost() { return  @"{$this->server[ 'HOST' ]}"; }
+		public function __get_httpHost() { return  @"{$this->server[ 'HTTP_HOST' ]}"; }
 		public function __get_httpProtocol() {
 			return $this->is_ssl() ? 'https' : 'http';
 		}
 		public function __get_httpFullHost() {
-			return "{$this->http_protocol}://{$this->host}";
+			return "{$this->httpProtocol}://{$this->httpHost}";
 		}
 		public function __get_ssl() { return $this->is_ssl(); }
 		public function __get_remoteIP() { return @$this->_incomingRecord['environment']['server']['REMOTE_ADDR']; }
@@ -280,6 +280,14 @@
 
 
 
+		public function attachAnchor( $traceBack = 0 ) {
+			$anchor = $this->_incomingRecord['environment']['attachment']['anchor'];
+			
+			if ( $traceBack > 0 )
+				$anchor = @array_slice( $anchor, 0, -$traceBack );
+				
+			return empty($anchor) ? '' : '/' . implode( '/', $anchor );
+		}
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
 			static $is_https = NULL;
