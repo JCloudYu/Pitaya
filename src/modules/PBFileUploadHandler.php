@@ -43,6 +43,14 @@
 			$this->_procFlag = CAST( $value, 'int strict' );
 		}
 
+		private $_filePreProc = NULL;
+		public function __get_filePreProc(){
+			return $this->_filePreProc;
+		}
+		public function __set_filePreProc( $value ){
+			$this->_filePreProc = is_callable($value) ? $value : NULL;
+		}
+
 		private $_fileProc = NULL;
 		public function __get_fileProc(){
 			return $this->_fileProc;
@@ -62,7 +70,7 @@
 
 
 		private $_status = PBEXECState::NORMAL;
-		private $_fields = array();
+		private $_fields = [];
 
 
 
@@ -86,7 +94,8 @@
 			$storagePath	= $this->_storagePath;
 			$procFlag		= $this->_procFlag;
 			$autoDir		= $this->_autoDirectroy;
-			$procFunc		= !empty($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
+			$preprocFunc	= is_callable($this->_filePreProc) ? $this->_filePreProc : function( $fileInfo ){ return $fileInfo; };
+			$procFunc		= is_callable($this->_fileProc) ? $this->_fileProc : function( $fileInfo ){ return $fileInfo; };
 
 			$targetFields	= $this->_fields;
 			if ( empty($targetFields) )
@@ -94,18 +103,19 @@
 
 
 
-			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$autoDir, &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
+			$processed = ary_filter( $targetFields, function( $item, &$fieldName ) use ( &$autoDir, &$uploadedFiles, &$purgeError, &$storagePath, &$procFlag, &$procFunc, &$preprocFunc )
 			{
 				if ( empty($item) || !@is_array($uploadedFiles[$item]) ) return NULL;
 
 				$fieldName = $item;
 
-				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$autoDir, &$purgeError, &$storagePath, &$procFlag, &$procFunc )
+				return ary_filter( $uploadedFiles[$item], function( $info, $idx ) use ( &$autoDir, &$purgeError, &$storagePath, &$procFlag, &$procFunc, &$preprocFunc )
 				{
-					$fileInfo = array(
+					$fileInfo = [
 						'name'		=> $info['name'],
 						'tmpPath'	=> "{$info[ 'tmp_name' ]}"
-					);
+					];
+					$token = sha1( uniqid() . "{$info['name']}" );
 
 					// region [ Skipping condition of PHP file error ]
 					if ( !empty( $info[ 'error' ] ) )
@@ -134,7 +144,32 @@
 						$fileInfo[ 'crc32' ] = hash_file( 'crc32', $info['tmp_name'] );
 					// endregion
 
-					$token = sha1( uniqid() . "{$info['name']}" );
+					
+					// region [ Collect remaining input file infomation ]
+					$mime = $info['type'];
+					list( $mimeMajor, $mimeMinor ) = explode( '/', $mime );
+
+					$fileInfo['token']	= $token;
+					$fileInfo['name']	= $info['name'];
+					$fileInfo['mime']	= array(
+						'general'	=> $mime,
+						'major'		=> $mimeMajor,
+						'minor'		=> $mimeMinor,
+					);
+					$fileInfo['size']	= $info['size'];
+					// endregion
+					
+					
+					$tempInfo	= $fileInfo; // Prevent $fileInfo from being modified
+					$overwrites = $preprocFunc( $tempInfo );
+					if ( !is_array( $overwrites ) ) $overwrites = [];
+					
+
+					
+					// NOTE: If purge error is on...
+					if ( !empty($fileInfo[ 'error' ]) && $purgeError ) return NULL;
+
+					
 					// region [ Move file to file stroage ]
 					if ( !empty($storagePath) )
 					{
@@ -149,34 +184,28 @@
 						if ( !is_uploaded_file( $info['tmp_name'] ) )
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_GENERATED;
 
+						$baseName	= empty($overwrites[ 'storageName' ]) ? $token : $overwrites[ 'storageName' ]; 
+						$dstPath	= "{$storagePath}/{$baseName}";
+						$result		= @move_uploaded_file( $info['tmp_name'], $dstPath );
 
-						$dstPath = "{$storagePath}/{$token}";
-						$result	 = @move_uploaded_file( $info['tmp_name'], $dstPath );
 						if ( empty($result) )
 							$fileInfo[ 'error' ] = PBUpadedFile::ERROR_CANT_PROC_MOVE;
-
-						unset( $fileInfo['tmpPath'] );
+						else
+						{
+							unset( $fileInfo['tmpPath'] );
+							$fileInfo[ 'storageName' ] = $overwrites[ 'storageName' ];
+						}
 					}
 					// endregion
 
-					// NOTE: If purge error is on...
-					if ( !empty($fileInfo[ 'error' ]) && $purgeError ) return NULL;
-
-					// region [ Collect remaining input file infomation ]
-					$mime = $info['type'];
-					list( $mimeMajor, $mimeMinor ) = explode( '/', $mime );
-
-					$fileInfo['token']	= $token;
-					$fileInfo['name']	= $info['name'];
-					$fileInfo['mime']	= array(
-						'general'	=> $mime,
-						'major'		=> $mimeMajor,
-						'minor'		=> $mimeMinor,
-					);
-					$fileInfo['size']	= $info['size'];
-					// endregion
-
-
+					
+					
+					// INFO: Overwrites details
+					foreach( $fileInfo as $field => $value )
+					{
+						if ( !array_key_exists( $field, $overwrites ) ) continue;
+						$fileInfo[ $field ] = $overwrites[ $field ];
+					}
 
 					return $procFunc( $fileInfo );
 				}, NULL);
