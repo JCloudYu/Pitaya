@@ -166,12 +166,24 @@
 			/*
 			 *	CAST( $val, 'time', $default )					// Epoch Mode
 			 *	CAST( $val, 'time format', $format, $default )	// Format Text Mode
+			 *	CAST( $val, 'time parse', $format, $default )	// Get time from format
 			 */
 			case 'time':
+				// Parse time according to format
+				if ( in_array( 'parse' ) )
+				{
+					$dateObj = date_create_from_format( "{$filter}", "{$value}" );
+					if ( $dateObj === FALSE )
+						return $nArgs > 3 ? $default : -1;
+					
+					return $dateObj->getTimestamp();
+				}
+			
+			
+			
+				// INFO: Automatically parse time from string
 				$val	= strtotime(trim("{$value}"));
-				$fmtErr	= (($val === FALSE || $val < 0) && !EXPR_INT($val = $value));
-
-
+				$fmtErr	= ($val === FALSE || $val < 0);
 
 				// INFO: Format Text Mode
 				if ( in_array( 'format', $opt ) )
@@ -181,8 +193,6 @@
 					else
 						return date( "{$filter}", ($fmtErr) ? 0 : $val );
 				}
-
-
 
 				// INFO: Epoch Mode
 				$defaultVal = ($nArgs > 2) ? $filter : 0;
