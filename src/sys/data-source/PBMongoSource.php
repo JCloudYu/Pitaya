@@ -229,6 +229,10 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result: FALSE );
 		}
+		public function command( $dataNS, $commands ) {
+			$ns = self::ResolveNameSpace( $dataNS );
+			return $this->_mongoConnection->executeCommand( $ns['database'], new Command($commands) );
+		}
 
 
 
