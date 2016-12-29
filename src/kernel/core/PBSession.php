@@ -104,8 +104,8 @@
 				{
 					// INFO: Load session configuration
 					$this->_sessionExpire	= (($expireTime == 0) ? 0 : $expireTime - $requestTime);
-					$this->_sessionPath		= TO(@$_SESSION[self::FIELD_SESSION_PATH], 'string');
-					$this->_sessionDomain	= TO(@$_SESSION[self::FIELD_SESSION_DOMAIN], 'string');
+					$this->_sessionPath		= CAST(@$_SESSION[self::FIELD_SESSION_PATH], 'string');
+					$this->_sessionDomain	= CAST(@$_SESSION[self::FIELD_SESSION_DOMAIN], 'string');
 					$this->_sessionSSLOnly	= (@$_SESSION[self::FIELD_SESSION_SSL_ONLY] === TRUE);
 
 
@@ -115,7 +115,7 @@
 
 					if ($expire !== NULL)
 					{
-						$this->_sessionExpire = TO($expire, 'int strict');
+						$this->_sessionExpire = CAST($expire, 'int strict');
 						$_SESSION[self::FIELD_SESSION_EXPIRE_TIME] = ($this->_sessionExpire == 0) ? 0 : $this->_sessionExpire + $requestTime;
 						$updateCookie = $updateCookie || TRUE;
 					}
@@ -145,7 +145,7 @@
 			}
 
 
-			$this->_sessionExpire	= ($expire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : TO($expire, 'int strict');
+			$this->_sessionExpire	= ($expire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : CAST($expire, 'int strict');
 			$this->_sessionPath		= "{$path}";
 			$this->_sessionDomain	= empty($domain) ? PBRequest::Request()->domain : $domain;
 			$this->_sessionSSLOnly	= FALSE;
@@ -169,7 +169,7 @@
 			$this->_sessionState = PBSession::SESSION_STATE_NEW_FROM_EXPIRED;
 			session_destroy();
 
-			$this->_sessionExpire	= ($newExpire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : TO($newExpire, 'int strict');
+			$this->_sessionExpire	= ($newExpire === NULL) ? PBCookie::EXPIRE_AFTER_BROWSER_CLOSE : CAST($newExpire, 'int strict');
 			$this->_sessionPath		= "{$newPath}";
 			$this->_sessionDomain	= empty($newDomain) ? PBRequest::Request()->domain : $newDomain;
 			$this->_sessionSSLOnly	= FALSE;
@@ -227,7 +227,7 @@
 		public function __set_sessionName($value) { if (empty($value)) $value = PBSession::PB_SESSION_NAME; $this->_sessionName	= $value; $this->__updateCookie(); }
 		public function __set_domain($value)	  { $this->_sessionDomain	= (empty($value)) ? PBRequest::Request()->domain : $value; $this->__updateCookie(); }
 		public function __set_path($value)		  { $this->_sessionPath		= preg_replace("/^[\\/\\\\]*/", '', "{$value}"); $this->__updateCookie(); }
-		public function __set_expire($value)	  { $this->_sessionExpire	= TO($value, 'int strict'); $this->__updateCookie(); }
+		public function __set_expire($value)	  { $this->_sessionExpire	= CAST($value, 'int strict'); $this->__updateCookie(); }
 		public function __set_sslOnly($value)	  { $this->_sessionSSLOnly	= ($value === TRUE); $this->__updateCookie(); }
 
 
@@ -240,7 +240,7 @@
 		{
 			if (!isset($_SESSION[$name])) return $default;
 
-			return TO($_SESSION[$name], $type);
+			return CAST($_SESSION[$name], $type);
 		}
 		public function is_set($name) { return isset($_SESSION[$name]); }
 		public function delete($name) { unset($_SESSION[$name]); }
