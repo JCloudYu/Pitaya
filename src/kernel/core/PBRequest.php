@@ -538,8 +538,11 @@
 		{
 			$CUSTOM_CAST = FALSE;
 		
+			// INFO: Legacy Mode ( where type is an array )
 			if ( is_array( $type ) )
 			{
+				DEPRECATION_WARNING( "Legacy mode is invoked! Second argument will no longer accept arrays!" );
+				
 				$varSrc = $default;
 				$default = NULL;
 				$CUSTOM_CAST = TRUE;
@@ -574,7 +577,10 @@
 
 			if ( !$CUSTOM_CAST ) return ($hasData) ? CAST( $value, $type, $default ) : $default;
 				
-			if ( array_key_exists( 'options', $type ) )
+				
+			
+			// INFO: Legacy Mode ( where type is an array )
+			if ( array_key_exists( 'options', $type ) ) 
 			{
 				$options = NULL;
 				if ( is_array($type) )
@@ -582,7 +588,7 @@
 					$options = @$type['options'];
 					$type	 = @$type['type'];
 				}
-	
+				
 				return ( $hasData ) ? TO( $value, $type, $options ) : $default;
 			}
 			
