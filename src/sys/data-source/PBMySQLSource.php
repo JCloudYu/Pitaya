@@ -54,6 +54,9 @@
 		public function bulk( $dataNS, $batchedOps ) {
 
 		}
+		public function command( $dataNS, $commands ) {
+		
+		}
 
 
 		public function count( $dataNS, $filter ) {
