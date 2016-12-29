@@ -606,15 +606,13 @@
 			$flags = array_unique($flags);
 			return ary_flag($flags, $name, $matchCase, $compareMode);
 		}
-		public function post($name, $type = 'raw', $default = NULL)
-		{
-			$args = func_get_args(); array_shift( $args );
-			return $this->data( $name, $args, 'post' );
+		public function post(...$args) {
+			$args[] = 'post';
+			return $this->data(...$args);
 		}
-		public function get($name, $type = 'raw', $default = NULL)
-		{
-			$args = func_get_args(); array_shift( $args );
-			return $this->data( $name, $args, 'get' );
+		public function get(...$args) {
+			$args[] = 'get';
+			return $this->data(...$args);
 		}
 		public function pickAttribute( $fields = array(), $customFilter = NULL )
 		{
