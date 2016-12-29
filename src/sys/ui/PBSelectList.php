@@ -94,17 +94,17 @@
 
 					if (is_array(@$selOption))
 					{
-						$value  	= (isset($selOption['value'])) ? TO(@$selOption['value'], $type) : '';
+						$value  	= (isset($selOption['value'])) ? CAST(@$selOption['value'], $type) : '';
 						$label		= (isset($selOption['label'])) ? $selOption['label'] : $value;
-						$checked	= (TO(@$selOption['checked'], 'boolean')) ? 'checked' : '';
-						$disabled	= (TO(@$selOption['disabled'], 'boolean')) ? 'disabled' : '';
+						$checked	= (CAST(@$selOption['checked'], 'boolean')) ? 'checked' : '';
+						$disabled	= (CAST(@$selOption['disabled'], 'boolean')) ? 'disabled' : '';
 						$align		= (isset($selOption['align'])) ? $selOption['align'] : $align;
 						$style		= (isset($selOption['style'])) ? $selOption['style'] : $style;
 						$group		= (isset($selOption['group'])) ? $selOption['group'] : $group;
 					}
 					else
 					{
-						$value = TO(@$selOption, $type);
+						$value = CAST(@$selOption, $type);
 						$label = $value;
 					}
 
