@@ -200,35 +200,6 @@
 		return $collected;
 	}
 
-	function ary_filter( $array, $filter = NULL, $skipVal = FALSE )
-	{
-		if ( !is_array($array) && !($array instanceof Traversable) ) return FALSE;
-
-		$arguments	= func_get_args();
-		$skipMode	= count($arguments) != 2;
-
-		if ( !is_callable($filter) )
-		{
-			$filter = (!$skipMode) ?
-				function( $item ) { return $item; } :
-				function( $item ) { return (empty($item)) ? FALSE : $item; };
-		}
-
-		$collected = array();
-		foreach ( $array as $idx => $item )
-		{
-			$result = $filter($item, $idx);
-			if ( $skipMode && ($result === $skipVal) ) continue;
-
-			if ( $idx === NULL )
-				$collected[] = $result;
-			else
-				$collected[$idx] = $result;
-		}
-
-		return $collected;
-	}
-
 	function json_object( $input = NULL ) {
 		if ( func_num_args() == 0 ) return new stdClass();
 

@@ -319,9 +319,9 @@
 
 	class PBAJAXOutput extends PBModule
 	{
-		const STATUS_ALERT 	=  1;
-		const STATUS_NORMAL	=  0;
-		const STATUS_ERROR 	= -1;
+		const STATUS_WARNING	=  1;
+		const STATUS_NORMAL		=  0;
+		const STATUS_ERROR		= -1;
 
 
 		private $_noWrap = FALSE;
@@ -346,21 +346,27 @@
 
 
 
-			$ajaxReturn = [];
-			if (!is_array($param))
-			{
-				$ajaxReturn['status'] 	= self::STATUS_NORMAL;
-				$ajaxReturn['msg']		= $param;
-			}
+			$ajaxReturn = (object)[];
+			if ( is_array($param) ) 
+				$param = (object)$param;
 			else
+			if ( !is_object($param) )
 			{
-				$ajaxReturn['status'] = (is_int(@$param['status'])) ? intval($param['status']) : self::STATUS_NORMAL;
-				$ajaxReturn['msg'] = (@$param['msg']) ? $param['msg'] : '';
-				unset($param['status']); unset($param['msg']);
-
-				$ajaxReturn = array_merge($ajaxReturn, $param);
+				$param = (object)[
+					'status' => self::STATUS_NORMAL,
+					'msg'	 => $param
+				];
 			}
+			
+			
+			
+			$param = clone $param;
+			$ajaxReturn->status = CAST( @$param->status, 'int strict', self::STATUS_NORMAL );
+			$ajaxReturn->msg	= CAST( @$param->msg, 'string', '' );
 
+
+
+			$ajaxReturn = data_set( $ajaxReturn, $param );
 			PBHTTP::ResponseJSON($ajaxReturn);
 		}
 	}
