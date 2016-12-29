@@ -307,7 +307,7 @@
 			$idx = "{$document->_id}";
 			return $document;
 		}
-		public static function ObjectID( $hexStr ) {
+		public static function ObjectID( $hexStr = NULL ) {
 			try{
 				return new ObjectID( func_num_args() > 0 ? "{$hexStr}" : NULL );
 			} catch(Exception $e) {
