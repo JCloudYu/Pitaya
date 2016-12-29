@@ -42,7 +42,7 @@
 	
 	
 		// INFO: Interfaces that will be used in system core
-		public function coreResolve() { return NULL; }
+		public function coreResolve(...$args) { return NULL; }
 	
 	
 	
