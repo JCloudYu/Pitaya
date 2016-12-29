@@ -309,7 +309,7 @@
 		}
 		public static function ObjectID( $hexStr ) {
 			try{
-				return new ObjectID( "{$hexStr}" );
+				return new ObjectID( func_num_args() > 0 ? "{$hexStr}" : NULL );
 			} catch(Exception $e) {
 				return NULL;
 			}
