@@ -177,7 +177,7 @@
 			 */
 			case 'time':
 				// Parse time according to format
-				if ( in_array( 'parse' ) )
+				if ( in_array( 'parse', $opt ) )
 				{
 					$dateObj = date_create_from_format( "{$filter}", "{$value}" );
 					if ( $dateObj === FALSE )
