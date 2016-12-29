@@ -12,11 +12,18 @@
 	define('YB', ZB * 1024.0);	// YotaByte
 
 
-	function CAST( $value, $type, $filter = NULL, $default = NULL )
+	function CAST(...$args)
 	{
+		$value	 = @$args[0]; 
+		$type	 = @$args[1];
+		$filter  = @$args[2]; 
+		$default = @$args[3]; 	
+	
+	
+	
 		$opt	= explode( ' ', strtolower(trim("{$type}")) );
 		$base	= @array_shift( $opt );
-		$nArgs	= func_num_args();
+		$nArgs	= count($args);
 
 		switch( $base )
 		{
