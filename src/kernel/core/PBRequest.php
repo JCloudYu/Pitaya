@@ -286,7 +286,7 @@
 			if ( $traceBack > 0 )
 				$anchor = @array_slice( $anchor, 0, -$traceBack );
 				
-			return empty($anchor) ? '' : '/' . implode( '/', $anchor );
+			return '/' . empty($anchor) ? '' : implode( '/', $anchor );
 		}
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
