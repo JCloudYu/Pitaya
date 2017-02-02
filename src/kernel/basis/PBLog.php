@@ -303,6 +303,7 @@ SQL
 				}
 
 
+				chmod( $logFilePath, 0777 );
 				$hLog = @fopen($logFilePath, 'a+b');
 				if ( empty( $hLog ) ) return NULL;
 
