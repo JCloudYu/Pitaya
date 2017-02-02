@@ -54,7 +54,7 @@ if [ "${mode}" == "-c" ]; then
 
 
 			find "${PITAYA_DIR}/env/http" -type f -exec cp \{\} ./ \;
-			find "${PITAYA_DIR}/env/macosx" -type f -not -name "pitaya" -exec cp \{\} ./ \;
+#			find "${PITAYA_DIR}/env/macosx" -type f -not -name "pitaya" -exec cp \{\} ./ \;
 
 			UNPACK_SAMPLE "cli";
 			UNPACK_SAMPLE "config";
