@@ -6,7 +6,26 @@
 	using( 'kernel.core.PBModule' );
 	using('sys.net.PBHTTP');
 
-	class PBHtmlOutput extends PBModule
+	class PBHttpOutput extends PBModule {
+		public $status	= PBHTTP::STATUS_200_OK;
+		public $mime	= "application/octet-stream";
+	
+		public function common( $content ) {
+			PBHTTP::ResponseStatus( $this->status );
+			header( "Content-Type: {$this->mime}" );
+			
+			
+			if ( !is_resource($content) )
+				echo "{$content}";
+			else
+			{
+				$output = fopen( "php://output", "a+b" );
+				stream_copy_to_stream( $content, $output );
+				fclose($output);
+			}
+		}
+	}
+	class PBHtmlOutput extends PBHttpOutput
 	{
 		private $_baseRCPath = '';
 
@@ -22,7 +41,7 @@
 		private $_elm	= [];
 		private $_meta	= [];
 
-		public function exec($param)
+		public function common($param)
 		{
 			$js = array('prepend' => '', 'append' => '', 'file prepend' => '', 'file append' => '');
 			$css = array('inline' => '', 'file' => '');
@@ -138,9 +157,9 @@
 
 
 			$appendedScript = "{$js['append']}{$js['file append']}{$js['last']}";
-			echo "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>";
-
-			return NULL;
+			
+			$this->mime = "text/html";
+			parent::common( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>" );
 		}
 
 		public function addJS($script, $append = TRUE)
@@ -316,57 +335,13 @@
 			}
 		}
 	}
-	class PBRawOutput extends PBModule
-	{
-		private $_mime = "text/plain";
-		public function __get_mime() {
-			return $this->_mime;
-		}
-		public function __set_mime( $value ) {
-			$this->_mime = "{$value}";
-		}
-
-		public function prepare( $moduleRequest ) {
-			$mime = trim("{$moduleRequest['mime']}");
-			if ( !empty($mime) ) $this->_mime = $mime;
-		}
-
-		public function exec( $param ) {
-			PBHTTP::ResponseContent( $param, $this->_mime );
-		}
-		public function shell( $param ) {
-			PBStdIO::STDOUT( $param );
-		}
-	}
-	class PBAJAXOutput extends PBModule
-	{
+	class PBAJAXOutput extends PBHttpOutput {
 		const STATUS_WARNING	=  1;
 		const STATUS_NORMAL		=  0;
 		const STATUS_ERROR		= -1;
 
-
-		private $_noWrap = FALSE;
-		public function __get_noWrap(){
-			return $this->_noWrap;
-		}
-		public function __set_noWrap( $value ){
-			$this->_noWrap = ($value === TRUE);
-		}
-
-
-		public function event($event) { $this->exec($event); }
-		public function exec($param)
+		public function common( $param )
 		{
-			if ( $this->_noWrap )
-			{
-				PBHTTP::ResponseJSON( $param );
-				return;
-			}
-
-			if ($param === NULL) return;
-
-
-
 			$ajaxReturn = (object)[];
 			if ( is_array($param) ) 
 				$param = (object)$param;
@@ -380,15 +355,21 @@
 			}
 			
 			
-			
+			// Merging params
 			$param = clone $param;
 			$ajaxReturn->status = CAST( @$param->status, 'int strict', self::STATUS_NORMAL );
-			$ajaxReturn->msg	= CAST( @$param->msg, 'string', '' );
-
-
-
-			$ajaxReturn = data_set( $ajaxReturn, $param );
-			PBHTTP::ResponseJSON($ajaxReturn);
+			$ajaxReturn->msg	= CAST( @$param->msg,	 'string', '' );
+			$ajaxReturn			= data_set( $ajaxReturn, $param );
+			
+			
+			
+			$this->mime = 'application/json';
+			parent::common( json_encode($ajaxReturn) );
 		}
 	}
+	class PBJSONOutput extends PBHttpOutput {
+		public function common( $param ) {
+			$this->mime = "application/json";
+			parent::common( json_encode($param) );
+		}
 	}
