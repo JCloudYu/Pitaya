@@ -316,7 +316,28 @@
 			}
 		}
 	}
+	class PBRawOutput extends PBModule
+	{
+		private $_mime = "text/plain";
+		public function __get_mime() {
+			return $this->_mime;
+		}
+		public function __set_mime( $value ) {
+			$this->_mime = "{$value}";
+		}
 
+		public function prepare( $moduleRequest ) {
+			$mime = trim("{$moduleRequest['mime']}");
+			if ( !empty($mime) ) $this->_mime = $mime;
+		}
+
+		public function exec( $param ) {
+			PBHTTP::ResponseContent( $param, $this->_mime );
+		}
+		public function shell( $param ) {
+			PBStdIO::STDOUT( $param );
+		}
+	}
 	class PBAJAXOutput extends PBModule
 	{
 		const STATUS_WARNING	=  1;
@@ -370,26 +391,4 @@
 			PBHTTP::ResponseJSON($ajaxReturn);
 		}
 	}
-
-	class PBRawOutput extends PBModule
-	{
-		private $_mime = "text/plain";
-		public function __get_mime() {
-			return $this->_mime;
-		}
-		public function __set_mime( $value ) {
-			$this->_mime = "{$value}";
-		}
-
-		public function prepare( $moduleRequest ) {
-			$mime = trim("{$moduleRequest['mime']}");
-			if ( !empty($mime) ) $this->_mime = $mime;
-		}
-
-		public function exec( $param ) {
-			PBHTTP::ResponseContent( $param, $this->_mime );
-		}
-		public function shell( $param ) {
-			PBStdIO::STDOUT( $param );
-		}
 	}
