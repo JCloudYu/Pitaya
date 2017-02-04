@@ -7,12 +7,24 @@
 	using('sys.net.PBHTTP');
 
 	class PBHttpOutput extends PBModule {
-		public $status	= PBHTTP::STATUS_200_OK;
-		public $mime	= "application/octet-stream";
+	
+		private static $_statusCode = NULL;
+		public static function StatusCode( $code ) {
+			self::$_statusCode = CAST( $code, 'int strict', NULL );
+		}
+		
+		private static $_contentType = NULL;
+		public static function ContentType( $type ) {
+			self::$_contentType = CAST( $type, 'string', NULL );
+		}
+		
 	
 		public function common( $content ) {
-			PBHTTP::ResponseStatus( $this->status );
-			header( "Content-Type: {$this->mime}" );
+			if ( self::$_statusCode !== NULL )
+				PBHTTP::ResponseStatus( self::$_statusCode );
+			
+			if ( self::$_contentType !== NULL )
+				header( "Content-Type: " . self::$_statusCode );
 			
 			
 			if ( !is_resource($content) )
@@ -158,7 +170,7 @@
 
 			$appendedScript = "{$js['append']}{$js['file append']}{$js['last']}";
 			
-			$this->mime = "text/html";
+			PBHttpOutput::ContentType( "text/html" );
 			parent::common( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>" );
 		}
 
@@ -364,13 +376,13 @@
 			
 			
 			
-			$this->mime = 'application/json';
+			PBHttpOutput::ContentType( 'application/json' );
 			parent::common( json_encode($ajaxReturn) );
 		}
 	}
 	class PBJSONOutput extends PBHttpOutput {
 		public function common( $param ) {
-			$this->mime = "application/json";
+			PBHttpOutput::ContentType( "application/json" );
 			parent::common( json_encode($param) );
 		}
 	}
