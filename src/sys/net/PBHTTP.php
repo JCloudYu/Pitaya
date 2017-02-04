@@ -8,7 +8,7 @@
 	{
 		public static function ResponseStatus( $status )
 		{
-			$statusMsg = self::GetStatusString( $status );
+			$statusMsg = PBHTTP::STATUS_STRING[ $status ];
 			if ( empty($statusMsg) ) throw new Exception("Unsupported HTTP Status Code");
 
 			header("HTTP/1.1 {$status} {$statusMsg}");
@@ -32,15 +32,19 @@
 			stream_copy_to_stream( $content, $output );
 			fclose($output);
 		}
+		public static function GetStatusString($status) {
+			DEPRECATION_WARNING( "PBHTTP::GetStatusString will no longer be aviable! Use PBHTTP::STATUS_STRING constant instead!" );
+			return self::STATUS_STRING[ $status ];
+		}
 
 
 		// region [ HTTP Status Code ]
-		//SEC: Information
+		//INFO: Information
 		const STATUS_100_CONTINUE								= 100;
 		const STATUS_101_SWITCHING_PROTOCOLS					= 101;
 		const STATUS_102_PROCESSING								= 102;
 
-		//SEC: Success
+		//INFO: Success
 		const STATUS_200_OK										= 200;
 		const STATUS_201_CREATED								= 201;
 		const STATUS_202_ACCEPTED								= 202;
@@ -52,7 +56,7 @@
 		const STATUS_208_ALREADY_REPORTED						= 208;
 		const STATUS_226_IM_USED								= 226;
 
-		//SEC: Redirection
+		//INFO: Redirect
 		const STATUS_300_MULTIPLE_CHOICES						= 300;
 		const STATUS_301_MOVED_PERMANENTLY						= 301;
 		const STATUS_302_FOUND									= 302;
@@ -63,7 +67,7 @@
 		const STATUS_307_TEMPORARY_REDIRECT						= 307;
 		const STATUS_308_PERMANENT_REDIRECT						= 308;
 
-		//SEC: Client Error
+		//INFO: Client Error
 		const STATUS_400_BAD_REQUEST							= 400;
 		const STATUS_401_UNAUTHORIZED							= 401;
 		const STATUS_402_PAYMENT_REQUIRED						= 402;
@@ -104,7 +108,7 @@
 		const STATUS_497_HTTP_TO_HTTPS							= 497;
 		const STATUS_499_CLIENT_CLOSED_REQUEST					= 499;
 
-		//SEC: Server Error
+		//INFO: Server Error
 		const STATUS_500_INTERNAL_SERVER_ERROR					= 500;
 		const STATUS_501_NOT_IMPLEMENTED						= 501;
 		const STATUS_502_BAD_GATEWAY							= 502;
@@ -120,90 +124,86 @@
 		const STATUS_598_NETWORK_READ_TIMEOUT					= 598;
 		const STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			= 599;
 		// endregion
+		
+		const STATUS_STRING = [
+			self::STATUS_100_CONTINUE								=> 'Continue',
+			self::STATUS_101_SWITCHING_PROTOCOLS					=> 'Switching Protocols',
+			self::STATUS_102_PROCESSING								=> 'Processing',
 
-		public static function GetStatusString($status)
-		{
-			static $STATUS_STRING = array(
-				100 => 'Continue',
-				101 => 'Switching Protocols',
-				102 => 'Processing',
+			self::STATUS_200_OK										=> 'OK',
+			self::STATUS_201_CREATED								=> 'Created',
+			self::STATUS_202_ACCEPTED								=> 'Accepted',
+			self::STATUS_203_NON_AUTHORITATIVE_INFORMATION			=> 'Non-Authoritative Information',
+			self::STATUS_204_NO_CONTENT								=> 'No Content',
+			self::STATUS_205_RESET_CONTENT							=> 'Reset Content',
+			self::STATUS_206_PARTIAL_CONTENT						=> 'Partial Content',
+			self::STATUS_207_MULTI_STATUS							=> 'Multi-Status',
+			self::STATUS_208_ALREADY_REPORTED						=> 'Already Reported',
+			self::STATUS_226_IM_USED								=> 'IM Used',
 
-				200 =>'OK',
-				201 =>'Created',
-				202 =>'Accepted',
-				203 =>'Non-Authoritative Information',
-				204 =>'No Content',
-				205 =>'Reset Content',
-				206 =>'Partial Content',
-				207 =>'Multi-Status',
-				208 =>'Already Reported',
-				226 =>'IM Used',
+			self::STATUS_300_MULTIPLE_CHOICES						=> 'Multiple Choices',
+			self::STATUS_301_MOVED_PERMANENTLY						=> 'Moved Permanently',
+			self::STATUS_302_FOUND									=> 'Found',
+			self::STATUS_303_SEE_OTHER								=> 'See Other',
+			self::STATUS_304_NOT_MODIFIED							=> 'Not Modified',
+			self::STATUS_305_USE_PROXY								=> 'Use Proxy',
+			self::STATUS_306_SWITCH_PROXY							=> 'Switch Proxy',
+			self::STATUS_307_TEMPORARY_REDIRECT						=> 'Temporary Redirect',
+			self::STATUS_308_PERMANENT_REDIRECT						=> 'Permanent Redirect',
 
-				300 =>'Multiple Choices',
-				301 =>'Moved Permanently',
-				302 =>'Found',
-				303 =>'See Other',
-				304 =>'Not Modified',
-				305 =>'Use Proxy',
-				306 =>'Switch Proxy',
-				307 =>'Temporary Redirect',
-				308 =>'Permanent Redirect',
+			self::STATUS_400_BAD_REQUEST							=> 'Bad Request',
+			self::STATUS_401_UNAUTHORIZED							=> 'Unauthorized',
+			self::STATUS_402_PAYMENT_REQUIRED						=> 'Payment Required',
+			self::STATUS_403_FORBIDDEN								=> 'Forbidden',
+			self::STATUS_404_NOT_FOUND								=> 'Not Found',
+			self::STATUS_405_METHOD_NOT_ALLOWED						=> 'Method Not Allowed',
+			self::STATUS_406_NOT_ACCEPTABLE							=> 'Not Acceptable',
+			self::STATUS_407_PROXY_AUTHENTICATION_REQUIRED			=> 'Proxy Authentication Required',
+			self::STATUS_408_REQUEST_TIMEOUT						=> 'Request Timeout',
+			self::STATUS_409_CONFLICT								=> 'Conflict',
+			self::STATUS_410_GONE									=> 'Gone',
+			self::STATUS_411_LENGTH_REQUIRED						=> 'Length Required',
+			self::STATUS_412_PRECONDITION_FAILED					=> 'Precondition Failed',
+			self::STATUS_413_REQUEST_ENTITY_TOO_LARGE				=> 'Request Entity Too Large',
+			self::STATUS_414_REQUEST_URI_TOO_LONG					=> 'Request-URI Too Long',
+			self::STATUS_415_UNSUPPORTED_MEDIA_TYPE					=> 'Unsupported Media Type',
+			self::STATUS_416_REQUEST_RANGE_NOT_SATISFIABLE			=> 'Request Range Not Satisfiable',
+			self::STATUS_417_EXPECTATION_FAILED						=> 'Expectation Failed',
+			self::STATUS_418_IM_A_TEAPOT							=> 'I\'m a teapot',
+			self::STATUS_420_ENHANCE_YOUR_CALM						=> 'Enhance Your Calm',
+			self::STATUS_422_UNPROCESSABLE_ENTITY					=> 'Unprocessable Entity',
+			self::STATUS_423_LOCKED									=> 'Locked',
+			self::STATUS_424_FAILED_DEPENDENCY						=> 'Failed Dependency',
+//			self::STATUS_424_FAILED_DEPENDENCY						=> 'Method Failure',
+			self::STATUS_425_UNORDERED_COLLECTION					=> 'Unordered Collection',
+			self::STATUS_426_UPGRADE_REQUIRED						=> 'Upgrade Required',
+			self::STATUS_428_PRECONDITION_REQUIRED					=> 'Precondition Required',
+			self::STATUS_429_TOO_MANY_REQUESTS						=> 'Too Many Requests',
+			self::STATUS_431_REQUEST_HEADER_FIELDS_TOO_MANY			=> 'Request Header Fields Too Large',
+			self::STATUS_444_NO_RESPONSE							=> 'No Response',
+			self::STATUS_449_RETRY_WITH								=> 'Retry With',
+			self::STATUS_450_BLOCKED_BY_WINDOWS_PARENTAL_CONTROLS	=> 'Blocked by Windows Parental Controls',
+//			self::STATUS_451_REDIRECT								=> 'Unavailable For Legal Reasons',
+			self::STATUS_451_REDIRECT								=> 'Redirect',
+			self::STATUS_494_REQUEST_HEADER_TOO_LARGE				=> 'Request Header Too Large',
+			self::STATUS_495_CERT_ERROR								=> 'Cert Error',
+			self::STATUS_496_NO_CERT								=> 'No Cert',
+			self::STATUS_497_HTTP_TO_HTTPS							=> 'HTTP to HTTPS',
+			self::STATUS_499_CLIENT_CLOSED_REQUEST					=> 'Client Closed Request',
 
-				400 =>'Bad Request',
-				401 =>'Unauthorized',
-				402 =>'Payment Required',
-				403 =>'Forbidden',
-				404 =>'Not Found',
-				405 =>'Method Not Allowed',
-				406 =>'Not Acceptable',
-				407 =>'Proxy Authentication Required',
-				408 =>'Request Timeout',
-				409 =>'Conflict',
-				410 =>'Gone',
-				411 =>'Length Required',
-				412 =>'Precondition Failed',
-				413 =>'Request Entity Too Large',
-				414 =>'Request-URI Too Long',
-				415 =>'Unsupported Media Type',
-				416 =>'Request Range Not Satisfiable',
-				417 =>'Expectation Failed',
-				418 =>'I\'m a teapot',
-				420 =>'Enhance Your Calm',
-				422 =>'Unprocessable Entity',
-				423 =>'Locked',
-				424 =>'Failed Dependency',
-//				424 =>'Method Failure',
-				425 =>'Unordered Collection',
-				426 =>'Upgrade Required',
-				428 =>'Precondition Required',
-				429 =>'Too Many Requests',
-				431 =>'Request Header Fields Too Large',
-				444 =>'No Response',
-				449 =>'Retry With',
-				450 =>'Blocked by Windows Parental Controls',
-				451 =>'Unavailable For Legal Reasons',
-//				451 =>'Redirect',
-				494 =>'Request Header Too Large',
-				495 =>'Cert Error',
-				496 =>'No Cert',
-				497 =>'HTTP to HTTPS',
-				499 =>'Client Closed Request',
-
-				500 =>'Internal Server Error',
-				501 =>'Not Implemented',
-				502 =>'Bad Gateway',
-				503 =>'Service Unavailable',
-				504 =>'Gateway Timeout',
-				505 =>'HTTP Version Not Supported',
-				506 =>'Variant Also Negotiates',
-				507 =>'Insufficient Storage',
-				508 =>'Loop Detected',
-				509 =>'Bandwidth Limit Exceeded',
-				510 =>'Not Extended',
-				511 =>'Network Authentication Required',
-				598 =>'Network read timeout error',
-				599 =>'Network connect timeout error',
-			);
-			return $STATUS_STRING[$status];
-		}
+			self::STATUS_500_INTERNAL_SERVER_ERROR					=> 'Internal Server Error',
+			self::STATUS_501_NOT_IMPLEMENTED						=> 'Not Implemented',
+			self::STATUS_502_BAD_GATEWAY							=> 'Bad Gateway',
+			self::STATUS_503_SERVICE_UNAVAILABLE					=> 'Service Unavailable',
+			self::STATUS_504_GATEWAY_TIMEOUT						=> 'Gateway Timeout',
+			self::STATUS_505_HTTP_VERSION_NOT_SUPPORTED				=> 'HTTP Version Not Supported',
+			self::STATUS_506_VARIANT_ALSO_NEGOTIATES				=> 'Variant Also Negotiates',
+			self::STATUS_507_INSUFFICIENT_STORAGE					=> 'Insufficient Storage',
+			self::STATUS_508_LOOP_DETECTED							=> 'Loop Detected',
+			self::STATUS_509_BANDWIDTH_LIMIT_EXCEEDED				=> 'Bandwidth Limit Exceeded',
+			self::STATUS_510_NOT_EXTENDED							=> 'Not Extended',
+			self::STATUS_511_NETWORK_AUTHENTICATION_REQUIRED		=> 'Network Authentication Required',
+			self::STATUS_598_NETWORK_READ_TIMEOUT					=> 'Network read timeout error',
+			self::STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			=> 'Network connect timeout error'
+		];
 	}
