@@ -357,8 +357,9 @@
 			
 			// Merging params
 			$param = clone $param;
-			$ajaxReturn->status = CAST( @$param->status, 'int strict', self::STATUS_NORMAL );
-			$ajaxReturn->msg	= CAST( @$param->msg,	 'string', '' );
+			$ajaxReturn->status = CAST( @$param->status, 'int strict',	self::STATUS_NORMAL );
+			$ajaxReturn->msg	= CAST( @$param->msg,	 'string',		'' );
+			$ajaxReturn->scope	= PBScopeTracer::Scope()->breadcrumb( '#' );
 			$ajaxReturn			= data_set( $ajaxReturn, $param );
 			
 			
