@@ -4,29 +4,47 @@
 	 ** Created by JCloudYu on 2015/12/07 15:49
 	 **/
 	using( 'kernel.core.PBModule' );
-	using('sys.net.PBHTTP');
+	using( 'sys.net.PBHTTP' );
 
-	class PBHttpOutput extends PBModule {
+	class PBHttpOutputCtrl extends PBModule {
 	
-		private static $_statusCode = NULL;
+		protected static $_statusCode = NULL;
 		public static function StatusCode( $code ) {
 			self::$_statusCode = CAST( $code, 'int strict', NULL );
 		}
 		
-		private static $_contentType = NULL;
+		protected static $_contentType = NULL;
 		public static function ContentType( $type ) {
 			self::$_contentType = CAST( $type, 'string', NULL );
 		}
 		
+		protected static $_headers = [];
+		public static function Header( $headerList = [] ){
+			self::$_headers = array_merge( self::$_headers, $headerList );
+		}
+		
+		protected static $_outputData = NULL;
+		public static function DataOut( $data ) {
+			self::$_outputData = $data;
+		}
 	
-		public function common( $content ) {
+	
+	
+		public function common( $param ) {
 			if ( self::$_statusCode !== NULL )
 				PBHTTP::ResponseStatus( self::$_statusCode );
 			
 			if ( self::$_contentType !== NULL )
 				header( "Content-Type: " . self::$_statusCode );
 			
+			foreach( self::$_headers as $field => $value ) {
+				if ( $value === NULL ) continue;
+				header( "{$field}: {$value}" );
+			}
 			
+			
+			
+			$content = ( $param === NULL ) ? self::$_outputData : $param;
 			if ( !is_resource($content) )
 				echo "{$content}";
 			else
@@ -37,8 +55,8 @@
 			}
 		}
 	}
-	class PBHtmlOutput extends PBHttpOutput
-	{
+	class PBHtmlOutput extends PBHttpOutputCtrl {
+	
 		private $_baseRCPath = '';
 
 		private $_js = array('prepend' => [], 'append' => [], 'last' => []);
@@ -53,8 +71,11 @@
 		private $_elm	= [];
 		private $_meta	= [];
 
-		public function common($param)
+		public function common( $param )
 		{
+			$outputCtnt = ($param === NULL) ? self::$_outputData : $param;	
+		
+		
 			$js = array('prepend' => '', 'append' => '', 'file prepend' => '', 'file append' => '');
 			$css = array('inline' => '', 'file' => '');
 			$header = '';
@@ -170,7 +191,7 @@
 
 			$appendedScript = "{$js['append']}{$js['file append']}{$js['last']}";
 			
-			PBHttpOutput::ContentType( "text/html" );
+			PBHttpOutputCtrl::ContentType( "text/html" );
 			parent::common( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$appendedScript}</body></html>" );
 		}
 
@@ -347,13 +368,20 @@
 			}
 		}
 	}
-	class PBAJAXOutput extends PBHttpOutput {
+	class PBAJAXOutput extends PBHttpOutputCtrl {
+	
 		const STATUS_WARNING	=  1;
 		const STATUS_NORMAL		=  0;
 		const STATUS_ERROR		= -1;
-
-		public function common( $param )
-		{
+		
+		public function common( $param ) {
+			$result = self::__PROCESS_OUTPUT( ( $param === NULL ) ? self::$_outputData : $param );
+			self::ContentType( 'application/json' );
+			parent::common( @json_encode($result) );
+		}
+		
+		private static function __PROCESS_OUTPUT( $param ) {
+		
 			$ajaxReturn = (object)[];
 			if ( is_array($param) ) 
 				$param = (object)$param;
@@ -373,16 +401,15 @@
 			$ajaxReturn->msg	= CAST( @$param->msg,	 'string',		'' );
 			$ajaxReturn->scope	= PBScopeTracer::Scope()->breadcrumb( '#' );
 			$ajaxReturn			= data_set( $ajaxReturn, $param );
-			
-			
-			
-			PBHttpOutput::ContentType( 'application/json' );
-			parent::common( json_encode($ajaxReturn) );
+
+			return $ajaxReturn;
 		}
 	}
-	class PBJSONOutput extends PBHttpOutput {
+	class PBJSONOutput extends PBHttpOutputCtrl {
 		public function common( $param ) {
-			PBHttpOutput::ContentType( "application/json" );
-			parent::common( json_encode($param) );
+			PBHttpOutputCtrl::ContentType( "application/json" );
+			parent::common(json_encode(
+				($param === NULL) ? self::$_outputData : $param
+			));
 		}
 	}
