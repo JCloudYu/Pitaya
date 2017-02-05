@@ -78,6 +78,8 @@
 		define('SYS_WORKING_ENV',	SYS_ENV_CLI); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI);
+		define('IS_CLI_ENV',		TRUE);
+		
 		define('REQUESTING_METHOD',	'');
 		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}");
 		define('EOL',				"\n");
@@ -110,6 +112,8 @@
 		define('SYS_WORKING_ENV',	SYS_ENV_NET); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP);
+		define('IS_CLI_ENV',		FALSE);
+		
 		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']));
 		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}");
 
@@ -125,6 +129,9 @@
 	chdir( __SPACE_ROOT__ );
 
 
+
+		
+	define('IS_HTTP_ENV',		!IS_CLI_ENV);
 	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
 		define( '__STANDALONE_EXEC_MODE__', FALSE);
 
@@ -208,6 +215,14 @@
 		// INFO: Error Reporting Control
 		s_define( "PITAYA_SUPPRESS_EXPECTED_WARNINGS", TRUE, TRUE, FALSE );
 		error_reporting( PITAYA_SUPPRESS_EXPECTED_WARNINGS ? (E_ALL & ~E_STRICT & ~E_NOTICE) : E_ALL );
+		
+/*
+		set_error_handler(function( $errno, $errStr ){
+			if ( !PITAYA_SUPPRESS_EXPECTED_WARNINGS ) return FALSE;
+			DEBUG::VarDump(func_get_args());
+			return (strpos( $errStr, 'Declaration of' ) === 0);
+		}, E_WARNING );
+*/
 	});
 
 

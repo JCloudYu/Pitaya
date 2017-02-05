@@ -31,6 +31,10 @@
 	
 	
 		public function common( $param ) {
+			if ( IS_CLI_ENV ) return;
+			
+			
+		
 			if ( self::$_statusCode !== NULL )
 				PBHTTP::ResponseStatus( self::$_statusCode );
 			
