@@ -39,7 +39,7 @@
 				PBHTTP::ResponseStatus( self::$_statusCode );
 			
 			if ( self::$_contentType !== NULL )
-				header( "Content-Type: " . self::$_statusCode );
+				header( "Content-Type: " . self::$_contentType );
 			
 			foreach( self::$_headers as $field => $value ) {
 				if ( $value === NULL ) continue;
