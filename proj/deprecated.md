@@ -2,23 +2,24 @@
 The following files and apis are maked as deprecated and will be removed soon!
 
 
-## 2017/02/09 ##
-### ext.base.misc ###
+## 1.4.4 ##
+### 2017/02/09 ###
+#### ext.base.misc ####
 - [func] TO
 
-### kernel.core.PBCookie ###
+#### kernel.core.PBCookie ####
 - [class] PBCookie
 
-### kernel.core.PBSession ###
+#### kernel.core.PBSession ####
 - [class] PBSession
 
-### kernel.core.PBRequest ###
+#### kernel.core.PBRequest ####
 - [usage] PBReuqest::data's second argument as array
 
-### sys.net.PBHTTP ###
+#### sys.net.PBHTTP ####
 - [func] PBHTTP::GetStatusString
 
-### modules.PBOutputCtrl\#PBHtmlOutput ###
+#### modules.PBOutputCtrl\#PBHtmlOutput ####
 - [func] PBHtmlOutput::property
 - [prop] PBHtmlOutput::rcPath
 - [prop] PBHtmlOutput::jsFile
