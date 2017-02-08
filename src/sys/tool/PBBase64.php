@@ -8,7 +8,7 @@
 		public static function URLDecode( $data ){
 			$length = strlen( $data );
 			$repeat = 4 - ($length % 4);
-			return base64_decode( strtr( $data . str_repeat( "=", $repeat ), '-_', '+/') );
+			return base64_decode( strtr( $data . str_repeat( "=", $repeat ), '-_', '+/'), TRUE );
 		}
 
 		public static function Encode( $data ){
@@ -16,7 +16,7 @@
 		}
 
 		public static function Decode( $data ) {
-			return base64_decode($data);
+			return base64_decode( $data, TRUE );
 		}
 	}
 	
