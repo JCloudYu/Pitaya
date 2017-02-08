@@ -2,26 +2,27 @@
 The following files and apis are maked as deprecated and will be removed soon!
 
 
+## 2017/02/09 ##
 ### ext.base.misc ###
-- function TO
+- [func] TO
 
 ### kernel.core.PBCookie ###
-- The whole class
+- [class] PBCookie
 
 ### kernel.core.PBSession ###
-- The whole class
+- [class] PBCookie
 
 ### kernel.core.PBRequest ###
-- usage PBReuqest::data's second argument as array
+- [usage] PBReuqest::data's second argument as array
 
 ### sys.net.PBHTTP ###
-- function PBHTTP::GetStatusString
+- [func] PBHTTP::GetStatusString
 
 ### modules.PBOutputCtrl\#PBHtmlOutput ###
-- function PBHtmlOutput::property
-- property PBHtmlOutput::rcPath
-- property PBHtmlOutput::jsFile
-- property PBHtmlOutput::jsFilesAppended
-- property PBHtmlOutput::jsFilesPrepended
-- property PBHtmlOutput::jsEnd
+- [func] PBHtmlOutput::property
+- [prop] PBHtmlOutput::rcPath
+- [prop] PBHtmlOutput::jsFile
+- [prop:get] PBHtmlOutput::jsFilesAppended
+- [prop:get] PBHtmlOutput::jsFilesPrepended
+- [prop:get] PBHtmlOutput::jsEnd
 
