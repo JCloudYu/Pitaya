@@ -10,7 +10,7 @@ The following files and apis are maked as deprecated and will be removed soon!
 - [class] PBCookie
 
 ### kernel.core.PBSession ###
-- [class] PBCookie
+- [class] PBSession
 
 ### kernel.core.PBRequest ###
 - [usage] PBReuqest::data's second argument as array
