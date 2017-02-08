@@ -134,7 +134,7 @@
 			// endregion
 
 			// region [ Prepare HTML contents ]
-			$baseBody = "{$param}";
+			$baseBody = "{$outputCtnt}";
 			$elm = $this->_elm;
 
 			// region [ Generate Page Wrapper ]
