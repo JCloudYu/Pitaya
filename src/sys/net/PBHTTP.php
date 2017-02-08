@@ -123,8 +123,8 @@
 		const STATUS_511_NETWORK_AUTHENTICATION_REQUIRED		= 511;
 		const STATUS_598_NETWORK_READ_TIMEOUT					= 598;
 		const STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			= 599;
-		// endregion
 		
+		//INFO: Status String
 		const STATUS_STRING = [
 			self::STATUS_100_CONTINUE								=> 'Continue',
 			self::STATUS_101_SWITCHING_PROTOCOLS					=> 'Switching Protocols',
@@ -206,4 +206,5 @@
 			self::STATUS_598_NETWORK_READ_TIMEOUT					=> 'Network read timeout error',
 			self::STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			=> 'Network connect timeout error'
 		];
+		// endregion
 	}
