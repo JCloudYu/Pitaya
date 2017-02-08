@@ -15,6 +15,10 @@
 
 		public static function Cookie($path = '', $domain = '')
 		{
+			DEPRECATION_WARNING( "PBCookie is marked as deprecated! If you want to set cookie, please refer to PBHTTP::SetCookie api!" );
+		
+		
+		
 			static $_singleton = NULL;
 
 			if ($_singleton) return $_singleton;

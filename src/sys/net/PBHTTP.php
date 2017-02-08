@@ -36,6 +36,70 @@
 			DEPRECATION_WARNING( "PBHTTP::GetStatusString will no longer be aviable! Use PBHTTP::STATUS_STRING constant instead!" );
 			return self::STATUS_STRING[ $status ];
 		}
+		
+		public static function SetCookie( $options ) {
+			if ( headers_sent() ) return FALSE;
+			if ( is_a( $options, stdClass::class ) ) {
+				$options = (array)$options;
+			}
+			
+			if ( !is_array($options) ) return NULL;
+			
+			$firstElm = current($options);
+			if ( !is_array($firstElm) && !is_object($firstElm) )
+				$options = [ $options ];
+	
+	
+			
+			data_filter($options, function( $cookie ){
+				if ( is_a( $cookie, stdClass::class ) )
+					$cookie = (array)$cookie;
+			
+				if ( !is_array($cookie) || empty($cookie['name']) ) 
+					return NULL;
+			
+			
+			
+				$cookieAttr   = [];
+				$cookieAttr[] = @"{$cookie[ 'name' ]}={$cookie[ 'value' ]}";
+				
+				if ( array_key_exists( 'expire', $cookie ) ) {
+					$expireTime  = CAST( $cookie[ 'expire' ], 'int strict', PITAYA_BOOT_TIME );
+					$expireStamp = date( "D, d M Y H:m:s", $expireTime - PITAYA_ZONE_DIFF );
+					$cookieAttr[] = "Expire={$expireStamp} GMT";
+				}
+				
+				if ( array_key_exists( 'duration', $cookie ) ) {
+					$duration = CAST( $cookie[ 'duration' ], 'int strict', 0 );
+					$cookieAttr[] = "Max-Age={$duration}";
+				}
+				
+				if ( !empty($cookie[ 'domain' ]) ) {
+					$cookieAttr[] = "Domain={$cookie[ 'domain' ]}";
+				}
+				
+				if ( !empty($cookie[ 'path' ]) ) {
+					$cookieAttr[] = "Path={$cookie[ 'path' ]}";
+				}
+					
+				if ( !empty($cookie[ 'ssl' ]) ) {
+					$cookieAttr[] = "Secure";
+				}
+				
+				if ( !empty($cookie[ 'http' ]) ) {
+					$cookieAttr[] = "HttpOnly";
+				}
+				
+				if ( !empty($cookie[ 'same-site' ]) ) {
+					$cookieAttr[] = "SameSite=" . ucfirst( @"{$cookie[ 'same-site' ]}" );
+				}
+				
+				$cookieAttribute = implode( '; ', $cookieAttr );
+				header( "Set-Cookie: {$cookieAttribute};" );
+			}, NULL);
+			
+			return TRUE;
+		}
 
 
 		// region [ HTTP Status Code ]

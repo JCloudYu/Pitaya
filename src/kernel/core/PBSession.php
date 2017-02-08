@@ -22,6 +22,9 @@
 		private static $_singleton = NULL;
 		public static function Session($expire = NULL, $path = NULL, $domain = NULL)
 		{
+			DEPRECATION_WARNING( "PBSession is marked as deprecated! If you want to set cookie, please refer to PBHTTP::SetCookie api!" );
+			
+			
 			if (self::$_singleton) return self::$_singleton;
 
 			self::$_singleton = new PBSession($expire, $path, $domain);
