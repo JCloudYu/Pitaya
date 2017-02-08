@@ -191,8 +191,6 @@ class PBProcess extends PBObject
 				
 				$length -= $skips;
 				while( $skips-- > 0 ) PBLinkedList::PREV($this->_bootSequence);
-				
-				PBLinkedList::PREV($this->_bootSequence);
 				while( $length-- > 0 ) PBLinkedList::REMOVE( $this->_bootSequence );
 			}
 		}
