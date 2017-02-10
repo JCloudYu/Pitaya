@@ -1,8 +1,8 @@
 <?php
 	class PBFuncChain extends PBModule {
 		private $_processChain = [];
-		public function execute( ...$arguments ) {
-			$param = @$arguments[0]; $request = @$arguments[1];
+		public function execute( $param = NULL, $request = NULL ) {
+		
 			foreach ( $this->_processChain as $call )
 			{
 				if ( !is_callable( $call ) ) continue;

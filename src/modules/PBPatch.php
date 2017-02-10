@@ -8,9 +8,9 @@
 
 
 
-		public function execute( ...$arguments ) {
+		public function execute( $chainData = NULL, $initData = NULL ) {
 		
-			$param = ( @$arguments[1] !== NULL ) ? $arguments[1] : @$arguments[0];
+			$param = ( $initData !== NULL ) ? $initData : $chainData;
 			
 			
 

@@ -215,13 +215,11 @@
 		s_define( "PITAYA_SUPPRESS_EXPECTED_WARNINGS", TRUE, TRUE, FALSE );
 		error_reporting( PITAYA_SUPPRESS_EXPECTED_WARNINGS ? (E_ALL & ~E_STRICT & ~E_NOTICE) : E_ALL );
 		
-/*
+
 		set_error_handler(function( $errno, $errStr ){
 			if ( !PITAYA_SUPPRESS_EXPECTED_WARNINGS ) return FALSE;
-			DEBUG::VarDump(func_get_args());
-			return (strpos( $errStr, 'Declaration of' ) === 0);
+			return ( substr( $errStr, 0, 14 ) === 'Declaration of' );
 		}, E_WARNING );
-*/
 	});
 
 

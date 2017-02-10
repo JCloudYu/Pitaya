@@ -52,9 +52,8 @@
 			
 		}
 
-		public function execute( ...$arguments )
+		public function execute( $chainData = NULL, $initData = NULL )
 		{
-			$initData = @$arguments[1];
 			$CONSTANT = PBConstant::Constant();
 			
 			$this->_targetPath = (is_array($initData)) ? implode('/', $initData) : "{$initData}";

@@ -1,8 +1,8 @@
 <?php
 	class PBKernelVersion extends PBModule {
 	
-		public function execute( ...$arguments ) {
-			$request = IS_HTTP_ENV ? PBRequest::Request()->parseQuery()->query['resource'] : @$arguments[1]; 
+		public function execute( $chainData = NULL, $initData = NULL ) {
+			$request = IS_HTTP_ENV ? PBRequest::Request()->parseQuery()->query['resource'] : $initData; 
 			$reqVer = CAST( @array_shift( $request ), 'string upper-case' );
 			$verMap = array(
 				"MAJOR"		=> PITAYA_VERSION_MAJOR,

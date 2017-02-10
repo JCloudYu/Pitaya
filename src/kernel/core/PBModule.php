@@ -1,8 +1,8 @@
 <?php
 
 	abstract class PBModule extends PBObject {
-		public function execute( ...$arguments ) { 
-			return @$arguments[0]; 
+		public function execute( $chainData = NULL, $initData = NULL ) { 
+			return $chainData; 
 		}
 		public function __invoke( ...$arguments ) {
 			return call_user_func_array( [ $this, 'execute' ], $arguments );

@@ -6,9 +6,7 @@
 			$this->_chainInfo = is_array($chainInfo) ? $chainInfo : [];
 		}
 		
-		public function execute( ...$arguments ) {
-			$chainData	= @$arguments[0];
-			$request	= @$arguments[1];
+		public function execute( $chainData = NULL, $request = NULL ) {
 			foreach ( $this->_chainInfo as $chainModule )
 				$this->chain[] = [ 'module' => $chainModule, 'request' => $request ];
 				
@@ -18,10 +16,8 @@
 
 	class PBVectorChain extends PBModule
 	{
-		public function execute( ...$arguments )
+		public function execute( $chainData = NULL, $moduleRequest = NULL )
 		{
-			$moduleRequest = @$arguments[1];
-		
 			$module			= PBProcess::Module( "working." . __STANDALONE_MODULE__ );
 			$this->chain[]	= [ 'module' => $module, 'request' => $moduleRequest ];
 		}
