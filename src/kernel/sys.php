@@ -1,21 +1,29 @@
 <?php
-/*
- * File: sys.php
- * Created by JCloudYu.
- * DateTime: 13/2/9 PM4:05
- */
 	using( 'ext.base.array' );
 	using( 'ext.base.misc'	);
 	using( 'ext.base.objects' );
 
-	class PBSysKernel extends PBObject
-	{
-		// region [ System Boot Loader ]
-		/**
-		 * @var PBSysKernel
-		 */
+	class PBSysKernel extends PBObject {
+	
+		// region [ Boot Related ]
+		private static $_cacheServicePath	= NULL;
+		private static $_cacheRandomCert	= NULL;
+		private static $_cachedRuntimeAttr	= NULL;
+
+		public static function __imprint_constants() {
+			static $initialized = FALSE;
+
+			if($initialized) return;
+
+			PBSysKernel::$_cacheServicePath  = $GLOBALS['servicePath'];
+			PBSysKernel::$_cachedRuntimeAttr = array(
+				'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
+			);
+		}
+		
+		/** @var PBSysKernel */
 		private static $_SYS_INSTANCE = NULL;
-		public static function boot($argc = 0, $argv = NULL) {
+		public static function boot( $argv = NULL ) {
 
 			// INFO: Avoid repeated initialization
 			if ( PBSysKernel::$_SYS_INSTANCE ) return;
@@ -31,17 +39,15 @@
 					if ( file_exists($serviceConf) ) require_once $serviceConf;
 				}
 
-				s_define('__DEFAULT_SERVICE_DEFINED__', defined('__DEFAULT_SERVICE__') || defined('DEFAULT_SERVICE'), TRUE, TRUE);
-				s_define('__DEFAULT_SERVICE__', 'index', TRUE); // DEPRECATED: The constants will be removed in v2.0.0
-				s_define('DEFAULT_SERVICE', 	'index', TRUE);
-
-				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL', 0, TRUE );
+				s_define( '__DEFAULT_SERVICE_DEFINED__',		defined('DEFAULT_SERVICE'), TRUE, TRUE );
+				s_define( 'DEFAULT_SERVICE',					'index',					TRUE );
+				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL',	0,							TRUE );
 
 
 
 				// INFO: Keep booting
 				PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
-				PBSysKernel::$_SYS_INSTANCE->__initialize( $argc, $argv);
+				PBSysKernel::$_SYS_INSTANCE->__initialize( $argv );
 				PBSysKernel::$_SYS_INSTANCE->__jobDaemonRun();
 
 				Termination::NORMALLY();
@@ -84,6 +90,7 @@
 
 
 				// INFO: Check vailidaty of default error processing module
+				/** @var $errProcObj PBTaskInstance */
 				$errProcObj = NULL;
 				if ( defined( "ERROR_MODULE" ) )
 				{
@@ -100,8 +107,7 @@
 
 				if ( $errProcObj )
 				{
-					$errProcObj->prepareEvent( $e );
-					$errProcObj->event( $e );
+					$errProcObj->execute( $e );
 				}
 				else
 				if ( __THROW_EXCEPTION__ === TRUE )
@@ -129,36 +135,9 @@
 		}
 		// endregion
 
-		// region [ Path Control ]
-		private static $_cacheServicePath	= NULL;
-		private static $_cacheRandomCert	= NULL;
-		private static $_cachedRuntimeAttr	= NULL;
 
-		public static function __imprint_constants() {
-
-			static $initialized = FALSE;
-
-			if($initialized) return;
-
-			PBSysKernel::$_cacheServicePath  = $GLOBALS['servicePath'];
-			PBSysKernel::$_cacheRandomCert   = $GLOBALS['randomCert'];
-			PBSysKernel::$_cachedRuntimeAttr = array(
-				'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
-			);
-		}
-		// endregion
-
-		// region [ System Instance ]
-		private $_entryService		= NULL;
-		private $_entryServiceParam	= NULL;
-		private $_systemId			= NULL;
-		private $_moduleSearchPaths	= array();
-
-		// INFO: Singleton declaration
 		private function __construct() {}
-
-		// INFO: System workflow initialization
-		private function __initialize($argc = 0, $argv = NULL) {
+		private function __initialize( $argv = NULL ) {
 
 			// INFO: Preserve path of system container
 			// DANGER: Make sure that this line will be excuted before __judgeMainService ( "service" will be different )
@@ -166,8 +145,7 @@
 				path( 'root',	 'boot.php' ),
 				path( 'service', 'boot.php' ),
 				path( 'share',	 'boot.php' )
-			];
-			
+			];	
 			$postprocessEnvPaths = [
 				path( 'root',	 'sys.php'),
 				path( 'root',	 'service.php'),
@@ -175,9 +153,6 @@
 				path( 'share',	 'share.php' ),
 				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
 			];
-
-
-
 			foreach ( $preprocessEnvPaths as $path )
 			{
 				if (is_File($path) && is_readable($path))
@@ -187,19 +162,16 @@
 				}
 			}
 
+
+
 			// INFO: Perform service decision and data initialization
-			$this->__judgeMainService($argc, $argv);
+			$this->__judgeMainService( $argv );
 			PBRequest::Request()->__initialize();
 
 
 
 			// INFO: Define runtime constants
 			define('__SERVICE__', $this->_entryService);
-
-
-
-			// INFO: Generate the unique system execution Id
-			$this->_systemId = encode(PBRequest::Request()->rawQuery);
 
 
 
@@ -215,14 +187,17 @@
 				}
 			});
 		}
-
-		public function __judgeMainService($argc = 0, $argv = NULL)
+		
+		
+		private $_entryService		= NULL;
+		private $_entryServiceParam	= NULL;
+		public function __judgeMainService( $argv = NULL )
 		{
 			$service = $attributes = '';
-			$moduleRequest = array();
+			$moduleRequest = [];
 
-			if ( SYS_WORKING_ENV == SYS_ENV_NET )
-			{
+			if ( SYS_WORKING_ENV == SYS_ENV_NET ) {
+			
 				$reqURI		= @"{$_SERVER['REQUEST_URI']}";
 				$request	= empty($reqURI) ? array() : explode('?', $reqURI);
 				$resource	= preg_replace('/\/+/', '/', preg_replace('/^\/*|\/*$/', '', preg_replace('/\\\\/', '/', CAST( @array_shift( $request ), 'string no-trim' ) )));
@@ -242,19 +217,12 @@
 				$service = @array_shift( $resource );
 				$moduleRequest = $resource;
 			}
-			else
-			{
+			else {
+			
 				$service = CAST( @array_shift($argv), 'string' );
 				$moduleRequest = $argv;
 			}
 
-
-
-			if ( strtoupper($service) == 'EVENT' )
-			{
-				$service = '';
-				array_unshift($moduleRequest, 'EVENT');
-			}
 
 
 			$processReq = function( $moduleRequest, $attributes ) {
@@ -285,7 +253,8 @@
 	
 					define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
 					define('__STANDALONE_MODULE__', $module );
-					self::DecideExecMode( $moduleRequest );
+					
+					
 	
 					$GLOBALS['service'] = $module;
 					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -320,7 +289,6 @@
 						$this->_entryService = $service;
 		
 						define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-						self::DecideExecMode( $moduleRequest );
 		
 						$GLOBALS['service'] = $service;
 						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -335,13 +303,13 @@
 
 
 			// INFO: Detect Main Service
-			$serviceName = array_pop( explode( '.', "{$service}" ) );
+			$serviceParts = @explode( '.', "{$service}" );
+			$serviceName = @array_pop( $serviceParts );
 			$state = available("service.{$serviceName}.{$serviceName}", FALSE);
 			if ($state) {
 				$this->_entryService = $serviceName;
 
 				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
-				self::DecideExecMode( $moduleRequest );
 
 				$GLOBALS['service'] = $serviceName;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -372,7 +340,6 @@
 				$this->_entryServiceParam	= $basisChain[$service];
 
 				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-				self::DecideExecMode( $moduleRequest );
 
 				$GLOBALS['service'] = $service;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -400,7 +367,6 @@
 					$this->_entryService = $service;
 
 					define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
-					self::DecideExecMode( $moduleRequest );
 
 
 					$GLOBALS['service'] = $service;
@@ -415,7 +381,6 @@
 					$this->_entryService = $service;
 
 					define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}");
-					self::DecideExecMode( $moduleRequest );
 
 
 					$GLOBALS['service'] = $service;
@@ -430,85 +395,25 @@
 			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: {$reqResource}) !"));
 		}
 
-		private static function DecideExecMode( &$moduleRequest )
-		{
-			if ( strtoupper(@"{$moduleRequest[0]}") == 'EVENT' )
-			{
-				array_shift($moduleRequest);
-				define( 'SERVICE_EXEC_MODE', 'EVENT');
-
-				define( 'EVENT_CHAIN',	TRUE);
-				define( 'SHELL_CHAIN',	FALSE);
-				define( 'CORS_CHAIN',	FALSE);
-				define( 'NORMAL_CHAIN',	FALSE);
-			}
-			else
-			if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
-			{
-				define('SERVICE_EXEC_MODE', 'SHELL');
-
-				define( 'EVENT_CHAIN',	FALSE);
-				define( 'SHELL_CHAIN',	TRUE);
-				define( 'CORS_CHAIN',	FALSE);
-				define( 'NORMAL_CHAIN',	FALSE);
-			}
-			else
-			if ( REQUESTING_METHOD == "OPTIONS" && __ENABLE_CORS_MODE__ )
-			{
-				define('SERVICE_EXEC_MODE', 'CORS');
-
-				define( 'EVENT_CHAIN',	FALSE);
-				define( 'SHELL_CHAIN',	FALSE);
-				define( 'CORS_CHAIN',	TRUE);
-				define( 'NORMAL_CHAIN',	FALSE);
-			}
-			else
-			{
-				define('SERVICE_EXEC_MODE', 'NORMAL');
-
-				define( 'EVENT_CHAIN',	FALSE);
-				define( 'SHELL_CHAIN',	FALSE);
-				define( 'CORS_CHAIN',	FALSE);
-				define( 'NORMAL_CHAIN',	TRUE);
-			}
-		}
-
-		public function __get_id() {
-
-			return $this->_systemId;
-		}
-		// endregion
-
-		// region [ System Workflow Control ]
-		// INFO: In this version of system, there will be only one process instance in the system (main process)
-		private $_processQueue = NULL;
-
+		/** @var PBProcess */
+		private $_process = NULL;
 		private function __forkProcess($service, $moduleRequest, $custInit = NULL) {
-			if ( $this->_processQueue ) return;
-
-
-			$systemIds = divide($this->_systemId);
-			$processId = encode(array($service, uniqid("", TRUE)), $systemIds['extended']);
-			$process = new PBProcess();
-
-			$process->__processId = $processId;
-			$process->__sysAPI = $this;
-
-			$this->_processQueue = $process;
-
-
+			if ( $this->_process ) return;
+			
+			
+			
+			$this->_process = new PBProcess( $this );
 			if ( is_callable($custInit) ) $custInit();
 
 			chdir( __WORKING_ROOT__ );
-			$process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
+			$this->_process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
 		}
-
 		private function __jobDaemonRun() {
-			$result = $this->_processQueue->run();
+			$this->_process->run();
 		}
-		// endregion
-
-		// region [ Module Control ]
+		
+		
+		private $_moduleSearchPaths	= [];
 		public function addModuleSearchPath( $package = "" )
 		{
 			if ( empty( $package ) ) return FALSE;
@@ -520,7 +425,6 @@
 			if ( !is_dir( path( $path ) ) ) return FALSE;
 			$this->_moduleSearchPaths[$hash] = $path;
 		}
-
 		public function removeModuleSearchPath( $package )
 		{
 			if ( empty( $package ) ) return FALSE;
@@ -530,67 +434,18 @@
 
 			unset( $this->_moduleSearchPaths[$hash] );
 		}
-
-
-		/**
-		 * Parse module identifier according to following syntax
-		 * 		 Syntax => leadingModule.subModule#class
-		 * 				=> module#class
-		 *
-		 * @param $moduleIdentifier
-		 *
-		 * @return array|bool
-		 */
-		public static function ParseModuleIdentifier( $moduleIdentifier )
-		{
-			$moduleIdentifier = trim( "{$moduleIdentifier}" );
-			if ( empty($moduleIdentifier) ) return FALSE;
-
-
-
-			$packages	= explode( '.',  "{$moduleIdentifier}" );
-			$packages	= ary_filter( $packages, NULL, FALSE );
-			$module		= array_pop( $packages );
-
-
-
-			$module = explode( '#', $module);
-			if ( count( $module ) > 2 ) return FALSE;
-
-			$class	= trim(@"{$module[1]}");
-			$module	= trim("{$module[0]}");
-			if ( empty( $module ) ) return FALSE;
-
-
-			return array(
-				'package'	=> $packages,
-				'module'	=> $module,
-				'class'		=> $class
-			);
-		}
-
 		public function acquireModule( $identifier, $instParam = NULL ) {
-
 			static $allocCounter = 0;
-			$caller = $this->caller;
-
-			if ( !in_array($caller['class'], array('PBProcess', 'PBSysKernel')) )
-				throw(new Exception("Calling an inaccessible function PBSysKernel::acquireModule()."));
-
-
 
 			$moduleDesc = self::ParseModuleIdentifier( $identifier );
+			if ( $moduleDesc === FALSE ) throw( new Exception( "Given target module identifier has syntax error!" ) );
 
-			if ( $moduleDesc === FALSE )
-				throw( new Exception( "Given target module identifier has syntax error!" ) );
 
-			$package	= implode( '.', $moduleDesc[ 'package' ] );
-			$module		= $moduleDesc[ 'module' ];
-			$class		= empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'class' ];
 
-			$processId	= $caller['object']->id;
-			$processIds = divide( $processId );
-			$moduleId	= encode( array($processId, $package, $module, ++$allocCounter), $processIds['extended'] );
+			$package  = implode( '.', $moduleDesc[ 'package' ] );
+			$module	  = $moduleDesc[ 'module' ];
+			$class	  = empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'class' ];
+			$moduleId = sha1( "{$package}.{$module}.{$class}#{$allocCounter}" . random_bytes( 32 ) . microtime() );
 
 
 
@@ -598,7 +453,7 @@
 
 
 			// INFO: Search path construction
-			$moduleSearchPaths = array();
+			$moduleSearchPaths = [];
 
 			if ( defined( '__SERVICE__' ) )
 				$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
@@ -656,35 +511,43 @@
 
 
 			$invokeModule = "{$class}";
-			$moduleObj	  = new $invokeModule( $instParam );
-			if(!is_subclass_of($moduleObj, 'PBModule'))
-				throw(new Exception("Requested class is not a valid module"));
+			$moduleObj = new $invokeModule( $instParam );
+			if ( !is_a($moduleObj, PBModule::class) ) throw(new Exception("Requested class is not a valid module"));
 
-			$moduleObj->__moduleId = $moduleId;
-
+			$moduleObj->id = $moduleId;
 			return $moduleObj;
 		}
-
-		public function validateChild($childrenId) {
-
-			$childrenId = divide($childrenId);
-			$selfId = $this->id;
-
-			return $selfId['base'] === $childrenId['extended'];
-		}
-		// endregion
-
-		// region [ Process Management API ]
-		/**
-		 * Get the process with specified process id
-		 *
-		 * @param string|null $id the specified process id
-		 *
-		 * @return PBProcess | null the specified PBProcess object
-		 */
-		public static function Process()
+		
+		
+		
+		
+		
+		
+		private static function ParseModuleIdentifier( $moduleIdentifier )
 		{
-			return self::$_SYS_INSTANCE->_processQueue;
+			$moduleIdentifier = trim( "{$moduleIdentifier}" );
+			if ( empty($moduleIdentifier) ) return FALSE;
+
+
+
+			$packages	= explode( '.',  "{$moduleIdentifier}" );
+			$packages	= ary_filter( $packages, NULL, FALSE );
+			$module		= array_pop( $packages );
+
+
+
+			$module = explode( '#', $module);
+			if ( count( $module ) > 2 ) return FALSE;
+
+			$class	= trim(@"{$module[1]}");
+			$module	= trim("{$module[0]}");
+			if ( empty( $module ) ) return FALSE;
+
+
+			return array(
+				'package'	=> $packages,
+				'module'	=> $module,
+				'class'		=> $class
+			);
 		}
-		// endregion
 	}

@@ -231,7 +231,7 @@ SQL
 			while ($counter > 0)
 			{
 				$inst = @$trace[$counter]['object'];
-				if (is_a($inst, 'PBModule')) $module = $inst->class;
+				if ( is_a($inst, PBModule::class) ) $module = $inst->class;
 
 				$counter--;
 			}
