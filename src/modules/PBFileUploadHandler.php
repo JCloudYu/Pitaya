@@ -1,9 +1,4 @@
 <?php
-	/**
-	 ** 1027.BadmintonLa - PBFIleReceiver.php
-	 ** Created by JCloudYu on 2015/11/23 09:48
-	 **/
-	using( 'kernel.core.PBModule' );
 	using( 'sys.process.*' );
 	using( 'sys.net.PBUploadedFile' );
 	using( 'ext.base.misc' );
@@ -69,26 +64,20 @@
 		
 
 
-		private $_status = PBEXECState::NORMAL;
 		private $_fields = [];
+		public function execute( ...$arguments ) {
+		
+			$param = @$arguments[0];
+			$initData = @$arguments[1];
+			
+			
+			
+			if ( PBRequest::Request()->method !== "POST" ) return FALSE;
+			$this->_fields = is_array($initData) ? $initData : [];
+				
 
-
-
-		public function prepare( $moduleRequest )
-		{
-			if ( PBRequest::Request()->method_upper !== "POST" )
-				$this->_status = PBEXECState::INVALID_METHOD;
-
-			$this->_fields = CAST( $moduleRequest, 'array' );
-		}
-
-		public function exec( $param )
-		{
-			if ( $this->_status !== PBEXECState::NORMAL )
-				return FALSE;
 
 			$param = CAST( $param, 'array' );
-
 			$uploadedFiles	= PBRequest::Request()->files;
 			$purgeError		= $this->_purgeError;
 			$storagePath	= $this->_storagePath;

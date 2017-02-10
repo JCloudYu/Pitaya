@@ -1,9 +1,4 @@
 <?php
-	/**
-	 ** 1028.CSMS-BDF - PBOutputCtrl.php
-	 ** Created by JCloudYu on 2015/12/07 15:49
-	 **/
-	using( 'kernel.core.PBModule' );
 	using( 'sys.net.PBHTTP' );
 	using( 'sys.tool.PBHTML' );
 
@@ -31,8 +26,12 @@
 	
 	
 	
-		public function common( $param ) {
+		public function execute( ...$arguments ) {
 			if ( IS_CLI_ENV ) return;
+			
+			
+			
+			$param = @$arguments[0];
 			
 			
 		
@@ -62,9 +61,9 @@
 	}
 	class PBHtmlOutput extends PBHttpOutputCtrl {
 		
-		public function common( $param ) {
+		public function execute( ...$arguments ) {
 		
-			$outputCtnt = ($param === NULL) ? self::$_outputData : $param;	
+			$outputCtnt = (@$arguments[0] === NULL) ? self::$_outputData : $arguments[0];	
 		
 		
 			$js = [
@@ -156,7 +155,7 @@
 
 
 			PBHttpOutputCtrl::ContentType( "text/html" );
-			parent::common( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>" );
+			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>" );
 		}
 		
 		// region [ Private Properties ]
@@ -385,10 +384,10 @@
 		const STATUS_NORMAL		=  0;
 		const STATUS_ERROR		= -1;
 		
-		public function common( $param ) {
-			$result = self::__PROCESS_OUTPUT( ( $param === NULL ) ? self::$_outputData : $param );
+		public function execute( ...$arguments ) {
+			$result = self::__PROCESS_OUTPUT( ( @$arguments[0] === NULL ) ? self::$_outputData : $arguments[0] );
 			self::ContentType( 'application/json' );
-			parent::common( @json_encode($result) );
+			parent::execute( @json_encode($result) );
 		}
 		
 		private static function __PROCESS_OUTPUT( $param ) {
@@ -417,10 +416,10 @@
 		}
 	}
 	class PBJSONOutput extends PBHttpOutputCtrl {
-		public function common( $param ) {
+		public function execute( ...$arguments ) {
 			PBHttpOutputCtrl::ContentType( "application/json" );
-			parent::common(json_encode(
-				($param === NULL) ? self::$_outputData : $param
+			parent::execute(json_encode(
+				(@$arguments[0] === NULL) ? self::$_outputData : $arguments[0]
 			));
 		}
 	}

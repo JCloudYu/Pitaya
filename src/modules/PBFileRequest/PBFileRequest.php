@@ -1,9 +1,4 @@
 <?php
-/**
- * 1003.IMSIS - file.php
- * Created by JCloudYu on 2014/07/08 18:59
- */ 
-	using('kernel.core.PBModule');
 	using('sys.tool.PBStreaming');
 
 	class PBFileRequest extends PBModule
@@ -54,12 +49,18 @@
 
 
 		public function prepare($moduleRequest) {
-			$this->_targetPath = (is_array($moduleRequest)) ? implode('/', $moduleRequest) : "{$moduleRequest}";
+			
 		}
 
-		public function exec()
+		public function execute( ...$arguments )
 		{
+			$initData = @$arguments[1];
 			$CONSTANT = PBConstant::Constant();
+			
+			$this->_targetPath = (is_array($initData)) ? implode('/', $initData) : "{$initData}";
+		
+		
+		
 
 			$extensionMap = self::$_acceptableExt;
 			ary_filter( $this->_custExtensionMap, function( $item, $idx ) use( &$extensionMap ) {

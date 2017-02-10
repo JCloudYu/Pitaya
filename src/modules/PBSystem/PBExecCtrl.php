@@ -1,48 +1,28 @@
 <?php
-	/**
-	 ** 0001.pitaya - PBEvtCtrl.php
-	 ** Created by JCloudYu on 2015/12/04 18:28
-	 **/
-	using( 'kernel.core.PBModule' );
-
 	class PBBasisChain extends PBModule
 	{
 		private $_chainInfo = array();
 		public function __construct( $chainInfo ) {
-			parent::__construct();
-			$this->_chainInfo = is_array($chainInfo) ? $chainInfo : array();
+			$this->_chainInfo = is_array($chainInfo) ? $chainInfo : [];
 		}
-
-		public function prepare( $moduleRequest ) { $this->__buildChain($moduleRequest); }
-		public function prepareShell( $moduleRequest ) { $this->__buildChain($moduleRequest);  }
-		public function prepareEvent( $moduleRequest ) { $this->__buildChain($moduleRequest);  }
-
-		private function __buildChain( $request )
-		{
+		
+		public function execute( ...$arguments ) {
+			$chainData	= @$arguments[0];
+			$request	= @$arguments[1];
 			foreach ( $this->_chainInfo as $chainModule )
-				$this->boot[] = array( 'module' => $chainModule, 'request' => $request );
+				$this->chain[] = [ 'module' => $chainModule, 'request' => $request ];
+				
+			return $chainData;
 		}
 	}
 
 	class PBVectorChain extends PBModule
 	{
-		public function prepareEvent( $moduleRequest )
+		public function execute( ...$arguments )
 		{
-			if ( !CLI_ENV ) return;
-
-			$this->prepareShell( $moduleRequest );
-		}
-		public function prepareShell( $moduleRequest )
-		{
-			$moduleName = "working." . __STANDALONE_MODULE__;
-			$module = PBProcess::Module( $moduleName );
-
-			if ( !$module->auth() )
-			{
-				PBStdIO::STDERR( "Access Denied! This module cannot be executed!" );
-				return;
-			}
-
-			$this->boot[] = array( 'module' => $module, 'request' => $moduleRequest );
+			$moduleRequest = @$arguments[1];
+		
+			$module			= PBProcess::Module( "working." . __STANDALONE_MODULE__ );
+			$this->chain[]	= [ 'module' => $module, 'request' => $moduleRequest ];
 		}
 	}

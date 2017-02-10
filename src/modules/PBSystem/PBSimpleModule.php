@@ -1,28 +1,9 @@
 <?php
-	/**
-	 ** 0001.pitaya - PBSimpleModule.php
-	 ** Created by JCloudYu on 2015/12/04 19:21
-	 **/
-	using( 'kernel.core.PBModule' );
-
-	class PBKernelVersion extends PBModule
-	{
-		private $_request = NULL;
-
-		public function prepare( $moduleRequest ) {
-			$request = is_array( $moduleRequest ) ? $moduleRequest : PBRequest::Request()->parseQuery()->query['resource'];
-			$this->prepareShell( $request );
-		}
-
-		public function prepareShell( $moduleRequest ) {
-			$this->_request = $moduleRequest;
-		}
-
-
-
-		public function exec( $param ) { return $this->shell( $param ); }
-		public function shell( $param ) {
-			$reqVer = CAST( @array_shift( $this->_request ), 'string upper-case' );
+	class PBKernelVersion extends PBModule {
+	
+		public function execute( ...$arguments ) {
+			$request = IS_HTTP_ENV ? PBRequest::Request()->parseQuery()->query['resource'] : @$arguments[1]; 
+			$reqVer = CAST( @array_shift( $request ), 'string upper-case' );
 			$verMap = array(
 				"MAJOR"		=> PITAYA_VERSION_MAJOR,
 				"MINOR"		=> PITAYA_VERSION_MINOR,

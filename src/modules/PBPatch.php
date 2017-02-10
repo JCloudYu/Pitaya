@@ -1,9 +1,4 @@
 <?php
-/**
- * 0009.sampee - PBPatch.php
- * Created by JCloudYu on 2014/06/15 22:27
- */
-	using('kernel.core.PBModule');
 	using('ext.base.string');
 
 	class PBPatch extends PBModule
@@ -12,17 +7,12 @@
 		public function __set_patchDir($value) { $this->_patchDir = $value; }
 
 
-		private $_targetVersion = NULL;
 
-
-		public function prepare($moduleRequest) { $this->prepareShell($moduleRequest); }
-		public function exec($param)			{ return $this->shell($param); }
-
-		public function prepareShell($moduleRequest) { $this->_targetVersion = $moduleRequest; }
-		public function shell($param)
-		{
-			if ($this->_targetVersion !== NULL)
-				$param = $this->_targetVersion;
+		public function execute( ...$arguments ) {
+		
+			$param = ( @$arguments[1] !== NULL ) ? $arguments[1] : @$arguments[0];
+			
+			
 
 			if (ParseVersion("{$param}") === NULL)
 			{
