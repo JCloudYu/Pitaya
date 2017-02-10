@@ -142,8 +142,6 @@ class PBProcess extends PBObject
 		PBLList::HEAD($this->_bootSequence);
 		do
 		{
-		DEBUG::VarDump($this->_bootSequence->data);
-		DEBUG::VarDump(array_keys($this->_attachedModules));
 			$module  = @$this->_attachedModules[@$this->_bootSequence->data[ 'id' ]];
 			$dataInput = $module->execute( $dataInput, @$this->_bootSequence->data[ 'request' ] );
 			$this->_appendBootSequence( $module->bootChain );
