@@ -48,7 +48,7 @@
 				// INFO: Keep booting
 				PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
 				PBSysKernel::$_SYS_INSTANCE->__initialize( $argv );
-				PBSysKernel::$_SYS_INSTANCE->__jobDaemonRun();
+				PBSysKernel::$_SYS_INSTANCE->_process->run();
 
 				Termination::NORMALLY();
 			}
@@ -407,9 +407,6 @@
 
 			chdir( __WORKING_ROOT__ );
 			$this->_process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
-		}
-		private function __jobDaemonRun() {
-			$this->_process->run();
 		}
 		
 		
