@@ -1,9 +1,4 @@
 <?php
-	/**
-	 ** Pitaya - PBTaskWorker.php
-	 ** Created by JCloudYu on 2015/11/20 09:55
-	 **/
-	using( 'kernel.core.PBModule' );
 	using( 'sys.tool.PBTaskWorker.PBTaskKernel' );
 
 	class PBTaskWorker extends PBObject
