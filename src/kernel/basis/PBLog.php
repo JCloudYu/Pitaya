@@ -1,11 +1,4 @@
 <?php
-/**
- * 0001.pitaya - PBLog.php
- * Created by JCloudYu on 2014/07/04 17:28
- */
-
-	using('ext.net.ip');
-
 	final class PBLog
 	{
 		const LOG_INFO_TIME		= 1;
