@@ -8,78 +8,54 @@
 	 * [STACK] TOP  ▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌▌ BOT
 	 */
 
-	using('kernel.basis.PBObject');
+	class PBLinkedList extends PBObject {
 	
-	// INFO: Multi-directional linked-list
-	class PBLinkedList extends PBObject
-	{
-		private $_head;
-		private $_tail;
-		private $_curr;
+		private $_head = NULL, $_tail = NULL, $_curr = NULL;
+		private $_counter = 0;
 	
-		private $_counter;
+		private function __construct() {}
 	
-		private function __construct() {
 	
-			$this->_head = $this->_tail = $this->_curr = NULL;
-			$this->_counter = 0;
-		}
 	
 		public function &__get_data() {
-	
-			if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return NULL;
+			if ( $this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL ) return NULL;
 			return $this->_curr->_data;
 		}
-	
 		public function __get_id() {
-	
-			if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return NULL;
+			if ( $this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL ) return NULL;
 			return $this->_curr->_id;
 		}
-	
 		public function __get_length() {
-	
-			if($this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL) return 0;
+			if ( $this->_head === NULL || $this->_tail === NULL || $this->_curr === NULL ) return 0;
 			return $this->_counter;
 		}
 	
-		public static function GENERATE() {
 	
+	
+		public static function GENERATE() {
 			return new PBLinkedList();
 		}
-	
 		public static function NEXT(&$list) {
-	
-			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
-	
-			if($list->_curr->_next)
-				$list->_curr = $list->_curr->_next;
-			else
-				return FALSE;
-	
+			if ( !is_a($list, 'PBLinkedList') || $list->_curr === NULL ) return FALSE;
+			if ( empty($list->_curr->_next) ) return FALSE;
+			
+			$list->_curr = $list->_curr->_next;
 			return TRUE;
 		}
-	
 		public static function PREV(&$list) {
-	
-			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
-	
-			if($list->_curr->_prev)
-				$list->_curr = $list->_curr->_prev;
-			else
-				return FALSE;
-	
+			if ( !is_a($list, 'PBLinkedList') || $list->_curr === NULL ) return FALSE;
+			if ( empty($list->_curr->_prev) ) return FALSE;
+			
+			$list->_curr = $list->_curr->_prev;
 			return TRUE;
 		}
-	
 		public static function PUSH(&$list, $data, $identifier = NULL) {
-	
-			if(!is_a($list, 'PBLinkedList')) return FALSE;
-			if(!is_string($identifier) && !is_int($identifier)) $identifier = NULL;
-	
-			$item = PBLinkedList::__genItem($data, $identifier);
-	
-			if($list->_tail === NULL || $list->_head === NULL || $list->_curr === NULL)
+			if ( !is_a($list, 'PBLinkedList') ) return FALSE;
+			if ( !is_string($identifier) && !is_int($identifier) ) $identifier = NULL;
+
+
+			$item = PBLinkedList::__genItem($data, $identifier);	
+			if ( $list->_tail === NULL || $list->_head === NULL || $list->_curr === NULL )
 			{
 				$list->_head = $item;
 				$list->_tail = $item;
@@ -101,15 +77,13 @@
 			$list->_counter++;
 			return TRUE;
 		}
-	
 		public static function POP(&$list) {
+			if ( !is_a($list, 'PBLinkedList') || $list->_curr === NULL ) return FALSE;
 	
-			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
 	
 			// INFO: Buffer current tail
 			$item = $list->_tail;
-	
-			if($list->_head === $list->_tail)
+			if ( $list->_head === $list->_tail )
 			{
 				$list->_head = NULL;
 				$list->_tail = NULL;
@@ -132,11 +106,10 @@
 			$list->_counter--;
 	
 			// INFO: Prepare the returning data and unset the popped item
-			$rt = array('data' => $item->_data, 'id' => $item->_id);
+			$rt = [ 'data' => $item->_data, 'id' => $item->_id ];
 			unset($item);
 			return $rt;
 		}
-	
 		public static function ENQUEUE(&$list, $data, $identifier = NULL) {
 	
 			if(!is_a($list, 'PBLinkedList')) return FALSE;
@@ -166,7 +139,6 @@
 			$list->_counter++;
 			return TRUE;
 		}
-	
 		public static function DEQUEUE(&$list) {
 	
 			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
@@ -200,7 +172,6 @@
 			unset($item);
 			return $rt;
 		}
-	
 		public static function BEFORE(&$list, $data, $identifier = NULL) {
 	
 			if(!is_a($list, 'PBLinkedList')) return FALSE;
@@ -234,7 +205,6 @@
 	
 			return TRUE;
 		}
-	
 		public static function AFTER(&$list, $data, $identifier = NULL) {
 	
 			if(!is_a($list, 'PBLinkedList')) return FALSE;
@@ -267,7 +237,6 @@
 	
 			return TRUE;
 		}
-	
 		public static function SET(&$list, $data, $identifier = NULL) {
 	
 			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
@@ -279,7 +248,6 @@
 	
 			return TRUE;
 		}
-	
 		public static function REMOVE(&$list) {
 	
 			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
@@ -319,12 +287,10 @@
 	//		unset($item);
 			return $rt;
 		}
-	
 		public static function DELETE(&$list) {
 	
 			return PBLinkedList::REMOVE($list);
 		}
-	
 		public static function HEAD(&$list) {
 	
 			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
@@ -333,7 +299,6 @@
 	
 			return TRUE;
 		}
-	
 		public static function TAIL(&$list) {
 	
 			if(!is_a($list, 'PBLinkedList') ||  $list->_curr === NULL) return FALSE;
@@ -363,7 +328,6 @@
 	
 			return $status;
 		}
-	
 		public static function MOVE(&$list, $index) {
 	
 			if(!is_a($list, 'PBLinkedList') || $list->_curr === NULL) return FALSE;
@@ -383,7 +347,9 @@
 	
 			return TRUE;
 		}
-	
+		
+		
+		
 		private static function __genItem($data, $id) {
 	
 			$obj = (object)NULL;
