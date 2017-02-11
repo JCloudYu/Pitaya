@@ -200,15 +200,25 @@
 			}
 			return $this->_filesCache;
 		}
-		
-		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
-		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
-		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
-		public function __get_server()		{ return $this->_incomingRecord['environment']['server']; }
-		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
-		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
-		public function __get_rawData()		{
-
+		public function __get_method() {
+			return $this->_incomingRecord['request']['method'];
+		}
+		public function __get_env() {
+			return $this->_incomingRecord['environment']['env'];
+		}
+		public function __get_attr() {
+			return $this->_incomingRecord['environment']['attr'];
+		}
+		public function __get_server() {
+			return $this->_incomingRecord['environment']['server'];
+		}
+		public function __get_baseQuery() {
+			return $this->_incomingRecord['request']['query'];
+		}
+		public function __get_rawQuery() {
+			return $this->_incomingRecord['rawQuery'];
+		}
+		public function __get_rawData() {
 			$stream = $this->rawDataStream;
 			$data = '';
 			while ( !feof($stream) )
