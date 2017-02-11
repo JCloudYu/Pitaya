@@ -407,7 +407,7 @@
 			$func = ($queryFunction === NULL) ? function($targetData) {
 				$data = PBRequest::ParseRequestQuery( $targetData);
 				return array('data' => $data, 'variable' => $data['attribute']['variable'], 'flag' => $data['attribute']['flag']);
-			} : $dataFunction;
+			} : $queryFunction;
 
 			$result = $func($this->_incomingRecord['request']['query']);
 			$this->_parsedQuery = @$result['data'];
