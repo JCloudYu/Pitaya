@@ -1,15 +1,10 @@
 <?php
-/**
- * 1017.NeighborApp - PBFileCache.php
- * Created by JCloudYu on 2015/02/20 13:47
- */
 	using('kernel.prototype.PBCachePrototype');
 
 	final class PBFileCache extends PBCachePrototype
 	{
 		private static $_storages		= array();
 		private static $_defaultStorage	= NULL;
-
 		public static function Storage( $storageKey = '', $storagePath = NULL )
 		{
 			$nArgs = func_num_args();
@@ -55,11 +50,12 @@
 
 		private $_fileStorageDir = NULL;
 		private function __construct( $storageDir ) { $this->_fileStorageDir = $storageDir; }
-
 		public function uniqueName( $prefix = "" ) {
 			@unlink( $fileName = tempnam($this->_fileStorageDir, $prefix) );
 			return $fileName;
 		}
+
+
 
 		public function store( $token, $data )
 		{
@@ -93,7 +89,6 @@
 
 			return TRUE;
 		}
-
 		public function fetch( $token, &$fileTime = NULL )
 		{
 			$cacheFile	= "{$this->_fileStorageDir}/{$token}";
@@ -118,7 +113,6 @@
 
 			return $data;
 		}
-
 		public function destroy( $token )
 		{
 			$cacheFile = "{$this->_fileStorageDir}/{$token}";
