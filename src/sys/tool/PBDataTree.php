@@ -1,19 +1,15 @@
 <?php
-/*
- * File: PBDataTree.php
- * Created by JCloudYu.
- * DateTime: 2014/04/05
- */
-	class PBDataTree implements ArrayAccess
-	{
+	class PBDataTree implements ArrayAccess {
+	
 		private $_storage		 = NULL;
 		private $_forceOverwrite = TRUE;
-
 		public function __construct($default = array(), $forceOverwrite = TRUE)
 		{
 			$this->_storage = (is_array($default)) ? $default : array();
 			$this->_forceOverwrite = empty($forceOverwrite) ? FALSE : TRUE;
 		}
+
+
 
 		public function &get($offset = NULL)
 		{
@@ -23,7 +19,6 @@
 			$offsets = explode('.', $offset);
 			return $this->_travel($offsets);
 		}
-
 		public function set($offset, $value)
 		{
 			if (is_a($value, 'PBDataTree'))
@@ -55,7 +50,6 @@
 			else
 				$target[$finalOffset] = $value;
 		}
-
 		public function clear($offset)
 		{
 			if (empty($offset))
@@ -80,7 +74,6 @@
 
 			return TRUE;
 		}
-
 		public function valid($offset)
 		{
 			if (empty($offset)) return TRUE;
@@ -97,7 +90,6 @@
 			}
 			return TRUE;
 		}
-
 		public function merge($offset, $ref, $deepMerge = FALSE, $forceMerge = TRUE)
 		{
 			if (is_a($ref, 'PBDataTree'))
@@ -142,7 +134,7 @@
 
 			return TRUE;
 		}
-
+		
 		private static function _merge($target, $ref, $deepMerge = FALSE, $forceMerge = TRUE)
 		{
 			$merged = $target;
@@ -169,7 +161,6 @@
 			}
 			return $merged;
 		}
-
 		private function &_travel($offsets)
 		{
 			if (empty($offsets)) return $this->_storage;
@@ -203,13 +194,8 @@
 
 
 
-
-
-
 		public function offsetGet($offset) { return $this->get($offset); }
 		public function offsetSet($offset, $value) { $this->set($offset, $value); }
 		public function offsetUnset($offset) { $this->clear($offset); }
 		public function offsetExists($offset) { return $this->valid($offset); }
 	}
-
-	class_alias( 'PBDataTree', 'PBStorage' ); // DEPRECATED: PBStorage will be deprecated in v2.0.0
