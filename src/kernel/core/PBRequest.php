@@ -219,12 +219,27 @@
 
 			return $data;
 		}
-		public function __get_rawDataStream() { fseek($this->_incomingRecord['rawDataStream'], 0); return $this->_incomingRecord['rawDataStream']; }
-		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
-		public function __get_command()     { return $this->_incomingRecord['command']; }
-		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
-		public function __get_attachAnchor() { static $anchor = NULL; if ( $anchor === NULL ) $anchor = $this->attachAnchor(); return $anchor; }
-		public function __get_domain() { return @"{$this->server[ 'SERVER_NAME' ]}"; }
+		public function __get_rawDataStream() {
+			fseek($this->_incomingRecord['rawDataStream'], 0);
+			return $this->_incomingRecord['rawDataStream'];
+		}
+		public function __get_argv() {
+			return $this->_incomingRecord['command']['argv'];
+		}
+		public function __get_command() {
+			return $this->_incomingRecord['command'];
+		}
+		public function __get_attachLevel() {
+			return $this->_incomingRecord['environment']['attachment']['level'];
+		}
+		public function __get_attachAnchor() {
+			static $anchor = NULL;
+			if ( $anchor !== NULL ) return $anchor;
+			return ($anchor = $this->attachAnchor());
+		}
+		public function __get_domain() {
+			return empty($this->server[ 'HTTP_HOST' ]) ? @"{$this->server[ 'SERVER_NAME' ]}" : @"{$this->server[ 'HTTP_HOST' ]}";
+		}
 		public function __get_httpProtocol() {
 			return $this->is_ssl() ? 'https' : 'http';
 		}
