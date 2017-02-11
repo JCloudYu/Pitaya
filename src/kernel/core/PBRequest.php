@@ -77,9 +77,8 @@
 		}
 		// endregion
 
-		// region [ Static data parsing ]
-		private function __parseLocale($localeInfo = '')
-		{
+		// region [ Getters / Setters ]
+		private function __parseLocale($localeInfo = '') {
 			$userLocales = explode(',', $localeInfo);
 
 			$localeInfo = array();
@@ -121,14 +120,9 @@
 				if (@$a['quality'] == $b['quality']) return 0;
 				return 1;	// (@$a['quality'] < $b['quality'])
 			});
-
 			return $localeInfo;
 		}
-		// endregion
-
-		// region [ Getters / Setters ]
-		public function __get_localePrefer()
-		{
+		public function __get_localePrefer() {
 			static $localeInfo = NULL;
 
 			if (!empty($localeInfo)) return $localeInfo;
