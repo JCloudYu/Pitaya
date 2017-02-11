@@ -202,8 +202,6 @@
 		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
 		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
 		public function __get_server()		{ return $this->_incomingRecord['environment']['server']; }
-		public function __get_cookie()		{ return $this->_incomingRecord['environment']['cookie']; }
-		public function __get_session()		{ return $this->_incomingRecord['environment']['session']; }
 		public function __get_baseQuery()	{ return $this->_incomingRecord['request']['query']; }
 		public function __get_rawQuery()	{ return $this->_incomingRecord['rawQuery']; }
 		public function __get_rawData()		{
@@ -220,12 +218,10 @@
 		}
 		public function __get_rawDataStream() { fseek($this->_incomingRecord['rawDataStream'], 0); return $this->_incomingRecord['rawDataStream']; }
 		public function __get_argv()        { return $this->_incomingRecord['command']['argv']; }
-		public function __get_argc()        { return $this->_incomingRecord['command']['argc']; }
 		public function __get_command()     { return $this->_incomingRecord['command']; }
 		public function __get_attachLevel() { return $this->_incomingRecord['environment']['attachment']['level']; }
 		public function __get_attachAnchor() { static $anchor = NULL; if ( $anchor === NULL ) $anchor = $this->attachAnchor(); return $anchor; }
 		public function __get_domain() { return @"{$this->server[ 'SERVER_NAME' ]}"; }
-		public function __get_httpHost() { return  @"{$this->server[ 'HTTP_HOST' ]}"; }
 		public function __get_httpProtocol() {
 			return $this->is_ssl() ? 'https' : 'http';
 		}
@@ -233,22 +229,6 @@
 			return "{$this->httpProtocol}://{$this->httpHost}";
 		}
 		public function __get_ssl() { return $this->is_ssl(); }
-		public function __get_remoteIP() { return @$this->_incomingRecord['environment']['server']['REMOTE_ADDR']; }
-		public function __get_nativeGet(){
-			return $this->_incomingRecord['request']['get'];
-		}
-		public function __get_nativePost(){
-			return $this->_incomingRecord['request']['post'];
-		}
-		public function __get_nativeFiles(){
-			return $this->_incomingRecord['request']['files'];
-		}
-		public function __get_nativeEnv(){
-			return $this->_incomingRecord['environment']['env'];
-		}
-		public function __get_nativeServer(){
-			return $this->_incomingRecord['environment']['server'];
-		}
 		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
 		public function __get_requestTime()
 		{
@@ -776,6 +756,73 @@
 				$header_name = implode( '-', ary_filter( $header_name, function( $word ){ return ucfirst($word); } ) );
 				$_incomingHeaders[ $header_name ] = $val;
 			}
+		// region [ Deprecated ]
+		public function __get_all() {
+			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord;
+		}
+		public function __get_method_upper(){
+			DEPRECATION_WARNING( "PBRequest::method_upper property is marked as deprecated and will be removed in the following versions soon!" );
+			return strtoupper( "{$this->_incomingRecord['request']['method']}" );
+		}
+		public function __get_method_lower(){
+			DEPRECATION_WARNING( "PBRequest::method_lower property is marked as deprecated and will be removed in the following versions soon!" );
+			return strtolower( "{$this->_incomingRecord['request']['method']}" );
+		}
+		public function __get_request() {
+			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['request'];
+		}
+		public function __get_cookie() {
+			DEPRECATION_WARNING( "PBRequest::cookie property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['environment']['cookie'];
+		}
+		public function __get_session() {
+			DEPRECATION_WARNING( "PBRequest::session property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['environment']['session'];
+		}
+		public function __get_argc() {
+			DEPRECATION_WARNING( "PBRequest::argc property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['command']['argc'];
+		}	
+		public function __get_httpHost() {
+			DEPRECATION_WARNING( "PBRequest::httpHost property is marked as deprecated and will be removed in the following versions soon!" );
+			return  @"{$this->server[ 'HTTP_HOST' ]}";
+		}
+		public function __get_remoteIP() {
+			DEPRECATION_WARNING( "PBRequest::remoteIP property is marked as deprecated and will be removed in the following versions soon!" );
+			return @$this->_incomingRecord['environment']['server']['REMOTE_ADDR'];
+		}
+		public function __get_nativeGet(){
+			DEPRECATION_WARNING( "PBRequest::nativeGet property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['request']['get'];
+		}
+		public function __get_nativePost(){
+			DEPRECATION_WARNING( "PBRequest::nativePost property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['request']['post'];
+		}
+		public function __get_nativeFiles(){
+			DEPRECATION_WARNING( "PBRequest::nativeFiles property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['request']['files'];
+		}
+		public function __get_nativeEnv(){
+			DEPRECATION_WARNING( "PBRequest::nativeEnv property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['environment']['env'];
+		}
+		public function __get_nativeServer(){
+			DEPRECATION_WARNING( "PBRequest::nativeServer property is marked as deprecated and will be removed in the following versions soon!" );
+			return $this->_incomingRecord['environment']['server'];
+		}
+		
+		public function post(...$args) {
+			DEPRECATION_WARNING( "PBRequest::post method is marked as deprecated and will be removed in the following versions soon!" );
+			$args[] = 'post';
+			return $this->data(...$args);
+		}
+		public function get(...$args) {
+			DEPRECATION_WARNING( "PBRequest::get method is marked as deprecated and will be removed in the following versions soon!" );
+			$args[] = 'get';
+			return $this->data(...$args);
 		}
 		// endregion
 	}
