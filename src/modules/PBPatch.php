@@ -16,7 +16,7 @@
 
 			if (ParseVersion("{$param}") === NULL)
 			{
-				if ( SYS_WORKING_ENV == SYS_ENV_CLI )
+				if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
 					PBStdIO::STDERR("Given parameter is not a valid version format! ({$param})");
 
 				PBLog::ERRLog("Given parameter is not a valid version format!");
@@ -29,7 +29,7 @@
 			{
 				if ( !is_dir($this->_patchDir) )
 				{
-					if ( SYS_WORKING_ENV == SYS_ENV_CLI )
+					if ( SYS_EXEC_ENV == EXEC_ENV_CLI )
 						PBStdIO::STDERR("Patch directory is not a valid directory! ({$this->_patchDir})");
 
 					PBLog::ERRLog("Patch directory is not a valid directory!");

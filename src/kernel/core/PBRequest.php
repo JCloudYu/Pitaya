@@ -30,7 +30,7 @@
 		
 		
 			if ( $_initialized ) return; $_initialized = TRUE;
-			if ( SYS_WORKING_ENV == SYS_ENV_CLI) {
+			if ( SYS_EXEC_ENV == EXEC_ENV_CLI) {
 				$this->_parsedQuery = $this->_parsedData = [];
 			}
 

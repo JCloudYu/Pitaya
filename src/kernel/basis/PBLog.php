@@ -136,7 +136,7 @@
 				'timestamp' => date("Y-m-d G:i:s", $curTime),
 				'service'	=> (!defined('__SERVICE__') ? 'Pitaya' : __SERVICE__),
 				'module'	=> $module,
-				'route'		=> (SYS_WORKING_ENV === SYS_ENV_CLI) ? 'CLI' : 'NET',
+				'route'		=> (SYS_EXEC_ENV === EXEC_ENV_CLI) ? 'CLI' : 'NET',
 				'position'	=> "{$trace[0]['file']}:{$trace[0]['line']}"
 			);
 		}
