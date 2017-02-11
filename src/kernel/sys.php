@@ -7,7 +7,6 @@
 	
 		// region [ Boot Related ]
 		private static $_cacheServicePath	= NULL;
-		private static $_cacheRandomCert	= NULL;
 		private static $_cachedRuntimeAttr	= NULL;
 
 		public static function __imprint_constants() {
@@ -442,7 +441,7 @@
 			$package  = implode( '.', $moduleDesc[ 'package' ] );
 			$module	  = $moduleDesc[ 'module' ];
 			$class	  = empty($moduleDesc[ 'class' ]) ? $module : $moduleDesc[ 'class' ];
-			$moduleId = sha1( "{$package}.{$module}.{$class}#{$allocCounter}" . random_bytes( 32 ) . microtime() );
+			$moduleId = sha1( "{$package}.{$module}.{$class}#{$allocCounter}" . microtime() );
 
 
 
