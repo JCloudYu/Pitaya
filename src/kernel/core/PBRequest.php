@@ -69,19 +69,6 @@
 
 
 
-			if ( KEEP_PHP_ENVIRONMENTAL_VARIABLES == FALSE )
-			{
-				// INFO: GET information is not kept since it may contains error parsed parameters
-				// INFO: This means that the main module have to parse its own parameters from request
-				unset($_GET); 		unset($HTTP_GET_VARS);
-				unset($_POST); 		unset($HTTP_POST_VARS);
-				unset($_FILES);		unset($HTTP_POST_FILES);
-				unset($_ENV); 		unset($HTTP_ENV_VARS);
-				unset($_SERVER);	unset($HTTP_SERVER_VARS);
-				unset($_REQUEST);
-			}
-
-
 			unset($GLOBALS['rawRequest']);
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
