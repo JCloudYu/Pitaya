@@ -14,11 +14,11 @@
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
 		public static function VarDumpParent() {
 
-			echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET), TRUE);
+			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
 		}
 		public static function VarDump() {
 
-			echo self::VDump(func_get_args(), (SYS_WORKING_ENV == SYS_ENV_NET));
+			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP));
 		}
 		public static function VarDumpParentString() {
 
