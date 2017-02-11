@@ -21,6 +21,16 @@ The following files and apis are maked as deprecated and will be removed soon!
 - [prop:get] PBRequest::method_upper
 - [prop:get] PBRequest::method_lower
 - [prop:get] PBRequest::request
+- [prop:get] PBRequest::cookie
+- [prop:get] PBRequest::session
+- [prop:get] PBRequset::argc
+- [prop:get] PBRequest::httpHost
+- [prop:get] PBRequest::remoteIP
+- [prop:get] PBRequest::nativeGet
+- [prop:get] PBRequest::nativePost
+- [prop:get] PBRequest::nativeFiles
+- [prop:get] PBRequest::nativeEnv
+- [prop:get] PBRequest::nativeServer
 
 #### sys.net.PBHTTP ####
 - [func] PBHTTP::GetStatusString
