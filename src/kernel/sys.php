@@ -89,7 +89,7 @@
 
 
 				// INFO: Check vailidaty of default error processing module
-				/** @var $errProcObj PBTaskInstance */
+				/** @var PBModule */
 				$errProcObj = NULL;
 				if ( defined( "ERROR_MODULE" ) )
 				{
