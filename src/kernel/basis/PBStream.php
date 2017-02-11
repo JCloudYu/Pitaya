@@ -1,13 +1,11 @@
 <?php
-/**
- * 1017.NeighborApp - PBStream.php
- * Created by JCloudYu on 2015/02/05 20:02
- */
-	final class PBStream extends PBObject
-	{
+	final class PBStream extends PBObject {
+	
 		private $_pipes = array();
 		public function __construct( $resource = NULL ) { $this->tee( $resource ); }
-
+		
+		
+		
 		public function tee( $resource )
 		{
 			if ( $resource === NULL ) return;
@@ -35,7 +33,6 @@
 
 			return $this;
 		}
-
 		public function pop( $close = FALSE )
 		{
 			$stream = @array_pop($this->_pipes);
@@ -50,7 +47,6 @@
 
 			return $stream;
 		}
-
 		public function shift( $close = FALSE )
 		{
 			$stream = @array_shift($this->_pipes);
@@ -65,7 +61,6 @@
 
 			return $stream;
 		}
-
 		public function write( $string, $length = NULL )
 		{
 			foreach ( $this->_pipes as $handle )
@@ -80,7 +75,6 @@
 
 			return $this;
 		}
-
 		public function flush()
 		{
 			foreach ( $this->_pipes as $handle )
@@ -91,18 +85,14 @@
 
 			return $this;
 		}
-
-
-		// region [ Properties ]
+		
 		public function __get_numBranches()
 		{
 			return count($this->_pipes);
 		}
-		// endregion
-
-
-
-		// region [ Private Methods ]
+		
+		
+		
 		private function _attachStream( PBStream $resource )
 		{
 			foreach ( $resource->_pipes as $handle )
@@ -112,19 +102,16 @@
 			}
 
 		}
-
 		private function _attachPath( $path )
 		{
 			$handle = @fopen($path, $mode);
 			if ( $handle ) $this->_pipes[] = $handle;
 		}
-
 		private function _attachResource( $resource )
 		{
 			if ( get_resource_type( $resource ) != "stream" ) return;
 			$this->_pipes[] = $resource;
 		}
-
 		private function _purgePipes()
 		{
 			$newPipes = array();
@@ -138,21 +125,21 @@
 			$this->_pipes = $newPipes;
 			unset( $old );
 		}
-		// endregion
 
 
 
 
 
 
-		// region [ Static APIs ]
+		/** @var PBStream */
 		private static $_OUT_STREAM = NULL;
 		public static function STDOUT()
 		{
 			if ( self::$_OUT_STREAM ) return self::$_OUT_STREAM;
 			return ( self::$_OUT_STREAM = new PBStream( STDOUT ) );
 		}
-
+		
+		/** @var PBStream */
 		private static $_IN_STREAM = NULL;
 		public static function STDIN()
 		{
@@ -160,14 +147,13 @@
 			return ( self::$_IN_STREAM = new PBStream( STDIN ) );
 		}
 
-
+		/** @var PBStream */
 		private static $_ERR_STREAM = NULL;
 		public static function STDERR()
 		{
 			if ( self::$_ERR_STREAM ) return self::$_ERR_STREAM;
 			return ( self::$_ERR_STREAM = new PBStream( STDERR ) );
 		}
-
 
 		public static function Open( $path, $mode = "a+b" ) {
 			$handle = @fopen($path, $mode);
@@ -202,5 +188,4 @@
 
 			return new PBStream( $handle );
 		}
-		// endregion
 	}
