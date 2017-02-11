@@ -78,6 +78,16 @@
 		// endregion
 
 		// region [ Getters / Setters ]
+		public function __get_localePrefer() {
+			static $localeInfo = NULL;
+
+			if (!empty($localeInfo)) return $localeInfo;
+
+			$info = @$this->_incomingRecord['environment']['server']['HTTP_ACCEPT_LANGUAGE'];
+			$localeInfo = $this->__parseLocale(empty($info) ? '' : $info);
+
+			return $localeInfo;
+		}
 		private function __parseLocale($localeInfo = '') {
 			$userLocales = explode(',', $localeInfo);
 
@@ -120,16 +130,6 @@
 				if (@$a['quality'] == $b['quality']) return 0;
 				return 1;	// (@$a['quality'] < $b['quality'])
 			});
-			return $localeInfo;
-		}
-		public function __get_localePrefer() {
-			static $localeInfo = NULL;
-
-			if (!empty($localeInfo)) return $localeInfo;
-
-			$info = @$this->_incomingRecord['environment']['server']['HTTP_ACCEPT_LANGUAGE'];
-			$localeInfo = $this->__parseLocale(empty($info) ? '' : $info);
-
 			return $localeInfo;
 		}
 		
