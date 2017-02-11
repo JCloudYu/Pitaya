@@ -59,6 +59,8 @@
 			$this->_incomingRecord['request']['files']			= @$_FILES;
 			$this->_incomingRecord['request']['post']			= $_POST;
 			$this->_incomingRecord['request']['get']			= $_GET;
+			$this->_incomingRecord['request']['cookie']			= $_COOKIE;
+			$this->_incomingRecord['request']['session']		= $_SESSION;
 			
 			$this->_incomingRecord['environment']['env']		= $_ENV;
 			$this->_incomingRecord['environment']['server']		= $_SERVER;
@@ -454,15 +456,13 @@
 		
 		
 		
-		/*	INFO: Usage
-				PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
-				PBRequest::Request()->data( name, type, default, src );
-		*/
-		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
-		{
+
+		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all') {
+			
 			$CUSTOM_CAST = FALSE;
 		
 			// INFO: Legacy Mode ( where type is an array )
+			// INFO: PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
 			if ( is_array( $type ) )
 			{
 				DEPRECATION_WARNING( "Legacy mode is invoked! Second argument will no longer accept arrays!" );
@@ -486,6 +486,12 @@
 					break;
 				case "get":
 					$value = self::___dataItr( @$this->_incomingRecord['request']['get'], $name, $hasData );
+					break;
+				case "cookie":
+					$value = self::___dataItr( $this->_incomingRecord['request']['cookie'], $name, $hasData );
+					break;
+				case "session":
+					$value = self::___dataItr( $this->_incomingRecord['request']['session'], $name, $hasData );
 					break;
 				case "all":
 				default:
@@ -530,10 +536,9 @@
 			$currLevel = $data; $hasData = TRUE;
 			while( count($path) > 0 )
 			{
-				$isArray = is_array($currLevel);
-				$isObject = ($currLevel instanceof stdClass);
-				if ( !$isArray && !$isObject )
-				{
+				$isArray  = is_array( $currLevel );
+				$isObject = is_a( $currLevel, stdClass::class );
+				if ( !$isArray && !$isObject ) {
 					$hasData = FALSE;
 					return NULL;	
 				}
