@@ -255,8 +255,11 @@
 		}
 		public function __get_httpFullHost() {
 			return "{$this->httpProtocol}://{$this->httpHost}";
+		public function __get_ssl() {
+			static $ssl = NULL;
+			if ( $ssl !== NULL ) return $ssl;
+			return ($ssl = $this->is_ssl());
 		}
-		public function __get_ssl() { return $this->is_ssl(); }
 		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
 		public function __get_requestTime()
 		{
