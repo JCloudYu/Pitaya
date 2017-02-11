@@ -34,34 +34,42 @@
 				$this->_parsedQuery = $this->_parsedData = [];
 			}
 
-			$this->_incomingRecord['command']                = array('argc' => @$_SERVER['argc'], 'argv' => @$_SERVER['argv']);
-			$this->_incomingRecord['rawQuery']				 = @$GLOBALS['rawRequest'];
 
+
+			
+
+
+			// read all contents from input stream
 			$inputCache = tmpfile();
 			$rawDataStream = fopen('php://input', "rb");
 			stream_copy_to_stream($rawDataStream, $inputCache);
 			fclose($rawDataStream);
-
-			$this->_incomingRecord['rawDataStream']			 = $inputCache;
-
-			$this->_incomingRecord['request']['method']		 = REQUESTING_METHOD;
-			$this->_incomingRecord['request']['query']		 = @$GLOBALS['request'];
-			$this->_incomingRecord['request']['data']		 = NULL;
-			$this->_incomingRecord['request']['service']	 = @$GLOBALS['service'];
-			$this->_incomingRecord['request']['files']		 = @$_FILES;
-			$this->_incomingRecord['request']['post']		 = $_POST;
-			$this->_incomingRecord['request']['get']		 = $_GET;
+			$this->_incomingRecord['rawDataStream'] = $inputCache;
 
 
-			$this->_incomingRecord['environment']['env']	 = $_ENV;
-			$this->_incomingRecord['environment']['server']	 = $_SERVER;
-			$this->_incomingRecord['environment']['attachment'] = [
-				'level' => PITAYA_ENVIRONMENTAL_ATTACH_LEVEL,
+			
+			// store all environmental configurations
+			$this->_incomingRecord['command']					= [ 'argc' => @$_SERVER['argc'], 'argv' => @$_SERVER['argv'] ];
+			$this->_incomingRecord['rawQuery']					= @$GLOBALS['rawRequest'];
+			
+			$this->_incomingRecord['request']['method']			= REQUESTING_METHOD;
+			$this->_incomingRecord['request']['query']			= @$GLOBALS['request'];
+			$this->_incomingRecord['request']['data']			= NULL;
+			$this->_incomingRecord['request']['service']		= @$GLOBALS['service'];
+			$this->_incomingRecord['request']['files']			= @$_FILES;
+			$this->_incomingRecord['request']['post']			= $_POST;
+			$this->_incomingRecord['request']['get']			= $_GET;
+			
+			$this->_incomingRecord['environment']['env']		= $_ENV;
+			$this->_incomingRecord['environment']['server']		= $_SERVER;
+			$this->_incomingRecord['environment']['attachment']	= [
+				'level'  => PITAYA_ENVIRONMENTAL_ATTACH_LEVEL,
 				'anchor' => $GLOBALS[ 'attachPoint' ]
 			];
 
 
 
+			// unset all global variables
 			unset($GLOBALS['rawRequest']);
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
