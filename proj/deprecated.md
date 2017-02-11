@@ -2,10 +2,14 @@
 The following files and apis are maked as deprecated and will be removed soon!
 
 
-## 1.4.4 ##
-### 2017/02/09 ###
+## 1.5.0 ##
 #### ext.base.misc ####
 - [func] TO
+- [func] iTrans
+- [func] Trans
+- [func] Imprint
+- [func] Script
+- [func] ScriptOut
 
 #### kernel.core.PBCookie ####
 - [class] PBCookie
