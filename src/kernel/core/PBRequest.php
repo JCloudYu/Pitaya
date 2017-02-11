@@ -138,8 +138,8 @@
 
 			return $localeInfo;
 		}
-		public function __get_range()
-		{
+		
+		public function __get_range() {
 			static $requestedRange = NULL;
 			if ($requestedRange !== NULL) return $requestedRange;
 
@@ -164,21 +164,28 @@
 
 			return $requestedRange;
 		}
-		public function __get_rangeUnit()
-		{
+		public function __get_rangeUnit() {
 			static $reqRangeType = NULL;
 			if ($reqRangeType !== NULL) return $reqRangeType;
 
 			list($reqRangeType, $range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
 			return $reqRangeType;
 		}
-		public function __get_headers()		{ return self::GetIncomingHeaders(); }
-		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
+		
+		public function __get_headers() {
+			static $_headers = NULL;
+			if ( $_headers !== NULL ) return $_headers;
+			
+			return ( $_headers = self::GetIncomingHeaders() );
+		}
+		public function __get_service() {
+			return $this->_incomingRecord['request']['service'];
+		}
 		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
 		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
 
 		private $_filesCache = NULL;
-		public function __get_files()		{
+		public function __get_files() {
 			if ( $this->_filesCache !== NULL ) return $this->_filesCache;
 
 			$this->_filesCache = array();
@@ -251,10 +258,13 @@
 			return empty($this->server[ 'HTTP_HOST' ]) ? @"{$this->server[ 'SERVER_NAME' ]}" : @"{$this->server[ 'HTTP_HOST' ]}";
 		}
 		public function __get_httpProtocol() {
-			return $this->is_ssl() ? 'https' : 'http';
+			static $protocol = NULL;
+			if ( $protocol !== NULL ) return $protocol;
+			return ( $protocol = $this->is_ssl() ? 'https' : 'http' );
 		}
 		public function __get_httpFullHost() {
-			return "{$this->httpProtocol}://{$this->httpHost}";
+			return "{$this->httpProtocol}://{$this->domain}";
+		}
 		public function __get_ssl() {
 			static $ssl = NULL;
 			if ( $ssl !== NULL ) return $ssl;
