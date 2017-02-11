@@ -169,9 +169,7 @@
 			list($reqRangeType, $range) = @explode('=', "{$this->_incomingRecord['environment']['server']['HTTP_RANGE']}");
 			return $reqRangeType;
 		}
-		public function __get_all() { return $this->_incomingRecord; }
 		public function __get_headers()		{ return self::GetIncomingHeaders(); }
-		public function __get_request()		{ return $this->_incomingRecord['request']; }
 		public function __get_service() 	{ return $this->_incomingRecord['request']['service']; }
 		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
 		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
@@ -201,8 +199,6 @@
 		}
 		
 		public function __get_method()		{ return $this->_incomingRecord['request']['method']; }
-		public function __get_method_upper(){ return strtoupper( "{$this->_incomingRecord['request']['method']}" ); }
-		public function __get_method_lower(){ return strtolower( "{$this->_incomingRecord['request']['method']}" ); }
 		public function __get_env()			{ return $this->_incomingRecord['environment']['env']; }
 		public function __get_attr()		{ return $this->_incomingRecord['environment']['attr']; }
 		public function __get_server()		{ return $this->_incomingRecord['environment']['server']; }
@@ -592,15 +588,7 @@
 
 			$flags = array_unique($flags);
 			return ary_flag($flags, $name, $matchCase, $compareMode);
-		}
-		public function post(...$args) {
-			$args[] = 'post';
-			return $this->data(...$args);
-		}
-		public function get(...$args) {
-			$args[] = 'get';
-			return $this->data(...$args);
-		}
+		}	
 		public function pickAttribute( $fields = array(), $customFilter = NULL )
 		{
 			static $_lastFilter	= NULL, $_defaultFilter	= NULL;

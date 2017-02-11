@@ -15,6 +15,12 @@ The following files and apis are maked as deprecated and will be removed soon!
 
 #### kernel.core.PBRequest ####
 - [usage] PBReuqest::data's second argument as array
+- [func] PBRequest::get
+- [func] PBRequest::post
+- [prop:get] PBRequest::all
+- [prop:get] PBRequest::method_upper
+- [prop:get] PBRequest::method_lower
+- [prop:get] PBRequest::request
 
 #### sys.net.PBHTTP ####
 - [func] PBHTTP::GetStatusString
