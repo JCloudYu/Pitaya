@@ -718,6 +718,8 @@
 				$header_name = implode( '-', ary_filter( $header_name, function( $word ){ return ucfirst($word); } ) );
 				$_incomingHeaders[ $header_name ] = $val;
 			}
+			
+			return $_incomingHeaders;
 		// region [ Deprecated ]
 		public function __get_all() {
 			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
