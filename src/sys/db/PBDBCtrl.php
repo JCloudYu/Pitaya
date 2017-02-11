@@ -1,12 +1,7 @@
 <?php
-/**
- * 1027.BadmintonLa - DBCtrl.php
- * Created by JCloudYu on 2015/04/12 01:01
- */
 	using('sys.db.ExtPDO');
 
-	final class PBDBCtrl
-	{
+	final class PBDBCtrl {
 		public static function DB( $identifier = NULL, $conInfo = NULL, $options = array( 'CREATE_VAR' ) )
 		{
 			static $_dbSources = array();
@@ -38,7 +33,6 @@
 
 			return NULL;
 		}
-
 		public static function GEN_CONNECT_INFO( $db, $account, $password, $host = "localhost", $port = 3306 )
 		{
 			return array(
@@ -49,7 +43,6 @@
 				'password'	=> $password
 			);
 		}
-
 		public static function CONNECT($param = NULL, $option = array('CREATE_VAR'))
 		{
 			$dsn = ExtPDO::DSN($param['host'], $param['db'], $param['port']);
@@ -59,7 +52,6 @@
 			$connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, FALSE);
 			return $connection;
 		}
-
 		public static function LIMIT($SQL, $page = NULL, $pageSize = NULL, &$pageInfo = NULL, &$DB = NULL)
 		{
 			if (is_array($SQL))
@@ -111,7 +103,6 @@
 
 			return $limitClause;
 		}
-
 		public static function SET($data, &$param = NULL, $varIndex = FALSE)
 		{
 			$param = $sql = array();
@@ -132,7 +123,6 @@
 			}
 			return implode(', ', $sql);
 		}
-
 		public static function ORDER($orderOpt = array())
 		{
 			if (!is_array($orderOpt)) return '';
@@ -157,41 +147,5 @@
 			if (empty($orderStmt)) return '';
 
 			return $orderStmt;
-		}
-
-
-
-		// DEPRECATED: The following tools will be removed in v2.0.0
-		public static function FieldBasedDataCollector(PDOStatement $stmt, $field = 'id')
-		{
-			$result	= array();
-
-			if ( !empty($field) )
-				while ( ($row = $stmt->fetch()) !== FALSE ) $result[$row["{$field}"]] = $row;
-			else
-				while ( ($row = $stmt->fetch()) !== FALSE ) $result[] = $row;
-
-			return $result;
-		}
-
-		public static function FilterBasedDataCollector(PDOStatement $stmt, $filterFunc, $field = NULL)
-		{
-			$result	= array();
-
-			while ( ($row = $stmt->fetch()) !== FALSE )
-			{
-				$index = NULL;
-				$filtered = $filterFunc($row, $index);
-
-				if ( !empty($field) )
-					$result[$filtered["{$field}"]] = $filtered;
-				else
-				if ( $index !== NULL )
-					$result[$index] = $filtered;
-				else
-					$result[] = $filtered;
-			}
-
-			return $result;
 		}
 	}

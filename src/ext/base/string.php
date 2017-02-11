@@ -53,8 +53,8 @@
 	}
 
 	// INFO: PHP Built-in Functions Extension
-	function hex_encode(string $data){ return bin2hex($data); }
-	function hex_decode(string $data){ return pack( "H*", $data ); }
+	function hex_encode($data){ return bin2hex($data); }
+	function hex_decode($data){ return pack( "H*", $data ); }
 	function ord_utf8($string, &$offset) {
 		$code = ord(substr($string, $offset,1));
 		if ($code >= 128) {        //otherwise 0xxxxxxx
@@ -431,12 +431,6 @@
 		return "[" . date($fmt) . "] {$logMsg}";
 	}
 	function CheckEmailSyntax($email) { return (filter_var($email, FILTER_VALIDATE_EMAIL) !== FALSE); }
-
-
-
-	// DEPRECATED: Following apis will be removed in v2.0.0
-	function CheckAccountSyntax($account) { return preg_match("/^[a-zA-Z0-9][a-zA-Z0-9._-]+$/i", $account) ? TRUE : FALSE; }
-	function CheckPasswordSyntax($password) { $pass = trim($password); return (strlen($pass) >= 8 && $password === $pass); }
 
 
 

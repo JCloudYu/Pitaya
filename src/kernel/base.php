@@ -17,13 +17,6 @@
 	
 	
 
-
-	// DEPRECATED: The constants will be removed in v2.0.0
-	define('SYS_ENV_CLI', 'CMD');
-	define('SYS_ENV_NET', 'NET');
-
-
-
 	define('EXEC_ENV_CLI',	'CLI');
 	define('EXEC_ENV_HTTP', 'HTTP');
 
@@ -69,7 +62,6 @@
 		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', getcwd() );
 
 
-		define('SYS_WORKING_ENV',	SYS_ENV_CLI); // DEPRECATED: The constants will be removed in v2.0.0
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_CLI);
 		define('IS_CLI_ENV',		TRUE);
@@ -103,7 +95,7 @@
 	{
 		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', ($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)) );
 
-		define('SYS_WORKING_ENV',	SYS_ENV_NET); // DEPRECATED: The constants will be removed in v2.0.0
+
 
 		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP);
 		define('IS_CLI_ENV',		FALSE);
