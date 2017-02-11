@@ -86,38 +86,40 @@
 			foreach ($userLocales as $localeContent)
 			{
 				$attr = explode(';', trim($localeContent));
-				$lang = $country = '';
-				$quality = 0;
+				$lang = $country = ''; $quality = 0;
+
+
 
 				// INFO: language part
-				if (!empty($attr[0]))
+				if (empty($attr[0]))
+					$lang = $country = '';
+				else
 				{
 					$buff = preg_split('/(^[a-zA-Z]+$)|^([a-zA-Z]+)-([a-zA-Z]+)$/', $attr[0], -1, PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE);
 					$lang = @"{$buff[0]}"; $country = @"{$buff[1]}";
 				}
-				else
-					$lang = $country = '';
+					
 
 
 				// INFO: quality part
-				if (!empty($attr[1]))
+				if (empty($attr[1]))
+					$quality = 1;
+				else
 				{
 					list($quality) = sscanf("{$attr[1]}", "q=%f");
 					if (empty($quality)) $quality = 0;
 				}
-				else
-					$quality = 1;
+					
 
 
 				if (empty($quality) || empty($lang)) continue;
-
 				$localeInfo[] = array('lang' => strtolower($lang), 'country' => strtolower($country), 'quality' => $quality);
 			}
 
 			usort($localeInfo, function(array $a, array $b) {
 				if (@$a['quality'] > $b['quality']) return -1;
 				if (@$a['quality'] == $b['quality']) return 0;
-				if (@$a['quality'] < $b['quality']) return 1;
+				return 1;	// (@$a['quality'] < $b['quality'])
 			});
 
 			return $localeInfo;
@@ -592,7 +594,7 @@
 		}
 		// endregion
 
-		// region [ Data Processing API ]
+		// region [ Data Processing Helper api ]
 		public static function DecomposeQuery( $rawRequest ) {
 			$rawRequest = @"{$rawRequest}";
 			$rawRequest = ($rawRequest === "") ? array() : explode('?', $rawRequest);
@@ -720,6 +722,9 @@
 			}
 			
 			return $_incomingHeaders;
+		}
+		// endregion
+		
 		// region [ Deprecated ]
 		public function __get_all() {
 			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
