@@ -10,35 +10,28 @@
 	{
 		// region [ Singleton Controller ]
 		private static $_reqInstance = NULL;
-		public static function Request()
-		{
-			if (self::$_reqInstance) return self::$_reqInstance;
-
-			self::$_reqInstance = new PBRequest();
-			return self::$_reqInstance;
+		private function __construct(){}
+		public static function Request() {
+			if ( self::$_reqInstance ) return self::$_reqInstance;
+			return ( self::$_reqInstance = new PBRequest() );
 		}
-
+		// endregion
+		
+		
+		
+		// region [ Content Initialization ]
 		public static function __imprint_constants() {
 			self::GetIncomingHeaders( $_SERVER );
 		}
 		
-		private function __construct() { }
-
-
-
-		private static $_initialized = FALSE;
-		private $_incomingRecord = array();
-		public function __initialize()
-		{
-			if ( self::$_initialized ) return;
-			self::$_initialized = TRUE;
+		private $_incomingRecord = [];
+		public function __initialize() {
+			static $_initialized = FALSE;
 		
 		
-		
-			if ( SYS_WORKING_ENV == SYS_ENV_CLI)
-			{
-				$this->_parsedQuery = array();
-				$this->_parsedData = array();
+			if ( $_initialized ) return; $_initialized = TRUE;
+			if ( SYS_WORKING_ENV == SYS_ENV_CLI) {
+				$this->_parsedQuery = $this->_parsedData = [];
 			}
 
 			$this->_incomingRecord['command']                = array('argc' => @$_SERVER['argc'], 'argv' => @$_SERVER['argv']);
@@ -271,34 +264,10 @@
 			
 			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
 		}
-
-
-
-		
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
-		private $_parsedData = NULL;
-		private $_dataVariable = NULL;
-		private $_dataFlag = NULL;
-
-		/**
-		 * Treat and parse the incoming data as the sepcified type.
-		 * The given function will be triggered only when the type is 'cust'.
-		 * If there's no function given, system will parse the data using system built-in parsing function.
-		 *
-		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
-		 * 'data' represets the result structure and variable indicates the vairables that are stored in the
-		 * incoming data, which will be used by function PBRequest::data
-		 *
-		 * @param string $type the type to which the incoming data will be converted
-		 * @param mixed $param the parameters that will be used during parsing process
-		 * @param callable $dataFunction the function that will be used to parse system's incoming data
-		 *
-		 * @return $this the PBRequest instance itself
-		 */
-		 
-		 
+		private $_parsedData = NULL, $_dataVariable = NULL, $_dataFlag = NULL;		 
 		public function parseData($type = 'cust', $param = NULL, Closure $dataFunction = NULL) {
 			static $parsers = NULL;
 		
@@ -402,8 +371,7 @@
 
 			return $this;
 		}
-		public static function ParseContentType( $contentType )
-		{
+		public static function ParseContentType( $contentType ) {
 			$typeInfo = [];
 			ary_filter( explode(';', "{$contentType}"), function( $item, &$idx ) use( &$typeInfo ) {
 			
@@ -423,24 +391,9 @@
 			return $typeInfo;
 		}
 
-
-
-		private $_parsedQuery = NULL;
-		private $_queryVariable = NULL;
-		private $_queryFlag = NULL;
-		/**
-		 * Parse the system's incoming query using the given function.
-		 * If there's no function given, system will parse the query using system built-in parsing function.
-		 * Note that the input function must return an array with two strin indices, 'data' and 'variable', in which
-		 * 'data' represets the result query structure and variable indicates the vairables that are stored in the
-		 * incoming query, which will be used by function PBRequest::data
-		 *
-		 * @param callable $queryFunction the function that will be used to parse system's incoming query
-		 *
-		 * @return $this the PBRequest instance itself
-		 */
-		public function parseQuery(Closure $queryFunction = NULL)
-		{
+		private $_parsedQuery = NULL, $_queryVariable = NULL, $_queryFlag = NULL;
+		public function parseQuery(Closure $queryFunction = NULL) {
+		
 			if ($this->_parsedQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
@@ -452,51 +405,17 @@
 			$this->_parsedQuery = @$result['data'];
 			$this->_queryVariable = @$result['variable'];
 			$this->_queryFlag = @$result['flag'];
-
 			return $this;
 		}
 		
-		/*
-			PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
-			PBRequest::Request()->data( name, type, default, src );
+		
+		
+		
+		
+		/*	INFO: Usage
+				PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
+				PBRequest::Request()->data( name, type, default, src );
 		*/
-		
-		private static function ___dataItr( $data, $path, &$hasData = TRUE ) {
-			$path = explode( '.', "{$path}" );
-
-
-		
-			$currLevel = $data; $hasData = TRUE;
-			while( count($path) > 0 )
-			{
-				$isArray = is_array($currLevel);
-				$isObject = ($currLevel instanceof stdClass);
-				if ( !$isArray && !$isObject )
-				{
-					$hasData = FALSE;
-					return NULL;	
-				}
-			
-			
-		
-				$index = array_shift( $path );
-				if ( $isArray )
-				{
-					$hasData = $hasData && ( $hit = array_key_exists( $index, $currLevel ) );
-					$currLevel = $hit ? $currLevel[ $index ] : NULL;
-				}
-				else
-				if ( $isObject )
-				{
-					$hasData = $hasData && ( $hit = property_exists( $currLevel, $index ) );
-					$currLevel = $hit ? $currLevel->{$index} : NULL;
-				}
-			}
-			
-			
-			return $currLevel;
-		}
-		
 		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all')
 		{
 			$CUSTOM_CAST = FALSE;
@@ -560,6 +479,41 @@
 			$args = array_values( $type );
 			array_unshift( $args, $value );
 			return call_user_func_array( 'CAST', $args );
+		}
+		private static function ___dataItr( $data, $path, &$hasData = TRUE ) {
+			$path = explode( '.', "{$path}" );
+
+
+		
+			$currLevel = $data; $hasData = TRUE;
+			while( count($path) > 0 )
+			{
+				$isArray = is_array($currLevel);
+				$isObject = ($currLevel instanceof stdClass);
+				if ( !$isArray && !$isObject )
+				{
+					$hasData = FALSE;
+					return NULL;	
+				}
+			
+			
+		
+				$index = array_shift( $path );
+				if ( $isArray )
+				{
+					$hasData = $hasData && ( $hit = array_key_exists( $index, $currLevel ) );
+					$currLevel = $hit ? $currLevel[ $index ] : NULL;
+				}
+				else
+				if ( $isObject )
+				{
+					$hasData = $hasData && ( $hit = property_exists( $currLevel, $index ) );
+					$currLevel = $hit ? $currLevel->{$index} : NULL;
+				}
+			}
+			
+			
+			return $currLevel;
 		}
 		public function flag($name, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR)
 		{
