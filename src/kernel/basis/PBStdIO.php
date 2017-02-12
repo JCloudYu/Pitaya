@@ -3,34 +3,9 @@
  * 1017.NeighborApp - PBStdio.php
  * Created by JCloudYu on 2015/02/04 15:00
  */
-	final class PBStdIO
-	{
-		public static function STDERR($msg, $newLine = TRUE)
-		{
-			static $stream = NULL;
-			if ( !$stream ) $stream = PBStream::STDERR();
-
-			self::WriteMsg($stream, $msg, $newLine);
-		}
-
-		public static function STDOUT($msg, $newLine = TRUE)
-		{
-			static $stream = NULL;
-			if ( !$stream ) $stream = PBStream::STDOUT();
-
-			self::WriteMsg($stream, $msg, $newLine);
-		}
-
-		private static function WriteMsg(PBStream $stream, $msg, $newLine = TRUE)
-		{
-			if ( $newLine ) $msg = "{$msg}\n";
-			$stream->write($msg)->flush();
-		}
-
-
-
-		public static function READ($msg = "", $isPassword = FALSE, $stars = FALSE)
-		{
+	final class PBStdIO {
+		public static function READ($msg = "", $isPassword = FALSE, $stars = FALSE) {
+		
 			if ( !empty($msg) ) fwrite(STDOUT, "{$msg}");
 
 			if ( !$isPassword ) return fgets(STDIN);
@@ -89,5 +64,23 @@
 
 			// Return the password
 			return rtrim($password, "\n");
+		}
+		public static function STDERR($msg = "", $newLine = TRUE) {
+		
+			static $stream = NULL;
+			if ( !$stream ) $stream = PBStream::STDERR();
+
+			self::WriteMsg($stream, $msg, $newLine);
+		}
+		public static function STDOUT($msg = "", $newLine = TRUE) {
+		
+			static $stream = NULL;
+			if ( !$stream ) $stream = PBStream::STDOUT();
+
+			self::WriteMsg($stream, $msg, $newLine);
+		}
+		private static function WriteMsg(PBStream $stream, $msg = "", $newLine = TRUE) {
+			if ( $newLine ) $msg = "{$msg}\n";
+			$stream->write($msg)->flush();
 		}
 	}
