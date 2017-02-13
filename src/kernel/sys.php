@@ -229,6 +229,10 @@
 			}
 
 
+			if ( is_callable(self::$_bootResolver) )
+				call_user_func( self::$_bootResolver, $service, $moduleRequest );
+
+
 
 			$processReq = function( $moduleRequest, $attributes ) {
 				if ( CLI_ENV ) return $moduleRequest;
