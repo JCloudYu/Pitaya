@@ -132,6 +132,12 @@
 				Termination::WITH_STATUS(Termination::STATUS_ERROR);
 			}
 		}
+		
+		private static $_bootResolver = NULL;
+		public static function SetResolver( $callable ){
+			if ( !is_callable($callable) ) return;
+			self::$_bootResolver = $callable;
+		}
 		// endregion
 
 
@@ -248,7 +254,7 @@
 					$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
 					$ext = substr( $module, -4 );
 					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
-					$this->_entryService		= "PBSystem.PBExecCtrl#PBVectorChain";
+					$this->_entryService = "PBSystem.PBExecCtrl#PBVectorChain";
 	
 					define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
 					define('__STANDALONE_MODULE__', $module );
