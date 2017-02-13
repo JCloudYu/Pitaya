@@ -128,46 +128,8 @@
 
 
 	require_once __ROOT__ . '/kernel/api.tool.php';
-
-
-
-	// ISSUE: We need to verify the configuration data...
-	if ( SYS_EXEC_ENV === EXEC_ENV_CLI )
-	{
-		define( 'CLI_ENV',	TRUE);
-		define( 'NET_ENV',	FALSE);
-
-		if ( file_exists(__SPACE_ROOT__ . "/cli.php") )
-		{
-			require_once __SPACE_ROOT__ . "/cli.php";
-			define( 'CONFIG_MODE', 'CLI' );
-		}
-	}
-	else
-	{
-		define( 'CLI_ENV',	FALSE);
-		define( 'NET_ENV',	TRUE);
-
-		if ( PITAYA_HOST != "" && file_exists( __SPACE_ROOT__ . "/config-" . PITAYA_HOST . ".php" ) )
-		{
-			require_once __SPACE_ROOT__ . "/config-" . PITAYA_HOST . ".php";
-			define( 'CONFIG_MODE', 'HOST' );
-		}
-	}
-
-
-	if ( !defined( 'CONFIG_MODE' ) )
-	{
-		if ( file_exists( __SPACE_ROOT__ . "/config.php" ) )
-		{
-			require_once __SPACE_ROOT__ . "/config.php";
-			define( 'CONFIG_MODE', 'DEFAULT' );
-		}
-		else
-		{
-			define( 'CONFIG_MODE', 'NONE' );
-		}
-	}
+	@include_once __SPACE_ROOT__ . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
+	
 
 
 
