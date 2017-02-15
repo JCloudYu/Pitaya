@@ -346,18 +346,21 @@
 			}
 
 
+			$payloadStr = json_encode($payload);
+			$payloadLen	 = strlen($payloadStr);
 
 			$hCurl = curl_init();
 			curl_setopt( $hCurl, CURLOPT_URL, $this->_serverAddr );
-			curl_setopt( $hCurl, CURLOPT_POST, TRUE );
 			curl_setopt( $hCurl, CURLOPT_FRESH_CONNECT, TRUE );
+			curl_setopt( $hCurl, CURLOPT_CUSTOMREQUEST, 'POST' );
 			curl_setopt( $hCurl, CURLOPT_HTTPHEADER, array (
-				'Authorization: key=' . $this->_serverKey,
-				'Content-Type: application/json'
+				'Authorization: key=' . trim($this->_serverKey),
+				'Content-Type: application/json',
+				"Content-Length: {$payloadLen}"
 			));
+			curl_setopt( $hCurl, CURLOPT_POSTFIELDS, $payloadStr );
 			curl_setopt( $hCurl, CURLOPT_RETURNTRANSFER, TRUE );
 			curl_setopt( $hCurl, CURLOPT_SSL_VERIFYPEER, FALSE );
-			curl_setopt( $hCurl, CURLOPT_POSTFIELDS, json_encode( $payload ) );
 			$response = curl_exec( $hCurl );
 			
 			if ( $response === FALSE )
