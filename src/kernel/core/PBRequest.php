@@ -863,7 +863,7 @@
 			return $this;
 		}
 				
-		private $_methods = [ 'HEAD', 'OPTIONS' ];
+		private $_methods = [];
 		private $_methodsDirty = FALSE;
 		/** @return PBRequestCORS */
 		public function allowMethods( $whiteList = [] ) {
@@ -880,10 +880,10 @@
 			return $this;
 		}
 		
-		private $_headers = [ 'Content-Length' ];
+		private $_headers = [];
 		private $_headersDirty = FALSE;
 		/** @return PBRequestCORS */
-		public function allowHeaders( $whiteList = [ 'Content-Length' ] ) {
+		public function allowHeaders( $whiteList = [] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_headersDirty = TRUE;
 		
@@ -917,28 +917,42 @@
 			return $this;
 		}
 		
-		public function accept() {
+		public function accept( $continue = FALSE ) {
 			if ( IS_CLI_ENV ) return TRUE;
 		
 		
-		
-			$acceptOrigin		= $this->_acceptOrigins();
-			$acceptMethod		= $this->_acceptMethods();
-			$acceptHeaders		= $this->_acceptHeaders();
+			$status = (object)[];
+			
+			$status->origin		= $acceptOrigin  = $this->_acceptOrigins();
+			$status->method		= $acceptMethod  = $this->_acceptMethods();
+			$status->headers	= $acceptHeaders = $this->_acceptHeaders();
 			$acceptCredentials	= $this->_acceptCredentials();
 			$acceptDuration		= $this->_acceptDuration();
 			 
 			
-			
-			$pass = $acceptOrigin && $acceptMethod && $acceptHeaders;
-			if ( empty($pass) ) {
+
+			if ( empty($acceptOrigin) || empty($acceptHeaders) ) {
 				PBHTTP::ResponseStatus( PBHTTP::STATUS_403_FORBIDDEN );
-				Termination::NORMALLY();
+				if ( !$continue ) Termination::NORMALLY();
+				
+				return $status;
 			}
+			if ( empty($acceptMethod) ) {
+				PBHTTP::ResponseStatus( PBHTTP::STATUS_405_METHOD_NOT_ALLOWED );
+				if ( !$continue ) Termination::NORMALLY();
+				
+				return $status;
+			}
+			
+			
+			
+			
 			if ( in_array( $requestedMethod, [ 'OPTIONS', 'HEAD' ] ) ) {
 				PBHTTP::ResponseStatus(PBHTTP::STATUS_200_OK);
-				Termination::NORMALLY();
+				if ( !$continue ) Termination::NORMALLY();
 			}
+			
+			return $status;
 		}
 		
 		
@@ -959,7 +973,7 @@
 				$origin = in_array( $accessOrigin, $this->_origins, TRUE ) ? $accessOrigin : NULL;
 			}
 
-			if ( $_accepted = ($origin !== NULL) ) 
+			if ( ($_accepted = ($origin !== NULL)) && $this->_request->method === "OPTIONS" ) 
 				header( "Access-Control-Allow-Origin: {$origin}" );
 			
 			$this->_originsDirty = FALSE;
@@ -969,10 +983,21 @@
 			static $_accepted = NULL; 
 			if ( $_accepted !== NULL && !$this->_methodsDirty ) return $_accepted;
 			
-			$requestedMethod = $this->_request->method; 
-			$_accepted = in_array($requestedMethod, $this->_methods) ? TRUE : FALSE;
-			header( 'Access-Control-Allow-Methods: ' . implode( ', ', $this->_methods ) );
 			
+			
+			$requestedMethod = $this->_request->method;
+			if ( $requestedMethod != "OPTIONS" )
+				$checkedMethod = $requestedMethod;
+			else {
+				$checkedMethod = $this->_request->headers[ 'Access-Control-Request-Method' ];
+				if ( !empty($this->_methods) ) {
+					header( 'Access-Control-Allow-Methods: ' . implode( ', ', $this->_methods ) );
+				}
+			}
+				
+			
+			
+			$_accepted = (empty($this->_methods) || in_array($checkedMethod, $this->_methods)) ? TRUE : FALSE;
 			$this->_methodsDirty = FALSE;
 			return $_accepted;
 		}
@@ -980,7 +1005,8 @@
 			static $_accepted = NULL; 
 			if ( $_accepted !== NULL && !$this->_headersDirty ) return $_accepted;
 		
-			header( 'Access-Control-Allow-Headers: ' . implode( ', ', $this->_headers ) );
+			if ( $this->_request->method === "OPTIONS" && !empty($this->_headers) )
+				header( 'Access-Control-Allow-Headers: ' . implode( ', ', $this->_headers ) );
 			
 			$this->_headersDirty = FALSE;
 			return ( $_accepted = TRUE );
@@ -989,7 +1015,8 @@
 			static $_accepted = NULL; 
 			if ( $_accepted !== NULL && !$this->_credentialsDirty ) return $_accepted;
 			
-			header( 'Access-Control-Allow-Credentials: ' . ($this->_credential ? 'true' : 'false') );
+			if ( $this->_request->method === "OPTIONS" )
+				header( 'Access-Control-Allow-Credentials: ' . ($this->_credential ? 'true' : 'false') );
 			
 			$this->_credentialsDirty = FALSE;
 			return ( $_accepted = TRUE );
@@ -998,7 +1025,8 @@
 			static $_accepted = NULL; 
 			if ( $_accepted !== NULL && !$this->_durationDirty ) return $_accepted;
 			
-			header( "Access-Control-Max-Age: {$this->_cacheDuration}" );
+			if ( $this->_request->method === "OPTIONS" )
+				header( "Access-Control-Max-Age: {$this->_cacheDuration}" );
 			
 			$this->_durationDirty = FALSE;
 			return ( $_accepted = TRUE );
