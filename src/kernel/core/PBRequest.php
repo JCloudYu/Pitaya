@@ -14,6 +14,12 @@
 			if ( self::$_reqInstance ) return self::$_reqInstance;
 			return ( self::$_reqInstance = new PBRequest() );
 		}
+		
+		private static $_cors = NULL;
+		public static function CORSControl() {
+			if ( self::$_cors ) return self::$_cors;
+			return ( self::$_cors = new PBRequestCORS() );
+		}
 		// endregion
 		
 		
@@ -834,4 +840,167 @@
 			return $this->data(...$args);
 		}
 		// endregion
+	}
+
+	final class PBRequestCORS extends PBObject {
+		private $_request = NULL;
+		public function __construct() {
+			$this->_request = PBRequest::Request();
+		}
+		
+		private $_origins = [ '*' ];
+		private $_originsDirty = FALSE;
+		/** @return PBRequestCORS */
+		public function allowOrigins( $whiteList = [ '*' ] ) {
+			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
+			$this->_originsDirty = TRUE;
+			
+			foreach( $whiteList as $id => $value ) {
+				$whiteList[ $id ] = strtolower(trim($value));
+			}
+			$this->_origins = array_unique($whiteList);
+			
+			return $this;
+		}
+				
+		private $_methods = [ 'HEAD', 'OPTIONS' ];
+		private $_methodsDirty = FALSE;
+		/** @return PBRequestCORS */
+		public function allowMethods( $whiteList = [] ) {
+			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
+			$this->_methodsDirty = TRUE;
+			
+			foreach( $whiteList as $id => $value ) {
+				$whiteList[ $id ] = strtoupper(trim($value));
+			}
+			$whiteList[] = 'HEAD';
+			$whiteList[] = 'OPTIONS';
+			$this->_methods = array_unique($whiteList);
+			
+			return $this;
+		}
+		
+		private $_headers = [ 'Content-Length' ];
+		private $_headersDirty = FALSE;
+		/** @return PBRequestCORS */
+		public function allowHeaders( $whiteList = [ 'Content-Length' ] ) {
+			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
+			$this->_headersDirty = TRUE;
+		
+			foreach( $whiteList as $id => $value ) {
+				$whiteList[ $id ] = ucwords(trim($value));
+			}
+			$this->_headers = array_unique($whiteList);
+			
+			return $this;
+		}
+		
+		private $_credential = TRUE;
+		private $_credentialsDirty = FALSE;
+		/** @return PBRequestCORS */
+		public function allowCredentials( $allowCredential = TRUE ) {
+			$this->_credentialsDirty = TRUE;
+			
+			$this->_credential = !empty($allowCredential);
+			
+			return $this;
+		}
+		
+		private $_cacheDuration = 86400;
+		private $_durationDirty = FALSE;
+		/** @return PBRequestCORS */
+		public function allowDuration( $duration = 86400 ) {
+			$this->_durationDirty = TRUE;
+		
+			$this->_cacheDuration = CAST( $duration, 'int strict', 0 );
+			
+			return $this;
+		}
+		
+		public function accept() {
+			if ( IS_CLI_ENV ) return TRUE;
+		
+		
+		
+			$acceptOrigin		= $this->_acceptOrigins();
+			$acceptMethod		= $this->_acceptMethods();
+			$acceptHeaders		= $this->_acceptHeaders();
+			$acceptCredentials	= $this->_acceptCredentials();
+			$acceptDuration		= $this->_acceptDuration();
+			 
+			
+			
+			$pass = $acceptOrigin && $acceptMethod && $acceptHeaders;
+			if ( empty($pass) ) {
+				PBHTTP::ResponseStatus( PBHTTP::STATUS_403_FORBIDDEN );
+				Termination::NORMALLY();
+			}
+			if ( in_array( $requestedMethod, [ 'OPTIONS', 'HEAD' ] ) ) {
+				PBHTTP::ResponseStatus(PBHTTP::STATUS_200_OK);
+				Termination::NORMALLY();
+			}
+		}
+		
+		
+		
+		private function _acceptOrigins() {
+			static $_accepted = NULL;
+			if ( $_accepted !== NULL && !$this->_originsDirty ) return $_accepted;
+			
+			
+			
+			$accessOrigin = @$this->_request->headers[ 'Origin' ];
+			$wildcard = in_array( '*', $this->_origins );
+			
+			if ( $wildcard ) {
+				$origin = ($accessOrigin === NULL) ? '*' : $accessOrigin;
+			}
+			else {
+				$origin = in_array( $accessOrigin, $this->_origins, TRUE ) ? $accessOrigin : NULL;
+			}
+
+			if ( $_accepted = ($origin !== NULL) ) 
+				header( "Access-Control-Allow-Origin: {$origin}" );
+			
+			$this->_originsDirty = FALSE;
+			return $_accepted;
+		}
+		private function _acceptMethods() {
+			static $_accepted = NULL; 
+			if ( $_accepted !== NULL && !$this->_methodsDirty ) return $_accepted;
+			
+			$requestedMethod = $this->_request->method; 
+			$_accepted = in_array($requestedMethod, $this->_methods) ? TRUE : FALSE;
+			header( 'Access-Control-Allow-Methods: ' . implode( ', ', $this->_methods ) );
+			
+			$this->_methodsDirty = FALSE;
+			return $_accepted;
+		}
+		private function _acceptHeaders() {
+			static $_accepted = NULL; 
+			if ( $_accepted !== NULL && !$this->_headersDirty ) return $_accepted;
+		
+			header( 'Access-Control-Allow-Headers: ' . implode( ', ', $this->_headers ) );
+			
+			$this->_headersDirty = FALSE;
+			return ( $_accepted = TRUE );
+		}
+		private function _acceptCredentials() {
+			static $_accepted = NULL; 
+			if ( $_accepted !== NULL && !$this->_credentialsDirty ) return $_accepted;
+			
+			header( 'Access-Control-Allow-Credentials: ' . ($this->_credential ? 'true' : 'false') );
+			
+			$this->_credentialsDirty = FALSE;
+			return ( $_accepted = TRUE );
+		}
+		private function _acceptDuration() {
+			static $_accepted = NULL; 
+			if ( $_accepted !== NULL && !$this->_durationDirty ) return $_accepted;
+			
+			header( "Access-Control-Max-Age: {$this->_cacheDuration}" );
+			
+			$this->_durationDirty = FALSE;
+			return ( $_accepted = TRUE );
+		}
 	}
