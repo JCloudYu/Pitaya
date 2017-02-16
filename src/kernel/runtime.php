@@ -265,7 +265,8 @@
 		}
 
 
-		if ( !defined('__LOG_EXCEPTION__') )		define('__LOG_EXCEPTION__',			TRUE);
+		if ( !defined('__LOG_EXCEPTION__') )
+			define( '__LOG_EXCEPTION__', TRUE );
 	});
 
 
