@@ -1,13 +1,12 @@
 <?php
-	using('kernel.basis.PBObject');
-	using('ext.base.time');
-	using('ext.base.math');
-	using('ext.base.misc');
-	using('ext.base.array');
-	using('ext.net.ip');
+	using( 'ext.base.time' );
+	using( 'ext.base.math' );
+	using( 'ext.base.misc' );
+	using( 'ext.base.array' );
+	using( 'sys.net.PBHTTP' );
 
-	final class PBRequest extends PBObject
-	{
+	final class PBRequest extends PBObject {
+	
 		// region [ Singleton Controller ]
 		private static $_reqInstance = NULL;
 		private function __construct(){}
@@ -122,7 +121,11 @@
 
 
 				if (empty($quality) || empty($lang)) continue;
-				$localeInfo[] = array('lang' => strtolower($lang), 'country' => strtolower($country), 'quality' => $quality);
+				$localeInfo[] = [ 
+					'lang'		=> strtolower($lang), 
+					'country'	=> strtolower($country), 
+					'quality'	=> $quality
+				];
 			}
 
 			usort($localeInfo, function(array $a, array $b) {
