@@ -450,7 +450,7 @@
 			if ($this->_parsedQuery !== NULL) return $this;
 
 			$func = ($queryFunction === NULL) ? function($targetData) {
-				$data = PBRequest::ParseRequestQuery( $targetData);
+				$data = PBRequest::ParseRequestQuery($targetData);
 				return array('data' => $data, 'variable' => $data['attribute']['variable'], 'flag' => $data['attribute']['flag']);
 			} : $queryFunction;
 
