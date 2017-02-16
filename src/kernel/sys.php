@@ -75,7 +75,7 @@
 
 
 
-				if ( CLI_ENV )
+				if ( IS_CLI_ENV )
 				{
 					PBStdIO::STDERR( $errMsg );
 					if (!empty($extMsg)) PBStdIO::STDERR( $extMsg );
@@ -114,7 +114,7 @@
 					throw( $e );
 				}
 				else
-				if ( NET_ENV && __DEBUG_MODE__ )
+				if ( IS_HTTP_ENV && __DEBUG_MODE__ )
 				{
 					if ( !headers_sent() )
 					{
@@ -235,7 +235,7 @@
 
 
 			$processReq = function( $moduleRequest, $attributes ) {
-				if ( CLI_ENV ) return $moduleRequest;
+				if ( IS_CLI_ENV ) return $moduleRequest;
 
 				$moduleRequest	= implode('/', $moduleRequest);
 				$attributes		= empty($attributes) ? '' : "?{$attributes}";
@@ -248,7 +248,7 @@
 			// region [ Find the default basis ]
 			// INFO: If cli and standalone script has been assigned
 			// MARK: Developer customizable only
-			if ( CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) )
+			if ( IS_CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) )
 			{
 				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
 				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
