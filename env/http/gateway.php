@@ -1,16 +1,21 @@
 <?php
-	define( '__SPACE_ROOT__', dirname( "{$_SERVER['SCRIPT_FILENAME']}" ), FALSE );
-	$pitayaRootPath = __SPACE_ROOT__."/Pitaya";
-
-	if ( strtoupper(substr( PHP_OS, 0, 3 )) === "WIN" )
-	{
-		if ( !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) )
-		{
-			// Borrowed from http://www.witti.ws/blog/2011/02/21/extract-path-lnk-file-using-php
-			$linkData = file_get_contents( "{$pitayaRootPath}.lnk" );
-			$pitayaRootPath = preg_replace('@^.*\00([A-Z]:)(?:[\00\\\\]|\\\\.*?\\\\\\\\.*?\00)([^\00]+?)\00.*$@s', '$1\\\\$2', $linkData);
-		}
+	define( 'ROOT', dirname( "{$_SERVER['SCRIPT_FILENAME']}" ) );
+	define( '__SPACE_ROOT__', ROOT ); // DEPRECATED: __SPACE_ROOT__ will be removed in 2.5.0
+	define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') );
+	function resolveLnk( $lnkPath ) {
+		// Borrowed from http://www.witti.ws/blog/2011/02/21/extract-path-lnk-file-using-php
+		$linkContent = file_get_contents( $lnkPath );
+		return preg_replace( '@^.*\00([A-Z]:)(?:[\00\\\\]|\\\\.*?\\\\\\\\.*?\00)([^\00]+?)\00.*$@s', '$1\\\\$2', $linkContent );
 	}
 	
-	define( '__ROOT__', $pitayaRootPath, FALSE );
-	require_once __ROOT__ . "/portal.php";
+	
+	
+   @include_once ROOT . "/pitaya.env.php";
+	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? __PITAYA_PATH : ROOT . '/Pitaya';
+	if ( IS_WIN_ENV && !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) ) {
+		$pitayaRootPath = resolveLnk( "{$pitayaRootPath}.lnk" );
+	}
+	
+	define( 'PITAYA_ROOT', $pitayaRootPath );
+	define( '__ROOT__', PITAYA_ROOT ); // DEPRECATED: __ROOT__ will be removed in 2.5.0
+	require_once PITAYA_ROOT . "/portal.php";
