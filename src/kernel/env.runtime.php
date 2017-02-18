@@ -251,8 +251,6 @@
 		if ( !defined('__LOG_EXCEPTION__') )
 			define( '__LOG_EXCEPTION__', TRUE );
 	});
-	
-	
 
 	// INFO: Error handling supportive apis
 	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
@@ -261,3 +259,21 @@
 	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
 		return -PB_CODE($baseCode, $extensionCode, $shift);
 	}
+
+	function pb_metric(){
+		static $_prevTime = 0;
+		
+		$now = microtime(TRUE);
+		$result = (object)[
+			'memory'		=> memory_get_usage(),
+			'memory_peak'	=> memory_get_peak_usage(),
+			'memory_diff'	=> memory_get_usage() - PITAYA_METRIC_BOOT_MEMORY,
+			'now'			=> $now,
+			'duration'		=> $now - PITAYA_METRIC_BOOT_TIME,
+			'diff'			=> $now - $_prevTime  
+		];
+		
+		$_prevTime = $now;
+		return $result;
+	}
+	pb_metric();

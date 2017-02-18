@@ -23,6 +23,6 @@
 		if ( $result === FALSE ) date_default_timezone_set('UTC');
 	});
 
-	define( 'PITAYA_BOOT_TIME',		time() - ((microtime( TRUE ) - $GLOBALS[ 'BOOT_TIME' ]) | 0) );
+	define( 'PITAYA_BOOT_TIME',		time() - ((microtime( TRUE ) - PITAYA_METRIC_BOOT_TIME) | 0) );
 	define( 'PITAYA_ZONE_DIFF',		date( 'Z' ) | 0 );
 	define( 'PITAYA_BOOT_TIMEZONE', date_default_timezone_get() );
