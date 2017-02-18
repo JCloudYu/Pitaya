@@ -269,7 +269,7 @@
 			'memory' => (object)[
 				'current' => $memoryUsage,
 				'peak'	  => memory_get_peak_usage(),
-				'diff'	  => $memoryUsage - PITAYA_METRIC_KERNEL_MEMORY
+				'diff'	  => $memoryUsage - @PITAYA_METRIC_KERNEL_MEMORY
 			],
 			'time' => (object)[
 				'now' => $now,

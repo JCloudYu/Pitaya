@@ -18,21 +18,19 @@
 	define( 'SYS_EXEC_ENV', IS_CLI_ENV ? EXEC_ENV_CLI : EXEC_ENV_HTTP );
 	// endregion
 	// region [ Environmental Initialization ]
+	call_user_func(function() {
+		$GLOBALS[ 'RUNTIME_ENV' ] = [];
+		$env = preg_split("/(\n)+|(\r\n)+/", shell_exec( IS_WIN_ENV ? 'set' : 'printenv') );
+		foreach ( $env as $envStatement ) {
+			if ( ($pos = strpos($envStatement, "=")) === FALSE ) continue;
+			
+			$var	 = substr( $envStatement, 0, $pos );
+			$content = substr( $envStatement, $pos + 1 );
+			$GLOBALS['RUNTIME_ENV'][$var] = $content;
+		}
+	});
+	
 	if ( IS_CLI_ENV ) {
-		call_user_func(function() {
-			$GLOBALS[ 'RUNTIME_ENV' ] = [];
-			$env = preg_split("/(\n)+|(\r\n)+/", shell_exec( IS_WIN_ENV ? 'set' : 'printenv') );
-			foreach ( $env as $envStatement ) {
-				if ( ($pos = strpos($envStatement, "=")) === FALSE ) continue;
-				
-				$var	 = substr( $envStatement, 0, $pos );
-				$content = substr( $envStatement, $pos + 1 );
-				$GLOBALS['RUNTIME_ENV'][$var] = $content;
-			}
-		});
-	
-	
-	
 		define( 'REQUESTING_METHOD',	'' );
 		define( 'PITAYA_HOST',			@"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}" );
 		define( 'EOL',					"\n" );
