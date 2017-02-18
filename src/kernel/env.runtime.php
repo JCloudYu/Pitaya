@@ -264,13 +264,18 @@
 		static $_prevTime = 0;
 		
 		$now = microtime(TRUE);
+		$memoryUsage = memory_get_usage();
 		$result = (object)[
-			'memory'		=> memory_get_usage(),
-			'memory_peak'	=> memory_get_peak_usage(),
-			'memory_diff'	=> memory_get_usage() - PITAYA_METRIC_BOOT_MEMORY,
-			'now'			=> $now,
-			'duration'		=> $now - PITAYA_METRIC_BOOT_TIME,
-			'diff'			=> $now - $_prevTime  
+			'memory' => (object)[
+				'current' => $memoryUsage,
+				'peak'	  => memory_get_peak_usage(),
+				'diff'	  => $memoryUsage - PITAYA_METRIC_KERNEL_MEMORY
+			],
+			'time' => (object)[
+				'now' => $now,
+				'dur' => $now - PITAYA_METRIC_BOOT_TIME
+			],
+			'diff' => $now - $_prevTime
 		];
 		
 		$_prevTime = $now;
