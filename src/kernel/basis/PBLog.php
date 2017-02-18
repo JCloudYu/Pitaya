@@ -3,16 +3,15 @@
 	{
 		const LOG_INFO_TIME		= 1;
 		const LOG_INFO_CATE		= 2;
-		const LOG_INFO_SERVICE	= 4;
-		const LOG_INFO_MODULE	= 8;
-		const LOG_INFO_ROUTE	= 16;
+		const LOG_INFO_BASIS	= 4;
+		const LOG_INFO_ROUTE	= 8;
 		const LOG_INFO_ALL		= 0xFFFFFFFF;
 	
 		private $_logStream = NULL;
 		public function __construct($logPath) {
 			$this->_logStream = self::ObtainStream($logPath);
 		}
-		public function genLogMsg( $message, $logPos = FALSE, $logCate = '', $options = [] ) {
+		public function genLogMsg( $message, $logCate = '', $options = [] ) {
 			if ( !is_array($options) ) $options = [];
 			
 			$LOG_INFO = array_key_exists( 'info-level', $options ) ? $options['info-level'] | 0 : self::LOG_INFO_ALL;
@@ -30,8 +29,6 @@
 
 
 			// INFO: Write file stream
-			$position = ($logPos) ? " {$info['position']}" : '';
-			
 			$timeInfo = '';
 			if ( $LOG_INFO & self::LOG_INFO_TIME )
 			{
@@ -40,62 +37,59 @@
 			}
 			
 			$cateInfo	= ( $LOG_INFO & self::LOG_INFO_CATE ) ? "[{$info['cate']}]" : '';
-			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_SERVICE ) ? "[{$info['service']}]" : '';
-			$moduleInfo	= ( $LOG_INFO & self::LOG_INFO_SERVICE ) ? "[{$info['module']}]" : '';
+			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_BASIS ) ? "[{$info['service']}]" : '';
 			$routeInfo	= ( $LOG_INFO & self::LOG_INFO_ROUTE) ? "[{$info['route']}]" : '';
 			
 			
 			
-			$msg = "{$timeInfo}{$cateInfo}{$basisInfo}{$moduleInfo}{$routeInfo}{$tags} {$message}{$position}";
+			$msg = "{$timeInfo}{$cateInfo}{$basisInfo}{$routeInfo}{$tags} {$message}";
 			return $msg;
 		}
-		public function logMsg( $message, $logPos = FALSE, $logCate = '', $options = [] ) {
+		public function logMsg( $message, $logCate = '', $options = [] ) {
 			if ( empty($this->_logStream) ) return FALSE;
 
 
-			$msg = ( @$options[ 'row-output' ] === TRUE ) ? $message : $this->genLogMsg( $message, $logPos, $logCate, $options );
+			$msg = ( @$options[ 'row-output' ] === TRUE ) ? $message : $this->genLogMsg( $message, $logCate, $options );
 			fwrite( $this->_logStream, "{$msg}\n" );
 			fflush( $this->_logStream );
 			return $msg;
 		}
 
-
-
-		public static function Log($message, $logPos = FALSE, $logFileName = '', $options = array())
+		public static function Log($message, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "service.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			return $log->logMsg($message, $logPos, '', $options);
+			return $log->logMsg($message, '', $options);
 		}
-		public static function ERRLog($message, $logPos = FALSE, $logFileName = '', $options = array())
+		public static function ERRLog($message, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "error.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			error_log( $msg = $log->genLogMsg( $message, $logPos, 'ERROR', array_merge($options, [ 'info-level' => self::LOG_INFO_ALL & ~self::LOG_INFO_TIME ]) ) );
-			return $log->logMsg( $message, $logPos, 'ERROR', $options );
+			error_log( $msg = $log->genLogMsg( $message, 'ERROR', array_merge($options, [ 'info-level' => self::LOG_INFO_ALL & ~self::LOG_INFO_TIME ]) ) );
+			return $log->logMsg( $message, 'ERROR', $options );
 		}
-		public static function SYSLog($message, $logPos = FALSE, $logFileName = '', $options = array())
+		public static function SYSLog($message, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "system.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			return $log->logMsg($message, $logPos, 'SYS', $options);
+			return $log->logMsg($message, 'SYS', $options);
 		}
-		public static function ShareLog($message, $logPos = FALSE, $logFileName = '', $options = array())
+		public static function ShareLog($message, $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "share.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			return $log->logMsg($message, $logPos, 'SHARE', $options);
+			return $log->logMsg($message, 'SHARE', $options);
 		}
-		public static function CustomLog($message, $cate = 'CUSTOM', $logPos = FALSE, $logFileName = '', $options = array())
+		public static function CustomLog($message, $cate = 'CUSTOM', $logFileName = '', $options = array())
 		{
 			$logPath = DEFAULT_SYSTEM_LOG_DIR . "/" . (empty($logFileName) ? "custom.pblog" : $logFileName);
 			$log	 = self::ObtainLog($logPath);
 
-			return $log->logMsg($message, $logPos, empty($cate) ? 'CUSTOM' : "{$cate}", $options);
+			return $log->logMsg($message, empty($cate) ? 'CUSTOM' : "{$cate}", $options);
 		}
 
 
@@ -111,34 +105,14 @@
 			return $_cachedLog[$pathKey];
 		}
 		private static function PrepLogInfo( $logCate = '' ) {
-
-			$trace = debug_backtrace();
-			array_shift($trace);	// This scope
-			array_shift($trace);	// Caller scope
-
-
-			// INFO: Retrieve the first module in the stack
-			$counter = count($trace);
-			$module = '';
-			while ($counter > 0)
-			{
-				$inst = @$trace[$counter]['object'];
-				if ( is_a($inst, PBModule::class) ) $module = $inst->class;
-
-				$counter--;
-			}
-
-
 			$curTime = time();
-			return array(
+			return [
 				'cate'		=> (empty($logCate) || !is_string($logCate)) ? 'INFO' : "{$logCate}",
 				'time'		=> $curTime,
 				'timestamp' => date("Y-m-d G:i:s", $curTime),
 				'service'	=> (!defined('__SERVICE__') ? 'Pitaya' : __SERVICE__),
-				'module'	=> $module,
-				'route'		=> (SYS_EXEC_ENV === EXEC_ENV_CLI) ? 'CLI' : 'NET',
-				'position'	=> "{$trace[0]['file']}:{$trace[0]['line']}"
-			);
+				'route'		=> IS_CLI_ENV ? 'CLI' : 'NET'
+			];
 		}
 		private static function ObtainStream($logFilePath)
 		{

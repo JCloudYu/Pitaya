@@ -1,10 +1,5 @@
 <?php
-	/**
-	 ** Caltrop - env.time.php
-	 ** Created by JCloudYu on 2016/08/28 20:32
-	 **/
-
-		// INFO: Set timezone
+	// INFO: Set timezone
 	call_user_func(function() {
 		$result = FALSE;
 
@@ -28,6 +23,6 @@
 		if ( $result === FALSE ) date_default_timezone_set('UTC');
 	});
 
-	define( 'PITAYA_BOOT_TIME',		time() - $GLOBALS[ 'BOOT_TIME' ],	FALSE );
-	define( 'PITAYA_ZONE_DIFF',		date( 'Z' ) | 0,					FALSE );
-	define( 'PITAYA_BOOT_TIMEZONE', date_default_timezone_get(),		FALSE );
+	define( 'PITAYA_BOOT_TIME',		time() - ((microtime( TRUE ) - $GLOBALS[ 'BOOT_TIME' ]) | 0) );
+	define( 'PITAYA_ZONE_DIFF',		date( 'Z' ) | 0 );
+	define( 'PITAYA_BOOT_TIMEZONE', date_default_timezone_get() );

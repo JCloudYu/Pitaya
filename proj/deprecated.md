@@ -2,7 +2,21 @@
 The following files and apis are maked as deprecated and will be removed soon!
 
 
-## 1.5.0 ##
+## 2.1.0 ##
+#### kernel ###
+- [const] \_\_WEB\_ROOT\_\_
+- [const] \_\_SPACE\_ROOT\_\_
+- [const] \_\_ROOT\_\_
+- [const] \_\_WORKING_ROOT\_\_
+- [const] 
+- [func] fileMove
+- [func] fileCopy
+- [func] available
+- [func] package
+
+#### ext.base.assistive ####
+- [func] S
+
 #### ext.base.misc ####
 - [func] TO
 - [func] iTrans
@@ -16,6 +30,9 @@ The following files and apis are maked as deprecated and will be removed soon!
 
 #### kernel.core.PBSession ####
 - [class] PBSession
+
+#### modules.PBErrorPage ####
+- [class] PBErrorPage
 
 #### kernel.core.PBRequest ####
 - [usage] PBReuqest::data's second argument as array

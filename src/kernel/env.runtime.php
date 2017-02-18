@@ -1,12 +1,21 @@
 <?php
-/**
- * 1017.NeighborApp - os.php
- * Created by JCloudYu on 2015/02/14 16:33
- */
-	// NOTE: Class definitions
+	// INFO: Runtime configurations
+	call_user_func(function(){
+		// INFO: Error Reporting Control
+		s_define( "PITAYA_SUPPRESS_EXPECTED_WARNINGS", TRUE, TRUE, FALSE );
+		error_reporting( PITAYA_SUPPRESS_EXPECTED_WARNINGS ? (E_ALL & ~E_STRICT & ~E_NOTICE) : E_ALL );
+		
+
+		set_error_handler(function( $errno, $errStr ){
+			if ( !PITAYA_SUPPRESS_EXPECTED_WARNINGS ) return FALSE;
+			return ( substr( $errStr, 0, 14 ) === 'Declaration of' );
+		}, E_WARNING );
+	});
+
+	s_define( '__DEBUG_CONSOLE_WIDTH__', 200, TRUE );
+
 	// INFO: Debug
-	final class Debug
-	{
+	final class DEBUG {
 		private static $_silent = FALSE;
 		public static function Silent()	 { self::$_silent = TRUE; }
 		public static function Verbose() { self::$_silent = FALSE; }
@@ -124,8 +133,7 @@
 			echo "<script language='javascript'>console.log(".json_encode($outStr).");</script>";
 		}
 		public static function BackTrace($args = 0) {
-
-			if ( self::IS_SILENT() ) return NULL;
+			if ( !DEBUG_BACKTRACE_ENABLED || self::IS_SILENT() ) return NULL;
 
 			$info = debug_backtrace($args);
 			$depth = count($info);
@@ -161,8 +169,7 @@
 	}
 
 	// INFO: Runtime control
-	final class Termination
-	{
+	final class Termination {
 		const STATUS_SUCCESS			= 0;
 		const STATUS_ERROR				= 1;
 		const STATUS_INCORRECT_USAGE	= 2;
@@ -184,13 +191,7 @@
 		}
 	}
 
-
-
-
-
-
-
-	// NOTE: Parse System Arguments
+	// INFO: Parse System Arguments
 	call_user_func(function() {
 		$conf = array();
 		$argv = $_SERVER['argv'];
@@ -228,24 +229,6 @@
 		$GLOBALS['RUNTIME_CONF'] = $conf;
 	});
 
-
-
-
-
-
-	if (__OS__ === 'WIN')
-	{
-		define('CMD_MOVE', 'move');
-		define('CMD_COPY', 'copy');
-	}
-	else
-	{
-		define('CMD_MOVE', 'mv');
-		define('CMD_COPY', 'cp');
-	}
-
-
-
 	// INFO: Setting Environmental Constants
 	call_user_func(function(){
 
@@ -268,19 +251,8 @@
 		if ( !defined('__LOG_EXCEPTION__') )
 			define( '__LOG_EXCEPTION__', TRUE );
 	});
-
-
-
-
-
-
-	if ( !defined('__EVENT_IDENTIFIER_LEN__') )	define('__EVENT_IDENTIFIER_LEN__',	16);
-	define('CONFIG_SESSION_STORAGE_PATH', ini_get('session.save_path'));
-
-
-
-
-
+	
+	
 
 	// INFO: Error handling supportive apis
 	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){

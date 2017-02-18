@@ -14,7 +14,7 @@
 
 			if($initialized) return;
 
-			PBSysKernel::$_cacheServicePath  = $GLOBALS['servicePath'];
+			PBSysKernel::$_cacheServicePath  = BASIS_ROOT;
 			PBSysKernel::$_cachedRuntimeAttr = array(
 				'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
 			);
@@ -39,8 +39,8 @@
 				}
 
 				s_define( '__DEFAULT_SERVICE_DEFINED__',		defined('DEFAULT_SERVICE'), TRUE, TRUE );
-				s_define( 'DEFAULT_SERVICE',					'index',					TRUE );
-				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL',	0,							TRUE );
+				s_define( 'DEFAULT_SERVICE',					IS_CLI_ENV ? 'cli' : 'index',	TRUE );
+				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL',	0,								TRUE );
 
 
 
@@ -66,7 +66,7 @@
 
 				if ( __LOG_EXCEPTION__ === TRUE )
 				{
-					PBLog::SYSLog( print_r($e, TRUE), FALSE, "system.exception.pblog" );
+					PBLog::SYSLog( print_r($e, TRUE), "system.exception.pblog" );
 					$extMsg = "See exception log for more information!";
 				}
 
@@ -158,10 +158,8 @@
 				path( 'share',	 'share.php' ),
 				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
 			];
-			foreach ( $preprocessEnvPaths as $path )
-			{
-				if (is_File($path) && is_readable($path))
-				{
+			foreach ( $preprocessEnvPaths as $path ) {
+				if (is_File($path) && is_readable($path)) {
 					chdir( dirname($path) );
 					require_once $path;
 				}
@@ -171,12 +169,12 @@
 
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService( $argv );
+			__PATH_RESOLVER::Purge();
 			PBRequest::Request()->__initialize();
 
 
-
 			// INFO: Define runtime constants
-			define('__SERVICE__', $this->_entryService);
+			define( '__SERVICE__', $this->_entryService );
 
 
 
@@ -200,7 +198,7 @@
 		{
 			$service = $attributes = '';
 			$moduleRequest = [];
-
+			
 			if ( SYS_EXEC_ENV == EXEC_ENV_HTTP ) {
 			
 				$reqURI		= @"{$_SERVER['REQUEST_URI']}";
@@ -248,8 +246,8 @@
 			// region [ Find the default basis ]
 			// INFO: If cli and standalone script has been assigned
 			// MARK: Developer customizable only
-			if ( IS_CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) )
-			{
+			if ( IS_CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) ) {
+			
 				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
 				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
 				{
@@ -260,8 +258,9 @@
 					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
 					$this->_entryService = "PBSystem.PBExecCtrl#PBVectorChain";
 	
-					define('__WORKING_ROOT__', self::$_cachedRuntimeAttr['standalone']['cwd']);
-					define('__STANDALONE_MODULE__', $module );
+					define( 'WORKING_ROOT', self::$_cachedRuntimeAttr['standalone']['cwd'] );
+					define( '__WORKING_ROOT__', WORKING_ROOT ); // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
+					define( '__STANDALONE_MODULE__', $module );
 					
 					
 	
@@ -274,8 +273,7 @@
 
 
 			// INFO: Customized service decision logics
-			if ( defined( 'DEFAULT_BOOT_RESOLVER' ) )
-			{
+			if ( defined( 'DEFAULT_BOOT_RESOLVER' ) ) {
 				try{
 					$module = $this->acquireModule( DEFAULT_BOOT_RESOLVER );
 				}
@@ -293,11 +291,12 @@
 					
 					
 					// INFO: Detect Main Service
-					$state = available("{$service}", FALSE);
+					$state = file_exists( path( "{$service}" ) . ".php" );
 					if ($state) {
 						$this->_entryService = $service;
 		
-						define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
+						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
+						define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 		
 						$GLOBALS['service'] = $service;
 						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -314,11 +313,12 @@
 			// INFO: Detect Main Service
 			$serviceParts = @explode( '.', "{$service}" );
 			$serviceName = @array_pop( $serviceParts );
-			$state = available("service.{$serviceName}.{$serviceName}", FALSE);
+			$state = file_exists( path( "broot.{$serviceName}.{$serviceName}" ) . ".php" );
 			if ($state) {
 				$this->_entryService = $serviceName;
 
-				define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
+				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryService}" );
+				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 				$GLOBALS['service'] = $serviceName;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -337,18 +337,17 @@
 			
 			$basisChain = @json_decode( @file_get_contents( path( 'defaults', 'basis-chain.json' ) ), TRUE );
 			$basisChainPath	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
-			if ( !empty( $basisChainPath ) && is_file( $basisChainPath ) )
-			{
+			if ( !empty( $basisChainPath ) && is_file( $basisChainPath ) ) {
 				$custChain = @json_decode( @file_get_contents($basisChainPath), TRUE );
 				$basisChain = array_merge( $basisChain, $custChain );
 			}
-			if ( !empty($basisChain[ $service ]) )
-			{
+			if ( !empty($basisChain[ $service ]) ) {
 				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
 				$this->_entryService		= "PBSystem.PBExecCtrl#PBBasisChain";
 				$this->_entryServiceParam	= $basisChain[$service];
 
-				define( '__WORKING_ROOT__', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
+				define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir() );
+				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 				$GLOBALS['service'] = $service;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
@@ -357,50 +356,40 @@
 
 
 
+			$reqService = "{$service}";
+			if ( !empty($service) ) array_unshift($moduleRequest, $service);
+
+			$service = DEFAULT_SERVICE;
+			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
+			if ($state) {
+				$this->_entryService = $service;
+
+				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryService}" );
+				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 
-
-			// INFO: If default basis is defined
-			// MARK: Developer customizable only
-			$defaultBasis = "NULL"; $reqResource = "{$service}";
-			if (__DEFAULT_SERVICE_DEFINED__)
-			{
-				if ( !empty($service) ) array_unshift($moduleRequest, $service);
-
-				$service = (defined('DEFAULT_SERVICE')) ? DEFAULT_SERVICE : '';
-				$state = $state || available("service.{$service}.{$service}", FALSE);
-
-				if ($state)
-				{
-					$this->_entryService = $service;
-
-					define('__WORKING_ROOT__', PBSysKernel::$_cacheServicePath."/{$this->_entryService}");
-
-
-					$GLOBALS['service'] = $service;
-					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-					return;
-				}
-
-				$state = $state || available("modules.{$service}.{$service}", FALSE);
-
-				if ($state)
-				{
-					$this->_entryService = $service;
-
-					define('__WORKING_ROOT__', __ROOT__."modules/{$this->_entryService}");
-
-
-					$GLOBALS['service'] = $service;
-					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-					return;
-				}
-
-				$defaultBasis = $service;
+				$GLOBALS['service'] = $service;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+				return;
 			}
+
+/*
+			$state = $state || file_exists( path( "modules.{$service}.{$service}" ) . ".php" );
+			if ($state) {
+				$this->_entryService = $service;
+
+				define( 'WORKING_ROOT', PITAYA_ROOT . "/modules/{$this->_entryService}" );
+				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
+
+
+				$GLOBALS['service'] = $service;
+				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+				return;
+			}
+*/
 			// endregion
 
-			throw(new Exception("Cannot locate default basis ( DEFAULT_SERVICE: {$defaultBasis} | RESOURCE: {$reqResource}) !"));
+			throw(new Exception("Cannot locate default basis ({$reqService})!"));
 		}
 
 		/** @var PBProcess */
@@ -413,7 +402,7 @@
 			$this->_process = new PBProcess( $this );
 			if ( is_callable($custInit) ) $custInit();
 
-			chdir( __WORKING_ROOT__ );
+			chdir( WORKING_ROOT );
 			$this->_process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
 		}
 		
@@ -458,11 +447,8 @@
 
 
 			// INFO: Search path construction
-			$moduleSearchPaths = [];
-
-			if ( defined( '__SERVICE__' ) )
-				$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
-			
+			$moduleSearchPaths   = [];
+			$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
 			$moduleSearchPaths[] = "modules.";
 			$moduleSearchPaths[] = "data.modules.";
 			$moduleSearchPaths[] = "share.modules.";
@@ -494,7 +480,7 @@
 				{
 					$path = "{$searchPath}{$component}";
 
-					if ( available($path) )
+					if (file_exists( path($path) . ".php" ))
 					{
 						using($path);
 						$hitPath = $path;

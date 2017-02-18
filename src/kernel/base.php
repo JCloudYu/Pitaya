@@ -2,175 +2,32 @@
 	$GLOBALS[ 'BOOT_TIME' ] = microtime( TRUE );
 	require_once __DIR__ . "/env.version.php";
 
-
-
 	// Detect minimum PHP Version
 	if ( PHP_VERSION_ID < 50600 )
 		die( "The system requires php 5.6.0 or higher!" );
+		
+		
+	if ( !defined( "ROOT" ) || !defined( "PITAYA_ROOT" ) ) {
+		die( "Required system constants are missing ( ROOT, PITAYA_ROOT )!" );
+	}
 
 
 	if ( defined( 'PITAYA_BASE_CORE_INITIALIZED' ) ) return
 	define( 'PITAYA_BASE_CORE_INITIALIZED', TRUE );
-
-
-
 	
 	
+	// INFO: Runtime configurations
+   @include_once ROOT . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
+   @include_once ROOT . "/common.php";
 
-	define('EXEC_ENV_CLI',	'CLI');
-	define('EXEC_ENV_HTTP', 'HTTP');
-
-	define('EON',	"\n");
-	define('EOR',	"\r");
-	define('EORN',	"\r\n");
-	define('EOB',	'<br>');
-
-	define('LF',	"\n");
-	define('CR',	"\r");
-	define('CRLF',	"\r\n");
-	define('BR',	'<br>');
-
-
-
-	// INFO:Some special initializations
-	call_user_func(function() {
+	require_once PITAYA_ROOT . '/kernel/env.native.php';
+	require_once PITAYA_ROOT . '/kernel/env.core.php';
+	require_once PITAYA_ROOT . '/kernel/env.path.php';
+	require_once PITAYA_ROOT . '/kernel/api.path.php';
+	require_once PITAYA_ROOT . '/kernel/env.time.php';
+	require_once PITAYA_ROOT . '/kernel/env.runtime.php';
+	require_once PITAYA_ROOT . "/kernel/env.const.php";
 	
-		if ( !defined( '__OS__' ) )
-			(strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') ? define('__OS__', 'WIN', TRUE) : define('__OS__', 'UNIX');
-
-		$GLOBALS['RUNTIME_ENV'] = array();
-
-		$env = shell_exec( ( __OS__ == "WIN" ) ? 'set' : 'printenv');
-		$env = preg_split("/(\n)+|(\r\n)+/", $env);
-		foreach ( $env as $envStatement )
-		{
-			if ( ($pos = strpos($envStatement, "=")) === FALSE ) continue;
-
-			$var	 = substr( $envStatement, 0, $pos );
-			$content = substr( $envStatement, $pos + 1 );
-			$GLOBALS['RUNTIME_ENV'][$var] = $content;
-		}
-	});
-
-
-	if ( !defined( '__ROOT__' ) )
-		define('__ROOT__', realpath( dirname($_SERVER["SCRIPT_FILENAME"]) ));
-
-
-	if ( php_sapi_name() == "cli" )
-	{
-		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', getcwd() );
-
-
-
-		define('SYS_EXEC_ENV',		EXEC_ENV_CLI);
-		define('IS_CLI_ENV',		TRUE);
-		
-		define('REQUESTING_METHOD',	'');
-		define('PITAYA_HOST',		 @"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}");
-		define('EOL',				"\n");
-
-
-		// NOTE: Remove script file path
-		array_shift( $_SERVER['argv'] );
-
-
-		// NOTE: Special intialization
-		if ( "{$_SERVER['argv'][0]}" == "-entry" )
-		{
-			array_shift($_SERVER['argv']);
-			$GLOBALS['STANDALONE_EXEC'] = array(
-				'script' => "{$_SERVER['argv'][0]}",
-				'cwd'	 => __SPACE_ROOT__
-			);
-			array_shift( $_SERVER['argv'] );
-
-			define( '__STANDALONE_EXEC_MODE__', TRUE);
-		}
-
-
-		$_SERVER['argc'] = count($_SERVER['argv']);
-	}
-	else
-	{
-		if ( !defined( '__SPACE_ROOT__' ) ) define( '__SPACE_ROOT__', ($_SERVER['DOCUMENT_ROOT'] = dirname(__ROOT__)) );
-
-
-
-		define('SYS_EXEC_ENV',		EXEC_ENV_HTTP);
-		define('IS_CLI_ENV',		FALSE);
-		
-		define('REQUESTING_METHOD',	strtoupper($_SERVER['REQUEST_METHOD']));
-		define('PITAYA_HOST', "{$_SERVER['HTTP_HOST']}");
-
-		define('EOL', '<br />');
-
-		$_SERVER['argv'] = array(); $_SERVER['argc'] = 0;
-	}
-
-
-	define( '__WEB_ROOT__', __SPACE_ROOT__, FALSE );
-
-	// INFO: Change current working environment space root
-	chdir( __SPACE_ROOT__ );
-
-
-
-		
-	define('IS_HTTP_ENV',		!IS_CLI_ENV);
-	if ( !defined( '__STANDALONE_EXEC_MODE__' ) )
-		define( '__STANDALONE_EXEC_MODE__', FALSE);
-
-
-
-
-
-
-
-	require_once __ROOT__ . '/kernel/api.tool.php';
-	@include_once __SPACE_ROOT__ . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
-	
-
-
-
-	// INFO: Common configurations...
-	if ( file_exists( __SPACE_ROOT__ . "/common.php" ) )
-		require_once __SPACE_ROOT__ . "/common.php";
-
-
-
-	// Calculate the time diff from begining... ( Theoretically... 0 )
-	$GLOBALS[ 'BOOT_TIME' ] = (microtime( TRUE ) - $GLOBALS[ 'BOOT_TIME' ])| 0;
-	require_once __ROOT__ . '/kernel/env.time.php';
-
-
-
-	// INFO: System Core APIs ( using, package, path, available and etc... )
-	require_once __ROOT__ . '/kernel/runtime.php';
-	require_once __ROOT__ . '/kernel/api.core.php';
-
-
-
-	// INFO: Include configurations according working environment
-	require_once __ROOT__ . "/kernel/" . ( (SYS_EXEC_ENV == EXEC_ENV_CLI) ? "cli.config.php" : "net.config.php" );
-	require_once __ROOT__ . "/kernel/env.const.php";
-
-
-
-	// INFO: Runtime Configuration Control
-	call_user_func(function(){
-		// INFO: Error Reporting Control
-		s_define( "PITAYA_SUPPRESS_EXPECTED_WARNINGS", TRUE, TRUE, FALSE );
-		error_reporting( PITAYA_SUPPRESS_EXPECTED_WARNINGS ? (E_ALL & ~E_STRICT & ~E_NOTICE) : E_ALL );
-		
-
-		set_error_handler(function( $errno, $errStr ){
-			if ( !PITAYA_SUPPRESS_EXPECTED_WARNINGS ) return FALSE;
-			return ( substr( $errStr, 0, 14 ) === 'Declaration of' );
-		}, E_WARNING );
-	});
-
-
 
 	// INFO: Load system core libraries and prepare system constants
 	using( 'kernel.php-extension.*' );
@@ -179,9 +36,4 @@
 	using( 'kernel.core.*' );
 	using( 'kernel.sys' );
 	
-
-	PBSysKernel::__imprint_constants();
-	PBRequest::__imprint_constants();
-	PBRuntimeCtrl::__ImprintEnvironment();
-	
-	require_once __ROOT__ . "/kernel/env.cleanup.php";
+	require_once PITAYA_ROOT . "/kernel/env.cleanup.php";	

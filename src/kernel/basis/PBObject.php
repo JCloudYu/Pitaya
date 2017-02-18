@@ -36,7 +36,12 @@
 
 			return get_class($this);
 		}
+		
+
+
 		protected function __get_caller() {
+			if ( !DEBUG_BACKTRACE_ENABLED ) return NULL;
+			DEBUG_WARNING( "PBObject::caller is designed for debugging! It can be harmful to your system performance" );
 
 			$tempBacktrace = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
 			$tempBacktrace = array_reverse($tempBacktrace);
