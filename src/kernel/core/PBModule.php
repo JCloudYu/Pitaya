@@ -38,15 +38,9 @@
 			return strtoupper(get_class($this));
 		}
 		
-		private $_bootChain = [];
-		protected function __set_chain($value) {
-			$this->_bootChain = (!is_array($value)) ? [] : $value;
-		}
-		protected function &__get_chain() {
-			return $this->_bootChain;
-		}
+		protected $chain = [];
 		public function __get_bootChain() {
-			return $this->_bootChain;
+			return $this->chain;
 		}
 		
 		protected $_error = NULL;
