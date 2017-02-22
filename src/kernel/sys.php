@@ -159,8 +159,7 @@
 				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
 			];
 			foreach ( $preprocessEnvPaths as $path ) {
-				if (is_File($path) && is_readable($path)) {
-					chdir( dirname($path) );
+				if ( is_file($path) && is_readable($path) ) {
 					require_once $path;
 				}
 			}
@@ -180,11 +179,8 @@
 
 			// INFO: Bring up the main process
 			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use(&$postprocessEnvPaths) {
-				foreach ( $postprocessEnvPaths as $path )
-				{
-					if (is_File($path) && is_readable($path))
-					{
-						chdir( dirname($path) );
+				foreach ( $postprocessEnvPaths as $path ) {
+					if ( is_file($path) && is_readable($path) ) {
 						require_once $path;
 					}
 				}

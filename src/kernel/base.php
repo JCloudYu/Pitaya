@@ -1,5 +1,6 @@
 <?php
-	$GLOBALS[ 'BOOT_TIME' ] = microtime( TRUE );
+	define( 'PITAYA_METRIC_BOOT_TIME',		microtime( TRUE ) );
+	define( 'PITAYA_METRIC_BOOT_MEMORY',	memory_get_usage() );
 	require_once __DIR__ . "/env.version.php";
 
 	// Detect minimum PHP Version
@@ -37,3 +38,5 @@
 	using( 'kernel.sys' );
 	
 	require_once PITAYA_ROOT . "/kernel/env.cleanup.php";	
+	define( 'PITAYA_METRIC_KERNEL_TIME',	microtime( TRUE ) );
+	define( 'PITAYA_METRIC_KERNEL_MEMORY',	memory_get_usage() );
