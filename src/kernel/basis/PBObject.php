@@ -1,7 +1,6 @@
 <?php
 	// The class provides the native getter and setter functions
-	class PBObject
-	{
+	class PBObject {
 		private static $_getPrefix = "__get_";
 		private static $_setPrefix = "__set_";
 
