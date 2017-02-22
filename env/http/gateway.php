@@ -1,9 +1,4 @@
 <?php
-	error_reporting( E_ALL & ~E_NOTICE );
-	
-	
-
-
 	define( 'ROOT', realpath(dirname("{$_SERVER['SCRIPT_FILENAME']}")) );
 	define( '__SPACE_ROOT__', ROOT ); // DEPRECATED: __SPACE_ROOT__ will be removed in 2.5.0
 	define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') );

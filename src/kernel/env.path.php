@@ -2,7 +2,7 @@
 	final class __PATH_RESOLVER {
 		private static $_path_cache = [];
 		public static function Initialize() {
-			if ( !is_array($GLOBALS['extPath']) ) $GLOBALS['extPath'] = [];
+			if ( !is_array(@$GLOBALS['extPath']) ) $GLOBALS['extPath'] = [];
 			
 			// INFO: Attach custom packages
 			foreach( $GLOBALS['extPath'] as $identifier => $path )
