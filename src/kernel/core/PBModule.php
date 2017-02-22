@@ -7,6 +7,9 @@
 		public function __invoke( ...$arguments ) {
 			return call_user_func_array( [ $this, 'execute' ], $arguments );
 		}
+		public function __toString() {
+			return $this->execute( NULL, NULL );
+		}
 		
 
 
