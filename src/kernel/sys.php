@@ -16,7 +16,7 @@
 
 			PBSysKernel::$_cacheServicePath  = BASIS_ROOT;
 			PBSysKernel::$_cachedRuntimeAttr = array(
-				'standalone'	=> @$GLOBALS['STANDALONE_EXEC']
+				'standalone' => @$GLOBALS['STANDALONE_EXEC']
 			);
 		}
 		
@@ -156,7 +156,7 @@
 				path( 'root',	 'service.php'),
 				path( "service", 'common.php'),
 				path( 'share',	 'share.php' ),
-				__STANDALONE_EXEC_MODE__ ? path( "working", "runtime.php" ): ""
+				PITAYA_STANDALONE_EXECUTION_MODE ? path( "working", "runtime.php" ): ""
 			];
 			foreach ( $preprocessEnvPaths as $path ) {
 				if ( is_file($path) && is_readable($path) ) {
@@ -242,8 +242,7 @@
 			// region [ Find the default basis ]
 			// INFO: If cli and standalone script has been assigned
 			// MARK: Developer customizable only
-			if ( IS_CLI_ENV && !empty(self::$_cachedRuntimeAttr['standalone']) ) {
-			
+			if ( IS_CLI_ENV && PITAYA_STANDALONE_EXECUTION_MODE ) {
 				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
 				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
 				{
@@ -444,7 +443,7 @@
 
 			// INFO: Search path construction
 			$moduleSearchPaths   = [];
-			$moduleSearchPaths[] = __STANDALONE_EXEC_MODE__ ? "working." : "service.";
+			$moduleSearchPaths[] = PITAYA_STANDALONE_EXECUTION_MODE ? "working." : "service.";
 			$moduleSearchPaths[] = "modules.";
 			$moduleSearchPaths[] = "data.modules.";
 			$moduleSearchPaths[] = "share.modules.";
