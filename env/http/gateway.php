@@ -1,5 +1,5 @@
 <?php
-	define( 'ROOT', dirname( "{$_SERVER['SCRIPT_FILENAME']}" ) );
+	define( 'ROOT', realpath(dirname("{$_SERVER['SCRIPT_FILENAME']}")) );
 	define( '__SPACE_ROOT__', ROOT ); // DEPRECATED: __SPACE_ROOT__ will be removed in 2.5.0
 	define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') );
 	function resolveLnk( $lnkPath ) {
@@ -11,9 +11,9 @@
 	
 	
    @include_once ROOT . "/pitaya.env.php";
-	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? __PITAYA_PATH : ROOT . '/Pitaya';
+	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? realpath(__PITAYA_PATH) : ROOT . '/Pitaya';
 	if ( IS_WIN_ENV && !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) ) {
-		$pitayaRootPath = resolveLnk( "{$pitayaRootPath}.lnk" );
+		$pitayaRootPath = realpath(resolveLnk( "{$pitayaRootPath}.lnk" ));
 	}
 	
 	define( 'PITAYA_ROOT', $pitayaRootPath );
