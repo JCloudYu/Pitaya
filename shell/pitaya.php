@@ -1,8 +1,10 @@
 #!/usr/bin/env php
 <?php
-	$LIB_PATH	 = realpath(__DIR__ . '/../');
-	$PORTAL_PATH = "{$LIB_PATH}/src/portal.php";
+	define( 'IS_WINDOWS', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') );
+	define( 'LIB_PATH', $LIB_PATH = realpath(__DIR__ . '/../') );
+	define( 'WORKING_DIR', $WORKING_DIR = realpath(getcwd()) );
 	
+	$PORTAL_PATH = "{$LIB_PATH}/src/portal.php";
 	if ( !is_file("{$PORTAL_PATH}") || !is_readable("{$PORTAL_PATH}") ) {
 		fwrite( STDERR, "Incompatible Execution Environment!" . PHP_EOL );
 		exit( 1 );
@@ -10,7 +12,6 @@
 	
 	
 
-	$WORKING_DIR = realpath(getcwd());
 	$ARGV = empty($_SERVER[ 'argv' ]) ? [] : $_SERVER[ 'argv' ];
 	array_shift( $ARGV ); // remove script path
 	
