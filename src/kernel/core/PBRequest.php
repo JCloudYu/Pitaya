@@ -64,8 +64,8 @@
 			$this->_incomingRecord['request']['files']			= @$_FILES;
 			$this->_incomingRecord['request']['post']			= $_POST;
 			$this->_incomingRecord['request']['get']			= $_GET;
-			$this->_incomingRecord['request']['cookie']			= $_COOKIE;
-			$this->_incomingRecord['request']['session']		= $_SESSION;
+			$this->_incomingRecord['request']['cookie']			= @$_COOKIE;
+			$this->_incomingRecord['request']['session']		= @$_SESSION;
 			
 			$this->_incomingRecord['environment']['env']		= $_ENV;
 			$this->_incomingRecord['environment']['server']		= $_SERVER;

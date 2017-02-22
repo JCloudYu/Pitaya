@@ -1,11 +1,14 @@
 <?php
 
 	abstract class PBModule extends PBObject {
-		public function execute( $chainData = NULL, $initData = NULL ) { 
+		public function execute( $chainData, $initData ) { 
 			return $chainData; 
 		}
 		public function __invoke( ...$arguments ) {
 			return call_user_func_array( [ $this, 'execute' ], $arguments );
+		}
+		public function __toString() {
+			return $this->execute( NULL, NULL );
 		}
 		
 
@@ -38,15 +41,9 @@
 			return strtoupper(get_class($this));
 		}
 		
-		private $_bootChain = [];
-		protected function __set_chain($value) {
-			$this->_bootChain = (!is_array($value)) ? [] : $value;
-		}
-		protected function &__get_chain() {
-			return $this->_bootChain;
-		}
+		protected $chain = [];
 		public function __get_bootChain() {
-			return $this->_bootChain;
+			return $this->chain;
 		}
 		
 		protected $error = NULL;
