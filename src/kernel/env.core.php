@@ -45,6 +45,8 @@
 				'cwd'	 => ROOT
 			);
 			array_shift( $_SERVER['argv'] );
+			
+			define( 'PITAYA_STANDALONE_EXECUTION_MODE', TRUE );
 		}
 		$_SERVER['argc'] = count($_SERVER['argv']);
 		// endregion
@@ -57,7 +59,7 @@
 		$_SERVER['argv'] = []; $_SERVER['argc'] = 0;
 	}
 	
-	if ( !defined( '__STANDALONE_EXEC_MODE__' ) ) define( '__STANDALONE_EXEC_MODE__', FALSE );
+	if ( !defined( 'PITAYA_STANDALONE_EXECUTION_MODE' ) ) define( 'PITAYA_STANDALONE_EXECUTION_MODE', FALSE );
 	// endregion
 	
 	// INFO: Change current working environment space root

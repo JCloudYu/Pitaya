@@ -8,7 +8,7 @@
 		s_define( 'KEEP_PHP_ENVIRONMENTAL_VARIABLES', FALSE, TRUE, FALSE );
 
 
-		if ( __STANDALONE_EXEC_MODE__ && is_writable( path( $logPackage = 'working' )) )
+		if ( PITAYA_STANDALONE_EXECUTION_MODE && is_writable( path( $logPackage = 'working' )) )
 			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage = "{$logPackage}.plog", TRUE );
 		else
 		if ( is_writable( path( $logPackage = 'data' )) )
