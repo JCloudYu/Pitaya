@@ -1,1 +1,83 @@
 <?php
+	function CreateLink( $dest, $link ) {
+		if ( IS_WINDOWS ) {
+			if ( !substr($link, -4, '.lnk'))
+				$link .= '.lnk';
+	
+			$shell = new COM('WScript.Shell');
+			$shortcut = $shell->createshortcut($link);
+			$shortcut->targetpath = $dest;
+			return $shortcut->save();
+		}
+	
+		return symlink( $dest, $link );
+	}
+	
+	function IsValidPath($path){
+		return !(!is_link($path) && !file_exists($path) && !file_exists("{$path}.lnk"));
+	}
+
+
+	$targetPath  = WORKING_DIR;
+	$createShare = FALSE;
+	$createData  = FALSE;
+	while( TRUE ) {
+		$item = @array_shift($ARGV);
+		switch( $item ) {
+			case "-share":
+				$createShare = $createShare || TRUE;
+				break;
+			
+			case "-data":
+				$createData = $createData || TRUE;
+				break;
+				
+			default:
+				break 2;
+		}
+	}
+	
+	
+	if ( !empty($item) ) {
+		@mkdir( $targetPath = "{$targetPath}/{$item}", 0755, TRUE );
+	}
+
+	$path = "{$targetPath}/Pitaya";
+	if ( !IsValidPath($path) ) {
+		CreateLink( LIB_PATH . '/src', $path );
+	}
+
+	$path = "{$targetPath}/Basis";
+	if ( !IsValidPath($path) ) {
+		@mkdir( $path, 0755, TRUE );
+	}
+
+	if ( $createShare ) {
+		$path = "{$targetPath}/Share";
+		if ( !IsValidPath($path) ) {
+			@mkdir( $path, 0755, TRUE );
+		}
+	}
+
+	if ( $createShare ) {
+		$path = "{$targetPath}/Data";
+		if ( !IsValidPath($path) ) {
+			@mkdir( $path, 0755, TRUE );
+		}
+	}
+
+
+	$srcPath  = LIB_PATH . '/env/base';
+	$itemList = scandir( $srcPath );
+	foreach( $itemList as $item ) {
+		if ( $item == "." || $item == ".." ) continue;
+		
+		
+		$destName = ( substr($item, -12 ) == ".example.php" ) ? substr( $item, 0, -11 ) . 'php' : $item;
+		if (file_exists( $path = "{$targetPath}/{$destName}" )) continue;
+		
+		$status = copy( ($sourcePath = "{$srcPath}/{$item}"), $path );
+		if ( empty($status) ) {
+			fwrite( STDERR,  "Cannot copy file {$sourcePath}!" . PHP_EOL );
+		}
+	}
