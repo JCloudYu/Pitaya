@@ -12,9 +12,6 @@
 	define( 'EXEC_ENV_CLI',	 'CLI' );
 	define( 'EXEC_ENV_HTTP', 'HTTP' );
 	
-	if ( !defined( 'IS_WIN_ENV' ) ) define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN') );
-	define( 'IS_CLI_ENV', php_sapi_name() === "cli" );
-	define( 'IS_HTTP_ENV', !IS_CLI_ENV );
 	define( 'SYS_EXEC_ENV', IS_CLI_ENV ? EXEC_ENV_CLI : EXEC_ENV_HTTP );
 	// endregion
 	// region [ Environmental Initialization ]
