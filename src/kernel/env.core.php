@@ -40,15 +40,13 @@
 		
 		// region [ CLI Initialization ]
 		array_shift( $_SERVER['argv'] ); // INFO: Remove script file path
-		if ( "{$_SERVER['argv'][0]}" == "-entry" ) {
+		if ( @"{$_SERVER['argv'][0]}" == "-entry" ) {
 			array_shift($_SERVER['argv']);
 			$GLOBALS['STANDALONE_EXEC'] = array(
 				'script' => "{$_SERVER['argv'][0]}",
 				'cwd'	 => ROOT
 			);
 			array_shift( $_SERVER['argv'] );
-
-			define( '__STANDALONE_EXEC_MODE__', TRUE );
 		}
 		$_SERVER['argc'] = count($_SERVER['argv']);
 		// endregion
@@ -57,10 +55,11 @@
 		define('REQUESTING_METHOD',		strtoupper($_SERVER['REQUEST_METHOD']));
 		define('PITAYA_HOST',			"{$_SERVER['HTTP_HOST']}");
 		define('EOL',					'<br />');
-		define( '__STANDALONE_EXEC_MODE__', FALSE );
 
 		$_SERVER['argv'] = []; $_SERVER['argc'] = 0;
 	}
+	
+	if ( !defined( '__STANDALONE_EXEC_MODE__' ) ) define( '__STANDALONE_EXEC_MODE__', FALSE );
 	// endregion
 	
 	// INFO: Change current working environment space root

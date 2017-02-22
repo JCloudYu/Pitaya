@@ -49,8 +49,8 @@
 			return $this->_bootChain;
 		}
 		
-		protected $_error = NULL;
+		protected $error = NULL;
 		public function __get_error() {
-			return $this->_error;
+			return $this->error;
 		}
 	}
