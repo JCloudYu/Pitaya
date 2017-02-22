@@ -15,14 +15,12 @@
 	array_shift( $ARGV ); // remove script path
 	
 	switch( $mode = @$ARGV[0] ) {
-		case "-k":
-			require "{$LIB_PATH}/shell/kernel/boot.php";
-			return;
-			
 		case "-c":
 			require "{$LIB_PATH}/shell/command/boot.php";
 			return;
 			
+		case "--help":
+			$detailedInfo = TRUE;
 		case "-h":
 			require "{$LIB_PATH}/shell/help/boot.php";
 			return;
