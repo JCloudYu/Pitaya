@@ -17,12 +17,14 @@
 	
 	switch( $mode = @$ARGV[0] ) {
 		case "-c":
-			require "{$LIB_PATH}/shell/command/boot.php";
+			array_shift($ARGV);
+			require "{$LIB_PATH}/shell/creation/boot.php";
 			return;
 			
 		case "--help":
 			$detailedInfo = TRUE;
 		case "-h":
+			array_shift($ARGV);
 			require "{$LIB_PATH}/shell/help/boot.php";
 			return;
 	}
