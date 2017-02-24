@@ -4,9 +4,10 @@
 			if ( !substr($link, -4, '.lnk'))
 				$link .= '.lnk';
 	
+			$dest  = realpath($dest);
 			$shell = new COM('WScript.Shell');
 			$shortcut = $shell->createshortcut($link);
-			$shortcut->targetpath = $dest;
+			$shortcut->targetpath = "\"{$dest}\"";
 			return $shortcut->save();
 		}
 	
