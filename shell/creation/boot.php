@@ -1,7 +1,7 @@
 <?php
 	function CreateLink( $dest, $link ) {
 		if ( IS_WINDOWS ) {
-			if ( !substr($link, -4, '.lnk'))
+			if ( substr($link, -4) !== '.lnk' )
 				$link .= '.lnk';
 	
 			$dest  = realpath($dest);
