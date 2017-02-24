@@ -20,17 +20,30 @@
 
 
 	$targetPath  = WORKING_DIR;
-	$createShare = FALSE;
-	$createData  = FALSE;
+	$options = (object)[
+		'createShare'	=> FALSE,
+		'createData'	=> FALSE,
+		'noBasis'		=> FALSE,
+		'noPitaya'		=> FALSE
+	];
+	
 	while( TRUE ) {
 		$item = @array_shift($ARGV);
 		switch( $item ) {
 			case "-share":
-				$createShare = $createShare || TRUE;
+				$options->createShare = $options->createShare || TRUE;
 				break;
 			
 			case "-data":
-				$createData = $createData || TRUE;
+				$options->createData = $options->createData || TRUE;
+				break;
+			
+			case "-no-pitaya":
+				$options->noPitaya = $options->noPitaya || TRUE;
+				break;
+			
+			case "-no-basis":
+				$options->noBasis = $options->noBasis || TRUE;
 				break;
 				
 			default:
@@ -42,25 +55,30 @@
 	if ( !empty($item) ) {
 		@mkdir( $targetPath = "{$targetPath}/{$item}", 0755, TRUE );
 	}
-
-	$path = "{$targetPath}/Pitaya";
-	if ( !IsValidPath($path) ) {
-		CreateLink( LIB_PATH . '/src', $path );
+	
+	
+	if ( !$options->noBasis ) {
+		$path = "{$targetPath}/Pitaya";
+		if ( !IsValidPath($path) ) {
+			CreateLink( LIB_PATH . '/src', $path );
+		}
 	}
 
-	$path = "{$targetPath}/Basis";
-	if ( !IsValidPath($path) ) {
-		@mkdir( $path, 0755, TRUE );
+	if ( !$options->noBasis ) {
+		$path = "{$targetPath}/Basis";
+		if ( !IsValidPath($path) ) {
+			@mkdir( $path, 0755, TRUE );
+		}
 	}
 
-	if ( $createShare ) {
+	if ( $options->createShare ) {
 		$path = "{$targetPath}/Share";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
 		}
 	}
 
-	if ( $createShare ) {
+	if ( $options->createData ) {
 		$path = "{$targetPath}/Data";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
