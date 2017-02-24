@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 ## FUNCTIONS
 function STDERR { cat - 1>&2; }
 ###
