@@ -9,8 +9,13 @@
 	require_once __DIR__ . "/env.boot.php";
 
 	// Detect minimum PHP Version
-	if ( PHP_VERSION_ID < 50600 )
+	if ( PHP_VERSION_ID < 50600 ) {
 		die( "The system requires php 5.6.0 or higher!" );
+	}
+		
+	if ( IS_WIN_ENV && !class_exists( 'COM' ) ) {
+		die( "COM extension is required in WindowsEnvironment! ( php_com_dotnet.dll )" );
+	}
 		
 		
 	if ( !defined( "ROOT" ) || !defined( "PITAYA_ROOT" ) ) {
