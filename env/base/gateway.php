@@ -20,10 +20,11 @@
 	
 	
    @include_once ROOT . "/pitaya.env.php";
-	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? realpath(__PITAYA_PATH) : ROOT . '/Pitaya';
+	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? __PITAYA_PATH : ROOT . '/Pitaya';
 	if ( IS_WIN_ENV && !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) ) {
-		$pitayaRootPath = realpath(resolveLnk( "{$pitayaRootPath}.lnk" ));
+		$pitayaRootPath = resolveLnk( "{$pitayaRootPath}.lnk" );
 	}
+	$pitayaRootPath = realpath($pitayaRootPath);
 	
 	define( 'PITAYA_ROOT', $pitayaRootPath );
 	define( '__ROOT__', PITAYA_ROOT ); // DEPRECATED: __ROOT__ will be removed in 2.5.0
