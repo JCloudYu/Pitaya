@@ -138,7 +138,7 @@
 					if ($fileTime <= $today)
 					{
 						$fileTime = date('Ymd', filemtime($logFilePath));
-						fileMove($logFilePath, "{$logFilePath}-{$fileTime}");
+						@rename( $logFilePath, "{$logFilePath}-{$fileTime}" );
 					}
 				}
 
