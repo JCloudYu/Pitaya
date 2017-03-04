@@ -99,4 +99,9 @@
 		if ( empty($status) ) {
 			fwrite( STDERR,  "Cannot copy file {$sourcePath}!" . PHP_EOL );
 		}
+		else {
+			if ( $item == "space.sh" ) {
+				chmod( $path, 0755 );
+			}
+		}
 	}
