@@ -101,7 +101,7 @@
 		}
 		else {
 			if ( $item == "space.sh" ) {
-				chmod( $path, 0755 );
+				@chmod( $path, 0755 );
 			}
 		}
 	}
