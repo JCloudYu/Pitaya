@@ -1,9 +1,5 @@
 <?php
-/**
- * VWIMSIS - Control.php
- * Created by JCloudYu on 2013/09/15 13:45
- */
-	using('kernel.basis.PBObject');
+	using( 'ext.base.string' );
 
 	final class Control extends PBObject
 	{
