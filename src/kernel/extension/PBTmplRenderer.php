@@ -5,7 +5,7 @@
 			self::$_tplPath = $path;
 		}
 		public static function Tpl( $tmplName ){
-			return new TemplateRenderer( $tmplName );
+			return new PBTmplRenderer( $tmplName );
 		}
 	
 
