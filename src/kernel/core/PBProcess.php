@@ -143,7 +143,11 @@ class PBProcess extends PBObject
 		do
 		{
 			$module  = @$this->_attachedModules[@$this->_bootSequence->data[ 'id' ]];
-			$dataInput = $module->execute( $dataInput, @$this->_bootSequence->data[ 'request' ] );
+			$request = @$this->_bootSequence->data[ 'request' ];
+			if ( !property_exists($module->data, "initData") )
+				$module->data->initData = $request;
+	
+			$dataInput = $module->execute( $dataInput, $request );
 			$this->_appendBootSequence( $module->bootChain );
 		}
 		while( PBLList::NEXT($this->_bootSequence) );
