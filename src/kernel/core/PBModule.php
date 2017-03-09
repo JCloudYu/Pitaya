@@ -1,5 +1,4 @@
 <?php
-
 	abstract class PBModule extends PBObject {
 		public function execute( $chainData, $initData ) { 
 			return $chainData; 

@@ -17,9 +17,7 @@
 			$this->_tplName = $tmplName;
 			$this->_tplBasePath = $basePath;
 		}
-		public function __toString() {
-			return $this();
-		}
+		public function __toString() { return $this(); }
 		public function __invoke( $output = FALSE ) {
 			$path = str_replace( '.', '/', $this->_tplName );
 			$scriptPath = "{$this->_tplBasePath}/{$path}.php";
