@@ -46,7 +46,7 @@
 			
 			$content = ( $param === NULL ) ? self::$_outputData : $param;
 			if ( !is_resource($content) )
-				echo "{$content}";
+				echo $content;
 			else
 			{
 				$output = fopen( "php://output", "a+b" );
