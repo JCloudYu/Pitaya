@@ -426,9 +426,9 @@
 			unset( $this->data->tmplName );
 			unset( $this->data->tmplPath );
 			
-			foreach( $this->data as $field => $value )
-				$template->{$field} = $value;
-				
+			$tplData = empty($chainData) ? $this->data : $chainData; 
+			foreach( $tplData as $field => $value ) $template->{$field} = $value;
+			
 			parent::execute(NULL, NULL); $template(TRUE);
 		}
 	}

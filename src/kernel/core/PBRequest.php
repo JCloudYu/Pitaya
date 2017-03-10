@@ -841,7 +841,6 @@
 		}
 		// endregion
 	}
-
 	final class PBRequestCORS extends PBObject {
 		private $_request = NULL;
 		public function __construct() {
@@ -1031,4 +1030,13 @@
 			$this->_durationDirty = FALSE;
 			return ( $_accepted = TRUE );
 		}
+	}
+
+	function PBRequest() {
+		static $_singleton = NULL;
+		if ( $_singleton === NULL ) {
+			$_singleton = PBRequest::Request();
+		}
+		
+		return $_singleton;
 	}

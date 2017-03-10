@@ -5,7 +5,7 @@
 			self::$_tplPath = $path;
 		}
 		public static function Tpl( $tmplName, $basePath = NULL ) {
-			return new PBTmplRenderer( $tmplName, $tmplPath );
+			return new PBTmplRenderer( $tmplName, $basePath );
 		}
 	
 

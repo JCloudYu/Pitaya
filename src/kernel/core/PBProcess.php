@@ -264,3 +264,12 @@ class PBProcess extends PBObject
 		return $module;
 	}
 }
+
+function PBProcess(){
+	static $_singleton = NULL;
+	if ( $_singleton === NULL ) {
+		$_singleton = PBProcess::Process();
+	}
+	
+	return $_singleton;
+}
