@@ -151,7 +151,7 @@
 
 
 			PBHttpOutputCtrl::ContentType( "text/html" );
-			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>" );
+			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>", NULL );
 		}
 		
 		// region [ Private Properties ]
@@ -383,7 +383,7 @@
 		public function execute( $chainData, $initData ) {
 			$result = self::__PROCESS_OUTPUT( ( $chainData === NULL ) ? self::$_outputData : $chainData );
 			self::ContentType( 'application/json' );
-			parent::execute( @json_encode($result) );
+			parent::execute( @json_encode($result), NULL );
 		}
 		
 		private static function __PROCESS_OUTPUT( $param ) {
@@ -416,7 +416,7 @@
 			PBHttpOutputCtrl::ContentType( "application/json" );
 			parent::execute(json_encode(
 				($chainData === NULL) ? self::$_outputData : $chainData
-			));
+			), NULL);
 		}
 	}
 	class PBTemplateOutput extends PBHttpOutputCtrl {
