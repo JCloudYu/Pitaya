@@ -4,8 +4,7 @@
 		public static function SetTplPath( $path ) {
 			self::$_tplPath = $path;
 		}
-		public static function Tpl( $tmplName, $basePath = NULL ){
-			$tmplPath = func_num_args() > 1 ? $basePath : self::$_tplPath;
+		public static function Tpl( $tmplName, $basePath = NULL ) {
 			return new PBTmplRenderer( $tmplName, $tmplPath );
 		}
 	
@@ -15,7 +14,7 @@
 		private $_tplName = "";
 		private function __construct( $tmplName, $basePath ) {
 			$this->_tplName = $tmplName;
-			$this->_tplBasePath = $basePath;
+			$this->_tplBasePath = (empty($basePath) ? self::$_tplPath : $basePath);
 		}
 		public function __toString() { return $this(); }
 		public function __invoke( $output = FALSE ) {

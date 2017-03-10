@@ -3,7 +3,9 @@
 		public function execute( $chainData, $initData ) { 
 			return $chainData; 
 		}
-		public function __invoke( ...$arguments ) {
+		public function __invoke() {
+			$arguments = func_get_args();
+		
 			$args = [
 				@array_shift($arguments),
 				@array_shift($arguments),
@@ -12,18 +14,18 @@
 			return call_user_func_array( [ $this, 'execute' ], $args );
 		}
 		public function __toString() {
-			return $this->execute( NULL, NULL );
+			return $this( NULL, NULL );
 		}
 		
 
 
 		private $_data = NULL;
-		public function &__get_data(){
+		public function &__get_data() {
 			if ( $this->_data === NULL ) 
 				$this->_data = (object)[];
 			
 			return $this->_data;
-		}		
+		}	
 
 		private $_instId = NULL;
 		public function __set_id( $value ) {

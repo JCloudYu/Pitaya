@@ -26,7 +26,7 @@
 	
 	
 	
-		public function execute( $param = NULL, $initData = NULL ) {
+		public function execute( $param, $initData ) {
 			if ( IS_CLI_ENV ) return;
 			
 			
@@ -57,7 +57,7 @@
 	}
 	class PBHtmlOutput extends PBHttpOutputCtrl {
 		
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 		
 			$outputCtnt = ($chainData === NULL) ? self::$_outputData : $chainData;	
 		
@@ -380,7 +380,7 @@
 		const STATUS_NORMAL		=  0;
 		const STATUS_ERROR		= -1;
 		
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 			$result = self::__PROCESS_OUTPUT( ( $chainData === NULL ) ? self::$_outputData : $chainData );
 			self::ContentType( 'application/json' );
 			parent::execute( @json_encode($result) );
@@ -412,7 +412,7 @@
 		}
 	}
 	class PBJSONOutput extends PBHttpOutputCtrl {
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 			PBHttpOutputCtrl::ContentType( "application/json" );
 			parent::execute(json_encode(
 				($chainData === NULL) ? self::$_outputData : $chainData
