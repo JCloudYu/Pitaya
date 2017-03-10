@@ -14,7 +14,7 @@
 			return call_user_func_array( [ $this, 'execute' ], $args );
 		}
 		public function __toString() {
-			return $this( NULL, NULL );
+			return "{$this( NULL, NULL )}";
 		}
 		
 
@@ -63,5 +63,15 @@
 		protected $error = NULL;
 		public function __get_error() {
 			return $this->error;
+		}
+	}
+
+	function PBModule( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
+		try {
+			return PBProcess::Process()->getModule( $moduleName, $reusable );
+		}
+		catch( Exception $e ) {
+			if ( $noThrow ) return NULL;
+			throw $e;
 		}
 	}
