@@ -419,3 +419,16 @@
 			));
 		}
 	}
+	class PBTemplateOutput extends PBHttpOutputCtrl {
+		public function execute( $chainData, $initData ) {
+			$template = PBTmplRenderer::Tpl( @$this->data->tmplName, @$this->data->tmplPath );
+			unset( $this->data->initData );
+			unset( $this->data->tmplName );
+			unset( $this->data->tmplPath );
+			
+			foreach( $this->data as $field => $value )
+				$template->{$field} = $value;
+				
+			parent::execute(NULL, NULL); $template(TRUE);
+		}
+	}
