@@ -426,7 +426,11 @@
 			unset( $this->data->tmplName );
 			unset( $this->data->tmplPath );
 			
-			$tplData = empty($chainData) ? $this->data : $chainData; 
+			
+			$tplData = data_merge(
+				$this->data,
+				empty($chainData) ? [] : $chainData
+			); 
 			foreach( $tplData as $field => $value ) $template->{$field} = $value;
 			
 			parent::execute(NULL, NULL); $template(TRUE);
