@@ -1,8 +1,4 @@
 <?php
-	using( 'ext.base.array' );
-	using( 'ext.base.misc'	);
-	using( 'ext.base.objects' );
-
 	class PBSysKernel extends PBObject {
 	
 		// region [ Boot Related ]
