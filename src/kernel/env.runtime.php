@@ -21,21 +21,19 @@
 		public static function Verbose() { self::$_silent = FALSE; }
 
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
-		public static function VarDumpParent() {
-
-			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
+		public static function VarDumpParent(...$args) {
+			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
 		}
-		public static function VarDump() {
-
-			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP));
+		public static function VarDump(...$args) {
+			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP));
 		}
-		public static function VarDumpParentString() {
+		public static function VarDumpParentString(...$args) {
 
-			return self::VDump(func_get_args(), FALSE, TRUE);
+			return self::VDump($args, FALSE, TRUE);
 		}
-		public static function VarDumpString() {
+		public static function VarDumpString(...$args) {
 
-			return self::VDump(func_get_args(), FALSE);
+			return self::VDump($args, FALSE);
 		}
 		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 

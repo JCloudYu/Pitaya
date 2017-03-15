@@ -1,13 +1,6 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - PBDataSourceCtrl.php
-	 ** Created by JCloudYu on 2016/04/15 00:43
-	 **/
-
-	class PBDataSourceCtrl
-	{
-		public static function Source( $identifier = '', $DSURI = '', $options = array(), $driverOpt = array(), $FORCE_CREATE = FALSE )
-		{
+	class PBDataSourceCtrl {
+		public static function Source( $identifier = '', $DSURI = '', $options = array(), $driverOpt = array(), $FORCE_CREATE = FALSE ) {
 			static $_dataSources = array();
 			$matches = NULL;
 
