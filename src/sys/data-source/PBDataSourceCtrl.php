@@ -82,3 +82,7 @@
 			return NULL;
 		}
 	}
+	
+	function PBDataSource($identifier = '', $DSURI = '', $options = array(), $driverOpt = array(), $FORCE_CREATE = FALSE) {
+		return PBDataSourceCtrl::Source( $identifier, $DSURI, $options, $driverOpt, $FORCE_CREATE );
+	}

@@ -1040,3 +1040,11 @@
 		
 		return $_singleton;
 	}
+	function PBCORSCtrl() {
+		static $_singleton = NULL;
+		if ( $_singleton === NULL ) {
+			$_singleton = PBRequest::CORSControl();
+		}
+		
+		return $_singleton;
+	}
