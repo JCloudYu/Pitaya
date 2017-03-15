@@ -10,7 +10,7 @@
 			}
 			else
 			{
-				if ( !array_key_exists( $data1, $field ) || $overwrite )
+				if ( !array_key_exists( $field, $data1 ) || $overwrite )
 					$data1[$field] = $value;
 			}
 		}
