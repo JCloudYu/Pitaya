@@ -14,17 +14,22 @@
 		private function __construct( $tmplName, $basePath ) {
 			$this->_tplName = $tmplName;
 			$this->_tplBasePath = (empty($basePath) ? self::$_tplPath : $basePath);
+			$this->_variables[ 'tmplId' ] = UUID();
 		}
 		public function __toString() { return $this(); }
 		public function __invoke( $output = FALSE ) {
 			$path = str_replace( '.', '/', $this->_tplName );
 			$scriptPath = "{$this->_tplBasePath}/{$path}.php";
 			if (!$output) ob_start();
-			$this->render( $scriptPath, $this->_variables );
+			$results = self::Render( $scriptPath, data_merge(
+				$this->_variables,
+				[ 'identity' => $this->_identity ]
+			));
+			data_fuse( $this->_variables, $results );
 			return (!$output) ? ob_get_clean() : "";
 		}
 		
-		private $_variables = array();
+		private $_variables = [];
 		public function __set( $name, $value ) {
 			$this->_variables[ $name ] = $value;
 		}
@@ -34,6 +39,8 @@
 		
 		private static function Render( $scriptPath, $variables = []) {
 			extract( $variables, EXTR_OVERWRITE );
+			$variables = [];
 			require $scriptPath;
+			return $variables;
 		}
 	}
