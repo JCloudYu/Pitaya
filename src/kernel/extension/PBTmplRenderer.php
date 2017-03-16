@@ -1,5 +1,5 @@
 <?php
-	final class PBTmplRenderer {
+	class PBTmplRenderer {
 		private static $_tplPath = "";
 		public static function SetTplPath( $path ) {
 			self::$_tplPath = $path;
@@ -8,8 +8,7 @@
 			return new PBTmplRenderer( $tmplName, $basePath );
 		}
 	
-
-		
+	
 		private $_tplBasePath = "";
 		private $_tplName = "";
 		private function __construct( $tmplName, $basePath ) {
@@ -33,7 +32,7 @@
 			return $this->_variables[$name];
 		}
 		
-		private function render( $scriptPath, $variables = array()) {
+		private static function Render( $scriptPath, $variables = []) {
 			extract( $variables, EXTR_OVERWRITE );
 			require $scriptPath;
 		}
