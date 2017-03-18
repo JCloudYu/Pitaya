@@ -18,7 +18,7 @@
 		private static $_cors = NULL;
 		public static function CORSControl() {
 			if ( self::$_cors ) return self::$_cors;
-			return ( self::$_cors = new PBRequestCORS() );
+			return ( self::$_cors = new ____pitaya_base_object_cors_controller() );
 		}
 		// endregion
 		
@@ -884,7 +884,7 @@
 		}
 		// endregion
 	}
-	final class PBRequestCORS extends PBObject {
+	final class ____pitaya_base_object_cors_controller extends PBObject {
 		private $_request = NULL;
 		public function __construct() {
 			$this->_request = PBRequest::Request();
@@ -1074,7 +1074,6 @@
 			return ( $_accepted = TRUE );
 		}
 	}
-	
 	class ____pitaya_base_object__path_mapper {
 		protected $_pathInfo = [];
 		protected $_pathLen = 0;
