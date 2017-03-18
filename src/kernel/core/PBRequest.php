@@ -186,8 +186,12 @@
 		public function __get_service() {
 			return $this->_incomingRecord['request']['service'];
 		}
-		public function __get_query() 		{ return $this->_parsedQuery ?: $this->_incomingRecord['request']['query']; }
-		public function __get_data() 		{ return $this->_parsedData ?: $this->_incomingRecord['request']['data']; }
+		public function __get_query() {
+			return $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
+		}
+		public function __get_data() {
+			return $this->_parsedData ?: $this->_incomingRecord['request']['data'];
+		}
 
 		private $_filesCache = NULL;
 		public function __get_files() {
@@ -294,9 +298,10 @@
 			if ( $ssl !== NULL ) return $ssl;
 			return ($ssl = $this->is_ssl());
 		}
-		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
-		public function __get_requestTime()
-		{
+		public function __get_port() {
+			return CAST( $this->server['SERVER_PORT'], 'int strict', -1 );
+		}
+		public function __get_requestTime() {
 			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
 			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
 		}
@@ -305,8 +310,9 @@
 		public function __get_contentType() {
 			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
 		}
-
-
+		// endregion
+		
+		// region [ Methods ]
 		/**
 		 * @return ____pitaya_base_object__path_mapper_tracable
 		 */
@@ -327,8 +333,7 @@
 			array_unshift($res, __BASIS__);
 			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
-		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
-		{
+		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE ) {
 			static $is_https = NULL;
 
 			if ($is_https !== NULL) return $is_https;
