@@ -28,11 +28,9 @@
 			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP));
 		}
 		public static function VarDumpParentString(...$args) {
-
 			return self::VDump($args, FALSE, TRUE);
 		}
 		public static function VarDumpString(...$args) {
-
 			return self::VDump($args, FALSE);
 		}
 		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
@@ -45,7 +43,7 @@
 
 			$out = '';
 			if($forHTML)
-				$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px;'>";
+				$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px; position:relative;'>";
 
 			if(!is_array($args)) $args = array($args);
 
