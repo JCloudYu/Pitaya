@@ -20,6 +20,12 @@
 			if ( self::$_cors ) return self::$_cors;
 			return ( self::$_cors = new ____pitaya_base_object_cors_controller() );
 		}
+		
+		private static $_queryBuilder = NULL;
+		public static function AttrControl() {
+			if ( self::$_queryBuilder ) return self::$_queryBuilder;
+			return ( self::$_queryBuilder = new ____pitaya_base_object_attr_builder() );
+		}
 		// endregion
 		
 		
@@ -1131,9 +1137,70 @@
 			return $this;
 		}
 	}
+	final class ____pitaya_base_object_attr_builder {
+		private $_attr = [];
+		private $_flags = [];
+		private $_dirty = FALSE;
+		
+		
+		public function flag( $name, $option = FALSE ) {
+			$this->_dirty = TRUE;
+			
+			if ( func_num_args() > 1 ) {
+				return !empty($this->_flags[$name]);
+			}
+		
+		
+			if ( $option === NULL ) {
+				unset($this->_flags[$name]);
+			}
+			else {
+				$this->_flags[ $name ] = $option;
+			}
+			return TRUE;
+		}
+		
+		
+		public function __set($name, $value) {
+			$this->_attr[ $name ] = $value;
+			$this->_dirty = TRUE;
+		}
+		public function &__get($name) {
+			$this->_dirty = TRUE;
+			return @$this->_attr[ $name ];
+		}
+		public function __isset($name) {
+			return array_key_exists($name, $this->_attr);
+		}
+		public function __unset($name) {
+			$this->_dirty = TRUE;
+			unset($this->_attr[$name]);
+		}
+		public function __toString() {
+			static $attr = NULL;
+			
+			if ( $attr === NULL || $this->_dirty ) {
+				$attr = [];
+				foreach ( $this->_attr as $name => $val ) {
+					$attr[] = urlencode(@"{$name}") . "=" . urlencode(@"{$val}");
+				}
+				
+				foreach ( $this->_flags as $name => $case ) {
+					$name = @"{$name}";
+					$attr[] = urlencode((empty($case) ? $name : strtolower($name)));
+				}
+			}
+			
+			$this->_dirty = FALSE;
+			return implode( '&', $attr );
+		}
+	}
 
 	function PBRequest() {
 		return PBRequest::Request();
+	}
+	function PBAttrCtrl() {
+		return PBRequest::AttrControl();
 	}
 	function PBCORSCtrl() {
 		return PBRequest::CORSControl();
