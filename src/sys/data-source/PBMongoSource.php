@@ -8,13 +8,13 @@
 	use \MongoDB\Driver\BulkWrite;
 	use \MongoDB\Driver\Command;
 	use \MongoDB\BSON\ObjectID;
+	use \MongoDB\BSON\Regex;
 
 
 
 	using( 'sys.data-source.PBIDataSource' );
 
-	class PBMongoSource extends PBIDataSource
-	{
+	class PBMongoSource extends PBIDataSource {
 		const AGGREGATION_OPRATORS = [
 			'$project',
 			'$match',
@@ -319,4 +319,8 @@
 		} catch(Exception $e) {
 			return NULL;
 		}
+	}
+	
+	function MongoRegex( $pattern, $flag = "" ) {
+		return new Regex( $pattern, $flag );
 	}
