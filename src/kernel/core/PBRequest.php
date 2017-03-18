@@ -352,6 +352,14 @@
 			
 			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
 		}
+		
+		public function redirect( $path, $status = NULL ) {
+			if ( headers_sent() ) return FALSE;
+			
+			PBHTTP::ResponseStatus( $status ?: PBHTTP::STATUS_307_TEMPORARY_REDIRECT );
+			header( "Location: {$path}" );
+			exit(0);
+		}
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
