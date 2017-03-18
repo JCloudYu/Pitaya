@@ -1181,19 +1181,21 @@
 			
 			return $picked;
 		}
-		public function flag( $name, $option = FALSE ) {
+		public function flag( $name, $set = TRUE ) {
 			$this->_dirty = TRUE;
 			
-			if ( func_num_args() > 1 ) {
-				return !empty($this->_flags[$name]);
+			if ( func_num_args() <= 1 ) {
+				return !!$this->_flags[$name];
 			}
 		
+			
 		
-			if ( $option === NULL ) {
-				unset($this->_flags[$name]);
+			$set = !!$set;
+			if ( $set ) {
+				$this->_flags[$name] = $set;
 			}
 			else {
-				$this->_flags[ $name ] = $option;
+				unset($this->_flags[$name]);
 			}
 			return TRUE;
 		}
@@ -1225,8 +1227,7 @@
 				}
 				
 				foreach ( $this->_flags as $name => $case ) {
-					$name = @"{$name}";
-					$attr[] = urlencode((empty($case) ? $name : strtolower($name)));
+					$attr[] = urlencode(@"{$name}");
 				}
 			}
 			
