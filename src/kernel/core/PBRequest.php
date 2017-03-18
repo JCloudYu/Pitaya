@@ -884,6 +884,9 @@
 		}
 		// endregion
 	}
+	
+	
+	
 	final class ____pitaya_base_object_cors_controller extends PBObject {
 		private $_request = NULL;
 		public function __construct() {
