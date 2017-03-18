@@ -1024,14 +1024,14 @@
 				$origin = in_array( $accessOrigin, $this->_origins, TRUE ) ? $accessOrigin : NULL;
 			}
 
-			if ( ($_accepted = ($origin !== NULL)) && $this->_request->method === "OPTIONS" ) 
+			if ( ($_accepted = ($origin !== NULL)) && $this->_request->method === "OPTIONS" )
 				header( "Access-Control-Allow-Origin: {$origin}" );
 			
 			$this->_originsDirty = FALSE;
 			return $_accepted;
 		}
 		private function _acceptMethods() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_methodsDirty ) return $_accepted;
 			
 			
@@ -1053,7 +1053,7 @@
 			return $_accepted;
 		}
 		private function _acceptHeaders() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_headersDirty ) return $_accepted;
 		
 			if ( $this->_request->method === "OPTIONS" && !empty($this->_headers) )
@@ -1063,7 +1063,7 @@
 			return ( $_accepted = TRUE );
 		}
 		private function _acceptCredentials() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_credentialsDirty ) return $_accepted;
 			
 			if ( $this->_request->method === "OPTIONS" )
@@ -1073,7 +1073,7 @@
 			return ( $_accepted = TRUE );
 		}
 		private function _acceptDuration() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_durationDirty ) return $_accepted;
 			
 			if ( $this->_request->method === "OPTIONS" )
