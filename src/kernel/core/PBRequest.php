@@ -254,8 +254,30 @@
 		public function __get_attachLevel() {
 			return $this->_incomingRecord['environment']['attachment']['level'];
 		}
-		public function __get_attachAnchor() { return $this->URIPath(0); }
-		public function __get_fullPath() { return $this->URIPath(0)->full(); }
+		public function __get_attachAnchor() {
+			static $anchor = NULL;
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath(0);
+			}
+			
+			return $anchor->cast_parent();
+		}
+		public function __get_effectiveAnchor() {
+			static $anchor = NULL;
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath(1);
+			}
+			
+			return $anchor->cast_parent();
+		}
+		public function __get_fullPath() {
+			static $anchor = NULL;
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath()->full();
+			}
+			
+			return $anchor->cast_parent();
+		}
 		public function __get_domain() {
 			return empty($this->server[ 'HTTP_HOST' ]) ? @"{$this->server[ 'SERVER_NAME' ]}" : @"{$this->server[ 'HTTP_HOST' ]}";
 		}
@@ -286,14 +308,14 @@
 
 
 		/**
-		 * @return ____pitaya_base_object__path_mapper
+		 * @return ____pitaya_base_object__path_mapper_tracable
 		 */
 		public function attachAnchor( $traceBack = 0 ) {
 			return $this->URIPath( -$traceBack );
 		}
 		
 		/**
-		 * @return ____pitaya_base_object__path_mapper
+		 * @return ____pitaya_base_object__path_mapper_tracable
 		 */
 		public function URIPath( $trace = 0 ) {
 			$anchor = @$this->_incomingRecord['environment']['attachment']['anchor'] ?: [];
@@ -303,7 +325,7 @@
 			if ( !is_array($res) ) $res = [];
 			
 			array_unshift($res, __BASIS__);
-			return (new ____pitaya_base_object__path_mapper( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
+			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
@@ -1039,12 +1061,27 @@
 			return ( $_accepted = TRUE );
 		}
 	}
-	final class ____pitaya_base_object__path_mapper {
-		private $_pathInfo = [];
-		private $_pathLen = 0;
-		private $_anchor = 0;
+	
+	class ____pitaya_base_object__path_mapper {
+		protected $_pathInfo = [];
+		protected $_pathLen = 0;
+		protected $_anchor = 0;
 		
-		public function trace( $traceBack = 0 ) {
+		
+		public function __construct( $basePath = [], $anchor = 0 ) {
+			$this->_pathInfo = is_array($basePath) ? $basePath : [];
+			$this->_pathLen = count($this->_pathInfo);
+			
+			$this->_moveAnchor( $anchor );
+		}
+		public function __invoke() {
+			return array_slice( $this->_pathInfo, 0, $this->_anchor + 1 );
+		}
+		public function __toString() {
+			return '/' . implode( '/', $this() );
+		}
+		
+		protected function _moveAnchor( $traceBack = 0 ) {
 			$this->_anchor += $traceBack;
 			if ( $this->_anchor < 0 ) {
 				$this->_anchor = 0;
@@ -1053,23 +1090,30 @@
 			if ( $this->_anchor >= $this->_pathLen ) {
 				$this->_anchor = ($this->_pathLen ?: 1) - 1;
 			}
+		}
+	}
+	final class ____pitaya_base_object__path_mapper_tracable extends ____pitaya_base_object__path_mapper {
+		private $_parent = NULL;
+		public function cast_parent() {
+			return $this->_parent;
+		}
+		
+		public function __construct( $basePath = [], $anchor = 0 ) {
+			parent::__construct($basePath, $anchor);
+			
+			$this->_parent = new ____pitaya_base_object__path_mapper();
+			$this->_parent->_pathInfo = &$this->_pathInfo;
+			$this->_parent->_pathLen = &$this->_pathLen;
+			$this->_parent->_anchor = &$this->_anchor;
+		}
+	
+		public function trace( $traceBack = 0 ) {
+			$this->_moveAnchor( $traceBack );
 			return $this;
 		}
 		public function full() {
 			$this->_anchor = ($this->_pathLen ?: 1) - 1;
 			return $this;
-		}
-		public function __construct( $basePath = [], $anchor = 0 ) {
-			$this->_pathInfo = is_array($basePath) ? $basePath : [];
-			$this->_pathLen = count($this->_pathInfo);
-			
-			$this->trace( $anchor );
-		}
-		public function __invoke() {
-			return array_slice( $this->_pathInfo, 0, $this->_anchor + 1 );
-		}
-		public function __toString() {
-			return '/' . implode( '/', $this() );
 		}
 	}
 
