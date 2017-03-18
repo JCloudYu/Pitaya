@@ -1,5 +1,6 @@
 <?php
 	class PBIdentifierGenerator {
+		const NIL = "00000000-0000-0000-0000-000000000000";
 		public static function UUIDv3($namespace, $name) {
 			if (!self::is_valid($namespace)) return false;
 			
