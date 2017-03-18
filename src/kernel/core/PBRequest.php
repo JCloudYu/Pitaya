@@ -254,11 +254,8 @@
 		public function __get_attachLevel() {
 			return $this->_incomingRecord['environment']['attachment']['level'];
 		}
-		public function __get_attachAnchor() {
-			static $anchor = NULL;
-			if ( $anchor !== NULL ) return $anchor;
-			return ($anchor = $this->attachAnchor());
-		}
+		public function __get_attachAnchor() { return $this->URIPath(0); }
+		public function __get_fullPath() { return $this->URIPath(0)->full(); }
 		public function __get_domain() {
 			return empty($this->server[ 'HTTP_HOST' ]) ? @"{$this->server[ 'SERVER_NAME' ]}" : @"{$this->server[ 'HTTP_HOST' ]}";
 		}
@@ -290,12 +287,17 @@
 
 
 		public function attachAnchor( $traceBack = 0 ) {
-			$anchor = $this->_incomingRecord['environment']['attachment']['anchor'];
+			return $this->URIPath( -$traceBack );
+		}
+		public function URIPath( $trace = 0 ) {
+			$anchor = @$this->_incomingRecord['environment']['attachment']['anchor'] ?: [];
+			$res = $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
 			
-			if ( $traceBack > 0 )
-				$anchor = @array_slice( $anchor, 0, -$traceBack );
-				
-			return empty($anchor) ? '' : ('/'. implode( '/', $anchor ));
+			$res = @$res[ 'resource' ];
+			if ( !is_array($res) ) $res = [];
+			
+			array_unshift($res, __BASIS__);
+			return (new ____pitaya_base_object__path_mapper( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
 		{
@@ -1029,6 +1031,39 @@
 			
 			$this->_durationDirty = FALSE;
 			return ( $_accepted = TRUE );
+		}
+	}
+	final class ____pitaya_base_object__path_mapper {
+		private $_pathInfo = [];
+		private $_pathLen = 0;
+		private $_anchor = 0;
+		
+		public function trace( $traceBack = 0 ) {
+			$this->_anchor += $traceBack;
+			if ( $this->_anchor < 0 ) {
+				$this->_anchor = 0;
+			}
+			else
+			if ( $this->_anchor >= $this->_pathLen ) {
+				$this->_anchor = ($this->_pathLen ?: 1) - 1;
+			}
+			return $this;
+		}
+		public function full() {
+			$this->_anchor = ($this->_pathLen ?: 1) - 1;
+			return $this;
+		}
+		public function __construct( $basePath = [], $anchor = 0 ) {
+			$this->_pathInfo = is_array($basePath) ? $basePath : [];
+			$this->_pathLen = count($this->_pathInfo);
+			
+			$this->trace( $anchor );
+		}
+		public function __invoke() {
+			return array_slice( $this->_pathInfo, 0, $this->_anchor + 1 );
+		}
+		public function __toString() {
+			return '/' . implode( '/', $this() );
 		}
 	}
 
