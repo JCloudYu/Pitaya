@@ -169,12 +169,14 @@
 
 
 			// INFO: Define runtime constants
-			define( '__SERVICE__', $this->_entryService );
+			define( '__BASIS__', $this->_entryBasis );
+			define( '__SERVICE__', __BASIS__ );
+			
 
 
 
 			// INFO: Bring up the main process
-			$this->__forkProcess($this->_entryService, PBRequest::Request()->query, function() use(&$postprocessEnvPaths) {
+			$this->__forkProcess($this->_entryBasis, PBRequest::Request()->query, function() use(&$postprocessEnvPaths) {
 				foreach ( $postprocessEnvPaths as $path ) {
 					if ( is_file($path) && is_readable($path) ) {
 						require_once $path;
@@ -184,8 +186,8 @@
 		}
 		
 		
-		private $_entryService		= NULL;
-		private $_entryServiceParam	= NULL;
+		private $_entryBasis		= NULL;
+		private $_entryBasisParam	= NULL;
 		public function __judgeMainService( $argv = NULL )
 		{
 			$service = $attributes = '';
@@ -247,7 +249,7 @@
 					$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
 					$ext = substr( $module, -4 );
 					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
-					$this->_entryService = "PBSystem.PBExecCtrl#PBVectorChain";
+					$this->_entryBasis = "PBSystem.PBExecCtrl#PBVectorChain";
 	
 					define( 'WORKING_ROOT', self::$_cachedRuntimeAttr['standalone']['cwd'] );
 					define( '__WORKING_ROOT__', WORKING_ROOT ); // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
@@ -284,7 +286,7 @@
 					// INFO: Detect Main Service
 					$state = file_exists( path( "{$service}" ) . ".php" );
 					if ($state) {
-						$this->_entryService = $service;
+						$this->_entryBasis = $service;
 		
 						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
 						define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
@@ -306,9 +308,9 @@
 			$serviceName = @array_pop( $serviceParts );
 			$state = file_exists( path( "broot.{$serviceName}.{$serviceName}" ) . ".php" );
 			if ($state) {
-				$this->_entryService = $serviceName;
+				$this->_entryBasis = $serviceName;
 
-				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryService}" );
+				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 				$GLOBALS['service'] = $serviceName;
@@ -334,8 +336,8 @@
 			}
 			if ( !empty($basisChain[ $service ]) ) {
 				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
-				$this->_entryService		= "PBSystem.PBExecCtrl#PBBasisChain";
-				$this->_entryServiceParam	= $basisChain[$service];
+				$this->_entryBasis		= "PBSystem.PBExecCtrl#PBBasisChain";
+				$this->_entryBasisParam	= $basisChain[$service];
 
 				define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir() );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
@@ -353,9 +355,9 @@
 			$service = DEFAULT_SERVICE;
 			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
 			if ($state) {
-				$this->_entryService = $service;
+				$this->_entryBasis = $service;
 
-				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryService}" );
+				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 
@@ -367,9 +369,9 @@
 /*
 			$state = $state || file_exists( path( "modules.{$service}.{$service}" ) . ".php" );
 			if ($state) {
-				$this->_entryService = $service;
+				$this->_entryBasis = $service;
 
-				define( 'WORKING_ROOT', PITAYA_ROOT . "/modules/{$this->_entryService}" );
+				define( 'WORKING_ROOT', PITAYA_ROOT . "/modules/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 
@@ -394,7 +396,7 @@
 			if ( is_callable($custInit) ) $custInit();
 
 			chdir( WORKING_ROOT );
-			$this->_process->attachMainService($service, $this->_entryServiceParam, $moduleRequest);
+			$this->_process->attachMainService($service, $this->_entryBasisParam, $moduleRequest);
 		}
 		
 		
