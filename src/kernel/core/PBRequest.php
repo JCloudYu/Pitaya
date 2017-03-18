@@ -1138,9 +1138,9 @@
 		}
 	}
 	final class ____pitaya_base_object_attr_builder {
-		private $_attr = [];
+		private $_attrs = [];
 		private $_flags = [];
-		private $_dirty = FALSE;
+		private $_dirty = TRUE;
 		
 		
 		public function flag( $name, $option = FALSE ) {
@@ -1161,28 +1161,29 @@
 		}
 		
 		
+		
 		public function __set($name, $value) {
-			$this->_attr[ $name ] = $value;
+			$this->_attrs[ $name ] = $value;
 			$this->_dirty = TRUE;
 		}
 		public function &__get($name) {
 			$this->_dirty = TRUE;
-			return @$this->_attr[ $name ];
+			return @$this->_attrs[ $name ];
 		}
 		public function __isset($name) {
-			return array_key_exists($name, $this->_attr);
+			return array_key_exists($name, $this->_attrs);
 		}
 		public function __unset($name) {
 			$this->_dirty = TRUE;
-			unset($this->_attr[$name]);
+			unset($this->_attrs[$name]);
 		}
 		public function __toString() {
 			static $attr = NULL;
 			
 			if ( $attr === NULL || $this->_dirty ) {
 				$attr = [];
-				foreach ( $this->_attr as $name => $val ) {
-					$attr[] = urlencode(@"{$name}") . "=" . urlencode(@"{$val}");
+				foreach ( $this->_attrs as $name => $val ) {
+					$attr[ $name ] = urlencode(@"{$name}") . "=" . urlencode(@"{$val}");
 				}
 				
 				foreach ( $this->_flags as $name => $case ) {
