@@ -285,10 +285,16 @@
 		}
 
 
-
+		/**
+		 * @return ____pitaya_base_object__path_mapper
+		 */
 		public function attachAnchor( $traceBack = 0 ) {
 			return $this->URIPath( -$traceBack );
 		}
+		
+		/**
+		 * @return ____pitaya_base_object__path_mapper
+		 */
 		public function URIPath( $trace = 0 ) {
 			$anchor = @$this->_incomingRecord['environment']['attachment']['anchor'] ?: [];
 			$res = $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
