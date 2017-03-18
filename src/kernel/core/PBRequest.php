@@ -1143,6 +1143,44 @@
 		private $_dirty = TRUE;
 		
 		
+		/**
+		 * return ____pitaya_base_object_attr_builder
+		 */
+		public function filter($rejects = FALSE, $accepts = TRUE) {
+			$picked = new ____pitaya_base_object_attr_builder();
+			
+			
+			
+			if ( !is_array($accepts) ) {
+				$picked->_attrs = $this->_attrs;
+				$picked->_flags = $this->_flags;
+			}
+			else {
+				foreach( $accepts as $name ) {
+					if ( array_key_exists($name, $this->_attrs) ) {
+						$picked->_attrs[ $name ] = $this->_attrs[ $name ];
+					}
+					
+					if ( array_key_exists($name, $this->_flags) ) {
+						$picked->_flags[ $name ] = $this->_flags[ $name ];
+					}
+				}
+			}
+			
+			if ( is_array($rejects) ) {
+				foreach( $rejects as $name ) {
+					if ( array_key_exists($name, $picked->_attrs) ) {
+						unset($picked->_attrs[ $name ]);
+					}
+					
+					if ( array_key_exists($name, $picked->_flags) ) {
+						unset($picked->_flags[ $name ]);
+					}
+				}
+			}
+			
+			return $picked;
+		}
 		public function flag( $name, $option = FALSE ) {
 			$this->_dirty = TRUE;
 			
