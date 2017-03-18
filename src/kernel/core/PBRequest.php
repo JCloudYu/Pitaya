@@ -186,8 +186,8 @@
 		public function __get_service() {
 			return $this->_incomingRecord['request']['service'];
 		}
-		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
-		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
+		public function __get_query() 		{ return $this->_parsedQuery ?: $this->_incomingRecord['request']['query']; }
+		public function __get_data() 		{ return $this->_parsedData ?: $this->_incomingRecord['request']['data']; }
 
 		private $_filesCache = NULL;
 		public function __get_files() {
