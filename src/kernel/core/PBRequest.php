@@ -1130,18 +1130,8 @@
 	}
 
 	function PBRequest() {
-		static $_singleton = NULL;
-		if ( $_singleton === NULL ) {
-			$_singleton = PBRequest::Request();
-		}
-		
-		return $_singleton;
+		return PBRequest::Request();
 	}
 	function PBCORSCtrl() {
-		static $_singleton = NULL;
-		if ( $_singleton === NULL ) {
-			$_singleton = PBRequest::CORSControl();
-		}
-		
-		return $_singleton;
+		return PBRequest::CORSControl();
 	}
