@@ -901,7 +901,7 @@
 		
 		private $_origins = [ '*' ];
 		private $_originsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowOrigins( $whiteList = [ '*' ] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_originsDirty = TRUE;
@@ -916,7 +916,7 @@
 				
 		private $_methods = [];
 		private $_methodsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowMethods( $whiteList = [] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_methodsDirty = TRUE;
@@ -933,7 +933,7 @@
 		
 		private $_headers = [];
 		private $_headersDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowHeaders( $whiteList = [] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_headersDirty = TRUE;
@@ -948,7 +948,7 @@
 		
 		private $_credential = TRUE;
 		private $_credentialsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowCredentials( $allowCredential = TRUE ) {
 			$this->_credentialsDirty = TRUE;
 			
@@ -959,7 +959,7 @@
 		
 		private $_cacheDuration = 86400;
 		private $_durationDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowDuration( $duration = 86400 ) {
 			$this->_durationDirty = TRUE;
 		
