@@ -144,7 +144,7 @@
 
 
 				touch( $logFilePath ); 
-				chmod( $logFilePath, 0777 );
+				chmod( $logFilePath, 0644 );
 				$hLog = @fopen($logFilePath, 'a+b');
 				if ( empty( $hLog ) ) return NULL;
 
