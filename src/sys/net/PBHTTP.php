@@ -5,6 +5,9 @@
  */
 
 	final class PBHTTP {
+		public static function ResponseContentType( $type ) {
+			header( "Content-Type: {$type}" );
+		}
 		public static function ResponseStatus( $status ) {
 			$statusMsg = PBHTTP::STATUS_STRING[ $status ];
 			if ( empty($statusMsg) ) throw new Exception("Unsupported HTTP Status Code");
