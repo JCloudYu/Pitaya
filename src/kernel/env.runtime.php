@@ -13,6 +13,7 @@
 	});
 
 	s_define( '__DEBUG_CONSOLE_WIDTH__', 200, TRUE );
+	s_define( '__DEBUG_FORCE_LOG_POSITION__', FALSE, TRUE );
 
 	// INFO: Debug
 	final class DEBUG {
