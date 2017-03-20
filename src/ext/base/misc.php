@@ -122,7 +122,7 @@
 
 			// region range [op-and] [op-or] [strict]
 			/*
-			 *	CAST( $value, 'range op-and op-or', array(...), $default );
+			 *	CAST( $value, 'range op-and op-or strict', array(...), $default );
 			 */
 			case 'range':
 				$defaultVal = ( $nArgs > 3 ) ? $default : NULL;

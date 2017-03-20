@@ -1,6 +1,5 @@
 <?php
-	final class PBLog
-	{
+	final class PBLog {
 		const LOG_INFO_TIME		= 1;
 		const LOG_INFO_CATE		= 2;
 		const LOG_INFO_BASIS	= 4;
