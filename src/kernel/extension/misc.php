@@ -42,7 +42,7 @@
 	// region [ Looping over data content ]
 	function data_filter( $traversable, $filter = NULL, $skipVal = FALSE )
 	{
-		if ( !is_array($traversable) && !($traversable instanceof Traversable) ) return FALSE;
+		if ( !is_array($traversable) && !is_object($traversable) && !($traversable instanceof Traversable) ) return FALSE;
 
 		$arguments	= func_get_args();
 		$skipMode	= count($arguments) != 2;
