@@ -283,7 +283,7 @@
 				{
 					$service		= $result[ 'service' ];
 					$moduleRequest	= $result[ 'request' ];
-					$workingDir		= $result[ 'workingRoot' ];
+					$workingDir		= $result[ 'root' ] ?: $result[ 'workingRoot' ];
 					
 					
 					
