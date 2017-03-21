@@ -131,7 +131,7 @@ class PBProcess extends PBObject
 	
 	
 	public function run() {
-		$dataInput = NULL;
+		$dataInput = PBRequest::Request()->query;
 
 		PBLList::HEAD($this->_bootSequence);
 		do
@@ -149,7 +149,7 @@ class PBProcess extends PBObject
 	
 	private $_entryModule	= NULL;
 	private $_mainModuleId = NULL;
-	public function attachMainService($moduleName, $instParam, $moduleRequest) {
+	public function attachMainService($moduleName, $instParam) {
 
 		// NOTE: Leading Module
 		if ( defined('LEADING_MODULE') )
@@ -157,7 +157,7 @@ class PBProcess extends PBObject
 			$module = $this->_acquireModule( LEADING_MODULE, TRUE );
 			$moduleId = $module->id;
 			PBLList::PUSH( $this->_bootSequence, [
-				'id' => $moduleId, 'request' => $moduleRequest 
+				'id' => $moduleId
 			], $moduleId );
 		}
 
@@ -167,7 +167,7 @@ class PBProcess extends PBObject
 		$this->_entryModule = $this->_acquireModule( $moduleName, $instParam, TRUE );
 		$this->_mainModuleId = $this->_entryModule->id;
 		PBLList::PUSH( $this->_bootSequence, [
-			'id' => $this->_mainModuleId, 'request' => $moduleRequest 
+			'id' => $this->_mainModuleId
 		], $this->_mainModuleId);
 
 
@@ -178,7 +178,7 @@ class PBProcess extends PBObject
 			$module = $this->_acquireModule(TAILING_MODULE, TRUE);
 			$moduleId = $module->id;
 			PBLList::PUSH( $this->_bootSequence,  [ 
-				'id' => $moduleId, 'request' => $moduleRequest
+				'id' => $moduleId
 			], $moduleId );
 		}
 		
