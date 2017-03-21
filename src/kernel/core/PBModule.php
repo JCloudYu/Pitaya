@@ -1,7 +1,7 @@
 <?php
 	abstract class PBModule extends PBObject {
-		public function execute( $chainData, $initData ) { 
-			return $chainData; 
+		public function execute( $chainData ) {
+			return $chainData;
 		}
 		public function __invoke() {
 			$arguments = func_get_args();
