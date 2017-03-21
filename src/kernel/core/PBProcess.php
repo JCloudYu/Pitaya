@@ -198,22 +198,24 @@ class PBProcess extends PBObject
 		return $this->_acquireModule($moduleName, $instParam, $reusable);
 	}
 	private function _appendBootSequence( $bootSequence ) {
+		if ( !is_array( $bootSequence )) return;
 
-		if( empty( $bootSequence ) || !is_array( $bootSequence )) return;
+
 
 		$bootSequence = array_reverse( $bootSequence );
+		foreach( $bootSequence as $illustrator ) {
+			if (is_a($illustrator, stdClass::class)) {
+				$illustrator = (array)$illustrator;
+			}
 
-		foreach( $bootSequence as $illustrator )
-		{
-			if ( is_a( $illustrator, stdClass::class ) ) $illustrator = (array)$illustrator;
-			if ( !is_array($illustrator) ) continue; // Skipping none array
-			if( !array_key_exists('module', $illustrator) )
-				throw(new Exception("Error bootSequence structure definition"));
+			if (!is_array($illustrator)) {
+				$illustrator = [ 'module' => $illustrator ];
+			}
+			
+			
 				
-			$moduleHandle = $illustrator['module'];
+			$moduleHandle = @$illustrator[ 'module' ];
 			if ( empty($moduleHandle) ) continue; // Skipping empty values
-
-
 
 			if ( is_a($moduleHandle, PBModule::class ) && array_key_exists($moduleHandle->id, $this->_attachedModules))
 				$moduleId = $moduleHandle->id;
@@ -223,11 +225,8 @@ class PBProcess extends PBObject
 				$moduleId = $this->_acquireModule( $moduleHandle, $reuse )->id;
 			}
 
-
-
 			PBLList::AFTER( $this->_bootSequence,  [ 
-				'id'		=> $moduleId, 
-				'request'	=> array_key_exists('request', $illustrator) ? $illustrator[ 'request' ] : NULL
+				'id' => $moduleId, 'request' => @$illustrator[ 'request' ]
 			], $moduleId );
 		}
 	}
