@@ -176,8 +176,13 @@
 
 		private function __construct(){}
 
-		public static function NORMALLY()		 { exit( self::STATUS_SUCCESS ); }
-		public static function WITH_STATUS( $errorCode = self::STATUS_ERROR )
+		public static function NORMALLY() {
+			exit(self::STATUS_SUCCESS);
+		}
+		public static function ERROR() {
+			exit(self::STATUS_ERROR);
+		}
+		public static function WITH_STATUS( $errorCode )
 		{
 			$errorCode = abs($errorCode);
 
