@@ -274,7 +274,11 @@
 					throw(new Exception( "Target default boot resolver is invalid!" ));
 				}
 
-				$result = $module->coreResolve( $service, $moduleRequest, $attributes );
+				if ( !class_implements($module, FALSE) ) {
+					throw(new Exception( "Target boot resolver doesn't implements PBIBootResolver!" ));
+				}
+				
+				$result = $module->resolve( $service, $moduleRequest, $attributes );
 				if ( !empty($result) )
 				{
 					$service		= $result[ 'service' ];
