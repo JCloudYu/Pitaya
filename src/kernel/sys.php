@@ -176,7 +176,7 @@
 
 
 			// INFO: Bring up the main process
-			$this->__forkProcess($this->_entryBasis, PBRequest::Request()->query, function() use(&$postprocessEnvPaths) {
+			$this->__forkProcess($this->_entryBasis, function() use(&$postprocessEnvPaths) {
 				foreach ( $postprocessEnvPaths as $path ) {
 					if ( is_file($path) && is_readable($path) ) {
 						require_once $path;
@@ -387,7 +387,7 @@
 
 		/** @var PBProcess */
 		private $_process = NULL;
-		private function __forkProcess($service, $moduleRequest, $custInit = NULL) {
+		private function __forkProcess($service, $custInit = NULL) {
 			if ( $this->_process ) return;
 			
 			
@@ -396,7 +396,7 @@
 			if ( is_callable($custInit) ) $custInit();
 
 			chdir( WORKING_ROOT );
-			$this->_process->attachMainService($service, $this->_entryBasisParam, $moduleRequest);
+			$this->_process->attachMainService($service, $this->_entryBasisParam);
 		}
 		
 		
