@@ -157,20 +157,26 @@
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $sessionId: FALSE );
 		}
 		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
+			$custom		= (!!$additional[ 'customize' ] || !!$additional[ 'compound-update' ]);
+			$castResult	= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
+			$updateId	= !!$additional[ 'update-id' ];
 
-			$compoundUpdate	= !empty($additional[ 'compound-update' ]);
-			$multipleUpdate	= (!array_key_exists( 'multiple-update', $additional)) ? TRUE : !!$additional[ 'multiple-update' ];
-			$shouldInsert	= (!array_key_exists( 'upsert', $additional )) ? FALSE : !!$additional[ 'upsert' ];
-			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
+			unset( $additional[ 'compound' ] );
+			unset( $additional[ 'compound-update' ] );
+			unset( $additional[ 'cast-result' ] );
+			unset( $additional[ 'update-id' ] );
+
+
 
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
-			
 			$updatedData = (array)$updatedData;
-			unset( $updatedData['_id'] );
+			if ( !$updateId ) {
+				unset( $updatedData['_id'] );
+			}
 
-			$updateData = $compoundUpdate ? (object)$updatedData : (object)[ '$set' => (object)$updatedData ];
-			$bulkWrite->update( (object)$filter, $updateData, [ 'multi' => $multipleUpdate, 'upsert' => $shouldInsert ] );
+			$updateData = $custom ? $updatedData : [ '$set' => $updatedData ];
+			$bulkWrite->update( $filter, $updateData, $additional );
 
 
 
@@ -298,10 +304,7 @@
 
 		private static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
-			$collection	= @array_pop( $ns );
-			$database	= @array_pop( $ns );
-
-			return [ 'database' => $database, 'collection' => $collection ];
+			return [ 'database' => @$ns[0], 'collection' => @$ns[1] ];
 		}
 		public static function MongoCollect( $document, &$idx ) {
 			$idx = "{$document->_id}";
