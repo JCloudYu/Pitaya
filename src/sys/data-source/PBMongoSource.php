@@ -158,12 +158,12 @@
 		}
 		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
 			$custom		= (!!$additional[ 'customize' ] || !!$additional[ 'compound-update' ]);
-			$castResult	= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
+			$rawResult	= !!$additional[ 'raw-result' ];
 			$updateId	= !!$additional[ 'update-id' ];
 
-			unset( $additional[ 'compound' ] );
+			unset( $additional[ 'customize' ] );
 			unset( $additional[ 'compound-update' ] );
-			unset( $additional[ 'cast-result' ] );
+			unset( $additional[ 'raw-result' ] );
 			unset( $additional[ 'update-id' ] );
 
 
@@ -184,7 +184,7 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
 			
-			return ($castResult) ? $result->getModifiedCount() : $result;
+			return (!$rawResult) ? $result->getModifiedCount() : $result;
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
 
