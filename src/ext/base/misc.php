@@ -185,7 +185,7 @@
 					if ( $dateObj === FALSE )
 						return $nArgs > 3 ? $default : -1;
 					
-					return $dateObj->getTimestamp();
+					return (in_array( 'get-object', $opt )) ? $dateObj : $dateObj->getTimestamp();
 				}
 			
 			
