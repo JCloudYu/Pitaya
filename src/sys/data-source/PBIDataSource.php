@@ -20,6 +20,7 @@
 		abstract public function count( $dataNS, $filter );
 		abstract public function range( $dataNS, $filter, &$additional = [] );
 		abstract public function command( $dataNS, $commands );
+		abstract public function supportive();
 
 
 

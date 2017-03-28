@@ -57,6 +57,9 @@
 		public function command( $dataNS, $commands ) {
 		
 		}
+		public function supportive() {
+			
+		}
 
 
 		public function count( $dataNS, $filter ) {

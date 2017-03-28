@@ -239,9 +239,16 @@
 			$ns = self::ResolveNameSpace( $dataNS );
 			return $this->_mongoConnection->executeCommand( $ns['database'], new Command($commands) );
 		}
-
-
-
+		public function supportive() {
+			static $supportive = NULL;
+			if ( $supportive === NULL ) {
+				$supportive = new PBMongoSourceSupportive($this->_mongoConnection);
+			}
+			
+			return $supportive;
+		}
+		
+		
 		public function count( $dataNS, $filter ) {
 			$ns = self::ResolveNameSpace( $dataNS );
 
@@ -315,6 +322,44 @@
 		}
 	}
 	
+	class PBMongoSourceSupportive {
+		private $_mongoConnection = NULL;
+		public function __construct( $conn ) { $this->_mongoConnection = $conn; }
+		public function getCollection( $dbName, $nameFilter = [] ) {
+			if ( !is_array($nameFilter) ) $nameFilter = [ $nameFilter ];
+		
+		
+		
+			$data = [];
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'listCollections' => 1,
+				'filter' => [
+					'name' => [ '$in' => $nameFilter ]
+				]
+			]));
+			
+			foreach( $ANCHOR as $collection ) {
+				$data[] = $collection;
+			}
+			
+			
+			
+			return $data;
+		}
+		public function dropCollection( $dbName, $collection, $checkValid = TRUE ) {
+			if ( $checkValid ) {
+				$collInfo = $this->getCollection($dbName, $collection);
+				if ( empty($collInfo) ) return FALSE;
+			}
+			
+			$data = [];
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'drop' => $collection,
+			]));
+			
+			return TRUE;
+		}
+	}
 	
 	function MongoID( $hexStr = NULL ) {
 		try{
@@ -323,7 +368,6 @@
 			return NULL;
 		}
 	}
-	
 	function MongoRegex( $pattern, $flag = "" ) {
 		return new Regex( $pattern, $flag );
 	}
