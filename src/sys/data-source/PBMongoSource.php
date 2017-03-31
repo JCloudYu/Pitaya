@@ -187,13 +187,21 @@
 			return (!$rawResult) ? $result->getModifiedCount() : $result;
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
+			
+			$deleteOne	= !!$additional[ 'just-one' ];
+			$rawResult	= !!$additional[ 'raw-result' ];
+			
+			unset($additional[ 'just-one' ]);
+			unset($additional[ 'raw-result' ]);
 
-			$multipleDelete	= (!array_key_exists( 'multiple-delete', $additional)) ? TRUE : !!$additional[ 'multiple-delete' ];
-			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
-
+			if ( $deleteOne ) {
+				$additional[ 'limit' ] = TRUE;
+			}
+				
+			
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite();
-			$bulkWrite->delete( (object)$filter, [ 'limit' => !$multipleDelete ] );
+			$bulkWrite->delete( (object)$filter, $additional );
 
 
 
@@ -201,7 +209,7 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
 			
-			return ($castResult) ? $result->getDeletedCount() : $result;
+			return (!$rawResult) ? $result->getDeletedCount() : $result;
 		}
 		public function bulk( $dataNS, $batchedOps, $additional = [] ) {
 			// INFO: Prepare delete info
