@@ -1,4 +1,10 @@
 <?php
+	$path = "{$targetPath}/Pitaya";
+    if ( !IsValidPath($path) ) {
+      CreateLink( LIB_PATH . '/src', $path );
+    }
+
+
 	if ( !empty($options->refBasis) ) {
 		if ( !is_dir( $options->refBasis ) ) {
 			fwrite( STDERR, "Referenced pitaya basis directory is invalid!" );
