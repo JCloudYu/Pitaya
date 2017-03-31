@@ -3,3 +3,4 @@
 	define( '__BASIS_PATH',		ROOT . '/Basis'		);
 	define( '__SHARE_PATH',		ROOT . '/Share'		);
 	define( '__DATA_PATH',		ROOT . '/Data'		);
+	define( '__LIB_PATH',		ROOT . '/Lib'		);
