@@ -53,7 +53,7 @@
 			if ( empty($this->_logStream) ) return FALSE;
 
 
-			$newline = array_key_exists("newline", $options) ? !!$options[ 'newline' ] ? TRUE;
+			$newline = array_key_exists("newline", $options) ? !!$options[ 'newline' ] : TRUE;
 			$msg = ( !!@$options[ 'nowrap' ] ) ? $message : $this->genLogMsg( $message, $logCate, $options );
 			
 			fwrite( $this->_logStream, $msg . (empty($newline) ? "\n" : "") );
