@@ -65,10 +65,10 @@
 
 
 		private $_fields = [];
-		public function execute( $param = NULL, $initData = NULL ) {
+		public function execute( $param ) {
 			
 			if ( PBRequest::Request()->method !== "POST" ) return FALSE;
-			$this->_fields = is_array($initData) ? $initData : [];
+			$this->_fields = is_array($this->data->initData) ? $this->data->initData : [];
 				
 
 

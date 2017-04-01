@@ -48,14 +48,11 @@
 		public function __get_downloadName() { return $this->_downloadName; }
 
 
-		public function prepare($moduleRequest) {
-			
-		}
-
-		public function execute( $chainData = NULL, $initData = NULL )
+		public function execute( $chainData )
 		{
 			$CONSTANT = PBConstant::Constant();
 			
+			$initData = $this->data->initDate;
 			$this->_targetPath = (is_array($initData)) ? implode('/', $initData) : "{$initData}";
 		
 		

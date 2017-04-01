@@ -1,7 +1,7 @@
 <?php
 	class PBFuncChain extends PBModule implements ArrayAccess {
 		private $_procStack = [];
-		public function execute( $param, $request ) {
+		public function execute( $param ) {
 			foreach ( $this->_procStack as $call ) {
 				if ( !is_callable( $call ) ) continue;
 				$param = $call( $param, $this->data );

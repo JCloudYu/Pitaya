@@ -8,9 +8,9 @@
 
 
 
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData ) {
 		
-			$param = ( $initData !== NULL ) ? $initData : $chainData;
+			$param = $this->data->initData ?: $chainData;
 			
 			
 
