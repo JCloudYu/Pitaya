@@ -1,5 +1,5 @@
 <?php
-	final class PBFileSystem {
+	class PBFileSystem {
 		public static function CopyDir( $sourceDir, $targetDir ) {
 			$jobQueue = [];
 			$jobQueue[] = (object)[

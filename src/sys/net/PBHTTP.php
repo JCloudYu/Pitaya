@@ -4,19 +4,21 @@
  * Created by JCloudYu on 2014/12/13 04:57
  */
 
-	final class PBHTTP
-	{
-		public static function ResponseStatus( $status )
-		{
+	final class PBHTTP {
+		public static function ResponseContentType( $type ) {
+			header( "Content-Type: {$type}" );
+		}
+		public static function ResponseStatus( $status ) {
 			$statusMsg = PBHTTP::STATUS_STRING[ $status ];
 			if ( empty($statusMsg) ) throw new Exception("Unsupported HTTP Status Code");
 
 			header("HTTP/1.1 {$status} {$statusMsg}");
 			header("Status: {$status} {$statusMsg}");
 		}
-		public static function ResponseJSON( $obj, $status = NULL ) { self::ResponseContent( json_encode($obj), "application/json", $status ); }
-		public static function ResponseContent( $content, $contentType = "text/plain", $status = NULL )
-		{
+		public static function ResponseJSON( $obj, $status = NULL ) {
+			self::ResponseContent( json_encode($obj), "application/json", $status );
+		}
+		public static function ResponseContent( $content, $contentType = "text/plain", $status = NULL ) {
 			if ( $status !== NULL ) self::ResponseStatus( $status );
 			header("Content-Type: {$contentType}");
 

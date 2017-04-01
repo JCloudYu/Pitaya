@@ -1,6 +1,5 @@
 <?php
-	final class PBLog
-	{
+	final class PBLog {
 		const LOG_INFO_TIME		= 1;
 		const LOG_INFO_CATE		= 2;
 		const LOG_INFO_BASIS	= 4;
@@ -39,18 +38,25 @@
 			$cateInfo	= ( $LOG_INFO & self::LOG_INFO_CATE ) ? "[{$info['cate']}]" : '';
 			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_BASIS ) ? "[{$info['service']}]" : '';
 			$routeInfo	= ( $LOG_INFO & self::LOG_INFO_ROUTE) ? "[{$info['route']}]" : '';
+			$posInfo	= " ";
+			if ( FORCE_LOG_POSITION && DEBUG_BACKTRACE_ENABLED ) {
+				$backtrace = debug_backtrace();
+				$posInfo = " {$backtrace[2]['file']}:{$backtrace[2]['line']}\n";
+			}
 			
 			
 			
-			$msg = "{$timeInfo}{$cateInfo}{$basisInfo}{$routeInfo}{$tags} {$message}";
+			$msg = "{$timeInfo}{$cateInfo}{$basisInfo}{$routeInfo}{$tags}{$posInfo}{$message}";
 			return $msg;
 		}
 		public function logMsg( $message, $logCate = '', $options = [] ) {
 			if ( empty($this->_logStream) ) return FALSE;
 
 
-			$msg = ( @$options[ 'row-output' ] === TRUE ) ? $message : $this->genLogMsg( $message, $logCate, $options );
-			fwrite( $this->_logStream, "{$msg}\n" );
+			$newline = array_key_exists("newline", $options) ? !!$options[ 'newline' ] : TRUE;
+			$msg = ( !!@$options[ 'nowrap' ] ) ? $message : $this->genLogMsg( $message, $logCate, $options );
+			
+			fwrite( $this->_logStream, $msg . (empty($newline) ? "\n" : "") );
 			fflush( $this->_logStream );
 			return $msg;
 		}
@@ -144,7 +150,7 @@
 
 
 				touch( $logFilePath ); 
-				chmod( $logFilePath, 0777 );
+				chmod( $logFilePath, 0644 );
 				$hLog = @fopen($logFilePath, 'a+b');
 				if ( empty( $hLog ) ) return NULL;
 
