@@ -35,7 +35,7 @@
 		array_shift($ARGV);
 		$mode = escapeshellarg($mode);
 		$args = []; foreach( $ARGV as $arg ) $args[] = escapeshellarg($arg);
-		$proc = proc_open( "php {$LIB_PATH}/src/portal.php -entry {$mode}" . implode( ' ',  $args ), [ STDIN, STDOUT, STDERR ], $pipes );
+		$proc = proc_open( "php {$LIB_PATH}/src/portal.php -entry {$mode} " . implode( ' ',  $args ), [ STDIN, STDOUT, STDERR ], $pipes );
 		$stat = proc_close($proc);
 		exit( $stat );
 	}
