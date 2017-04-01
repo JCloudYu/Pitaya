@@ -13,6 +13,7 @@
 	});
 
 	s_define( '__DEBUG_CONSOLE_WIDTH__', 200, TRUE );
+	s_define( '__DEBUG_FORCE_LOG_POSITION__', FALSE, TRUE );
 
 	// INFO: Debug
 	final class DEBUG {
@@ -21,21 +22,17 @@
 		public static function Verbose() { self::$_silent = FALSE; }
 
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
-		public static function VarDumpParent() {
-
-			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
+		public static function VarDumpParent(...$args) {
+			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
 		}
-		public static function VarDump() {
-
-			echo self::VDump(func_get_args(), (SYS_EXEC_ENV == EXEC_ENV_HTTP));
+		public static function VarDump(...$args) {
+			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP));
 		}
-		public static function VarDumpParentString() {
-
-			return self::VDump(func_get_args(), FALSE, TRUE);
+		public static function VarDumpParentString(...$args) {
+			return self::VDump($args, FALSE, TRUE);
 		}
-		public static function VarDumpString() {
-
-			return self::VDump(func_get_args(), FALSE);
+		public static function VarDumpString(...$args) {
+			return self::VDump($args, FALSE);
 		}
 		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
 
@@ -47,7 +44,7 @@
 
 			$out = '';
 			if($forHTML)
-				$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px;'>";
+				$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px; position:relative;'>";
 
 			if(!is_array($args)) $args = array($args);
 
@@ -179,8 +176,13 @@
 
 		private function __construct(){}
 
-		public static function NORMALLY()		 { exit( self::STATUS_SUCCESS ); }
-		public static function WITH_STATUS( $errorCode = self::STATUS_ERROR )
+		public static function NORMALLY() {
+			exit(self::STATUS_SUCCESS);
+		}
+		public static function ERROR() {
+			exit(self::STATUS_ERROR);
+		}
+		public static function WITH_STATUS( $errorCode )
 		{
 			$errorCode = abs($errorCode);
 

@@ -1,66 +1,15 @@
 <?php
-	/**
-	 ** 1027.BadmintonLa - basic.obj.php
-	 ** Created by JCloudYu on 2016/02/11 09:57
-	 **/
-
-	final class PBScopeTracer
-	{
-		private static $_singleton = NULL;
-		public static function Scope() {
-			if ( self::$_singleton !== NULL )
-				return self::$_singleton;
-
-			return ( self::$_singleton = new PBScopeTracer() );
-		}
-
-
-
-		private $_scope_levels;
-		public function __construct( $stack = '', $seperator = ' ' )
-		{
-			if ( !is_array($stack) )
-				$stack = empty($stack) ? array() : explode( "{$seperator}", "{$stack}" );
-
-			$this->_scope_levels = $stack;
-		}
-
-		public function push( $item )
-		{
-			$arguments = func_get_args();
-			if ( count($arguments) == 0 )
-				return FALSE;
-
-			foreach( $arguments as $item )
-				array_push( $this->_scope_levels, $item );
-			return TRUE;
-		}
-
-		public function pop()
-		{
-			return @array_pop( $this->_scope_levels );
-		}
-
-		public function breadcrumb( $glue = '#' )
-		{
-			return implode( $glue,
-				ary_filter( $this->_scope_levels, function($item) use( $glue ) {
-					return str_replace( $glue, "_", "{$item}" );
-				})
-			);
-		}
-
-		public function __toString() { return $this->breadcrumb(); }
-	}
-
-
-	abstract class PBJSONContainer implements ArrayAccess, Iterator
-	{
+	abstract class PBJSONContainer implements ArrayAccess, Iterator {
 		protected $_container = array();
 		protected $_end		  = TRUE;
 
 		abstract function safe_cast();
-
+		public function __construct( $data ) {
+			if ( func_num_args() > 0 && is_array($data) ) {
+				$this->_container = $data;
+			}
+		}
+		
 		public function offsetSet( $offset, $value ) {
 			if ( $offset === NULL )
 				$this->_container[] = $value;
@@ -96,19 +45,15 @@
 		public function key() {
 			return key($this->_container);
 		}
-
 		public function next() {
 			$this->_end = !next($this->_container);
 		}
-
 		public function rewind() {
 			reset($this->_container);
 		}
-
 		public function valid() {
 			return ( count($this->_container) <= 0 ) ? FALSE : $this->_end;
 		}
-
 		public static function Flatten( $content ) {
 
 			if ( is_a( $content, 'stdClass' ) )
@@ -133,18 +78,12 @@
 			return $content;
 		}
 	}
-
-	class PBJSONObject extends PBJSONContainer
-	{
-		public static function JSONObject( $data = NULL ) {
-			$obj = new PBJSONObject();
-
-			if ( func_num_args() > 0 && is_array($data) )
-				$obj->_container = $data;
-
-			return $obj;
+	
+	class PBJSONObject extends PBJSONContainer {
+		public static function JSONObject($data=NULL) {
+			DEPRECATION_WARNING( "PBJSONObject::JSONObject is marked as deprecated! Please refer to PBJSONObject() api instead!" );
+			return PBJSONObject($data);
 		}
-
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
@@ -152,18 +91,15 @@
 			return (object)$this->_container;
 		}
 	}
-
-	class PBJSONArray extends PBJSONContainer
-	{
+	function PBJSONObject( $data = NULL ) {
+		return new PBJSONObject( $data );
+	}
+	
+	class PBJSONArray extends PBJSONContainer {
 		public static function JSONArray( $data = NULL ) {
-			$obj = new PBJSONArray();
-
-			if ( func_num_args() > 0 && is_array($data) )
-				$obj->_container = $data;
-
-			return $obj;
+			DEPRECATION_WARNING( "PBJSONArray::JSONArray is marked as deprecated! Please refer to PBJSONArray() api instead!" );
+			return PBJSONObject($data);
 		}
-
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
@@ -171,21 +107,33 @@
 			return array_values($this->_container);
 		}
 	}
-
+	function PBJSONArray( $data = NULL ) {
+		return new PBJSONArray( $data );
+	}
+	
+	
 	class PBJSONCast {
-		public static function JSONCast() {
-			static $singleton = NULL;
-			if ( $singleton ) return $singleton;
+		public $data = NULL;
+		public function __construct( &$carriedData = NULL ) {
+			$this->data = $carriedData;
+		}
+		public function __invoke( $output = FALSE ) {
+			$outData = &$this->data;
+			if (is_a($outData, 'PBJSONContainer')) {
+				$outData = $outData->safe_cast();
+			}
 			
-			$singleton = new PBJSONCast();
-			return $singleton;
+			if ($output) {
+				echo json_encode($outData);
+				return;
+			}
+			
+			return json_encode($outData);
 		}
-		private function __construct() {}
-		
-		public function __invoke( $data ) {
-			if ( is_a( $data, 'PBJSONContainer' ) )
-				$data = $data->safe_cast();
-		
-			return json_encode( $data );
+		public function __toString() { 
+			return $this(FALSE);
 		}
+	}
+	function PBJSONCast( $jsonData=NULL ) {
+		return new PBJSONCast($jsonData);
 	}

@@ -18,7 +18,7 @@
 	{
 		public function execute( $chainData = NULL, $moduleRequest = NULL )
 		{
-			$module			= PBProcess::Module( "working." . __STANDALONE_MODULE__ );
+			$module			= PBModule( "working." . __STANDALONE_MODULE__ );
 			$this->chain[]	= [ 'module' => $module, 'request' => $moduleRequest ];
 		}
 	}

@@ -18,7 +18,13 @@
 		private static $_cors = NULL;
 		public static function CORSControl() {
 			if ( self::$_cors ) return self::$_cors;
-			return ( self::$_cors = new PBRequestCORS() );
+			return ( self::$_cors = new ____pitaya_base_object_cors_controller() );
+		}
+		
+		private static $_queryBuilder = NULL;
+		public static function AttrControl() {
+			if ( self::$_queryBuilder ) return self::$_queryBuilder;
+			return ( self::$_queryBuilder = new ____pitaya_base_object_attr_builder() );
 		}
 		// endregion
 		
@@ -186,8 +192,12 @@
 		public function __get_service() {
 			return $this->_incomingRecord['request']['service'];
 		}
-		public function __get_query() 		{ return $this->_parsedQuery ? $this->_parsedQuery : $this->_incomingRecord['request']['query']; }
-		public function __get_data() 		{ return $this->_parsedData  ? $this->_parsedData  : $this->_incomingRecord['request']['data']; }
+		public function __get_query() {
+			return $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
+		}
+		public function __get_data() {
+			return $this->_parsedData ?: $this->_incomingRecord['request']['data'];
+		}
 
 		private $_filesCache = NULL;
 		public function __get_files() {
@@ -256,8 +266,27 @@
 		}
 		public function __get_attachAnchor() {
 			static $anchor = NULL;
-			if ( $anchor !== NULL ) return $anchor;
-			return ($anchor = $this->attachAnchor());
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath(0);
+			}
+			
+			return $anchor->cast_parent();
+		}
+		public function __get_effectiveAnchor() {
+			static $anchor = NULL;
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath(1);
+			}
+			
+			return $anchor->cast_parent();
+		}
+		public function __get_fullPath() {
+			static $anchor = NULL;
+			if ( $anchor === NULL ) {
+				$anchor = $this->URIPath()->full();
+			}
+			
+			return $anchor->cast_parent();
 		}
 		public function __get_domain() {
 			return empty($this->server[ 'HTTP_HOST' ]) ? @"{$this->server[ 'SERVER_NAME' ]}" : @"{$this->server[ 'HTTP_HOST' ]}";
@@ -275,9 +304,10 @@
 			if ( $ssl !== NULL ) return $ssl;
 			return ($ssl = $this->is_ssl());
 		}
-		public function __get_port() { return CAST( $this->server['SERVER_PORT'], 'int strict', -1 ); }
-		public function __get_requestTime()
-		{
+		public function __get_port() {
+			return CAST( $this->server['SERVER_PORT'], 'int strict', -1 );
+		}
+		public function __get_requestTime() {
 			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
 			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
 		}
@@ -286,19 +316,30 @@
 		public function __get_contentType() {
 			return ( $this->_contentType !== NULL ) ? $this->_contentType : ($this->_contentType = self::ParseContentType( @$this->server['CONTENT_TYPE'] ));
 		}
-
-
-
+		// endregion
+		
+		// region [ Methods ]
+		/**
+		 * @return ____pitaya_base_object__path_mapper_tracable
+		 */
 		public function attachAnchor( $traceBack = 0 ) {
-			$anchor = $this->_incomingRecord['environment']['attachment']['anchor'];
-			
-			if ( $traceBack > 0 )
-				$anchor = @array_slice( $anchor, 0, -$traceBack );
-				
-			return empty($anchor) ? '' : ('/'. implode( '/', $anchor ));
+			return $this->URIPath( -$traceBack );
 		}
-		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE )
-		{
+		
+		/**
+		 * @return ____pitaya_base_object__path_mapper_tracable
+		 */
+		public function URIPath( $trace = 0 ) {
+			$anchor = @$this->_incomingRecord['environment']['attachment']['anchor'] ?: [];
+			$res = $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
+			
+			$res = @$res[ 'resource' ];
+			if ( !is_array($res) ) $res = [];
+			
+			array_unshift($res, __BASIS__);
+			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
+		}
+		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE ) {
 			static $is_https = NULL;
 
 			if ($is_https !== NULL) return $is_https;
@@ -316,6 +357,14 @@
 			
 			
 			return ( $is_https = $isForwardedHttp || $isForwardedSSL || $isHttps || $isPort443 );
+		}
+		
+		public function redirect( $path, $status = NULL ) {
+			if ( headers_sent() ) return FALSE;
+			
+			PBHTTP::ResponseStatus( $status ?: PBHTTP::STATUS_307_TEMPORARY_REDIRECT );
+			header( "Location: {$path}" );
+			exit(0);
 		}
 		// endregion
 
@@ -841,8 +890,10 @@
 		}
 		// endregion
 	}
-
-	final class PBRequestCORS extends PBObject {
+	
+	
+	
+	final class ____pitaya_base_object_cors_controller extends PBObject {
 		private $_request = NULL;
 		public function __construct() {
 			$this->_request = PBRequest::Request();
@@ -850,7 +901,7 @@
 		
 		private $_origins = [ '*' ];
 		private $_originsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowOrigins( $whiteList = [ '*' ] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_originsDirty = TRUE;
@@ -865,7 +916,7 @@
 				
 		private $_methods = [];
 		private $_methodsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowMethods( $whiteList = [] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_methodsDirty = TRUE;
@@ -882,7 +933,7 @@
 		
 		private $_headers = [];
 		private $_headersDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowHeaders( $whiteList = [] ) {
 			if ( !is_array($whiteList) ) $whiteList = [ $whiteList ];
 			$this->_headersDirty = TRUE;
@@ -897,7 +948,7 @@
 		
 		private $_credential = TRUE;
 		private $_credentialsDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowCredentials( $allowCredential = TRUE ) {
 			$this->_credentialsDirty = TRUE;
 			
@@ -908,7 +959,7 @@
 		
 		private $_cacheDuration = 86400;
 		private $_durationDirty = FALSE;
-		/** @return PBRequestCORS */
+		/** @return ____pitaya_base_object_cors_controller */
 		public function allowDuration( $duration = 86400 ) {
 			$this->_durationDirty = TRUE;
 		
@@ -973,14 +1024,14 @@
 				$origin = in_array( $accessOrigin, $this->_origins, TRUE ) ? $accessOrigin : NULL;
 			}
 
-			if ( ($_accepted = ($origin !== NULL)) && $this->_request->method === "OPTIONS" ) 
+			if ( ($_accepted = ($origin !== NULL)) && $this->_request->method === "OPTIONS" )
 				header( "Access-Control-Allow-Origin: {$origin}" );
 			
 			$this->_originsDirty = FALSE;
 			return $_accepted;
 		}
 		private function _acceptMethods() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_methodsDirty ) return $_accepted;
 			
 			
@@ -1002,7 +1053,7 @@
 			return $_accepted;
 		}
 		private function _acceptHeaders() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_headersDirty ) return $_accepted;
 		
 			if ( $this->_request->method === "OPTIONS" && !empty($this->_headers) )
@@ -1012,7 +1063,7 @@
 			return ( $_accepted = TRUE );
 		}
 		private function _acceptCredentials() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_credentialsDirty ) return $_accepted;
 			
 			if ( $this->_request->method === "OPTIONS" )
@@ -1022,7 +1073,7 @@
 			return ( $_accepted = TRUE );
 		}
 		private function _acceptDuration() {
-			static $_accepted = NULL; 
+			static $_accepted = NULL;
 			if ( $_accepted !== NULL && !$this->_durationDirty ) return $_accepted;
 			
 			if ( $this->_request->method === "OPTIONS" )
@@ -1031,4 +1082,166 @@
 			$this->_durationDirty = FALSE;
 			return ( $_accepted = TRUE );
 		}
+	}
+	class ____pitaya_base_object__path_mapper {
+		protected $_pathInfo = [];
+		protected $_pathLen = 0;
+		protected $_anchor = 0;
+		
+		
+		public function __construct( $basePath = [], $anchor = 0 ) {
+			$this->_pathInfo = is_array($basePath) ? $basePath : [];
+			$this->_pathLen = count($this->_pathInfo);
+			
+			$this->_moveAnchor( $anchor );
+		}
+		public function __invoke() {
+			return array_slice( $this->_pathInfo, 0, $this->_anchor + 1 );
+		}
+		public function __toString() {
+			return '/' . implode( '/', $this() );
+		}
+		
+		protected function _moveAnchor( $traceBack = 0 ) {
+			$this->_anchor += $traceBack;
+			if ( $this->_anchor < 0 ) {
+				$this->_anchor = 0;
+			}
+			else
+			if ( $this->_anchor >= $this->_pathLen ) {
+				$this->_anchor = ($this->_pathLen ?: 1) - 1;
+			}
+		}
+	}
+	final class ____pitaya_base_object__path_mapper_tracable extends ____pitaya_base_object__path_mapper {
+		private $_parent = NULL;
+		public function cast_parent() {
+			return $this->_parent;
+		}
+		
+		public function __construct( $basePath = [], $anchor = 0 ) {
+			parent::__construct($basePath, $anchor);
+			
+			$this->_parent = new ____pitaya_base_object__path_mapper();
+			$this->_parent->_pathInfo = &$this->_pathInfo;
+			$this->_parent->_pathLen = &$this->_pathLen;
+			$this->_parent->_anchor = &$this->_anchor;
+		}
+	
+		public function trace( $traceBack = 0 ) {
+			$this->_moveAnchor( $traceBack );
+			return $this;
+		}
+		public function full() {
+			$this->_anchor = ($this->_pathLen ?: 1) - 1;
+			return $this;
+		}
+	}
+	final class ____pitaya_base_object_attr_builder {
+		private $_attrs = [];
+		private $_flags = [];
+		private $_dirty = TRUE;
+		
+		
+		/**
+		 * return ____pitaya_base_object_attr_builder
+		 */
+		public function filter($rejects = FALSE, $accepts = TRUE) {
+			$picked = new ____pitaya_base_object_attr_builder();
+			
+			
+			
+			if ( !is_array($accepts) ) {
+				$picked->_attrs = $this->_attrs;
+				$picked->_flags = $this->_flags;
+			}
+			else {
+				foreach( $accepts as $name ) {
+					if ( array_key_exists($name, $this->_attrs) ) {
+						$picked->_attrs[ $name ] = $this->_attrs[ $name ];
+					}
+					
+					if ( array_key_exists($name, $this->_flags) ) {
+						$picked->_flags[ $name ] = $this->_flags[ $name ];
+					}
+				}
+			}
+			
+			if ( is_array($rejects) ) {
+				foreach( $rejects as $name ) {
+					if ( array_key_exists($name, $picked->_attrs) ) {
+						unset($picked->_attrs[ $name ]);
+					}
+					
+					if ( array_key_exists($name, $picked->_flags) ) {
+						unset($picked->_flags[ $name ]);
+					}
+				}
+			}
+			
+			return $picked;
+		}
+		public function flag( $name, $set = TRUE ) {
+			$this->_dirty = TRUE;
+			
+			if ( func_num_args() <= 1 ) {
+				return !!$this->_flags[$name];
+			}
+		
+			
+		
+			$set = !!$set;
+			if ( $set ) {
+				$this->_flags[$name] = $set;
+			}
+			else {
+				unset($this->_flags[$name]);
+			}
+			return TRUE;
+		}
+		
+		
+		
+		public function __set($name, $value) {
+			$this->_attrs[ $name ] = $value;
+			$this->_dirty = TRUE;
+		}
+		public function &__get($name) {
+			$this->_dirty = TRUE;
+			return @$this->_attrs[ $name ];
+		}
+		public function __isset($name) {
+			return array_key_exists($name, $this->_attrs);
+		}
+		public function __unset($name) {
+			$this->_dirty = TRUE;
+			unset($this->_attrs[$name]);
+		}
+		public function __toString() {
+			static $attr = NULL;
+			
+			if ( $attr === NULL || $this->_dirty ) {
+				$attr = [];
+				foreach ( $this->_attrs as $name => $val ) {
+					$attr[ $name ] = urlencode(@"{$name}") . "=" . urlencode(@"{$val}");
+				}
+				
+				foreach ( $this->_flags as $name => $case ) {
+					$attr[] = urlencode(@"{$name}");
+				}
+			}
+			
+			$this->_dirty = FALSE;
+			return implode( '&', $attr );
+		}
+	}
+
+	function PBRequest() {
+		return PBRequest::Request();
+	}
+	function PBAttrCtrl() {
+		return PBRequest::AttrControl();
+	}
+	function PBCORSCtrl() {
+		return PBRequest::CORSControl();
 	}

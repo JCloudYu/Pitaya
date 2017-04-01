@@ -8,13 +8,13 @@
 	use \MongoDB\Driver\BulkWrite;
 	use \MongoDB\Driver\Command;
 	use \MongoDB\BSON\ObjectID;
+	use \MongoDB\BSON\Regex;
 
 
 
 	using( 'sys.data-source.PBIDataSource' );
 
-	class PBMongoSource extends PBIDataSource
-	{
+	class PBMongoSource extends PBIDataSource {
 		const AGGREGATION_OPRATORS = [
 			'$project',
 			'$match',
@@ -157,20 +157,26 @@
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $sessionId: FALSE );
 		}
 		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
+			$custom		= (!!$additional[ 'customize' ] || !!$additional[ 'compound-update' ]);
+			$rawResult	= !!$additional[ 'raw-result' ];
+			$updateId	= !!$additional[ 'update-id' ];
 
-			$compoundUpdate	= !empty($additional[ 'compound-update' ]);
-			$multipleUpdate	= (!array_key_exists( 'multiple-update', $additional)) ? TRUE : !!$additional[ 'multiple-update' ];
-			$shouldInsert	= (!array_key_exists( 'upsert', $additional )) ? FALSE : !!$additional[ 'upsert' ];
-			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
+			unset( $additional[ 'customize' ] );
+			unset( $additional[ 'compound-update' ] );
+			unset( $additional[ 'raw-result' ] );
+			unset( $additional[ 'update-id' ] );
+
+
 
 			// INFO: Prepare update info
 			$bulkWrite 	= new BulkWrite();
-			
 			$updatedData = (array)$updatedData;
-			unset( $updatedData['_id'] );
+			if ( !$updateId ) {
+				unset( $updatedData['_id'] );
+			}
 
-			$updateData = $compoundUpdate ? (object)$updatedData : (object)[ '$set' => (object)$updatedData ];
-			$bulkWrite->update( (object)$filter, $updateData, [ 'multi' => $multipleUpdate, 'upsert' => $shouldInsert ] );
+			$updateData = $custom ? $updatedData : [ '$set' => $updatedData ];
+			$bulkWrite->update( $filter, $updateData, $additional );
 
 
 
@@ -178,16 +184,24 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
 			
-			return ($castResult) ? $result->getModifiedCount() : $result;
+			return (!$rawResult) ? $result->getModifiedCount() : $result;
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
+			
+			$deleteOne	= !!$additional[ 'just-one' ];
+			$rawResult	= !!$additional[ 'raw-result' ];
+			
+			unset($additional[ 'just-one' ]);
+			unset($additional[ 'raw-result' ]);
 
-			$multipleDelete	= (!array_key_exists( 'multiple-delete', $additional)) ? TRUE : !!$additional[ 'multiple-delete' ];
-			$castResult		= (!array_key_exists( 'cast-result', $additional )) ? TRUE : !!$additional[ 'cast-result' ];
-
+			if ( $deleteOne ) {
+				$additional[ 'limit' ] = TRUE;
+			}
+				
+			
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite();
-			$bulkWrite->delete( (object)$filter, [ 'limit' => !$multipleDelete ] );
+			$bulkWrite->delete( (object)$filter, $additional );
 
 
 
@@ -195,7 +209,7 @@
 			$result = $this->_mongoConnection->executeBulkWrite( $dataNS, $bulkWrite );
 			if ( !is_a( $result, '\MongoDB\Driver\WriteResult' ) ) return FALSE;
 			
-			return ($castResult) ? $result->getDeletedCount() : $result;
+			return (!$rawResult) ? $result->getDeletedCount() : $result;
 		}
 		public function bulk( $dataNS, $batchedOps, $additional = [] ) {
 			// INFO: Prepare delete info
@@ -233,9 +247,16 @@
 			$ns = self::ResolveNameSpace( $dataNS );
 			return $this->_mongoConnection->executeCommand( $ns['database'], new Command($commands) );
 		}
-
-
-
+		public function supportive() {
+			static $supportive = NULL;
+			if ( $supportive === NULL ) {
+				$supportive = new PBMongoSourceSupportive($this->_mongoConnection);
+			}
+			
+			return $supportive;
+		}
+		
+		
 		public function count( $dataNS, $filter ) {
 			$ns = self::ResolveNameSpace( $dataNS );
 
@@ -298,10 +319,7 @@
 
 		private static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
-			$collection	= @array_pop( $ns );
-			$database	= @array_pop( $ns );
-
-			return [ 'database' => $database, 'collection' => $collection ];
+			return [ 'database' => @$ns[0], 'collection' => @$ns[1] ];
 		}
 		public static function MongoCollect( $document, &$idx ) {
 			$idx = "{$document->_id}";
@@ -312,6 +330,84 @@
 		}
 	}
 	
+	class PBMongoSourceSupportive {
+		private $_mongoConnection = NULL;
+		public function __construct( $conn ) { $this->_mongoConnection = $conn; }
+		public function createCollection( $dbName, $collectionName, $checkValid = TRUE ) {
+			if ( $checkValid ) {
+				$coll = $this->getCollection( $dbName, $collectionName );
+				if ( !empty($coll) ) return FALSE;
+			}
+			
+			return $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'create' => $collectionName,
+			]));
+		}
+		public function createIndex( $dbName, $targetCollection, $indexes = [], $checkValid = TRUE ) {
+			if ( !is_array() || empty($indexes) ) return FALSE;
+			if ( $checkValid ) {
+				$coll = $this->getCollection( $dbName, $collectionName );
+				if ( empty($coll) ) return FALSE;
+			}
+		
+			$NS = "{$dbName}.{$targetCollection}";
+			foreach( $indexes as &$discriptor ) {
+				if ( is_object($discriptor) ) {
+					$discriptor->ns = $NS;
+				}
+				else
+				if ( is_array($discriptor) ) {
+					$discriptor[ 'ns' ] = $NS;
+				}
+			}
+		
+			
+			return $SOURCE->command( $dbName, [
+				'createIndexes' => $targetCollection,
+				'indexes' => $indexes
+			]);
+		}
+		public function getCollection( $dbName, $nameFilter = [] ) {
+			if ( !is_array($nameFilter) ) {
+				if ( empty($nameFilter) ) {
+					return [];
+				}
+				
+				$nameFilter = [ $nameFilter ];
+			}
+		
+		
+		
+			$data = [];
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'listCollections' => 1,
+				'filter' => [
+					'name' => [ '$in' => $nameFilter ]
+				]
+			]));
+			
+			foreach( $ANCHOR as $collection ) {
+				$data[] = $collection;
+			}
+			
+			
+			
+			return $data;
+		}
+		public function dropCollection( $dbName, $collection, $checkValid = TRUE ) {
+			if ( $checkValid ) {
+				$collInfo = $this->getCollection($dbName, $collection);
+				if ( empty($collInfo) ) return FALSE;
+			}
+			
+			$data = [];
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'drop' => $collection,
+			]));
+			
+			return TRUE;
+		}
+	}
 	
 	function MongoID( $hexStr = NULL ) {
 		try{
@@ -319,4 +415,7 @@
 		} catch(Exception $e) {
 			return NULL;
 		}
+	}
+	function MongoRegex( $pattern, $flag = "" ) {
+		return new Regex( $pattern, $flag );
 	}

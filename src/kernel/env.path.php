@@ -19,6 +19,7 @@
 
 			// INFO: Attach other keywords
 			self::$_path_cache[ 'root' ]	= ROOT;
+			self::$_path_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ? __LIB_PATH : '/Lib';
 			self::$_path_cache[ 'share' ]	= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
 			self::$_path_cache[ 'data' ]	= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
 			self::$_path_cache[ 'broot' ]	= self::$_path_cache[ 'srvroot' ] = defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';

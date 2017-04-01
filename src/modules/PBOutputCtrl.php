@@ -26,7 +26,7 @@
 	
 	
 	
-		public function execute( $param = NULL, $initData = NULL ) {
+		public function execute( $param, $initData ) {
 			if ( IS_CLI_ENV ) return;
 			
 			
@@ -46,7 +46,7 @@
 			
 			$content = ( $param === NULL ) ? self::$_outputData : $param;
 			if ( !is_resource($content) )
-				echo "{$content}";
+				echo $content;
 			else
 			{
 				$output = fopen( "php://output", "a+b" );
@@ -57,7 +57,7 @@
 	}
 	class PBHtmlOutput extends PBHttpOutputCtrl {
 		
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 		
 			$outputCtnt = ($chainData === NULL) ? self::$_outputData : $chainData;	
 		
@@ -151,7 +151,7 @@
 
 
 			PBHttpOutputCtrl::ContentType( "text/html" );
-			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>" );
+			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>", NULL );
 		}
 		
 		// region [ Private Properties ]
@@ -380,10 +380,10 @@
 		const STATUS_NORMAL		=  0;
 		const STATUS_ERROR		= -1;
 		
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 			$result = self::__PROCESS_OUTPUT( ( $chainData === NULL ) ? self::$_outputData : $chainData );
 			self::ContentType( 'application/json' );
-			parent::execute( @json_encode($result) );
+			parent::execute( @json_encode($result), NULL );
 		}
 		
 		private static function __PROCESS_OUTPUT( $param ) {
@@ -405,17 +405,34 @@
 			$param = clone $param;
 			$ajaxReturn->status = CAST( @$param->status, 'int strict',	self::STATUS_NORMAL );
 			$ajaxReturn->msg	= CAST( @$param->msg,	 'string',		'' );
-			$ajaxReturn->scope	= PBScopeTracer::Scope()->breadcrumb( '#' );
+			$ajaxReturn->scope	= PBScope()->breadcrumb( '#' );
 			$ajaxReturn			= data_set( $ajaxReturn, $param );
 
 			return $ajaxReturn;
 		}
 	}
 	class PBJSONOutput extends PBHttpOutputCtrl {
-		public function execute( $chainData = NULL, $initData = NULL ) {
+		public function execute( $chainData, $initData ) {
 			PBHttpOutputCtrl::ContentType( "application/json" );
 			parent::execute(json_encode(
 				($chainData === NULL) ? self::$_outputData : $chainData
-			));
+			), NULL);
+		}
+	}
+	class PBTemplateOutput extends PBHttpOutputCtrl {
+		public function execute( $chainData, $initData ) {
+			$template = PBTmplRenderer::Tpl( @$this->data->tmplName, @$this->data->tmplPath );
+			unset( $this->data->initData );
+			unset( $this->data->tmplName );
+			unset( $this->data->tmplPath );
+			
+			
+			$tplData = data_merge(
+				$this->data,
+				empty($chainData) ? [] : $chainData
+			); 
+			foreach( $tplData as $field => $value ) $template->{$field} = $value;
+			
+			parent::execute(NULL, NULL); $template(TRUE);
 		}
 	}

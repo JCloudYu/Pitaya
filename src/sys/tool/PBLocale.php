@@ -1,8 +1,7 @@
 <?php
 	using( 'sys.tool.PBScriptCtrl' );
 
-	final class PBLocale extends PBObject implements ArrayAccess {
-	
+	final class PBLocale extends PBObject implements ArrayAccess {	
 		private static $_sharedBasePackage = NULL;
 		public static function basePackage($packagePath = NULL) { 
 			self::$_sharedBasePackage = "$packagePath";
@@ -77,4 +76,13 @@
 				return $this->_storedLocales[$this->_curLocale][ $offset ];
 			return @strtr($offset, $this->_storedLocales[$this->_curLocale]);
 		}
+	}
+	
+	function PBLocale(){
+		static $_singleton = NULL;
+		if ( $_singleton === NULL ) {
+			$_singleton = PBLocale::Locale();
+		}
+		
+		return $_singleton;
 	}
