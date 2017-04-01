@@ -12,3 +12,9 @@
 		if ( !defined( 'ROOT' ) ) define( "ROOT", realpath(getcwd()) );
 		if ( !defined( 'PITAYA_ROOT' ) ) define( 'PITAYA_ROOT', realpath(__DIR__ . '/../') );
 	}
+
+
+
+
+	// Native constatns
+	define( 'CLEAR_SCREEN', chr(27)."[2J".chr(27)."[;H" );

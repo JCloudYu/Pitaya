@@ -333,8 +333,48 @@
 	class PBMongoSourceSupportive {
 		private $_mongoConnection = NULL;
 		public function __construct( $conn ) { $this->_mongoConnection = $conn; }
+		public function createCollection( $dbName, $collectionName, $checkValid = TRUE ) {
+			if ( $checkValid ) {
+				$coll = $this->getCollection( $dbName, $collectionName );
+				if ( !empty($coll) ) return FALSE;
+			}
+			
+			return $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'create' => $collectionName,
+			]));
+		}
+		public function createIndex( $dbName, $targetCollection, $indexes = [], $checkValid = TRUE ) {
+			if ( !is_array() || empty($indexes) ) return FALSE;
+			if ( $checkValid ) {
+				$coll = $this->getCollection( $dbName, $collectionName );
+				if ( empty($coll) ) return FALSE;
+			}
+		
+			$NS = "{$dbName}.{$targetCollection}";
+			foreach( $indexes as &$discriptor ) {
+				if ( is_object($discriptor) ) {
+					$discriptor->ns = $NS;
+				}
+				else
+				if ( is_array($discriptor) ) {
+					$discriptor[ 'ns' ] = $NS;
+				}
+			}
+		
+			
+			return $SOURCE->command( $dbName, [
+				'createIndexes' => $targetCollection,
+				'indexes' => $indexes
+			]);
+		}
 		public function getCollection( $dbName, $nameFilter = [] ) {
-			if ( !is_array($nameFilter) ) $nameFilter = [ $nameFilter ];
+			if ( !is_array($nameFilter) ) {
+				if ( empty($nameFilter) ) {
+					return [];
+				}
+				
+				$nameFilter = [ $nameFilter ];
+			}
 		
 		
 		
