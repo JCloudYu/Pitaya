@@ -32,11 +32,16 @@
 		];
 
 		private $_mongoConnection = NULL;
+		private $_defaultDB = NULL;
 
 		public function __construct( $DSURI = "//127.0.0.1:27017/db", $options = array(), $driverOpt = array() ) {
-			if ( !preg_match( '/^([A-Za-z][A-Za-z0-9]*:)*(\/\/.*)$/', $DSURI, $matches ) )
+			if ( !preg_match('/^mongodb:([\/]{2}[^\/]+)(\/[^\/]*)?(\/.*)*$/', $DSURI, $matches ) ) {
 				throw new PBException( "Given data source URI is incorrect!" );
-			$URI = @"mongodb:{$matches[2]}";
+			}
+			
+			$URI = @"mongodb:{$matches[1]}";
+			$DB	 = substr( "{$matches[2]}", 1 );
+			$this->_defaultDB = empty($DB) ? NULL : $DB;
 			$this->_mongoConnection = new \MongoDB\Driver\Manager( $URI, $options, $driverOpt );
 		}
 		public function __get_source() {
@@ -46,6 +51,7 @@
 
 
 		public function get( $dataNS, $filter, &$additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
 
 			if ( empty($additional[ 'aggregation' ]) )
 				return $this->getQuery( $dataNS, $filter, $additional );
@@ -53,6 +59,8 @@
 				return $this->getAggregate( $dataNS, $filter, $additional );
 		}
 		public function getQuery( $dataNS, $filter, &$additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+		
 			$queryOpt = [];
 			if ( !empty($additional[ 'page' ]) )
 			{
@@ -83,6 +91,8 @@
 			}
 		}
 		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			$aggregation = $queryOpt = [];
 			$aggregation[] = [ '$match' => (object)$baseQuery ];
 
@@ -127,6 +137,8 @@
 		}
 
 		public function insert( $dataNS, $insertData, $additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			
 
 			// INFO: Prepare write info
 			$bulkWrite = new BulkWrite();
@@ -157,6 +169,8 @@
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $sessionId: FALSE );
 		}
 		public function update( $dataNS, $filter, $updatedData = [], $additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			$custom		= (!!$additional[ 'customize' ] || !!$additional[ 'compound-update' ]);
 			$rawResult	= !!$additional[ 'raw-result' ];
 			$updateId	= !!$additional[ 'update-id' ];
@@ -187,6 +201,7 @@
 			return (!$rawResult) ? $result->getModifiedCount() : $result;
 		}
 		public function delete( $dataNS, $filter, $additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
 			
 			$deleteOne	= !!$additional[ 'just-one' ];
 			$rawResult	= !!$additional[ 'raw-result' ];
@@ -212,6 +227,8 @@
 			return (!$rawResult) ? $result->getDeletedCount() : $result;
 		}
 		public function bulk( $dataNS, $batchedOps, $additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			// INFO: Prepare delete info
 			$bulkWrite = new BulkWrite( [ 'ordered' => !empty($additional[ 'ordered' ]) ] );
 			foreach( $batchedOps as $bulkOp )
@@ -244,6 +261,8 @@
 			return ( is_a( $result, '\MongoDB\Driver\WriteResult' ) ? $result: FALSE );
 		}
 		public function command( $dataNS, $commands ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			$ns = self::ResolveNameSpace( $dataNS );
 			return $this->_mongoConnection->executeCommand( $ns['database'], new Command($commands) );
 		}
@@ -258,6 +277,8 @@
 		
 		
 		public function count( $dataNS, $filter ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			$ns = self::ResolveNameSpace( $dataNS );
 
 			$cursor = $this->_mongoConnection->executeCommand(
@@ -268,6 +289,8 @@
 			return $cursor->toArray()[0]->n;
 		}
 		public function countAggregate( $dataNS, $baseAggregation ) {
+			$dataNS = $this->CastName($dataNS);
+			
 			$ns = self::ResolveNameSpace( $dataNS );
 
 			$baseAggregation[] = ['$group' => ['_id' => NULL, 'count' => ['$sum' => 1]]];
@@ -281,6 +304,8 @@
 			return $cursor->toArray()[0]->count;
 		}
 		public function range( $dataNS, $filter, &$additional = [], $aggregate = FALSE ) {
+			$dataNS = $this->CastName($dataNS);
+			
 
 			$page 		= CAST( @$additional['page'], 'int' );
 			$pageSize 	= CAST( @$additional['pageSize'], 'int' );
@@ -317,6 +342,13 @@
 			return $range;
 		}
 
+		private function CastName( $name ) {
+			if ( substr($name, 0, 3) === "db." ) {
+				return "{$this->_defaultDB}." . substr($name, 3);
+			}
+			
+			return $name;
+		}
 		private static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
 			return [ 'database' => @$ns[0], 'collection' => @$ns[1] ];
