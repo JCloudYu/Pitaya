@@ -241,18 +241,21 @@
 			}
 	
 	
-	
-			if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) )
-			{
+			if ( is_a($moduleIdentifier, PBModule::class) ) {
+				$module = $moduleIdentifier;
+			}
+			else
+			if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) ) {
 				$module = $this->_attachedModules[ $moduleIdentifier ];
 	
 				// INFO: Given module identifier is in package format
-				if ( ($moduleIdentifier != $module->id) && !$reusable ) $module = NULL;
+				if ( ($moduleIdentifier != $module->id) && !$reusable ) {
+					$module = NULL;
+				}
 			}
 	
 	
-			if ( empty($module) )
-			{
+			if ( empty($module) ) {
 				$module	  = $this->_system->acquireModule( $moduleIdentifier, $instParam );
 				$moduleId = $module->id;
 				$this->_attachedModules[ $moduleId ] = $module;
