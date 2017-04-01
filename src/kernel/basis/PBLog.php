@@ -53,8 +53,10 @@
 			if ( empty($this->_logStream) ) return FALSE;
 
 
-			$msg = ( @$options[ 'row-output' ] === TRUE ) ? $message : $this->genLogMsg( $message, $logCate, $options );
-			fwrite( $this->_logStream, "{$msg}\n" );
+			$newline = array_key_exists("newline", $options) ? !!$options[ 'newline' ] ? TRUE;
+			$msg = ( !!@$options[ 'nowrap' ] ) ? $message : $this->genLogMsg( $message, $logCate, $options );
+			
+			fwrite( $this->_logStream, $msg . (empty($newline) ? "\n" : "") );
 			fflush( $this->_logStream );
 			return $msg;
 		}
