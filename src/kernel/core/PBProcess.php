@@ -1,6 +1,5 @@
 <?php
-	class PBProcess extends PBObject
-	{
+	class PBProcess extends PBObject {
 		public static function Module( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
 			call_user_func( 'PBModule', $moduleName, $reusable, $noThrow );
 		}
@@ -39,7 +38,7 @@
 			$moduleId = $this->_bootSequence->data[ 'id' ];
 			PBLinkedList::PREV($this->_bootSequence);
 	
-			return $this->_attachedModules[$moduleId];
+			return PBModule( $moduleId );
 		}
 		public function transferRequest($moduleRequest) {
 		
@@ -106,7 +105,7 @@
 				$skipCounter = 0;
 				while( PBLinkedList::NEXT($this->_bootSequence) )
 				{
-					$module = $this->_attachedModules[ $this->_bootSequence->data[ 'id' ] ];
+					$module = PBModule( $this->_bootSequence->data[ 'id' ] );
 					
 					$valid = FALSE;
 					ary_filter( $skips, function( $name ) use( &$valid, &$module ) {
@@ -136,7 +135,7 @@
 			PBLList::HEAD($this->_bootSequence);
 			do
 			{
-				$module  = @$this->_attachedModules[@$this->_bootSequence->data[ 'id' ]];
+				$module  = PBModule(@$this->_bootSequence->data[ 'id' ]);
 				$request = @$this->_bootSequence->data[ 'request' ];
 				if ( !property_exists($module->data, "initData") )
 					$module->data->initData = $request;
@@ -149,12 +148,12 @@
 		
 		private $_entryModule	= NULL;
 		private $_mainModuleId = NULL;
-		public function attachMainService($moduleName, $instParam) {
+		public function attachMainService($moduleName, $initData = NULL) {
 	
 			// NOTE: Leading Module
 			if ( defined('LEADING_MODULE') )
 			{
-				$module = $this->_acquireModule( LEADING_MODULE, TRUE );
+				$module = PBModule( LEADING_MODULE, TRUE );
 				$moduleId = $module->id;
 				PBLList::PUSH( $this->_bootSequence, [
 					'id' => $moduleId
@@ -164,8 +163,9 @@
 	
 	
 			// NOTE: Service Entry Module
-			$this->_entryModule = $this->_acquireModule( $moduleName, $instParam, TRUE );
+			$this->_entryModule = PBModule( $moduleName, TRUE );
 			$this->_mainModuleId = $this->_entryModule->id;
+			$this->_entryModule->data->initData = $initData;
 			PBLList::PUSH( $this->_bootSequence, [
 				'id' => $this->_mainModuleId
 			], $this->_mainModuleId);
@@ -175,7 +175,7 @@
 			// NOTE: Tailing Module
 			if ( defined('TAILING_MODULE') )
 			{
-				$module = $this->_acquireModule(TAILING_MODULE, TRUE);
+				$module = PBModule(TAILING_MODULE, TRUE);
 				$moduleId = $module->id;
 				PBLList::PUSH( $this->_bootSequence,  [
 					'id' => $moduleId
@@ -188,15 +188,6 @@
 			PBLinkedList::HEAD($this->_bootSequence);
 		}
 		
-		public function getModule($moduleName, $instParam = NULL, $reusable = TRUE) {
-			if ( func_num_args() == 2 )
-			{
-				$reusable = $instParam;
-				$instParam = NULL;
-			}
-	
-			return $this->_acquireModule($moduleName, $instParam, $reusable);
-		}
 		private function _appendBootSequence( $bootSequence ) {
 			if ( !is_array( $bootSequence )) return;
 	
@@ -217,53 +208,14 @@
 				$moduleHandle = @$illustrator[ 'module' ];
 				if ( empty($moduleHandle) ) continue; // Skipping empty values
 	
-				if ( is_a($moduleHandle, PBModule::class ) && array_key_exists($moduleHandle->id, $this->_attachedModules))
-					$moduleId = $moduleHandle->id;
-				else
-				{
-					$reuse = array_key_exists( 'reuse', $illustrator ) ? !empty($illustrator['reuse'] ) : TRUE;
-					$moduleId = $this->_acquireModule( $moduleHandle, $reuse )->id;
-				}
+				$reuse = array_key_exists( 'reuse', $illustrator ) ? !empty($illustrator['reuse'] ) : TRUE;
+				$moduleId = PBModule( $moduleHandle, $reuse )->id;
+				
 	
 				PBLList::AFTER( $this->_bootSequence,  [
 					'id' => $moduleId, 'request' => @$illustrator[ 'request' ]
 				], $moduleId );
 			}
-		}
-		
-		private $_attachedModules = [];
-		private function _acquireModule( $moduleIdentifier, $instParam = NULL, $reusable = TRUE )
-		{
-			if ( func_num_args() == 2 )
-			{
-				$reusable = $instParam;
-				$instParam = NULL;
-			}
-	
-	
-			if ( is_a($moduleIdentifier, PBModule::class) ) {
-				$module = $moduleIdentifier;
-			}
-			else
-			if ( array_key_exists( $moduleIdentifier, $this->_attachedModules ) ) {
-				$module = $this->_attachedModules[ $moduleIdentifier ];
-	
-				// INFO: Given module identifier is in package format
-				if ( ($moduleIdentifier != $module->id) && !$reusable ) {
-					$module = NULL;
-				}
-			}
-	
-	
-			if ( empty($module) ) {
-				$module	  = $this->_system->acquireModule( $moduleIdentifier, $instParam );
-				$moduleId = $module->id;
-				$this->_attachedModules[ $moduleId ] = $module;
-	
-				if ( $reusable ) $this->_attachedModules[ $moduleIdentifier ] = $module;
-			}
-	
-			return $module;
 		}
 	}
 	

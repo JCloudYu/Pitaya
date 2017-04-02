@@ -433,7 +433,7 @@
 
 			unset( $this->_moduleSearchPaths[$hash] );
 		}
-		public function acquireModule( $identifier, $instParam = NULL ) {
+		public function acquireModule( $identifier ) {
 			static $allocCounter = 0;
 
 			$moduleDesc = self::ParseModuleIdentifier( $identifier );
@@ -501,7 +501,7 @@
 
 
 			$invokeModule = "{$class}";
-			$moduleObj = new $invokeModule( $instParam );
+			$moduleObj = new $invokeModule();
 			if ( !is_a($moduleObj, PBModule::class) ) throw(new Exception("Requested class is not a valid module"));
 
 			$moduleObj->id = $moduleId;

@@ -67,11 +67,48 @@
 	}
 
 	function PBModule( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
+		static $_attachedModule = [];
+		
+		
+		if ( is_a($moduleName, PBModule::class) ) {
+			if ( $_attachedModule[$moduleName->id] )
+				return $moduleName;
+			else
+			if ( !$noThrow ) {
+				throw new PBException([
+					'code' => -1,
+					'msg' => "Given module is not a center-controlled module!"
+				]);
+			}
+			else {
+				return NULL;
+			}
+		}
+		
+		
+		
+		if ( !empty($_attachedModule[$moduleName]) ) {
+			$module = $this->$_attachedModule[ $moduleName ];
+
+			if ( ($moduleName != $module->id) && !$reusable ) {
+				$module = NULL;
+			}
+		}
+
+
 		try {
-			return PBProcess::Process()->getModule( $moduleName, $reusable );
+			if ( empty($module) ) {
+				$module	  = PBSysKernel::SYS()->acquireModule( $moduleName );
+				$moduleId = $module->id;
+				$this->_attachedModules[ $moduleId ] = $module;
+	
+				if ( $reusable ) $this->_attachedModules[ $moduleName ] = $module;
+			}
+	
+			return $module;
 		}
 		catch( Exception $e ) {
-			if ( $noThrow ) return NULL;
+			if ($noThrow) return NULL;
 			throw $e;
 		}
 	}
