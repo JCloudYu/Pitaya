@@ -1,6 +1,5 @@
 <?php
-	class PBSysKernel extends PBObject {
-	
+	final class PBSysKernel extends PBObject {
 		/** @var PBSysKernelAccessor */
 		private static $_SYS_ACCESS_INTERFACE = NULL;
 		public static function SYS() {
@@ -195,8 +194,7 @@
 		
 		private $_entryBasis		= NULL;
 		private $_entryBasisParam	= NULL;
-		private function __judgeMainService( $argv = NULL )
-		{
+		private function __judgeMainService( $argv = NULL ) {
 			$service = $attributes = '';
 			$moduleRequest = [];
 			
@@ -415,8 +413,7 @@
 		
 		// region [ Module Control ]
 		private $_moduleSearchPaths	= [];
-		public function addModuleSearchPath( $package = "" )
-		{
+		public function addModuleSearchPath( $package = "" ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
@@ -425,15 +422,16 @@
 
 			if ( !is_dir( path( $path ) ) ) return FALSE;
 			$this->_moduleSearchPaths[$hash] = $path;
+			return TRUE;
 		}
-		public function removeModuleSearchPath( $package )
-		{
+		public function removeModuleSearchPath( $package ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
 			if ( !isset( $this->_moduleSearchPaths[$hash] ) ) return TRUE;
 
 			unset( $this->_moduleSearchPaths[$hash] );
+			return TRUE;
 		}
 		public function acquireModule( $identifier ) {
 			static $allocCounter = 0;
