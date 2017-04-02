@@ -1,6 +1,12 @@
 <?php
 	class PBSysKernel extends PBObject {
 	
+		/** @var PBSysKernelAccessor */
+		private static $_SYS_ACCESS_INTERFACE = NULL;
+		public static function SYS() {
+			return self::$_SYS_ACCESS_INTERFACE;
+		}
+	
 		// region [ Boot Related ]
 		private static $_cacheServicePath	= NULL;
 		private static $_cachedRuntimeAttr	= NULL;
@@ -14,12 +20,6 @@
 			PBSysKernel::$_cachedRuntimeAttr = array(
 				'standalone' => @$GLOBALS['STANDALONE_EXEC']
 			);
-		}
-		
-		/** @var PBSysKernelAccessor */
-		private static $_SYS_ACCESS_INTERFACE = NULL;
-		public static function SYS() {
-			return self::$_SYS_ACCESS_INTERFACE;
 		}
 		
 		/** @var PBSysKernel */
@@ -144,7 +144,7 @@
 		}
 		// endregion
 
-
+		// region [ Boot Control ]
 		private function __construct() {}
 		private function __initialize( $argv = NULL ) {
 
@@ -192,7 +192,6 @@
 				}
 			});
 		}
-		
 		
 		private $_entryBasis		= NULL;
 		private $_entryBasisParam	= NULL;
@@ -396,7 +395,9 @@
 
 			throw(new Exception("Cannot locate default basis ({$reqService})!"));
 		}
+		// endregion
 
+		// region [ Process Control ]
 		/** @var PBProcess */
 		private $_process = NULL;
 		private function __forkProcess($service, $custInit = NULL) {
@@ -410,8 +411,9 @@
 			chdir( WORKING_ROOT );
 			$this->_process->attachMainService($service, $this->_entryBasisParam);
 		}
+		// endregion
 		
-		
+		// region [ Module Control ]
 		private $_moduleSearchPaths	= [];
 		public function addModuleSearchPath( $package = "" )
 		{
@@ -507,12 +509,14 @@
 			$moduleObj->id = $moduleId;
 			return $moduleObj;
 		}
+		// endregion
 		
 		
 		
 		
 		
 		
+		// region [ Supportive Functions ]
 		private static function ParseModuleIdentifier( $moduleIdentifier )
 		{
 			$moduleIdentifier = trim( "{$moduleIdentifier}" );
@@ -540,6 +544,7 @@
 				'class'		=> $class
 			);
 		}
+		// endregion
 	}
 
 	final class PBSysKernelAccessor {
