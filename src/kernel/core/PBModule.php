@@ -88,7 +88,7 @@
 		
 		
 		if ( !empty($_attachedModule[$moduleName]) ) {
-			$module = $this->$_attachedModule[ $moduleName ];
+			$module = $_attachedModule[ $moduleName ];
 
 			if ( ($moduleName != $module->id) && !$reusable ) {
 				$module = NULL;
@@ -100,9 +100,9 @@
 			if ( empty($module) ) {
 				$module	  = PBSysKernel::SYS()->acquireModule( $moduleName );
 				$moduleId = $module->id;
-				$this->_attachedModules[ $moduleId ] = $module;
+				$_attachedModule[ $moduleId ] = $module;
 	
-				if ( $reusable ) $this->_attachedModules[ $moduleName ] = $module;
+				if ( $reusable ) $_attachedModule[ $moduleName ] = $module;
 			}
 	
 			return $module;
