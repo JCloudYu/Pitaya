@@ -399,10 +399,10 @@
 			}
 		
 			
-			return $SOURCE->command( $dbName, [
+			return $this->_mongoConnection->executeCommand( $dbName, new Command([
 				'createIndexes' => $targetCollection,
 				'indexes' => $indexes
-			]);
+			]));
 		}
 		public function getCollection( $dbName, $nameFilter = [] ) {
 			if ( !is_array($nameFilter) ) {
