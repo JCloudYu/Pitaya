@@ -16,6 +16,12 @@
 			);
 		}
 		
+		/** @var PBSysKernelAccessor */
+		private static $_SYS_ACCESS_INTERFACE = NULL;
+		public static function SYS() {
+			return self::$_SYS_ACCESS_INTERFACE;
+		}
+		
 		/** @var PBSysKernel */
 		private static $_SYS_INSTANCE = NULL;
 		public static function boot( $argv = NULL ) {
@@ -42,6 +48,8 @@
 
 				// INFO: Keep booting
 				PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
+				PBSysKernel::$_SYS_ACCESS_INTERFACE = new PBSysKernelAccessor( PBSysKernel::$_SYS_INSTANCE );
+				
 				PBSysKernel::$_SYS_INSTANCE->__initialize( $argv );
 				PBSysKernel::$_SYS_INSTANCE->_process->run();
 
@@ -531,5 +539,17 @@
 				'module'	=> $module,
 				'class'		=> $class
 			);
+		}
+	}
+
+	final class PBSysKernelAccessor {
+		/**@var PBSysKernel*/
+		private $_relatedSys = NULL;
+		public function __construct( PBSysKernel $sysInst ) {
+			$this->_relatedSys = $sysInst;
+		}
+		
+		public function acquireModule($moduleName, $reuse = FALSE) {
+			return call_user_func_array([ $this->_relatedSys, "acquireModule" ], func_get_args());
 		}
 	}
