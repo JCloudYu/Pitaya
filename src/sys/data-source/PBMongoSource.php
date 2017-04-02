@@ -247,6 +247,19 @@
 
 			return $range;
 		}
+
+
+
+		public function aggregate( $dataNS, $aggregations = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			$ns = self::ResolveNameSpace( $dataNS );
+			
+			return $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns[ 'collection' ],
+				'pipeline'	=> $aggregations,
+				'cursor'	=> (object)[]
+			]));
+		}
 		
 		
 		

@@ -68,4 +68,8 @@
 		public function range( $dataNS, $filter, &$additional = [] ) {
 
 		}
+		
+		public function aggregate($dataNS, $aggregations = []) {
+		
+		}
 	}
