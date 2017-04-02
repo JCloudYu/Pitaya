@@ -1,4 +1,4 @@
 <?php
 	interface PBIBootResolver {
-		public function resolve( $basis, $request, $attribute );
+		public function resolve( $basis, $resource, $attribute, $fragment );
 	}

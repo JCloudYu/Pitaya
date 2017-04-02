@@ -347,14 +347,14 @@
 			return $cursor->toArray()[0]->count;
 		}
 
-		private function CastName( $name ) {
+		public function CastName( $name ) {
 			if ( substr($name, 0, 3) === "db." ) {
 				return "{$this->_defaultDB}." . substr($name, 3);
 			}
 			
 			return $name;
 		}
-		private static function ResolveNameSpace( $namespace ) {
+		public static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
 			return [ 'database' => @$ns[0], 'collection' => @$ns[1] ];
 		}
@@ -381,7 +381,7 @@
 			]));
 		}
 		public function createIndex( $dbName, $targetCollection, $indexes = [], $checkValid = TRUE ) {
-			if ( !is_array() || empty($indexes) ) return FALSE;
+			if ( !is_array($indexes) || empty($indexes) ) return FALSE;
 			if ( $checkValid ) {
 				$coll = $this->getCollection( $dbName, $collectionName );
 				if ( empty($coll) ) return FALSE;

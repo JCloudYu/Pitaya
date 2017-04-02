@@ -195,7 +195,7 @@
 		private $_entryBasis		= NULL;
 		private $_entryBasisParam	= NULL;
 		private function __judgeMainService( $argv = NULL ) {
-			$service = $attributes = '';
+			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
 			
 			if ( SYS_EXEC_ENV == EXEC_ENV_HTTP ) {
@@ -226,8 +226,10 @@
 			}
 
 
-			if ( is_callable(self::$_bootResolver) )
-				call_user_func( self::$_bootResolver, $service, $moduleRequest );
+			if ( is_callable(self::$_bootResolver) ) {
+				// ISSUE: Merge boot resolvers after rewriting boot path decisition logics
+				//call_user_func( self::$_bootResolver, $service, $moduleRequest );
+			}
 
 
 
@@ -283,12 +285,13 @@
 					throw(new Exception( "Target boot resolver doesn't implements PBIBootResolver!" ));
 				}
 				
-				$result = $module->resolve( $service, $moduleRequest, $attributes );
-				if ( !empty($result) )
-				{
-					$service		= $result[ 'service' ];
-					$moduleRequest	= $result[ 'request' ];
-					$workingDir		= $result[ 'root' ] ?: $result[ 'workingRoot' ];
+				$result = $module->resolve( $service, $moduleRequest, $attributes, $fragment );
+				if ( !empty($result) ) {
+					$result = object($result);
+				
+					$service		= @$result->basis ?: @$result->service ?: $service;
+					$moduleRequest	= @$result->resource ?: @$result->request ?: $moduleRequest;
+					$workingDir		= @$result->root ?: @$result->workingRoot ?: '';
 					
 					
 					
