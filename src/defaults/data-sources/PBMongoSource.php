@@ -1,18 +1,9 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - PBMongoSource.php
-	 ** Created by JCloudYu on 2016/04/14 18:27
-	 **/
-
 	use \MongoDB\Driver\Query;
 	use \MongoDB\Driver\BulkWrite;
 	use \MongoDB\Driver\Command;
 	use \MongoDB\BSON\ObjectID;
 	use \MongoDB\BSON\Regex;
-
-
-
-	using( 'sys.data-source.PBIDataSource' );
 
 	class PBMongoSource extends PBIDataSource {
 		const AGGREGATION_OPRATORS = [
@@ -57,83 +48,6 @@
 				return $this->getQuery( $dataNS, $filter, $additional );
 			else
 				return $this->getAggregate( $dataNS, $filter, $additional );
-		}
-		public function getQuery( $dataNS, $filter, &$additional = [] ) {
-			$dataNS = $this->CastName($dataNS);
-		
-			$queryOpt = [];
-			if ( !empty($additional[ 'page' ]) )
-			{
-				$range = $this->range( $dataNS, $filter, $additional );
-				$queryOpt[ 'skip' ]		= $range[ 'skip' ];
-				$queryOpt[ 'limit' ]	= $range[ 'limit' ];
-			}
-
-			if ( !empty($additional[ 'order' ]) )
-				$queryOpt[ 'sort' ] = $additional[ 'order' ];
-
-			foreach( $additional as $option => $value )
-			{
-				if ( in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
-				$queryOpt[ $option ] = $value;
-			}
-
-
-			// INFO: Query and collect results
-			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
-			
-			if ( !empty($additional[ 'fetch-anchor' ]) )
-				return $cursor;
-			else
-			{
-				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
-				return PBIDataSource::CollectData( $cursor, $mapFunc );
-			}
-		}
-		public function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
-			$dataNS = $this->CastName($dataNS);
-			
-			$aggregation = $queryOpt = [];
-			$aggregation[] = [ '$match' => (object)$baseQuery ];
-
-			if ( !empty($additional[ 'order' ]) )
-				$aggregation[] = [ '$sort' => (object)$additional[ 'order' ] ];
-
-			if ( !empty($additional[ 'projection' ]) )
-				$aggregation[] = [ '$project' => (object)$additional[ 'projection' ] ];
-
-			if ( !empty($additional[ 'aggregation' ]) )
-			{
-				foreach( $additional[ 'aggregation' ] as $op )
-				{
-					if ( !in_array(key($op), self::AGGREGATION_OPRATORS) ) continue;
-					$aggregation[] = (object)$op;
-				}
-			}
-
-			if ( !empty($additional['page']) )
-			{
-				$range = $this->range( $dataNS, $aggregation, $additional, TRUE );
-				$aggregation[] = [ '$skip'	=> $range[ 'skip' ] ];
-				$aggregation[] = [ '$limit' => $range[ 'limit' ] ];
-			}
-
-
-			// INFO: Query and collect results
-			$ns = self::ResolveNameSpace( $dataNS );
-			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
-				'aggregate' => $ns['collection'],
-				'pipeline'	=> $aggregation,
-				'cursor'	=> (object)[]
-			]));
-			
-			if ( !empty($additional[ 'fetch-anchor' ]) )
-				return $cursor;
-			else
-			{
-				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
-				return PBIDataSource::CollectData( $cursor, $mapFunc );
-			}
 		}
 
 		public function insert( $dataNS, $insertData, $additional = [] ) {
@@ -274,8 +188,6 @@
 			
 			return $supportive;
 		}
-		
-		
 		public function count( $dataNS, $filter ) {
 			$dataNS = $this->CastName($dataNS);
 			
@@ -287,21 +199,6 @@
 			);
 
 			return $cursor->toArray()[0]->n;
-		}
-		public function countAggregate( $dataNS, $baseAggregation ) {
-			$dataNS = $this->CastName($dataNS);
-			
-			$ns = self::ResolveNameSpace( $dataNS );
-
-			$baseAggregation[] = ['$group' => ['_id' => NULL, 'count' => ['$sum' => 1]]];
-
-
-			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
-				'aggregate' => $ns['collection'],
-				'pipeline'	=> $baseAggregation,
-				'cursor'	=> (object)[]
-			]));
-			return $cursor->toArray()[0]->count;
 		}
 		public function range( $dataNS, $filter, &$additional = [], $aggregate = FALSE ) {
 			$dataNS = $this->CastName($dataNS);
@@ -342,14 +239,122 @@
 			return $range;
 		}
 
-		private function CastName( $name ) {
+
+
+		public function aggregate( $dataNS, $aggregations = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			$ns = self::ResolveNameSpace( $dataNS );
+			
+			return $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns[ 'collection' ],
+				'pipeline'	=> $aggregations,
+				'cursor'	=> (object)[]
+			]));
+		}
+		
+		
+		
+		protected function getQuery( $dataNS, $filter, &$additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+		
+			$queryOpt = [];
+			if ( !empty($additional[ 'page' ]) )
+			{
+				$range = $this->range( $dataNS, $filter, $additional );
+				$queryOpt[ 'skip' ]		= $range[ 'skip' ];
+				$queryOpt[ 'limit' ]	= $range[ 'limit' ];
+			}
+
+			if ( !empty($additional[ 'order' ]) )
+				$queryOpt[ 'sort' ] = $additional[ 'order' ];
+
+			foreach( $additional as $option => $value )
+			{
+				if ( in_array($option, ["page", "pageSize", "pageAmt", "total", 'order']) ) continue;
+				$queryOpt[ $option ] = $value;
+			}
+
+
+			// INFO: Query and collect results
+			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
+			
+			if ( !empty($additional[ 'fetch-anchor' ]) )
+				return $cursor;
+			else
+			{
+				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
+				return PBIDataSource::CollectData( $cursor, $mapFunc );
+			}
+		}
+		protected function getAggregate( $dataNS, $baseQuery, &$additional = [] ) {
+			$dataNS = $this->CastName($dataNS);
+			
+			$aggregation = $queryOpt = [];
+			$aggregation[] = [ '$match' => (object)$baseQuery ];
+
+			if ( !empty($additional[ 'order' ]) )
+				$aggregation[] = [ '$sort' => (object)$additional[ 'order' ] ];
+
+			if ( !empty($additional[ 'projection' ]) )
+				$aggregation[] = [ '$project' => (object)$additional[ 'projection' ] ];
+
+			if ( !empty($additional[ 'aggregation' ]) )
+			{
+				foreach( $additional[ 'aggregation' ] as $op )
+				{
+					if ( !in_array(key($op), self::AGGREGATION_OPRATORS) ) continue;
+					$aggregation[] = (object)$op;
+				}
+			}
+
+			if ( !empty($additional['page']) )
+			{
+				$range = $this->range( $dataNS, $aggregation, $additional, TRUE );
+				$aggregation[] = [ '$skip'	=> $range[ 'skip' ] ];
+				$aggregation[] = [ '$limit' => $range[ 'limit' ] ];
+			}
+
+
+			// INFO: Query and collect results
+			$ns = self::ResolveNameSpace( $dataNS );
+			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns['collection'],
+				'pipeline'	=> $aggregation,
+				'cursor'	=> (object)[]
+			]));
+			
+			if ( !empty($additional[ 'fetch-anchor' ]) )
+				return $cursor;
+			else
+			{
+				$mapFunc = ( !array_key_exists( 'id-mapping', $additional ) || !!$additional[ 'id-mapping' ] ) ? 'PBMongoSource::MongoCollect' : NULL;
+				return PBIDataSource::CollectData( $cursor, $mapFunc );
+			}
+		}
+		protected function countAggregate( $dataNS, $baseAggregation ) {
+			$dataNS = $this->CastName($dataNS);
+			
+			$ns = self::ResolveNameSpace( $dataNS );
+
+			$baseAggregation[] = ['$group' => ['_id' => NULL, 'count' => ['$sum' => 1]]];
+
+
+			$cursor = $this->_mongoConnection->executeCommand( $ns[ 'database' ], new Command([
+				'aggregate' => $ns['collection'],
+				'pipeline'	=> $baseAggregation,
+				'cursor'	=> (object)[]
+			]));
+			return $cursor->toArray()[0]->count;
+		}
+
+		public function CastName( $name ) {
 			if ( substr($name, 0, 3) === "db." ) {
 				return "{$this->_defaultDB}." . substr($name, 3);
 			}
 			
 			return $name;
 		}
-		private static function ResolveNameSpace( $namespace ) {
+		public static function ResolveNameSpace( $namespace ) {
 			$ns = explode( '.', $namespace );
 			return [ 'database' => @$ns[0], 'collection' => @$ns[1] ];
 		}
@@ -376,7 +381,7 @@
 			]));
 		}
 		public function createIndex( $dbName, $targetCollection, $indexes = [], $checkValid = TRUE ) {
-			if ( !is_array() || empty($indexes) ) return FALSE;
+			if ( !is_array($indexes) || empty($indexes) ) return FALSE;
 			if ( $checkValid ) {
 				$coll = $this->getCollection( $dbName, $collectionName );
 				if ( empty($coll) ) return FALSE;
@@ -394,10 +399,10 @@
 			}
 		
 			
-			return $SOURCE->command( $dbName, [
+			return $this->_mongoConnection->executeCommand( $dbName, new Command([
 				'createIndexes' => $targetCollection,
 				'indexes' => $indexes
-			]);
+			]));
 		}
 		public function getCollection( $dbName, $nameFilter = [] ) {
 			if ( !is_array($nameFilter) ) {

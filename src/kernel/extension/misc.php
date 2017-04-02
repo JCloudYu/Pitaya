@@ -84,3 +84,13 @@
 		return call_user_func_array( 'json_encode', $args );
 	}
 	// endregion
+
+	// region [ Hash Functions ]
+	function sha256( $content, $rawOutput = FALSE ) {
+		return hash( 'sha256', $content, $rawOutput );
+	}
+	
+	function sha512( $content, $rawOutput = FALSE ) {
+		return hash( 'sha512', $content, $rawOutput );
+	}
+	// endregion
