@@ -196,7 +196,7 @@
 		
 		private $_entryBasis		= NULL;
 		private $_entryBasisParam	= NULL;
-		public function __judgeMainService( $argv = NULL )
+		private function __judgeMainService( $argv = NULL )
 		{
 			$service = $attributes = '';
 			$moduleRequest = [];
