@@ -98,7 +98,18 @@
 			return TRUE;
 		}
 
-
+		const DEFAULT_COOKIE_INFO = [
+			'name'		=> '',
+			'value'		=> '',
+			'expire'	=> 0,
+			'duration'	=> 0,
+			'domain'	=> '',
+			'path'		=> '/',
+			'ssl'		=> TRUE,
+			'http'		=> TRUE,
+			'same-site'	=> 'strict' // @string(def:'strict'|'lax')
+		];
+		
 		// region [ HTTP Status Code ]
 		//INFO: Information
 		const STATUS_100_CONTINUE								= 100;

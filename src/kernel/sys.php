@@ -1,5 +1,10 @@
 <?php
-	class PBSysKernel extends PBObject {
+	final class PBSysKernel extends PBObject {
+		/** @var PBSysKernelAccessor */
+		private static $_SYS_ACCESS_INTERFACE = NULL;
+		public static function SYS() {
+			return self::$_SYS_ACCESS_INTERFACE;
+		}
 	
 		// region [ Boot Related ]
 		private static $_cacheServicePath	= NULL;
@@ -42,6 +47,8 @@
 
 				// INFO: Keep booting
 				PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
+				PBSysKernel::$_SYS_ACCESS_INTERFACE = new PBSysKernelAccessor( PBSysKernel::$_SYS_INSTANCE );
+				
 				PBSysKernel::$_SYS_INSTANCE->__initialize( $argv );
 				PBSysKernel::$_SYS_INSTANCE->_process->run();
 
@@ -136,7 +143,7 @@
 		}
 		// endregion
 
-
+		// region [ Boot Control ]
 		private function __construct() {}
 		private function __initialize( $argv = NULL ) {
 
@@ -185,12 +192,10 @@
 			});
 		}
 		
-		
 		private $_entryBasis		= NULL;
 		private $_entryBasisParam	= NULL;
-		public function __judgeMainService( $argv = NULL )
-		{
-			$service = $attributes = '';
+		private function __judgeMainService( $argv = NULL ) {
+			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
 			
 			if ( SYS_EXEC_ENV == EXEC_ENV_HTTP ) {
@@ -221,8 +226,10 @@
 			}
 
 
-			if ( is_callable(self::$_bootResolver) )
-				call_user_func( self::$_bootResolver, $service, $moduleRequest );
+			if ( is_callable(self::$_bootResolver) ) {
+				// ISSUE: Merge boot resolvers after rewriting boot path decisition logics
+				//call_user_func( self::$_bootResolver, $service, $moduleRequest );
+			}
 
 
 
@@ -278,12 +285,13 @@
 					throw(new Exception( "Target boot resolver doesn't implements PBIBootResolver!" ));
 				}
 				
-				$result = $module->resolve( $service, $moduleRequest, $attributes );
-				if ( !empty($result) )
-				{
-					$service		= $result[ 'service' ];
-					$moduleRequest	= $result[ 'request' ];
-					$workingDir		= $result[ 'root' ] ?: $result[ 'workingRoot' ];
+				$result = $module->resolve( $service, $moduleRequest, $attributes, $fragment );
+				if ( !empty($result) ) {
+					$result = object($result);
+				
+					$service		= @$result->basis ?: @$result->service ?: $service;
+					$moduleRequest	= @$result->resource ?: @$result->request ?: $moduleRequest;
+					$workingDir		= @$result->root ?: @$result->workingRoot ?: '';
 					
 					
 					
@@ -388,7 +396,9 @@
 
 			throw(new Exception("Cannot locate default basis ({$reqService})!"));
 		}
+		// endregion
 
+		// region [ Process Control ]
 		/** @var PBProcess */
 		private $_process = NULL;
 		private function __forkProcess($service, $custInit = NULL) {
@@ -402,11 +412,11 @@
 			chdir( WORKING_ROOT );
 			$this->_process->attachMainService($service, $this->_entryBasisParam);
 		}
+		// endregion
 		
-		
+		// region [ Module Control ]
 		private $_moduleSearchPaths	= [];
-		public function addModuleSearchPath( $package = "" )
-		{
+		public function addModuleSearchPath( $package = "" ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
@@ -415,17 +425,18 @@
 
 			if ( !is_dir( path( $path ) ) ) return FALSE;
 			$this->_moduleSearchPaths[$hash] = $path;
+			return TRUE;
 		}
-		public function removeModuleSearchPath( $package )
-		{
+		public function removeModuleSearchPath( $package ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
 			if ( !isset( $this->_moduleSearchPaths[$hash] ) ) return TRUE;
 
 			unset( $this->_moduleSearchPaths[$hash] );
+			return TRUE;
 		}
-		public function acquireModule( $identifier, $instParam = NULL ) {
+		public function acquireModule( $identifier ) {
 			static $allocCounter = 0;
 
 			$moduleDesc = self::ParseModuleIdentifier( $identifier );
@@ -493,18 +504,20 @@
 
 
 			$invokeModule = "{$class}";
-			$moduleObj = new $invokeModule( $instParam );
+			$moduleObj = new $invokeModule();
 			if ( !is_a($moduleObj, PBModule::class) ) throw(new Exception("Requested class is not a valid module"));
 
 			$moduleObj->id = $moduleId;
 			return $moduleObj;
 		}
+		// endregion
 		
 		
 		
 		
 		
 		
+		// region [ Supportive Functions ]
 		private static function ParseModuleIdentifier( $moduleIdentifier )
 		{
 			$moduleIdentifier = trim( "{$moduleIdentifier}" );
@@ -531,5 +544,18 @@
 				'module'	=> $module,
 				'class'		=> $class
 			);
+		}
+		// endregion
+	}
+
+	final class PBSysKernelAccessor {
+		/**@var PBSysKernel*/
+		private $_relatedSys = NULL;
+		public function __construct( PBSysKernel $sysInst ) {
+			$this->_relatedSys = $sysInst;
+		}
+		
+		public function acquireModule($moduleName, $reuse = FALSE) {
+			return call_user_func_array([ $this->_relatedSys, "acquireModule" ], func_get_args());
 		}
 	}

@@ -14,8 +14,8 @@
 	define('YB', ZB * 1024.0);	// YotaByte
 
 
-	function CAST(...$args)
-	{
+	function CAST(...$args) {
+	
 		$value	 = @$args[0]; 
 		$type	 = @$args[1];
 		$filter  = @$args[2]; 

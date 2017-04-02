@@ -1,15 +1,8 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - PBMySQLSource.php
-	 ** Created by JCloudYu on 2016/04/14 18:27
-	 **/
-
-	using( 'sys.data-source.PBIDataSource' );
 	using( 'sys.db.ExtPDO' );
-	using( 'ext.base.assistive' );
 
-	class PBMySQLSource extends PBIDataSource
-	{
+	class PBMySQLSource extends PBIDataSource {
+	
 		private $_pdoConnection = NULL;
 
 		public function __construct( $DSURI = "//user:pass@127.0.0.1:3306/db", $options = array(), $driverOpt = array() ) {
@@ -67,5 +60,9 @@
 		}
 		public function range( $dataNS, $filter, &$additional = [] ) {
 
+		}
+		
+		public function aggregate($dataNS, $aggregations = []) {
+		
 		}
 	}
