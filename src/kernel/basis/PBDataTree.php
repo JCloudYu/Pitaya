@@ -7,14 +7,14 @@
 		}
 		public function travel( $path ) {
 			$comps = explode( '.', $path );
-			$currObj = NULL;
+			$currObj = $this->_anchor;
 			while( !empty($comps) ) {
 				$item = array_shift($comps);
-				if ( !is_a($comps->{$item}, stdClass::class) ) {
-					$comps->{$item} = stdClass();
+				if ( !is_a($currObj->{$item}, stdClass::class) ) {
+					@$currObj->{$item} = stdClass();
 				}
 				
-				$currObj = $comps->{$item};
+				$currObj = $currObj->{$item};
 			}
 			
 			return PBDataTree($currObj);
@@ -23,6 +23,10 @@
 		
 		
 		public function& __get($name) {
+			if ( $name === 'object' ) {
+				return $this->_anchor;
+			}
+		
 			if ( is_a($this->_anchor->{$name}, stdClass::class) ) {
 				return PBDataTree($this->_anchor->{$name});
 			}
