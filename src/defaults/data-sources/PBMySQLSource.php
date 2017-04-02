@@ -1,9 +1,8 @@
 <?php
 	using( 'sys.db.ExtPDO' );
-	using( 'ext.base.assistive' );
 
-	class PBMySQLSource extends PBIDataSource
-	{
+	class PBMySQLSource extends PBIDataSource {
+	
 		private $_pdoConnection = NULL;
 
 		public function __construct( $DSURI = "//user:pass@127.0.0.1:3306/db", $options = array(), $driverOpt = array() ) {

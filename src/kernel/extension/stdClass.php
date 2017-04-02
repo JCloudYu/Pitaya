@@ -14,3 +14,9 @@
 		
 		return NULL;
 	}
+	
+	if ( !function_exists( 'object' ) ) {
+		function object($item = NULL) {
+			return call_user_func_array( 'stdClass', func_get_args() );
+		}
+	}
