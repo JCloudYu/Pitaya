@@ -1,8 +1,8 @@
 <?php
 	class PBTmplRenderer {
-		private static $_tplPath = "";
+		private static $_tplPath = NULL;
 		public static function SetTplPath( $path ) {
-			self::$_tplPath = $path;
+			self::$_tplPath = "{$path}";
 		}
 		public static function Tpl( $tmplName, $basePath = NULL ) {
 			return new PBTmplRenderer( $tmplName, $basePath );
@@ -12,8 +12,8 @@
 		private $_tplBasePath = "";
 		private $_tplName = "";
 		private function __construct( $tmplName, $basePath ) {
+			$this->_tplBasePath = $basePath ?: self::$_tplPath ?: path( 'defaults.templates' );
 			$this->_tplName = $tmplName;
-			$this->_tplBasePath = (empty($basePath) ? self::$_tplPath : $basePath);
 			$this->_variables[ 'tmplId' ] = UUID();
 		}
 		public function __toString() { return $this(); }
