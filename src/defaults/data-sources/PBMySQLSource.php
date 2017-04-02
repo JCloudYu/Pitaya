@@ -1,10 +1,4 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - PBMySQLSource.php
-	 ** Created by JCloudYu on 2016/04/14 18:27
-	 **/
-
-	using( 'sys.data-source.PBIDataSource' );
 	using( 'sys.db.ExtPDO' );
 	using( 'ext.base.assistive' );
 

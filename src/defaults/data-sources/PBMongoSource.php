@@ -1,18 +1,9 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - PBMongoSource.php
-	 ** Created by JCloudYu on 2016/04/14 18:27
-	 **/
-
 	use \MongoDB\Driver\Query;
 	use \MongoDB\Driver\BulkWrite;
 	use \MongoDB\Driver\Command;
 	use \MongoDB\BSON\ObjectID;
 	use \MongoDB\BSON\Regex;
-
-
-
-	using( 'sys.data-source.PBIDataSource' );
 
 	class PBMongoSource extends PBIDataSource {
 		const AGGREGATION_OPRATORS = [
