@@ -90,7 +90,15 @@
 		return hash( 'sha256', $content, $rawOutput );
 	}
 	
+	function sha256_file( $fileName, $rawOutput = FALSE ) {
+		hash_file( 'sha256', $fileName, $rawOutput );
+	}
+	
 	function sha512( $content, $rawOutput = FALSE ) {
 		return hash( 'sha512', $content, $rawOutput );
+	}
+	
+	function sha512_file( $fileName, $rawOutput = FALSE ) {
+		hash_file( 'sha512', $fileName, $rawOutput );
 	}
 	// endregion
