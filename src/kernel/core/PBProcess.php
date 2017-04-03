@@ -130,7 +130,7 @@
 		
 		
 		public function run() {
-			$dataInput = PBRequest::Request()->query;
+			$dataInput = PBRequest()->query;
 	
 			PBLList::HEAD($this->_bootSequence);
 			do
