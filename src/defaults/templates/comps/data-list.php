@@ -1,7 +1,18 @@
 <?php
-	$headers = !is_array(@$headers) ? [] : $headers;
-	$data	 = !is_array(@$data) ? [] : $data;
-	$columns = [];
+	/**
+	 * Input variables
+	 * @var $headers array
+	 * @var $data array
+	 * @var $emptyStr string
+	 */
+
+	$headers	= !is_array(@$headers) ? [] : $headers;
+	$data		= !is_array(@$data) ? [] : $data;
+	$emptyStr	= $emptyStr ?: '';
+	
+	
+	
+	$columns	= [];
 ?>
 <div id="<?=@$tmplId?>" class="data-list">
 	<div class="list-head"><div class='list-row clearfix'><?php
