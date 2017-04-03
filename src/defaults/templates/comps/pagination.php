@@ -1,4 +1,12 @@
 <?php
+	/**
+	 * Input variables
+	 * @var $total int
+	 * @var $size int
+	 * @var $current int
+	 * @var $generator callable
+	 */
+
 	$total = @$total ?: FALSE;
 	$total = CAST( @$total, 'int strict positive', 0 );
 	
@@ -26,17 +34,17 @@
 			$label = $pageNum;
 		}
 		
-		return [
+		return stdClass([
 			'label' => $label,
 			'url'	=> $active ? '#' : $pageNum
-		];
+		]);
 	}
 ?>
 <div id="<?=@$tmplId?>" class="pagination clearfix">
 	<?php
 		if ( $current != 1 ) {
-			$itemInfo = $generator( $current-1, FALSE, -1 );
-			echo "<div class='page-item prev'><a href='{$itemInfo['url']}'>{$itemInfo['label']}</a></div>";
+			$itemInfo = object($generator( $current-1, FALSE, -1 ), TRUE);
+			echo "<div class='page-item prev'><a href='{$itemInfo->url}'>{$itemInfo->label}</a></div>";
 		}
 		
 		$basePage = (($current / $size)|0) * $size;
@@ -45,21 +53,21 @@
 				$page = $basePage + $i;
 				if ( $page > $total ) break;
 				
-				$itemInfo = $generator( $page, ($active = $page == $current), 0 );
+				$itemInfo = object($generator( $page, ($active = $page == $current), 0 ), TRUE);
 				$active = $active ? 'active' : '';
-				$url = ( empty($itemInfo['url']) ) ? '' : "href='{$itemInfo['url']}'";
-				echo "<div class='page-item {$active}'><a {$url}>{$itemInfo['label']}</a></div>";
+				$url = ( empty($itemInfo->url) ) ? '' : "href='{$itemInfo->url}'";
+				echo "<div class='page-item {$active}'><a {$url}>{$itemInfo->label}</a></div>";
 			}
 		}
 		else {
-			$itemInfo = $generator( $current, TRUE, 0 );
-			$url = ( empty($itemInfo['url']) ) ? '' : "href='{$itemInfo['url']}'";
-			echo "<div class='page-item active'><a {$url}>{$itemInfo['label']}</a></div>";
+			$itemInfo = object($generator( $current, TRUE, 0 ), TRUE);
+			$url = ( empty($itemInfo->url) ) ? '' : "href='{$itemInfo->url}'";
+			echo "<div class='page-item active'><a {$url}>{$itemInfo->label}</a></div>";
 		}
 		
 		if ( $total !== FALSE && $current != $total ) {
-			$itemInfo = $generator( $current+1, FALSE, 1 );
-			echo "<div class='page-item next'><a href='{$itemInfo['url']}'>{$itemInfo['label']}</a></div>";
+			$itemInfo = object($generator( $current+1, FALSE, 1 ), TRUE);
+			echo "<div class='page-item next'><a href='{$itemInfo->url}'>{$itemInfo->label}</a></div>";
 		}
 	?>
 </div>
