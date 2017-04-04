@@ -337,6 +337,7 @@
 			if ( !is_array($res) ) $res = [];
 			
 			array_unshift($res, __BASIS__);
+			array_unshift($anchor, '');
 			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
 		public function is_ssl( $checkStdPorts = TRUE, $checkForward = TRUE ) {
@@ -1099,7 +1100,7 @@
 			return array_slice( $this->_pathInfo, 0, $this->_anchor + 1 );
 		}
 		public function __toString() {
-			return '/' . implode( '/', $this() );
+			return implode( '/', $this() );
 		}
 		
 		protected function _moveAnchor( $traceBack = 0 ) {
