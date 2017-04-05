@@ -5,8 +5,7 @@
  */
  	using( 'kernel.basis.PBObject' );
  
-	final class PBCrypto
-	{
+	final class PBCrypto {
 		const CANDIDATES_LOWER_NO_SYM = "0123456789abcdefghijklmnopqrstuvwxyz";
 		const CANDIDATES_MIXED_NO_SYM = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		const CANDIDATES_SYMBOLS	  = " !\"$%^&*()-_=+[{]};:'@#~|,<.>/?\\/`";
@@ -54,6 +53,10 @@
 			return str_pad( $otp, $length, "0", STR_PAD_LEFT );
 		}
 		
+		public static function GenJWT( $alg = 'HMACSHA256', stdClass $payload, $encData ) {
+			
+		}
+		
 		public static function ValidatePass($target, $caseSensitive = TRUE, $checkSymbol = TRUE)
 		{
 			$target	  = str_split($target);
@@ -85,8 +88,28 @@
 		}
 	}
 	
-	final class PBRSA extends PBObject
-	{
+	final class PBBase64 {
+		public static function URLEncode( $data ){
+			return strtr(rtrim(base64_encode( $data ), '='), '+/', '-_');
+		}
+
+		public static function URLDecode( $data ){
+			$length = strlen( $data );
+			$repeat = 4 - ($length % 4);
+			return base64_decode( strtr( $data . str_repeat( "=", $repeat ), '-_', '+/'), TRUE );
+		}
+
+		public static function Encode( $data ){
+			return base64_encode($data);
+		}
+
+		public static function Decode( $data ) {
+			return base64_decode( $data, TRUE );
+		}
+	}
+	
+	final class PBRSA extends PBObject {
+	
 		const DEFAULT_KEY_LENGTH = 2048;
 		const DEFAULT_TAILING_SIZE = 11;
 	
