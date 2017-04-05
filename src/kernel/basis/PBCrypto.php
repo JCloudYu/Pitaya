@@ -88,6 +88,85 @@
 		}
 	}
 	
+	final class PBJWT {
+		private $_algorithm = 'HS256';
+		private $_secret	= '';
+	
+		public function __construct( $alg = 'HS256', $secret = '' ) {
+			$this->algorithm = $alg;
+			$this->secret = $secret;
+		}
+		public function __set($name, $value) {
+			if ( $name == "secret" ) {
+				$this->_secret = "{$value}";
+			}
+			else
+			if ( $name == "algorithm" ) {
+				$value = strtoupper($value);
+				if ( in_array( $value, [ 'NONE', 'HS256' ] ) ) {
+					$this->_algorithm = $value;
+				}
+			}
+		}
+		public function __get($name) {
+			if ( $name == "secret" ) {
+				return $this->_secret;
+			}
+			else
+			if ( $name == "algorithm" ) {
+				return $this->_algorithm;
+			}
+		}
+		public function encode( stdClass $payload ) {
+			$payload = PBBase64::URLEncode(json_encode($payload));
+			
+			if ( $this->_algorithm == "NONE" ) {
+				$header	 = PBBase64::URLEncode(json_encode([ 'alg' => 'none' ]));
+				$leading = "{$header}.{$payload}";
+				$sig = "";
+			}
+			else
+			if ( $this->_algorithm == "HS256" ) {
+				$header	 = PBBase64::URLEncode(json_encode([ 'alg' => 'HS256', 'typ' => 'JWT' ]));
+				$leading = "{$header}.{$payload}";
+				$sig = PBBase64::URLEncode(hash_hmac('sha256', $leading, $this->_secret, TRUE));
+			}
+			
+			return "{$leading}.{$sig}";
+		}
+		public function decode( $jwtToken ) {
+			$jwtToken = explode( '.', "{$jwtToken}" );
+			if ( count($jwtToken) != 3 ) return NULL;
+			
+			list( $encHeader, $encPayload, $sig ) = $jwtToken;
+			$header = @json_decode(PBBase64::URLDecode($encHeader));
+			$payload = @json_decode(PBBase64::URLDecode($encPayload));
+
+			if ( empty($header) || empty($payload) ) return NULL;
+			if ( @$header->alg === "none" ) {
+				return stdClass([
+					'header'	=> $header,
+					'payload'	=> $payload
+				]);
+			}
+			else
+			if ( @$header->alg === "HS256" ) {
+				$verify = PBBase64::URLEncode(hash_hmac('sha256', "{$encHeader}.{$encPayload}", $this->_secret, TRUE));
+				if ( $verify === $sig ) {
+					return stdClass([
+						'header'	=> $header,
+						'payload'	=> $payload
+					]);
+				}
+			}
+			
+			return NULL;
+		}
+	}
+	function PBJWT( $alg = 'HS256', $secret = '' ) {
+		return new PBJWT( $alg, $secret );
+	}
+	
 	final class PBBase64 {
 		public static function URLEncode( $data ){
 			return strtr(rtrim(base64_encode( $data ), '='), '+/', '-_');
