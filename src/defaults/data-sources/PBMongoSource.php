@@ -460,7 +460,10 @@
 			}
 			
 			foreach( $resolved as $field => $update ) {
-				$query[ "{$prop}.{$field}" ] = $update;
+				if ( $field[0] == "$" )
+					$query[ "{$prop}" ][ $field ] = $update;
+				else
+					$query[ "{$prop}.{$field}" ] = $update;
 			}
 		}
 		
