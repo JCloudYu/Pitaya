@@ -446,7 +446,7 @@
 		}
 	}
 	
-	function MongoRecursiveUpdate($item) {
+	function MongoRecursiveQuery($item) {
 		if ( !is_a($item, stdClass::class) && !is_assoc($item) ) {
 			return FALSE;
 		}
