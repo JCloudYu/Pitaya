@@ -446,6 +446,26 @@
 		}
 	}
 	
+	function MongoRecursiveUpdate($item) {
+		if ( !is_a($item, stdClass::class) && !is_assoc($item) ) {
+			return FALSE;
+		}
+		
+		$query = [];
+		foreach( $item as $prop => $value ) {
+			$resolved = MongoRecursiveUpdate($value);
+			if ( $resolved === FALSE ) {
+				$query[$prop] = $value;
+				continue;
+			}
+			
+			foreach( $resolved as $field => $update ) {
+				$query[ "{$prop}.{$field}" ] = $update;
+			}
+		}
+		
+		return $query;
+	}
 	function MongoID( $hexStr = NULL ) {
 		try{
 			return new ObjectID( func_num_args() > 0 ? "{$hexStr}" : NULL );

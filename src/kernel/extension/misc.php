@@ -102,3 +102,10 @@
 		return hash_file( 'sha512', $fileName, $rawOutput );
 	}
 	// endregion
+	
+	// region [ Array Function ]
+	function is_assoc($array,  $allowEmpty = FALSE) {
+		if ( !is_array($array) ) return FALSE;
+		return (empty($array) && $allowEmpty) || (array_keys($array) !== range(0, count($array) - 1));
+	}
+	// endregion
