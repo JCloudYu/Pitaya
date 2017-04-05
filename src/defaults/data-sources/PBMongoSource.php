@@ -454,7 +454,7 @@
 		$query = [];
 		foreach( $item as $prop => $value ) {
 			$resolved = MongoRecursiveQuery($value);
-			if ( $resolved === FALSE ) {
+			if ( $resolved === FALSE || $prop[0] == '$' ) {
 				$query[$prop] = $value;
 				continue;
 			}
