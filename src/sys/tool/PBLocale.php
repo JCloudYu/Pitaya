@@ -49,7 +49,7 @@
 
 
 
-			$localePath	= path( "{$this->_localeLibPath}/{$this->_curLocale}", "locale.php" );
+			$localePath	= "{$this->_localeLibPath}/{$this->_curLocale}/locale.php";
 			if ( !is_file($localePath) || !is_readable($localePath) ) return;
 			
 			
