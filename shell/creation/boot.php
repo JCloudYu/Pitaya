@@ -16,6 +16,65 @@
 	function IsValidPath($path){
 		return !(!is_link($path) && !file_exists($path) && !file_exists("{$path}.lnk"));
 	}
+	final class FS {
+		public static function CopyDir( $sourceDir, $targetDir ) {
+			$jobQueue = [];
+			$jobQueue[] = (object)[
+				'src' => basename($sourceDir),
+				'dst' => basename($targetDir)
+			];
+			$sourceDir = dirname($sourceDir);
+			$targetDir = dirname($targetDir);
+			
+			while ( count($jobQueue) > 0 ) {
+				$job = array_shift($jobQueue);
+				$dirSrc = $job->src;
+				$dirDst = empty($job->dst) ? $dirSrc : $job->dst;
+				$dirList = self::__COPY_DIR( "{$sourceDir}/{$dirSrc}", "{$targetDir}/{$dirDst}" );
+				foreach ( $dirList as $dir ) {
+					$jobQueue[] = (object)[ 'src' => "{$job->src}/{$dir}" ];
+				}
+			}
+		}
+		public static function __COPY_DIR( $srcDir, $destDir ) {
+			static $SKIPPED_FILES = [ '.', '..' ];
+		
+			@mkdir( $destDir );
+			if ( !is_dir($destDir) || !is_writable($destDir) ) {
+				fwrite( STDERR,  "Insufficient privileges to access destination dir! ({$destDir})" . PHP_EOL );
+				exit(1);
+			}
+		
+			$hDir = @opendir( $srcDir );
+			if ( empty($hDir) ) {
+				fwrite( STDERR,  "Cannot open source dir! ({$srcDir})" . PHP_EOL );
+				exit(1);
+			}
+			
+			
+			
+			$dirList = [];
+			while( ($file = @readdir($hDir)) !== FALSE ) {
+				if ( in_array($file, $SKIPPED_FILES) ) continue;
+				$srcFile = "{$srcDir}/{$file}";
+				if ( is_dir($srcFile) ) {
+					$dirList[] = $file;
+					continue;
+				}
+				
+				$destFile = "{$destDir}/{$file}";
+				$result = @copy( $srcFile, $destFile );
+				if ( $result === FALSE ) {
+					fwrite( STDERR,  "File '{$srcFile}' is not able to be copied into '{$destFile}'!" . PHP_EOL );
+					exit(1);
+				}
+			}
+			
+			@closedir($hDir);
+			return $dirList;
+		}
+	}
+
 
 
 	define( 'COMMAND_DIR', __DIR__ );

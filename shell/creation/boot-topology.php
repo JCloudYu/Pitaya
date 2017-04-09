@@ -72,6 +72,29 @@
 	
 	
 	
+	if ( is_array(@$top->copy) ) {
+		foreach( $top->copy as $copyDesc ) {
+			$source = SOURCE_PROJECT_PATH . "/{$copyDesc->src}";
+			if ( !file_exists($source) ) continue;
+			
+			
+			
+			$dest = ESTABLISHED_PATH . "/{$copyDesc->dst}";
+			if ( !is_dir($dest) ) {
+				@mkdir( $dest, 0777, TRUE );
+			}
+			
+			if ( is_dir($source) ) {
+				FS::CopyDir($source, $dest);
+			}
+			else {
+				$fileName = basename($source);
+				copy( $source, "{$dest}/{$fileName}" );
+			}
+		}
+	}
+	
+	
 	
 	
 	
