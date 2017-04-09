@@ -1,13 +1,9 @@
 {
-	"name": "sample-package",
-	"version": "0.0.1",
+	"format-version":"0.0.1",
 	"structure": {
 		"basis": "relative/path/to/basis",
 		"share": "relative/path/to/share",
 		"data": false,
 		"lib": false
-	},
-	"dependencies": {
-		"simple_html_dom": "simple_html_dom@1.1.1"
 	}
 }

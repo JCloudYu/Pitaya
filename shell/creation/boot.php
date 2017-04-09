@@ -13,15 +13,14 @@
 	
 		return symlink( $dest, $link );
 	}
-	
 	function IsValidPath($path){
 		return !(!is_link($path) && !file_exists($path) && !file_exists("{$path}.lnk"));
 	}
 
 
-	$targetPath  = WORKING_DIR;
+	define( 'COMMAND_DIR', __DIR__ );
 	$options = (object)[
-		'refPackage'	=> NULL,
+		'refTopology'	=> NULL,
 		'refShare'		=> NULL,
 		'refData'		=> NULL,
 		'refBasis'		=> NULL,
@@ -54,24 +53,24 @@
 			
 			
 			
-			case "--package":
-				$options->refPackage = @trim(@array_shift($ARGV));
+			case "--topology":
+				$options->refTopology = @realpath(@trim(@array_shift($ARGV)));
 				break;
 			
 			case "--share":
-				$options->refShare = @trim(@array_shift($ARGV));
+				$options->refShare = @realpath(@trim(@array_shift($ARGV)));
 				break;
 			
 			case "--basis":
-				$options->refBasis = @trim(@array_shift($ARGV));
+				$options->refBasis = @realpath(@trim(@array_shift($ARGV)));
 				break;
 			
 			case "--data":
-				$options->refData = @trim(@array_shift($ARGV));
+				$options->refData = @realpath(@trim(@array_shift($ARGV)));
 				break;
 			
 			case "--lib":
-				$options->refLib = @trim(@array_shift($ARGV));
+				$options->refLib = @realpath(@trim(@array_shift($ARGV)));
 				break;
 				
 			default:
@@ -80,17 +79,26 @@
 	}
 	
 	
-	if ( empty($item) )
-		define( 'TARGET_PATH', $targetPath );
+	if ( empty($item) ) {
+		define( 'ESTABLISHED_PATH', WORKING_DIR );
+	}
 	else {
-		define( 'TARGET_PATH', $targetPath = "{$targetPath}/{$item}" );
-		@mkdir( TARGET_PATH , 0755, TRUE );
+		define( 'ESTABLISHED_PATH', WORKING_DIR . "/{$item}" );
+		@mkdir( ESTABLISHED_PATH , 0755, TRUE );
 	}
 
 
-
-	if ( !empty($options->refPackage) ) {
-		require_once __DIR__ . '/boot-proj.php';
+	
+	if ( !empty($options->refTopology) ) {
+		require COMMAND_DIR . '/boot-topology.php';
 	}
-
-	require_once __DIR__ . '/boot-init.php';
+	else {
+		$targetPath = ESTABLISHED_PATH;
+		$structure = (object)[
+			'basis' => @$options->refBasis,
+			'share' => @$options->refShare,
+			'data'	=> @$options->refData,
+			'lib'	=> @$options->refLib
+		];
+		require COMMAND_DIR . '/boot-build-space.php';
+	}

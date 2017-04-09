@@ -1,0 +1,8 @@
+{
+	"format-version":"0.0.1",
+	"spaces":[
+		{ "root":"root/dir/name", "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false },
+		{ "root":"root/dir/name", "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false },
+		{ "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false }
+	]
+}

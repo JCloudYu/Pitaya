@@ -5,13 +5,13 @@
     }
 
 
-	if ( !empty($options->refBasis) ) {
-		if ( !is_dir( $options->refBasis ) ) {
+	if ( !empty($structure->basis) ) {
+		if ( !is_dir( $structure->basis ) ) {
 			fwrite( STDERR, "Referenced pitaya basis directory is invalid!" );
 			exit(1);
 		}
 		
-		$src  = @realpath($options->refBasis);
+		$src  = @realpath($structure->basis);
 		$path = "{$targetPath}/Basis";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
@@ -27,13 +27,13 @@
 
 
 
-	if ( !empty($options->refShare) ) {
-		if ( !is_dir( $options->refShare ) ) {
+	if ( !empty($structure->share) ) {
+		if ( !is_dir( $structure->share ) ) {
 			fwrite( STDERR, "Referenced pitaya share directory is invalid!" );
 			exit(1);
 		}
 		
-		$src  = @realpath($options->refShare);
+		$src  = @realpath($structure->share);
 		$path = "{$targetPath}/Share";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
@@ -48,13 +48,13 @@
 	}
 
 
-	if ( !empty($options->refData) ) {
-		if ( !is_dir( $options->refData ) ) {
+	if ( !empty($structure->data) ) {
+		if ( !is_dir( $structure->data ) ) {
 			fwrite( STDERR, "Referenced pitaya data directory is invalid!" );
 			exit(1);
 		}
 		
-		$src  = @realpath($options->refData);
+		$src  = @realpath($structure->data);
 		$path = "{$targetPath}/Data";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
@@ -70,13 +70,13 @@
 	
 	
 	
-	if ( !empty($options->refLib) ) {
-		if ( !is_dir( $options->refLib ) ) {
+	if ( !empty($structure->lib) ) {
+		if ( !is_dir( $structure->lib ) ) {
 			fwrite( STDERR, "Referenced pitaya lib directory is invalid!" );
 			exit(1);
 		}
 		
-		$src  = @realpath($options->refLib);
+		$src  = @realpath($structure->lib);
 		$path = "{$targetPath}/Lib";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
