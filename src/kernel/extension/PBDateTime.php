@@ -1,5 +1,26 @@
 <?php
 	class PBDateTime extends DateTime {
+		public static function FromFormat( $format, $timeStr ) {
+			$time = new PBDateTime();
+			return $time->format($format, $timeStr);
+		}
+		public static function FromTimestamp($unixtimestamp) {
+			$time = new PBDateTime();
+			$time->setTimestamp($unixtimestamp);
+			return $time;
+		}
+	
+		public function format($format, $timeStr = '') {
+			if ( func_num_args() > 1 ) {
+				$timeObj = PBDateTime::createFromFormat($format, $timeStr);
+				$this->setTimestamp($timeObj->getTimestamp());
+				return $this;
+			}
+			else {
+				return $this->format($format);
+			}
+		}
+		
 		public function __get( $prop ) {
 			switch( strtolower($prop) ) {
 				case "year":
@@ -52,4 +73,8 @@
 			
 			return $this->{$prop} = $value;
 		}
+	}
+	
+	function PBDateTime() {
+		return new PBDateTime();
 	}
