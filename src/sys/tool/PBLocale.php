@@ -23,7 +23,8 @@
 		private $_curLocale 	= '';
 		private $_storedLocales = array();
 		public function __construct() {
-			$this->_basePackage = path( self::$_sharedBasePackage );
+			$this->_basePackage = self::$_sharedBasePackage;
+			$this->_localeLibPath = path($this->_basePackage);
 			
 			$this->_curLocale = 'default';
 			$this->_storedLocales = array();
