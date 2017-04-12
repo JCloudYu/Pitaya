@@ -56,13 +56,14 @@
 
 			// INFO: Prepare write info
 			$bulkWrite = new BulkWrite();
+			$castId = (empty($additional['cast-object-id']) || empty($additional['cast-id']));
 
 			if ( empty($additional['multiple']) )
 			{
 				$insertData = (array)$insertData;
 				unset( $insertData['_id'] );
 				$id = $bulkWrite->insert( $insertData );
-				$sessionId = (empty($additional['cast-object-id'])) ? $id : "{$id}";
+				$sessionId = (!$castId) ? $id : "{$id}";
 			}
 			else
 			{
@@ -72,7 +73,7 @@
 					$doc = (array)$doc;
 					unset( $doc['_id'] );
 					$id = $bulkWrite->insert( $doc );
-					$sessionId[] = (empty($additional['cast-object-id'])) ? $id : "{$id}";
+					$sessionId[] = (!$castId) ? $id : "{$id}";
 				}
 			}
 
@@ -412,22 +413,55 @@
 				
 				$nameFilter = [ $nameFilter ];
 			}
+			
+			
+			$options = [ 'listCollections' => 1 ];
+			if ( !empty($nameFilter) ) {
+				$options[ 'filter' ] =  [
+					'name' => [ '$in' => $nameFilter ]
+				];
+			}
+		
+			
 		
 		
 		
 			$data = [];
-			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
-				'listCollections' => 1,
-				'filter' => [
-					'name' => [ '$in' => $nameFilter ]
-				]
-			]));
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command($options));
 			
 			foreach( $ANCHOR as $collection ) {
 				$data[] = $collection;
 			}
 			
 			
+			
+			return $data;
+		}
+		public function getIndex( $dbName, $collectionName, $nameFilter = [] ) {
+			if ( !is_array($nameFilter) ) {
+				if ( empty($nameFilter) ) {
+					return [];
+				}
+				
+				$nameFilter = [ $nameFilter ];
+			}
+		
+		
+		
+			$data = [];
+			$ANCHOR = $this->_mongoConnection->executeCommand( $dbName, new Command([
+				'listIndexes' => $collectionName
+			]));
+			
+			$fetchAll = empty($nameFilter);
+			foreach( $ANCHOR as $index ) {
+				if ( $fetchAll )
+					$data[] = $index;
+				else
+				if ( in_array($index->name, $nameFilter) ) {
+					$data[] = $index;
+				}
+			}
 			
 			return $data;
 		}
