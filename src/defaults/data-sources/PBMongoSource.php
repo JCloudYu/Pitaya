@@ -384,7 +384,7 @@
 		public function createIndex( $dbName, $targetCollection, $indexes = [], $checkValid = TRUE ) {
 			if ( !is_array($indexes) || empty($indexes) ) return FALSE;
 			if ( $checkValid ) {
-				$coll = $this->getCollection( $dbName, $collectionName );
+				$coll = $this->getCollection( $dbName, $targetCollection );
 				if ( empty($coll) ) return FALSE;
 			}
 		
@@ -456,10 +456,10 @@
 			$fetchAll = empty($nameFilter);
 			foreach( $ANCHOR as $index ) {
 				if ( $fetchAll )
-					$data[] = $index;
+					$data[$index->name] = $index;
 				else
 				if ( in_array($index->name, $nameFilter) ) {
-					$data[] = $index;
+					$data[$index->name] = $index;
 				}
 			}
 			
