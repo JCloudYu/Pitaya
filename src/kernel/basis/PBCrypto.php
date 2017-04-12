@@ -53,10 +53,6 @@
 			return str_pad( $otp, $length, "0", STR_PAD_LEFT );
 		}
 		
-		public static function GenJWT( $alg = 'HMACSHA256', stdClass $payload, $encData ) {
-			
-		}
-		
 		public static function ValidatePass($target, $caseSensitive = TRUE, $checkSymbol = TRUE)
 		{
 			$target	  = str_split($target);

@@ -109,3 +109,5 @@
 		return (empty($array) && $allowEmpty) || (array_keys($array) !== range(0, count($array) - 1));
 	}
 	// endregion
+	
+	
