@@ -59,7 +59,7 @@
 		
 		public function execute( $chainData ) {
 		
-			$outputCtnt = ($chainData === NULL) ? self::$_outputData : $chainData;	
+			$outputCtnt = self::$_outputData ?: $chainData;
 		
 		
 			$js = [
@@ -381,7 +381,7 @@
 		const STATUS_ERROR		= -1;
 		
 		public function execute( $chainData ) {
-			$result = self::__PROCESS_OUTPUT( ( $chainData === NULL ) ? self::$_outputData : $chainData );
+			$result = self::__PROCESS_OUTPUT( self::$_outputData ?: $chainData );
 			self::ContentType( 'application/json' );
 			parent::execute( @json_encode($result) );
 		}
@@ -415,7 +415,7 @@
 		public function execute( $chainData ) {
 			PBHttpOutputCtrl::ContentType( "application/json" );
 			parent::execute(json_encode(
-				($chainData === NULL) ? self::$_outputData : $chainData
+				self::$_outputData ?: $chainData
 			));
 		}
 	}
@@ -427,10 +427,7 @@
 			unset( $this->data->tmplPath );
 			
 			
-			$tplData = data_merge(
-				$this->data,
-				empty($chainData) ? [] : $chainData
-			); 
+			$tplData = data_merge( $this->data, $chainData ?: [], self::$_outputData ?: [] );
 			foreach( $tplData as $field => $value ) $template->{$field} = $value;
 			
 			parent::execute(NULL); $template(TRUE);
