@@ -1,9 +1,4 @@
 <?php
-/**
- * server - http.php
- * Created by JCloudYu on 2014/12/13 04:57
- */
-
 	final class PBHTTP {
 		public static function ResponseContentType( $type ) {
 			header( "Content-Type: {$type}" );
@@ -34,6 +29,18 @@
 			stream_copy_to_stream( $content, $output );
 			fclose($output);
 		}
+		
+		const DEFAULT_COOKIE_INFO = [
+			'name'		=> '',
+			'value'		=> '',
+			'expire'	=> 0,
+			'duration'	=> 0,
+			'domain'	=> '',
+			'path'		=> '/',
+			'ssl'		=> TRUE,
+			'http'		=> TRUE,
+			'same-site'	=> 'strict' // @string(def:'strict'|'lax')
+		];
 		public static function SetCookie( $options ) {
 			if ( headers_sent() ) return FALSE;
 			if ( is_a( $options, stdClass::class ) ) {
@@ -97,18 +104,6 @@
 			
 			return TRUE;
 		}
-
-		const DEFAULT_COOKIE_INFO = [
-			'name'		=> '',
-			'value'		=> '',
-			'expire'	=> 0,
-			'duration'	=> 0,
-			'domain'	=> '',
-			'path'		=> '/',
-			'ssl'		=> TRUE,
-			'http'		=> TRUE,
-			'same-site'	=> 'strict' // @string(def:'strict'|'lax')
-		];
 		
 		// region [ HTTP Status Code ]
 		//INFO: Information
@@ -278,14 +273,5 @@
 			self::STATUS_598_NETWORK_READ_TIMEOUT					=> 'Network read timeout error',
 			self::STATUS_599_NETWORK_CONNECT_TIMEOUT_ERROR			=> 'Network connect timeout error'
 		];
-		// endregion
-		
-		
-		
-		// region [ Deprecated ]
-		public static function GetStatusString($status) {
-			DEPRECATION_WARNING( "PBHTTP::GetStatusString will no longer be aviable! Use PBHTTP::STATUS_STRING constant instead!" );
-			return self::STATUS_STRING[ $status ];
-		}
 		// endregion
 	}
