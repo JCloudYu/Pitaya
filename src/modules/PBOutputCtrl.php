@@ -1,5 +1,4 @@
 <?php
-	using( 'sys.net.PBHTTP' );
 	using( 'sys.tool.PBHTML' );
 
 	class PBHttpOutputCtrl extends PBModule {
