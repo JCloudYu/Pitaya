@@ -1,7 +1,7 @@
 <?php
 	class PBProcess extends PBObject {
 		public static function Module( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
-			call_user_func( 'PBModule', $moduleName, $reusable, $noThrow );
+			return call_user_func( 'PBModule', $moduleName, $reusable, $noThrow );
 		}
 		public static function ServiceModule() {
 			return self::$_singleton->_entryModule;
