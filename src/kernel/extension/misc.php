@@ -108,6 +108,92 @@
 		if ( !is_array($array) ) return FALSE;
 		return (empty($array) && $allowEmpty) || (array_keys($array) !== range(0, count($array) - 1));
 	}
+	
+	define( 'IN_ARY_MODE_AND', 			0x01 );
+	define( 'IN_ARY_MODE_OR', 			0x00 );
+	define( 'IN_ARY_MODE_STRICT', 		0x02 );
+	define( 'IN_ARY_MODE_NONE_STRICT', 	0x00 );
+	function in_ary($needle, $candidates, $mode = IN_ARY_MODE_OR) {
+		if (!is_array($needle)) $needle = array($needle);
+
+
+		if (!is_int($mode)) $mode = 0;
+		$andMode 	= $mode & IN_ARY_MODE_AND;
+		$strictMode = $mode & IN_ARY_MODE_STRICT;
+
+		$state = (empty($andMode)) ? FALSE : TRUE;
+		foreach ($needle as $content)
+		{
+			if ($andMode)
+				$state = $state && in_array($content, $candidates, !empty($strictMode));
+			else
+				$state = $state || in_array($content, $candidates, !empty($strictMode));
+		}
+
+		return $state;
+	}
+	
+	function ary_fill($size, $element, $startIndex = 0) {
+		$rtAry = array();
+
+		for($i = 0; $i <$size; $i++, $startIndex++)
+			$rtAry[$startIndex] = $element;
+
+		return $rtAry;
+	}
+	function ary_exclude($src, $ref) {
+		if (!is_array($src)) return array();
+
+		$args = func_get_args();
+		array_shift($args);
+
+
+		$left = $src;
+		foreach ($args as $param)
+		{
+			if (!is_array($param)) continue;
+
+
+			$stayed = array();
+			foreach ($left as $src_content)
+			{
+				if (in_array($src_content, $param)) continue;
+				$stayed[] = $src_content;
+			}
+			$left = $stayed;
+		}
+
+		return $left;
+	}
+	function ary_flag($ary, $flag, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR) {
+		
+	
+		if (!is_array($ary)) $ary = array();
+		if (!is_array($flag)) $flag = array($flag);
+
+		if (!$matchCase)
+			foreach ($flag as $id => $content) $flag[$id] = trim(strtolower("{$content}"));
+
+
+		$candidates = array();
+		foreach ($ary as $idx => $item)
+		{
+			if (!preg_match('/^\d+$/', "{$idx}")) continue;
+			$candidates[] = trim(((!$matchCase) ? strtolower("{$item}") : "{$item}"));
+		}
+
+		return in_ary($flag, $candidates, $compareMode);
+	}
+	function ary_pick($ary, $indices) {
+		if (empty($indices) || (!is_array($indices) && !is_string($indices)))
+			return array();
+
+		$indices = (is_string($indices)) ? explode(',', $indices) : $indices;
+		$collected = array();
+		foreach ($indices as $idx) { $collected[] = $ary[$idx]; }
+
+		return $collected;
+	}
 	// endregion
 	
 	// region [ Numeric Detection ]
@@ -350,5 +436,130 @@
 			default:
 				return $value;
 		}
+	}
+	// endregion
+	
+	
+	
+	
+	
+	
+	// region [ DEPRECATED ]
+	function is_assoc_ary( &$arr ) {
+		DEPRECATION_WARNING( "is_assoc_ary api is marked as deprecated! Please refer to is_assoc api!" );
+    	return array_keys($arr) !== range(0, count($arr) - 1);
+	}
+	function is_normal_ary( &$arr ) {
+		DEPRECATION_WARNING( "is_normal_ary api is marked as deprecated! Please refer to is_assoc api!" );
+    	return array_keys($arr) === range(0, count($arr) - 1);
+	}
+	function json_object( $input = NULL ) {
+		DEPRECATION_WARNING( "json_object api is marked as deprecated! Please refer to stdClass api!" );
+	
+		if ( func_num_args() == 0 ) return new stdClass();
+		return ( !is_array($input) ) ? $input : (object)$input;
+	}
+	function json_array( $input = NULL ) {
+		DEPRECATION_WARNING( "json_array api is marked as deprecated!" );
+		if ( func_num_args() == 0 ) return array();
+
+		return ( !is_array($input) ) ? $input : array_values($input);
+	}
+	function ary_intersect() {
+		DEPRECATION_WARNING( "ary_intersect api is marked as deprecated! Please refer to array_intersect api!" );
+		return call_user_func_array('array_intersect', func_get_args());
+	}
+	function ary_union() {
+		DEPRECATION_WARNING( "ary_union api is marked as deprecated! Please refer to array_merge api!" );
+		return array_unique(call_user_func_array('array_merge', func_get_args()));
+	}
+	function ary_merge(&$ary1, $ary2) {
+		DEPRECATION_WARNING( "ary_merge api is marked as deprecated! Please refer to data_merge / data_fuse api!" );
+	
+		$args = func_get_args();
+
+		// INFO: Pop out the first two arguments
+		array_shift($args);
+
+		foreach ($args as $arg)
+		{
+			if (!is_array($arg)) continue;
+			foreach ($arg as $key => $value) $ary1[$key] = $value;
+		}
+
+		return $ary1;
+	}
+	function ary_merge_recursive(&$ary1, $ary2) {
+		DEPRECATION_WARNING( "ary_merge_recursive api is marked as deprecated! Please refer to data_merge / data_fuse api!" );
+	
+		$args = func_get_args();
+
+		// INFO: Pop out the first two arguments
+		array_shift($args);
+
+		foreach ($args as $arg)
+		{
+			if (!is_array($arg)) continue;
+			foreach ($arg as $key => $value)
+			{
+				if (is_array($value))
+				{
+					if (!is_array($ary1[$key])) $ary1[$key] = array();
+
+					ary_merge_recursive($ary1[$key], $value);
+				}
+				else
+					$ary1[$key] = $value;
+			}
+		}
+
+		return $ary1;
+	}
+	function ary_set_recursiv($ary1, $ary2, $forceKeep = FALSE) {
+		DEPRECATION_WARNING( "ary_set_recursiv api is marked as deprecated! Please refer to data_merge / data_fuse api!" );
+	
+	
+		$buff = NULL;
+		if (!is_array($ary1)) {
+			if ($forceKeep) {
+				if (!is_array($ary2))
+					return array($ary1, $ary2);
+				else {
+					$ary2[] = $ary1;
+
+					return $ary2;
+				}
+			}
+			else
+				return $ary2;
+		}
+		else {
+			if (!is_array($ary2)) {
+				if ($forceKeep) {
+					$ary1[] = $ary2;
+
+					return $ary1;
+				}
+				else
+					return $ary2;
+			}
+			else {
+				foreach ($ary2 as $key => $value) {
+					if (!array_key_exists($key, $ary1))
+						$ary1[$key] = $value;
+					else
+						$ary1[$key] = array_merge($ary1[$key], $ary2[$key]);
+				}
+
+				return $ary1;
+			}
+		}
+	}
+	function ary_data($ary, $idx, $type = 'raw', $default = NULL) {
+		DEPRECATION_WARNING( "ary_data api is marked as deprecated and will be removed in the following versions!" );
+		if (!is_array($ary)) $ary = array();
+		if (preg_match('/^\d+$/', "{$idx}") || !isset($ary[$idx])) return $default;
+
+		return TO($ary[$idx], $type);
 	}
 	// endregion
