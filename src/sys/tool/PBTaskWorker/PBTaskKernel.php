@@ -1,10 +1,4 @@
 <?php
-	/**
-	 ** 0001.pitaya - PBTaskKernel.php
-	 ** Created by JCloudYu on 2015/12/05 01:43
-	 **/
-	using( 'ext.base.misc' );
-
 	class PBTaskKernel extends PBObject
 	{
 		private $_seqId = 0;

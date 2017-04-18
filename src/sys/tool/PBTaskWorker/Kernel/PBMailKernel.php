@@ -1,11 +1,6 @@
 <?php
-	/**
-	 ** 0002.pitaya.workbench - PBMailKernel.php
-	 ** Created by JCloudYu on 2015/12/25 13:09
-	 **/
 	using( 'sys.tool.PBTaskWorker.PBTaskKernel' );
-	using( 'ext.base.misc' );
-	using( 'ext.base.array' );
+	
 
 	class PBMailKernel extends PBTaskKernel
 	{

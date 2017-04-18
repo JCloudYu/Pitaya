@@ -1,8 +1,7 @@
 <?php
 	using( 'sys.process.*' );
 	using( 'sys.net.PBUploadedFile' );
-	using( 'ext.base.misc' );
-
+	
 	final class PBFileUploadHandler extends PBModule
 	{
 		const UPLOAD_PROC_NOOP				=  0;

@@ -1,12 +1,4 @@
 <?php
-	/**
-	 * Pitaya - PBSelectList.php
-	 * Created by JCloudYu on 2015/11/24 17:00
-	 */
-
-	using( 'kernel.basis.PBObject' );
-	using( 'ext.base.misc' );
-
 	class PBSelectList extends PBObject
 	{
 		const ALLOWED_SELECT_TYPES = 'checkbox,radio';

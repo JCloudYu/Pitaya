@@ -41,10 +41,12 @@
 	using( 'kernel.basis.PBObject' );
 	using( 'kernel.basis.*' );
 	using( 'kernel.core.*' );
+	
+	
+	
 	using( 'kernel.sys' );
 	
-	using( 'ext.base.array' );
-	using( 'ext.base.misc'	);
+	
 	
 	require_once PITAYA_ROOT . "/kernel/env.cleanup.php";	
 	define( 'PITAYA_METRIC_KERNEL_TIME',	microtime( TRUE ) );

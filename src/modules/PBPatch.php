@@ -1,5 +1,5 @@
 <?php
-	using('ext.base.string');
+	
 
 	class PBPatch extends PBModule
 	{

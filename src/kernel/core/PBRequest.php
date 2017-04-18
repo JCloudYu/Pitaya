@@ -1,10 +1,4 @@
 <?php
-	using( 'ext.base.time' );
-	using( 'ext.base.math' );
-	using( 'ext.base.misc' );
-	using( 'ext.base.array' );
-	using( 'sys.net.PBHTTP' );
-
 	final class PBRequest extends PBObject {
 	
 		// region [ Singleton Controller ]

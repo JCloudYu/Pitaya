@@ -1,12 +1,4 @@
 <?php
-	/**
-	 * Pitaya - PBDataList.php
-	 * Created by JCloudYu on 2015/11/24 17:00
-	 */
-
-	using( 'kernel.basis.PBObject' );
-	using( 'ext.base.misc' );
-
 	class PBDataList extends PBObject
 	{
 		const ALLOWED_COLUMN_TYPES = 'checkbox,radio';

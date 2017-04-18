@@ -1,11 +1,6 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - GCMKernel.php
-	 ** Created by JCloudYu on 2015/11/04 03:28
-	 **/
 	using( 'sys.net.NotifyKernel.INotifyKernel' );
-	using( 'ext.base.misc' );
-
+	
 	class GCMKernel extends PBObject implements INotifyKernel
 	{
 		const GCM_HTTP_SERVER_ADDRESS	 = "https://gcm-http.googleapis.com/gcm/send";

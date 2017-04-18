@@ -1,10 +1,5 @@
 <?php
-	/**
-	 ** 1024.QueueCounter - APNKernel.php
-	 ** Created by JCloudYu on 2015/11/04 03:25
-	 **/
 	using( 'sys.net.NotifyKernel.INotifyKernel' );
-	using( 'ext.base.misc' );
 
 	class APNKernel extends PBObject implements INotifyKernel
 	{

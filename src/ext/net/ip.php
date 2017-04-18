@@ -4,7 +4,7 @@
  * Created by JCloudYu on 2013/10/11 13:32
  */
 
-	using('ext.base.array');
+	
 
 	function NormalizeIPv6($ipAddr)
 	{

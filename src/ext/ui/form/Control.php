@@ -1,5 +1,5 @@
 <?php
-	using( 'ext.base.string' );
+	
 
 	final class Control extends PBObject
 	{

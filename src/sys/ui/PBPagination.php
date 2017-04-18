@@ -1,12 +1,4 @@
 <?php
-	/**
-	 * Pitaya - PBPagination.php
-	 * Created by JCloudYu on 2015/11/24 17:00
-	 */
-
-	using( 'kernel.basis.PBObject' );
-	using( 'ext.base.misc' );
-
 	class PBPagination extends PBObject
 	{
 		const DEFAULT_VISIBLE_SIZE = 10;
