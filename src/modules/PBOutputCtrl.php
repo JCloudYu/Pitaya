@@ -187,7 +187,7 @@
 		}
 		public function __set_files( $value ) {
 			if ( !is_array($value) ) return;
-			foreach( $value as $fileDes ) $this->__set_file( $value );
+			foreach( $value as $fileDes ) $this->__set_file( $fileDes );
 		}
 		public function __get_defaultResourcePath() { return $this->localResourcePath; }
 		public function __set_defaultResourcePath($value) { $this->localResourcePath = "{$value}"; }
