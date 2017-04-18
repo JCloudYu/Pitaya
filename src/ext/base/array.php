@@ -1,7 +1,4 @@
 <?php
-
-	using('ext.base.misc');
-
 	function ary_merge(&$ary1, $ary2)
 	{
 		$args = func_get_args();

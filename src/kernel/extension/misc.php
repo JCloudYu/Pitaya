@@ -110,4 +110,245 @@
 	}
 	// endregion
 	
+	// region [ Numeric Detection ]
+	function EXPR_NUMERIC($val) {
+		return EXPR_INT($val) || EXPR_FLOAT_DOT($val) || EXPR_FLOAT_SCIENCE($val);
+	}
+	function EXPR_INT($val) {
+		return (preg_match('/^[-+]{0,1}\d+$/', "{$val}") > 0);
+	}
+	function EXPR_UINT($val) {
+		return (preg_match('/^\d+$/', "{$val}") > 0);
+	}
+	function EXPR_FLOAT($val) {
+		return EXPR_FLOAT_DOT($val) || EXPR_FLOAT_SCIENCE($val);
+	}
+	function EXPR_FLOAT_DOT($val) {
+		return (preg_match('/^[-+]{0,1}((\d*\.\d+)|(\d+\.\d*))$/', "{$val}") > 0);
+	}
+	function EXPR_FLOAT_SCIENCE($val) {
+		return (preg_match('/^[-+]{0,1}((\d*\.\d+)|(\d+\.\d*))[eE][-+]{0,1}\d+$/', "{$val}") > 0);
+
+		/*
+		// INFO: Alternative implementation of science expression syntax detection
+		$parts = explode('e', strtolower("{$val}"));
+		if (count($parts) != 2) return FALSE;
+
+		return FLOAT_DOT_EXPR($parts[0]) && INT_EXPR($parts[1]);
+		*/
+	}
+	// endregion
 	
+	// region [ Type Casting ]
+	function CAST(...$args) {
+	
+		$value	 = @$args[0];
+		$type	 = @$args[1];
+		$filter  = @$args[2];
+		$default = @$args[3];
+	
+	
+	
+		$opt	= explode( ' ', strtolower(trim("{$type}")) );
+		$base	= @array_shift( $opt );
+		$nArgs	= count($args);
+
+		switch( $base )
+		{
+			// region int [strict] [no-casting]
+			/*
+			 *	CAST( $value, 'int strict no-casting', $default )
+			 */
+			case 'int':
+				$default = $filter;
+
+				$value = trim("$value");
+				$defaultVal = ($nArgs > 2) ? $default : 0;
+				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_INT" : "EXPR_NUMERIC";
+				$status = $procFunc($value);
+				
+				if ( in_array( 'positive', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && !( $str[0] == "-" );
+				}
+				else
+				if ( in_array( 'negative', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && ( $str[0] == "-" );
+				}
+
+				
+				if ( !$status )
+					return $defaultVal;
+				else
+					return ( in_array( 'no-casting', $opt ) ) ? $value : @intval($value);
+			// endregion
+
+			// region float [strict] [no-casting]
+			/*
+			 *	CAST( $value, 'float strict no-casting', $default )
+			 */
+			case 'float':
+				$default = $filter;
+				
+				$value = trim("$value");
+				$defaultVal = ($nArgs > 2) ? $default : 0.0;
+				$procFunc	= ( in_array('strict', $opt) ) ? "EXPR_FLOAT" : "EXPR_NUMERIC";
+				$status = $procFunc($value);
+				
+				if ( in_array( 'positive', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && !( $str[0] == "-" );
+				}
+				else
+				if ( in_array( 'negative', $opt ) )
+				{
+					$str = "{$value}";
+					$status = $status && ( $str[0] == "-" );
+				}
+
+				
+				if ( !$status )
+					return $defaultVal;
+				else
+					return ( in_array( 'no-casting', $opt ) ) ? $value : @floatval($value);
+			// endregion
+
+			// region string [force] [lower-case] [upper-case] [decode-url] [encode-url] [purge-html]
+			/*
+			 *	CAST( $value, 'string purge-html', $default )
+			 */
+			case 'string':
+				$default = $filter;
+
+				if ( !is_string( $value ) && ($nArgs > 2) && !in_array( 'force', $opt ) ) return $default;
+
+				$value = in_array( 'no-trim', $opt ) ? "{$value}" : trim("{$value}");
+
+				if (in_array('encode-url', $opt))
+					$value = urlencode($value);
+
+				if (in_array('decode-url', $opt))
+					$value = urldecode($value);
+
+				if (in_array('lower-case', $opt))
+					$value = strtolower($value);
+				else
+				if (in_array('upper-case', $opt))
+					$value = strtoupper($value);
+
+				if (in_array('purge-html', $opt))
+					$value = htmlspecialchars($value);
+
+				return $value;
+			// endregion
+
+			// region range [op-and] [op-or] [strict]
+			/*
+			 *	CAST( $value, 'range op-and op-or strict', array(...), $default );
+			 */
+			case 'range':
+				$defaultVal = ( $nArgs > 3 ) ? $default : NULL;
+
+				if ( !is_array( $filter ) )
+					return $defaultVal;
+
+
+				$booleanOperator = ( in_array( 'op-and', $opt ) ) ? IN_ARY_MODE_AND : IN_ARY_MODE_OR;
+				$strictTyping	 = ( in_array( 'strict', $opt ) ) ? IN_ARY_MODE_STRICT : IN_ARY_MODE_NONE_STRICT;
+				return in_ary( $value, $filter, $booleanOperator | $strictTyping ) ? $value : $defaultVal;
+			// endregion
+
+			// region array [purge-empty] [regex] [delimiter] [json]
+			/*
+			 *	CAST( $value, 'array', $default ) // TYPING MODE
+			 *	CAST( $value, 'array regex', $pattern, $default )	// SPLIT MODE
+			 *	CAST( $value, 'array delimiter', $pattern, $default )	// SPLIT MODE
+			 */
+			case 'array':
+				$typingOptions	= array( 'delimiter', 'regex' );
+				$typingMode		= (CAST( $typingOptions, 'range', $opt ) === NULL);
+
+				if ( $typingMode === NULL )	// INFO: TYPING MODE
+					$defaultVal = ($nArgs > 2) ? $filter : array();
+				else						// INFO: SPLIT MODE
+					$defaultVal = ($nArgs > 3) ? $filter : array();
+
+
+
+				if ( trim("{$value}") === "" ) return $defaultVal;
+
+
+
+				if ( is_array($value) )
+					$converted = $value;
+				else
+				if ( in_array( 'delimiter', $opt ) )
+					$converted = @explode( "{$filter}", "{$value}" );
+				else
+				if ( in_array( 'regex', $opt ) )
+					$converted = @preg_split( "{$filter}", "{$value}" );
+				else
+					$converted = $defaultVal;
+
+				return ( in_array( 'purge-empty', $opt ) && is_array($converted) && (count($converted) == 0) ) ? $defaultVal : $converted;
+			// endregion
+
+			// region time [format]
+			/*
+			 *	CAST( $val, 'time', $default )					// Epoch Mode
+			 *	CAST( $val, 'time format', $format, $default )	// Format Text Mode
+			 *	CAST( $val, 'time parse', $format, $default )	// Get time from format
+			 */
+			case 'time':
+				// Parse time according to format
+				if ( in_array( 'parse', $opt ) )
+				{
+					$dateObj = date_create_from_format( "{$filter}", "{$value}" );
+					if ( $dateObj === FALSE )
+						return $nArgs > 3 ? $default : -1;
+					
+					return (in_array( 'get-object', $opt )) ? $dateObj : $dateObj->getTimestamp();
+				}
+			
+			
+			
+				// INFO: Automatically parse time from string
+				$val	= strtotime(trim("{$value}"));
+				$fmtErr	= ($val === FALSE || $val < 0);
+
+				// INFO: Format Text Mode
+				if ( in_array( 'format', $opt ) )
+				{
+					if ( $fmtErr && ($nArgs > 3) )
+						return $default;
+					else
+						return date( "{$filter}", ($fmtErr) ? 0 : $val );
+				}
+
+				// INFO: Epoch Mode
+				$defaultVal = ($nArgs > 2) ? $filter : 0;
+				return $fmtErr ? $defaultVal : $val;
+			// endregion
+
+			// region bool [is-true] [is-false]
+			case 'boolean':
+			case 'bool':
+				if (in_array('is-true', $opt))
+					return ($value === TRUE);
+				else
+				if (in_array('is-false', $opt))
+					return !($value === FALSE);
+				else
+					return !(empty($value));
+			// endregion
+
+			case 'raw':
+			default:
+				return $value;
+		}
+	}
+	// endregion
