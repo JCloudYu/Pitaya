@@ -1,8 +1,7 @@
 <?php
 	using( 'sys.tool.PBHTML' );
 
-	class PBHttpOutputCtrl extends PBModule {
-	
+	class PBHttpOutput extends PBModule {
 		protected static $_statusCode = NULL;
 		public static function StatusCode( $code ) {
 			self::$_statusCode = CAST( $code, 'int strict', NULL );
@@ -54,7 +53,9 @@
 			}
 		}
 	}
-	class PBHtmlOutput extends PBHttpOutputCtrl {
+	class_alias( 'PBHttpOutput', 'PBHttpOutputCtrl' );
+	
+	class PBHtmlOutput extends PBHttpOutput {
 		
 		public function execute( $chainData ) {
 		
@@ -149,7 +150,7 @@
 
 
 
-			PBHttpOutputCtrl::ContentType( "text/html" );
+			PBHttpOutput::ContentType( "text/html" );
 			parent::execute( "<!DOCTYPE html><html {$htmlAttr}><head>{$metaTag}{$header}{$js['file prepend']}{$js['prepend']}{$css['file']}{$css['inline']}</head><body {$bodyAttr}>{$contentWrapper}{$js['append']}{$js['file append']}{$js['last']}</body></html>" );
 		}
 		
@@ -373,7 +374,7 @@
 		}
 		// endregion
 	}
-	class PBAJAXOutput extends PBHttpOutputCtrl {
+	class PBAJAXOutput extends PBHttpOutput {
 	
 		const STATUS_WARNING	=  1;
 		const STATUS_NORMAL		=  0;
@@ -410,15 +411,15 @@
 			return $ajaxReturn;
 		}
 	}
-	class PBJSONOutput extends PBHttpOutputCtrl {
+	class PBJSONOutput extends PBHttpOutput {
 		public function execute( $chainData ) {
-			PBHttpOutputCtrl::ContentType( "application/json" );
+			PBHttpOutput::ContentType( "application/json" );
 			parent::execute(json_encode(
 				self::$_outputData ?: $chainData
 			));
 		}
 	}
-	class PBTemplateOutput extends PBHttpOutputCtrl {
+	class PBTemplateOutput extends PBHttpOutput {
 		public function execute( $chainData ) {
 			$template = PBTmplRenderer::Tpl( @$this->data->tmplName, @$this->data->tmplPath );
 			unset( $this->data->initData );
