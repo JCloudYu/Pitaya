@@ -33,6 +33,10 @@
 				})
 			);
 		}
+		public function accept( $acceptList = [], $glue = '#' ) {
+			$currentScope = $this->breadcrumb( $glue );
+			return in_array($currentScope, $acceptList);
+		}
 		public function __toString() { return $this->breadcrumb(); }
 	}
 	class_alias( 'PBScope', 'PBScopeTracer', FALSE );

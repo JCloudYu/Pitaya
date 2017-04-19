@@ -17,7 +17,7 @@
 				return $this;
 			}
 			else {
-				return $this->format($format);
+				return parent::format($format);
 			}
 		}
 		
