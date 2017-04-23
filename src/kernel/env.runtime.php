@@ -12,8 +12,7 @@
 		}, E_WARNING );
 	});
 
-	s_define( '__DEBUG_CONSOLE_WIDTH__', 200, TRUE );
-	s_define( '__DEBUG_FORCE_LOG_POSITION__', FALSE, TRUE );
+	s_define( '__DEBUG_CONSOLE_WIDTH__',		200, TRUE );
 
 	// INFO: Parse System Arguments
 	call_user_func(function() {
@@ -59,7 +58,7 @@
 		if ( !defined('__DEBUG_MODE__') )
 		{
 			$ENV_DEBUG_MODE = IS_POSITIVE( @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_DEBUG_MODE'] );
-			define( '__DEBUG_MODE__', $ENV_DEBUG_MODE || FALSE);
+			define( '__DEBUG_MODE__', $ENV_DEBUG_MODE || FALSE );
 		}
 
 
@@ -68,10 +67,11 @@
 		if ( !defined('__THROW_EXCEPTION__') )
 		{
 			$ENV_THROW_EXCEPTION = IS_POSITIVE( @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_THROW_EXCEPTION'] );
-			define( '__THROW_EXCEPTION__', $ENV_THROW_EXCEPTION || FALSE);
+			define( '__THROW_EXCEPTION__', $ENV_THROW_EXCEPTION || FALSE );
 		}
 
 
-		if ( !defined('__LOG_EXCEPTION__') )
+		if ( !defined('__LOG_EXCEPTION__') ) {
 			define( '__LOG_EXCEPTION__', TRUE );
+		}
 	});

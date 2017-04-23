@@ -188,7 +188,7 @@
 
 
 
-			$width = ( defined('__DEBUG_CONSOLE_WIDTH__') ) ? intval(__DEBUG_CONSOLE_WIDTH__) : 0;
+			$width = intval(__DEBUG_CONSOLE_WIDTH__);
 
 			$out = '';
 			if($forHTML)
