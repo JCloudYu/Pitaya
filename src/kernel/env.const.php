@@ -1,9 +1,4 @@
 <?php
-	/**
-	 ** 1028.CSMS-BDF - env.const.php
-	 ** Created by JCloudYu on 2015/11/20 15:29
-	 **/
-
 	call_user_func(function(){
 		s_define( 'KEEP_PHP_ENVIRONMENTAL_VARIABLES', FALSE, TRUE, FALSE );
 
