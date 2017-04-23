@@ -35,5 +35,9 @@
 		return $backtrace[2]['class'];
 	}
 	function IS_POSITIVE( $value ) {
-		return in_array( strtolower( @"{$value}" ), array( '1', 'yes', 'on', 'true' ));
+		static $CANDIDATES = [ TRUE, '1', 'yes', 'on', 'true' ];
+		if ( is_string($value) ) {
+			$value = strtolower($value);
+		}
+		return in_array( $value, $CANDIDATES, TRUE );
 	}

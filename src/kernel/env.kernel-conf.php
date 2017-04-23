@@ -57,14 +57,51 @@
 	}
 	
 	if ( !defined( 'PITAYA_STANDALONE_EXECUTION_MODE' ) ) define( 'PITAYA_STANDALONE_EXECUTION_MODE', FALSE );
-	// endregion
 	
-	// INFO: Change current working environment space root
-	chdir( ROOT );
+	chdir( ROOT ); // INFO: Change working directory to space root
+	// endregion
+	// region [ Parse Command Line System Arguments ]
+	call_user_func(function() {
+		$conf = array();
+		$argv = $_SERVER['argv'];
+
+		$RUN = TRUE;
+		do
+		{
+			switch ( @"{$argv[0]}" )
+			{
+				case "--timezone":
+				case "-tz":
+					array_shift($argv);
+					$TZ = @array_shift($argv);
+
+					if ( empty($TZ) )
+					{
+						error_log("-tz option must be followed with timezone identifier!");
+						Termination::WITH_STATUS(Termination::STATUS_INCORRECT_USAGE);
+					}
+
+					$conf['TZ'] = $TZ;
+					break;
+
+				default:
+					$RUN = $RUN && FALSE;
+			}
+		}
+		while( $RUN );
+
+
+
+		$_SERVER['argv'] = $GLOBALS['RUNTIME_ARGV'] = $argv;
+		$_SERVER['argc'] = $GLOBALS['RUNTIME_ARGC'] = count( $GLOBALS['RUNTIME_ARGV'] );
+
+		$GLOBALS['RUNTIME_CONF'] = $conf;
+	});
+	// endregion
+
+	
 
 
 
 	// DEPRECATED: __WEB_ROOT__ constant will be removed in 2.5.0
 	define( '__WEB_ROOT__', ROOT, FALSE ); 
-
-	
