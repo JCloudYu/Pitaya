@@ -53,3 +53,86 @@
 		}
 	}
 	__PATH_RESOLVER::Initialize();
+
+
+
+
+
+
+	function path($referencingContext = '', $appendItem = '') {
+		$tokens = explode('.', $referencingContext);
+		$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+
+		foreach( $tokens as $token)
+			$completePath .= "/{$token}";
+
+		$appendItem = trim($appendItem);
+		return $completePath . (empty($appendItem) ? '' : "/{$appendItem}");
+	}
+	function using($referencingContext = '', $important = TRUE) {
+		static $registeredInclusions = array();
+		if ( func_num_args() == 1 && $referencingContext === TRUE ) return $registeredInclusions;
+
+		$tokens = explode('.', $referencingContext);
+		$tokens = array_reverse($tokens);
+
+		if ( isset($registeredInclusions[($referencingContext)]) )
+			return $registeredInclusions[($referencingContext)];
+
+		if($tokens[0] == '*')
+		{
+			array_shift($tokens);
+			$tokens = array_reverse($tokens);
+			$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+
+
+			foreach( $tokens as $token)
+				$completePath .= "/{$token}";
+			$completePath .= '/';
+
+			$dirHandle = file_exists($completePath) ? opendir($completePath) : NULL;
+
+			if($dirHandle === NULL && $important)
+				throw(new Exception("Cannot locate package: {$completePath}"));
+
+			if($dirHandle !== NULL)
+			while(($entry = readdir($dirHandle)) !== FALSE)
+			{
+				if($entry == '.' || $entry == '..') continue;
+				if(preg_match('/.*php$/', $entry) === 1)
+				{
+					$givenContainer = substr($referencingContext, 0, -2);
+					$validEntry = substr($entry, 0, -4);
+
+					if(isset($registeredInclusions[("$givenContainer.$validEntry")])) continue;
+
+					$targetPath = "$completePath/$entry";
+
+					$registeredInclusions[("$givenContainer.$validEntry")] = TRUE;
+
+					if($important) require($targetPath);
+					else include($targetPath);
+				}
+			}
+
+			$registeredInclusions[($referencingContext)] = $dirHandle !== NULL;
+		}
+		else
+		{
+			$tokens = array_reverse($tokens);
+			$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+
+			foreach( $tokens as $token)
+				$completePath .= "/{$token}";
+
+			$completePath .= '.php';
+
+			if(file_exists($completePath)) $registeredInclusions[($referencingContext)] = TRUE;
+			else $registeredInclusions[($referencingContext)] = FALSE;
+
+			if($important) require($completePath);
+			else @include($completePath);
+		}
+
+		return $registeredInclusions[($referencingContext)];
+	}
