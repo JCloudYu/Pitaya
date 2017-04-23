@@ -88,7 +88,8 @@
 		'createShare'	=> FALSE,
 		'createData'	=> FALSE,
 		'createLib'		=> FALSE,
-		'noBasis'		=> FALSE
+		'noBasis'		=> FALSE,
+		'releaseMode'	=> TRUE
 	];
 	
 	while( TRUE ) {
@@ -108,6 +109,10 @@
 			
 			case "-no-basis":
 				$options->noBasis = $options->noBasis || TRUE;
+				break;
+					
+			case "-debug":
+				$options->releaseMode = $options->releaseMode && FALSE;
 				break;
 			
 			

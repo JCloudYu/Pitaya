@@ -4,5 +4,11 @@
 		{ "root":"root/dir/name", "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false },
 		{ "root":"root/dir/name", "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false },
 		{ "basis":"relative/path/to/basis", "share":"relative/path/to/basis", "lib":false, "data":false }
+	],
+	"operations":[
+		{ "type":"link", "src":"source/path1", "dst":"destination/path1" },
+		{ "type":"copy", "src":"source/path2", "dst":"destination/path2" },
+		{ "mode":"release", "type":"copy", "src":"source/path3", "dst":"destination/path3" },
+		{ "mode":"debug",	"type":"link", "src":"source/path3", "dst":"destination/path3" }
 	]
 }
