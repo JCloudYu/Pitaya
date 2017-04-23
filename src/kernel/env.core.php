@@ -138,24 +138,51 @@
 	
 	// region [ Runtime Control APIs ]
 	final class DEBUG {
+		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
+		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
+	
 		private static $_silent = FALSE;
 		public static function Silent()	 { self::$_silent = TRUE; }
 		public static function Verbose() { self::$_silent = FALSE; }
-
-		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
-		public static function VarDumpParent(...$args) {
-			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
-		}
+		
 		public static function VarDump(...$args) {
 			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP));
 		}
-		public static function VarDumpParentString(...$args) {
-			return self::VDump($args, FALSE, TRUE);
+		public static function BackTrace($args = 0) {
+			if ( !DEBUG_BACKTRACE_ENABLED || self::IS_SILENT() ) return NULL;
+
+			$info = debug_backtrace($args);
+			$depth = count($info);
+
+			$adjusted = array();
+			for( $i=1; $i<$depth; $i++)
+			{
+				$adjusted[$i-1] = array();
+
+				$tmp = $info[$i];
+
+				$adjusted[$i-1]['file'] = $info[$i-1]['file'];
+				$adjusted[$i-1]['line'] = $info[$i-1]['line'];
+
+				$adjusted[$i-1]['function'] = $tmp['function'];
+
+				if(array_key_exists('class',  $tmp)) $adjusted[$i-1]['class']  = $tmp['class'];
+				if(array_key_exists('object', $tmp)) $adjusted[$i-1]['object'] = $tmp['object'];
+				if(array_key_exists('type',	  $tmp)) $adjusted[$i-1]['type']   = $tmp['type'];
+				if(array_key_exists('args',	  $tmp)) $adjusted[$i-1]['args']   = $tmp['args'];
+			}
+
+			$item = array_pop($info);
+			unset($item['class']);
+			unset($item['object']);
+			unset($item['type']);
+			unset($item['args']);
+			array_push($adjusted,$item);
+
+			return $adjusted;
 		}
-		public static function VarDumpString(...$args) {
-			return self::VDump($args, FALSE);
-		}
-		public static function VDump($args = array(), $forHTML = TRUE, $getParentPos = FALSE) {
+		
+		public static function VDump($args = array(), $forHTML = TRUE) {
 
 			if ( self::IS_SILENT() ) return '';
 
@@ -186,9 +213,6 @@
 				$locator = 2;
 			else
 				$locator = 1;
-
-			if($getParentPos)
-				$locator += 1;
 
 			$info = @$info[$locator];
 
@@ -241,8 +265,15 @@
 
 			return $out;
 		}
+		
+		
+		
+		
+		
+		
+		// region [ Deprecated ]
 		public static function JSLog($outStr) {
-
+			DEPRECATION_WARNING( "DEBUG::JSLog api is marked as deprecated and will be removed within the following versions!" );
 			if ( self::IS_SILENT() ) return;
 
 			if(!is_string($outStr))
@@ -250,40 +281,19 @@
 
 			echo "<script language='javascript'>console.log(".json_encode($outStr).");</script>";
 		}
-		public static function BackTrace($args = 0) {
-			if ( !DEBUG_BACKTRACE_ENABLED || self::IS_SILENT() ) return NULL;
-
-			$info = debug_backtrace($args);
-			$depth = count($info);
-
-			$adjusted = array();
-			for( $i=1; $i<$depth; $i++)
-			{
-				$adjusted[$i-1] = array();
-
-				$tmp = $info[$i];
-
-				$adjusted[$i-1]['file'] = $info[$i-1]['file'];
-				$adjusted[$i-1]['line'] = $info[$i-1]['line'];
-
-				$adjusted[$i-1]['function'] = $tmp['function'];
-
-				if(array_key_exists('class',  $tmp)) $adjusted[$i-1]['class']  = $tmp['class'];
-				if(array_key_exists('object', $tmp)) $adjusted[$i-1]['object'] = $tmp['object'];
-				if(array_key_exists('type',	  $tmp)) $adjusted[$i-1]['type']   = $tmp['type'];
-				if(array_key_exists('args',	  $tmp)) $adjusted[$i-1]['args']   = $tmp['args'];
-			}
-
-			$item = array_pop($info);
-			unset($item['class']);
-			unset($item['object']);
-			unset($item['type']);
-			unset($item['args']);
-			array_push($adjusted,$item);
-
-			return $adjusted;
+		public static function VarDumpParent(...$args) {
+			DEPRECATION_WARNING( "DEBUG::VarDumpParent api is marked as deprecated and will be removed within the following versions!" );
+			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
 		}
-		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
+		public static function VarDumpParentString(...$args) {
+			DEPRECATION_WARNING( "DEBUG::VarDumpParentString api is marked as deprecated and will be removed within the following versions!" );
+			return self::VDump($args, FALSE, TRUE);
+		}
+		public static function VarDumpString(...$args) {
+			DEPRECATION_WARNING( "DEBUG::VarDumpString api is marked as deprecated and will be removed within the following versions!" );
+			return self::VDump($args, FALSE);
+		}
+		// endregion
 	}
 	final class Termination {
 		const STATUS_SUCCESS			= 0;
