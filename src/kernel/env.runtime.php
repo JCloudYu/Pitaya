@@ -165,34 +165,6 @@
 		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
 	}
 
-	// INFO: Runtime control
-	final class Termination {
-		const STATUS_SUCCESS			= 0;
-		const STATUS_ERROR				= 1;
-		const STATUS_INCORRECT_USAGE	= 2;
-		const STATUS_NOT_AN_EXECUTABLE	= 126;
-		const STATUS_COMMAND_NOT_FOUND	= 127;
-		const STATUS_SIGNAL_ERROR		= 128;
-
-		private function __construct(){}
-
-		public static function NORMALLY() {
-			exit(self::STATUS_SUCCESS);
-		}
-		public static function ERROR() {
-			exit(self::STATUS_ERROR);
-		}
-		public static function WITH_STATUS( $errorCode )
-		{
-			$errorCode = abs($errorCode);
-
-			if ( $errorCode >= self::STATUS_SIGNAL_ERROR )
-				$errorCode = $errorCode % self::STATUS_SIGNAL_ERROR;
-
-			exit( $errorCode );
-		}
-	}
-
 	// INFO: Parse System Arguments
 	call_user_func(function() {
 		$conf = array();
@@ -253,34 +225,3 @@
 		if ( !defined('__LOG_EXCEPTION__') )
 			define( '__LOG_EXCEPTION__', TRUE );
 	});
-
-	// INFO: Error handling supportive apis
-	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
-		return $baseCode * $shift + $extensionCode;
-	}
-	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
-		return -PB_CODE($baseCode, $extensionCode, $shift);
-	}
-
-	function pb_metric(){
-		static $_prevTime = 0;
-		
-		$now = microtime(TRUE);
-		$memoryUsage = memory_get_usage();
-		$result = (object)[
-			'memory' => (object)[
-				'current' => $memoryUsage,
-				'peak'	  => memory_get_peak_usage(),
-				'diff'	  => $memoryUsage - (defined( 'PITAYA_METRIC_KERNEL_MEMORY' ) ? PITAYA_METRIC_KERNEL_MEMORY : 0)
-			],
-			'time' => (object)[
-				'now' => $now,
-				'dur' => $now - (defined( 'PITAYA_METRIC_BOOT_TIME' ) ? PITAYA_METRIC_BOOT_TIME : 0)
-			],
-			'diff' => $now - $_prevTime
-		];
-		
-		$_prevTime = $now;
-		return $result;
-	}
-	pb_metric();

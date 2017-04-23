@@ -1,4 +1,6 @@
 <?php
+	// region [ Core Path APIs ]
+	// region [ Core Path Resolver ]
 	final class __PATH_RESOLVER {
 		private static $_path_cache = [];
 		public static function Initialize() {
@@ -8,7 +10,7 @@
 			foreach( $GLOBALS['extPath'] as $identifier => $path )
 				self::$_path_cache[$identifier] = "{$path}";
 
-			// INFO: Attach pitaya root packages 
+			// INFO: Attach pitaya root packages
 			$list = scandir(PITAYA_ROOT);
 			foreach ($list as $dir) {
 				$absPath = PITAYA_ROOT . "/{$dir}";
@@ -53,12 +55,8 @@
 		}
 	}
 	__PATH_RESOLVER::Initialize();
-
-
-
-
-
-
+	// endregion
+	
 	function path($referencingContext = '', $appendItem = '') {
 		$tokens = explode('.', $referencingContext);
 		$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
@@ -136,3 +134,67 @@
 
 		return $registeredInclusions[($referencingContext)];
 	}
+	// endregion
+	
+	// region [ Runtime Control APIs ]
+	final class Termination {
+		const STATUS_SUCCESS			= 0;
+		const STATUS_ERROR				= 1;
+		const STATUS_INCORRECT_USAGE	= 2;
+		const STATUS_NOT_AN_EXECUTABLE	= 126;
+		const STATUS_COMMAND_NOT_FOUND	= 127;
+		const STATUS_SIGNAL_ERROR		= 128;
+
+		private function __construct(){}
+
+		public static function NORMALLY() {
+			exit(self::STATUS_SUCCESS);
+		}
+		public static function ERROR() {
+			exit(self::STATUS_ERROR);
+		}
+		public static function WITH_STATUS( $errorCode )
+		{
+			$errorCode = abs($errorCode);
+
+			if ( $errorCode >= self::STATUS_SIGNAL_ERROR )
+				$errorCode = $errorCode % self::STATUS_SIGNAL_ERROR;
+
+			exit( $errorCode );
+		}
+	}
+	
+	// region [ Supportive APIs ]
+	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
+		return $baseCode * $shift + $extensionCode;
+	}
+	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
+		return -PB_CODE($baseCode, $extensionCode, $shift);
+	}
+	// endregion
+	// endregion
+	
+	// region [ Performance Evaluation APIs ]
+	function pb_metric(){
+		static $_prevTime = 0;
+		
+		$now = microtime(TRUE);
+		$memoryUsage = memory_get_usage();
+		$result = (object)[
+			'memory' => (object)[
+				'current' => $memoryUsage,
+				'peak'	  => memory_get_peak_usage(),
+				'diff'	  => $memoryUsage - (defined( 'PITAYA_METRIC_KERNEL_MEMORY' ) ? PITAYA_METRIC_KERNEL_MEMORY : 0)
+			],
+			'time' => (object)[
+				'now' => $now,
+				'dur' => $now - (defined( 'PITAYA_METRIC_BOOT_TIME' ) ? PITAYA_METRIC_BOOT_TIME : 0)
+			],
+			'diff' => $now - $_prevTime
+		];
+		
+		$_prevTime = $now;
+		return $result;
+	}
+	pb_metric();
+	// endregion
