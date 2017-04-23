@@ -29,7 +29,7 @@
 	
 	require_once PITAYA_ROOT . '/kernel/env.native.php';
 	require_once PITAYA_ROOT . '/kernel/env.kernel-conf.php';
-	require_once PITAYA_ROOT . '/kernel/env.path.php';
+	require_once PITAYA_ROOT . '/kernel/env.core.php';
 	
 	require_once PITAYA_ROOT . '/kernel/env.runtime.php';
 	require_once PITAYA_ROOT . '/kernel/env.time.php';
