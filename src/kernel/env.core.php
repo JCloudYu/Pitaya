@@ -137,31 +137,6 @@
 	// endregion
 	
 	// region [ Runtime Control APIs ]
-	final class PBRuntime {
-		const IN_CLI_ENV		= IS_CLI_ENV;
-		const IN_HTTP_ENV		= IS_HTTP_ENV;
-		const IN_DEBUG_MODE		= __DEBUG_MODE__;
-		const IN_RELEASE_MODE	= !__DEBUG_MODE__;
-	
-	
-		public static function __ImprintEnvironment() {
-			static $_imprinted = FALSE;
-			if ( $_imprinted ) return;
-			
-			
-		}
-		
-		private static $_singleton = NULL;
-		public static function Initialize() {
-			if ( self::$_singleton !== NULL ) return;
-			self::$_singleton = self::$_singleton ?: new PBRuntime();
-		}
-		public static function Runtime() { return self::$_singleton; }
-		public function __construct() {}
-	}
-	function PBRuntime(){ return PBRuntime::Runtime(); }
-	PBRuntime::Initialize();
-	
 	final class DEBUG {
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
 		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
@@ -346,16 +321,30 @@
 			exit( $errorCode );
 		}
 	}
+	final class PBRuntime {
+		const IN_CLI_ENV		= IS_CLI_ENV;
+		const IN_HTTP_ENV		= IS_HTTP_ENV;
+		const IN_DEBUG_MODE		= __DEBUG_MODE__;
+		const IN_RELEASE_MODE	= !__DEBUG_MODE__;
 	
 	
-	// region [ Supportive APIs ]
-	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
-		return $baseCode * $shift + $extensionCode;
+		public static function __ImprintEnvironment() {
+			static $_imprinted = FALSE;
+			if ( $_imprinted ) return;
+			
+			
+		}
+		
+		private static $_singleton = NULL;
+		public static function Initialize() {
+			if ( self::$_singleton !== NULL ) return;
+			self::$_singleton = self::$_singleton ?: new PBRuntime();
+		}
+		public static function Runtime() { return self::$_singleton; }
+		public function __construct() {}
 	}
-	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
-		return -PB_CODE($baseCode, $extensionCode, $shift);
-	}
-	// endregion
+	function PBRuntime(){ return PBRuntime::Runtime(); }
+	PBRuntime::Initialize();
 	// endregion
 	
 	// region [ Performance Evaluation APIs ]
@@ -381,4 +370,13 @@
 		return $result;
 	}
 	pb_metric();
+	// endregion
+	
+	// region [ Runtime Supportive APIs ]
+	function PB_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ){
+		return $baseCode * $shift + $extensionCode;
+	}
+	function PB_ERROR_CODE( $baseCode, $extensionCode = 0, $shift = 1000000 ) {
+		return -PB_CODE($baseCode, $extensionCode, $shift);
+	}
 	// endregion
