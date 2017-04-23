@@ -160,6 +160,7 @@
 		public function __construct() {}
 	}
 	function PBRuntime(){ return PBRuntime::Runtime(); }
+	PBRuntime::Initialize();
 	
 	final class DEBUG {
 		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
