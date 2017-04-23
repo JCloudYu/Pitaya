@@ -12,7 +12,7 @@
 		}, E_WARNING );
 	});
 
-	s_define( '__DEBUG_CONSOLE_WIDTH__',		200, TRUE );
+	s_define( '__DEBUG_CONSOLE_WIDTH__', 350, TRUE );
 
 	// INFO: Setting Environmental Constants
 	call_user_func(function() {
