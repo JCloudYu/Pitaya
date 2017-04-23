@@ -54,6 +54,7 @@
 
 			
 			// store all environmental configurations
+			// ISSUE: $_SERVER[ 'argv' ] is containing nothing at this moment! Please refer to env.cleanup.php
 			$this->_incomingRecord['command']					= [ 'argc' => @$_SERVER['argc'], 'argv' => @$_SERVER['argv'] ];
 			$this->_incomingRecord['rawQuery']					= @$GLOBALS['rawRequest'];
 			
