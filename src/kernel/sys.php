@@ -152,14 +152,8 @@
 			$preprocessEnvPaths = [
 				path( 'root',	 'boot.php' ),
 				path( 'service', 'boot.php' ),
-				path( 'share',	 'boot.php' )
-			];	
-			$postprocessEnvPaths = [
-				path( 'root',	 'sys.php'),
-				path( 'root',	 'service.php'),
-				path( "service", 'common.php'),
-				path( 'share',	 'share.php' ),
-				PITAYA_STANDALONE_EXECUTION_MODE ? path( "working", "runtime.php" ): ""
+				path( 'share',	 'boot.php' ),
+				PITAYA_STANDALONE_EXECUTION_MODE ? path( 'working', 'boot.php' ) : ''
 			];
 			foreach ( $preprocessEnvPaths as $path ) {
 				if ( is_file($path) && is_readable($path) ) {
@@ -183,13 +177,7 @@
 
 
 			// INFO: Bring up the main process
-			$this->__forkProcess($this->_entryBasis, function() use(&$postprocessEnvPaths) {
-				foreach ( $postprocessEnvPaths as $path ) {
-					if ( is_file($path) && is_readable($path) ) {
-						require_once $path;
-					}
-				}
-			});
+			$this->__forkProcess($this->_entryBasis);
 		}
 		
 		private $_entryBasis		= NULL;
@@ -401,13 +389,12 @@
 		// region [ Process Control ]
 		/** @var PBProcess */
 		private $_process = NULL;
-		private function __forkProcess($service, $custInit = NULL) {
+		private function __forkProcess($service) {
 			if ( $this->_process ) return;
 			
 			
 			
 			$this->_process = new PBProcess( $this );
-			if ( is_callable($custInit) ) $custInit();
 
 			chdir( WORKING_ROOT );
 			$this->_process->attachMainService($service, $this->_entryBasisParam);
