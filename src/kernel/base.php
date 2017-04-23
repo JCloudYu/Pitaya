@@ -24,6 +24,7 @@
 	
 	
 	// INFO: Runtime configurations
+   @include_once ROOT . '/pitaya.php';
    @include_once ROOT . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
    @include_once ROOT . "/common.php";
 	
