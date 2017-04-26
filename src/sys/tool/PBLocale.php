@@ -20,14 +20,11 @@
 
 
 		
-		private $_curLocale 	= '';
-		private $_storedLocales = array();
+		private $_curLocale 	= FALSE;
+		private $_storedLocales = [];
 		public function __construct() {
 			$this->_basePackage = self::$_sharedBasePackage;
 			$this->_localeLibPath = path($this->_basePackage);
-			
-			$this->_curLocale = 'default';
-			$this->_storedLocales = array();
 		}
 
 
@@ -44,16 +41,15 @@
 			return $this->_curLocale;
 		}
 		public function __set_locale($value) {
-			$this->_curLocale = empty($value) ? 'default' : "{$value}";
-			if ( !empty($this->_storedLocales[$this->_curLocale]) ) return;
-
-
-
-			$localePath	= "{$this->_localeLibPath}/{$this->_curLocale}/locale.php";
+			$localeName = "{$value}";
+			if ( empty($localeName) ) return;
+			if ( !empty($this->_storedLocales[$localeName]) ) return;
+			
+			$localePath	= "{$this->_localeLibPath}/{$localeName}/locale.php";
 			if ( !is_file($localePath) || !is_readable($localePath) ) return;
 			
 			
-			
+			$this->_curLocale = $localeName;
 			$locale	= PBScriptCtrl::Imprint( $localePath );
 			$locale	= array_key_exists( 'locale', $locale ) ? $locale['locale'] : [];
 			$this->_storedLocales[$this->_curLocale] = $locale;
@@ -65,12 +61,16 @@
 			return TRUE;
 		}
 		public function offsetUnset($offset) {
+			if ( $this->_curLocale === FALSE ) return;
 			unset($this->_storedLocales[$this->_curLocale][$offset]);
 		}
 		public function offsetSet($offset, $value) {
+			if ( $this->_curLocale === FALSE ) return;
 			$this->_storedLocales[$this->_curLocale][$offset] = $value;
 		}
 		public function offsetGet($offset) {
+			if ( $this->_curLocale === FALSE ) return $offset;
+			
 			if ( is_array($this->_storedLocales[$this->_curLocale][ $offset ]) )
 				return $this->_storedLocales[$this->_curLocale][ $offset ];
 			return @strtr($offset, $this->_storedLocales[$this->_curLocale] ?: []);
