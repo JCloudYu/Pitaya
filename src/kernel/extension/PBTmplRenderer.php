@@ -11,10 +11,11 @@
 	
 		private $_tplBasePath = "";
 		private $_tplName = "";
+		private $_identity = '';
 		private function __construct( $tmplName, $basePath ) {
 			$this->_tplBasePath = $basePath ?: self::$_tplPath ?: path( 'defaults.templates' );
-			$this->_tplName = $tmplName;
-			$this->_variables[ 'tmplId' ] = UUID();
+			$this->_tplName	 = $tmplName;
+			$this->_identity = UUID();
 		}
 		public function __toString() { return $this(); }
 		public function __invoke( $output = FALSE ) {
@@ -23,7 +24,7 @@
 			if (!$output) ob_start();
 			$results = self::Render( $scriptPath, data_merge(
 				$this->_variables,
-				[ 'identity' => $this->_identity ]
+				[ 'tmplId' => $this->_identity ]
 			));
 			data_fuse( $this->_variables, $results );
 			return (!$output) ? ob_get_clean() : "";
@@ -34,7 +35,7 @@
 			$this->_variables[ $name ] = $value;
 		}
 		public function &__get($name) {
-			return $this->_variables[$name];
+			return ($name == "tmplId") ? $this->_identity : $this->_variables[$name];
 		}
 		
 		private static function Render( $scriptPath, $variables = []) {
