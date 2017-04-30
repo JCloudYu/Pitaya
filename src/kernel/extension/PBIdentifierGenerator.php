@@ -2,7 +2,7 @@
 	class PBIdentifierGenerator {
 		const NIL = "00000000-0000-0000-0000-000000000000";
 		public static function UUIDv3($namespace, $name) {
-			if (!self::is_valid($namespace)) return false;
+			if (!self::IsValidUUID($namespace)) return FALSE;
 			
 			// Get hexadecimal components of namespace
 			$nhex = str_replace(array('-', '{', '}'), '', $namespace);
@@ -59,7 +59,7 @@
 			);
 		}
 		public static function UUIDv5($namespace, $name) {
-			if (!self::is_valid($namespace)) return false;
+			if (!self::IsValidUUID($namespace)) return FALSE;
 			
 			// Get hexadecimal components of namespace
 			$nhex = str_replace(array('-', '{', '}'), '', $namespace);
