@@ -32,6 +32,8 @@
 	define( 'SOURCE_PROJECT_PATH', $projPath = getcwd() );
 	
 	
+	@require_once COMMAND_DIR . "/boot-process-operations.php";
+	
 	if ( !empty($top->spaces) ) {
 		if ( !is_array($top->spaces) ) {
 			fwrite( STDERR,  "spaces field must be an array!" . PHP_EOL );
@@ -72,87 +74,7 @@
 	
 	
 	
-	const OPERATION_ACCEPTED_TYPES = [ 'link', 'copy' ];
-	if ( is_array(@$top->operations) ) {
-		foreach( $top->operations as $opDesc ) {
-			if ( !in_array($opDesc->type, OPERATION_ACCEPTED_TYPES) )
-				continue;
-		
-			if ( property_exists($opDesc, 'mode') ) {
-				if ( $options->releaseMode ) {
-					if ( $opDesc->mode != "release" )
-						continue;
-				}
-				else {
-					if ( $opDesc->mode != "debug" )
-						continue;
-				}
-			}
-		
-			$source = SOURCE_PROJECT_PATH . "/{$opDesc->src}";
-			if ( !file_exists($source) ) {
-				fwrite(STDERR, "Source {$source} doesn't exist!" . PHP_EOL);
-				continue;
-			}
-			
-			$dest = ESTABLISHED_PATH . "/{$opDesc->dst}";
-			if ( file_exists($dest) ) {
-				$dest = realpath($dest);
-				fwrite(STDERR, "File exists at {$dest}! Please remove it manually!" . PHP_EOL);
-				continue;
-			}
-			
-			$source = realpath($source);
-			
-			
-			
-			if ( $opDesc->type == "link" ) {
-				CreateLink( $source, $dest );
-			}
-			else {
-				@mkdir( $dest, 0777, TRUE );
-				
-				if ( is_dir($source) ) {
-					FS::CopyDir($source, $dest);
-				}
-				else {
-					$fileName = basename($source);
-					copy( $source, "{$dest}/{$fileName}" );
-				}
-			}
-		}
-	}
-	else
-	if ( is_array(@$top->copy) ) {
-		foreach( $top->copy as $copyDesc ) {
-			$source = SOURCE_PROJECT_PATH . "/{$copyDesc->src}";
-			if ( !file_exists($source) ) {
-				fwrite(STDERR, "Source {$source} doesn't exist!" . PHP_EOL);
-				continue;
-			}
-			
-			$dest = ESTABLISHED_PATH . "/{$copyDesc->dst}";
-			if ( file_exists($dest) ) {
-				$dest = realpath($dest);
-				fwrite(STDERR, "File exists at {$dest}! Please remove it manually!" . PHP_EOL);
-				continue;
-			}
-			
-			$source = realpath($source);
-			
-			
-			
-			@mkdir( $dest, 0777, TRUE );
-			
-			if ( is_dir($source) ) {
-				FS::CopyDir($source, $dest);
-			}
-			else {
-				$fileName = basename($source);
-				copy( $source, "{$dest}/{$fileName}" );
-			}
-		}
-	}
+	
 	
 	
 	
