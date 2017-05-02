@@ -148,7 +148,7 @@
 		
 		private $_entryModule	= NULL;
 		private $_mainModuleId = NULL;
-		public function attachMainService($moduleName, $initData = NULL) {
+		public function attachMainService( $entryModule, $initData = NULL ) {
 	
 			if ( defined('LEADING_MODULE') ) {
 				$moduleNames = (is_array(LEADING_MODULE) ? LEADING_MODULE : [ LEADING_MODULE ]);
@@ -164,7 +164,7 @@
 	
 	
 			// NOTE: Service Entry Module
-			$this->_entryModule = PBModule( $moduleName, TRUE );
+			$this->_entryModule = PBModule( $entryModule, TRUE );
 			$this->_mainModuleId = $this->_entryModule->id;
 			$this->_entryModule->data->initData = $initData;
 			PBLList::PUSH( $this->_bootSequence, [
