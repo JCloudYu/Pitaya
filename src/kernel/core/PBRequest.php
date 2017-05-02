@@ -306,6 +306,30 @@
 			$netRequestTime = @$this->_incomingRecord['environment']['server']['REQUEST_TIME'];
 			return empty($netRequestTime) ? PITAYA_BOOT_TIME : $netRequestTime;
 		}
+		public function __get_httpServer() {
+			static $_cache = NULL;
+			if ( $_cache ) return $_cache;
+			
+			$serverInfo = strtolower("{$this->_incomingRecord[ 'environment' ][ 'server' ][ 'SERVER_SOFTWARE' ]}");
+			$divider = strpos( $serverInfo, '/' );
+			$_cache = ( $divider === FALSE ) ? $serverInfo : substr($serverInfo, 0, $divider);
+			return $_cache;
+		}
+		public function __get_httpServerInfo() {
+			static $_cache = NULL;
+			if ( $_cache ) return $_cache;
+			
+			$serverInfo = strtolower("{$this->_incomingRecord[ 'environment' ][ 'server' ][ 'SERVER_SOFTWARE' ]}");
+			$divider = strpos( $serverInfo, ' ' );
+			if ( $divider !== FALSE ) {
+				$serverInfo = substr( $serverInfo, 0, $divider );
+			}
+			
+			
+			list($name, $version) = explode( '/', $serverInfo );
+			$_cache = stdClass([ 'server' => $name, 'version' => $version ]);
+			return (clone $_cache);
+		}
 		
 		private $_contentType = NULL;
 		public function __get_contentType() {

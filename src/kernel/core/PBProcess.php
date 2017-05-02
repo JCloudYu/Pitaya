@@ -150,14 +150,15 @@
 		private $_mainModuleId = NULL;
 		public function attachMainService($moduleName, $initData = NULL) {
 	
-			// NOTE: Leading Module
-			if ( defined('LEADING_MODULE') )
-			{
-				$module = PBModule( LEADING_MODULE, TRUE );
-				$moduleId = $module->id;
-				PBLList::PUSH( $this->_bootSequence, [
-					'id' => $moduleId
-				], $moduleId );
+			if ( defined('LEADING_MODULE') ) {
+				$moduleNames = (is_array(LEADING_MODULE) ? LEADING_MODULE : [ LEADING_MODULE ]);
+				foreach( $moduleNames as $moduleName ) {
+					$module = PBModule( $moduleName, TRUE );
+					$moduleId = $module->id;
+					PBLList::PUSH( $this->_bootSequence, [
+						'id' => $moduleId
+					], $moduleId );
+				}
 			}
 	
 	
@@ -172,14 +173,15 @@
 	
 	
 	
-			// NOTE: Tailing Module
-			if ( defined('TAILING_MODULE') )
-			{
-				$module = PBModule(TAILING_MODULE, TRUE);
-				$moduleId = $module->id;
-				PBLList::PUSH( $this->_bootSequence,  [
-					'id' => $moduleId
-				], $moduleId );
+			if ( defined('TAILING_MODULE') ) {
+				$moduleNames = (is_array(TAILING_MODULE) ? TAILING_MODULE : [ TAILING_MODULE ]);
+				foreach( $moduleNames as $moduleName ) {
+					$module = PBModule( $moduleName, TRUE );
+					$moduleId = $module->id;
+					PBLList::PUSH( $this->_bootSequence, [
+						'id' => $moduleId
+					], $moduleId );
+				}
 			}
 			
 			
