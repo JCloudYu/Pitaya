@@ -1,8 +1,12 @@
 <?php
 	// region [ Fusion two data ]
 	function &data_fuse(&$data1, $data2, $overwrite = TRUE){
+		if ( !is_array($data1) && !is_object($data1) ) return $data1;
+		if ( !is_array($data2) && !is_object($data2) ) return $data1;
+	
+	
 		$targetIsObj = is_object($data1);
-		foreach ( $data2 as $field => $value ) {
+		foreach( $data2 as $field => $value ) {
 			if ($targetIsObj)
 			{
 				if ( !property_exists( $data1, $field ) || $overwrite )
