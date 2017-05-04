@@ -279,7 +279,7 @@
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
 			
-			if ( !empty($additional[ 'fetch-anchor' ]) )
+			if ( empty($additional[ 'collect' ]) )
 				return $cursor;
 			else
 			{
@@ -324,7 +324,7 @@
 				'cursor'	=> (object)[]
 			]));
 			
-			if ( !empty($additional[ 'fetch-anchor' ]) )
+			if ( empty($additional[ 'collect' ]) )
 				return $cursor;
 			else
 			{
