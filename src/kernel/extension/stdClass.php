@@ -14,9 +14,3 @@
 		
 		return $force ? new stdClass() : NULL;
 	}
-	
-	if ( !function_exists( 'object' ) ) {
-		function object($item = NULL, $force = FALSE) {
-			return call_user_func_array( 'stdClass', func_get_args() );
-		}
-	}
