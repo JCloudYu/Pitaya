@@ -61,12 +61,21 @@
 			return $this->chain;
 		}
 		
+		
 		protected $error = NULL;
 		public function __get_error() {
 			return $this->error;
 		}
 	}
-
+	
+	/**
+	 * @param $moduleName
+	 * @param bool $reusable
+	 * @param bool $noThrow
+	 * @return PBModule|null
+	 * @throws Exception
+	 * @throws PBException
+	 */
 	function PBModule( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
 		static $_attachedModule = [];
 		
