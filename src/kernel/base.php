@@ -47,6 +47,11 @@
 	using( 'kernel.sys' );
 	using( 'kernel.experimental.*' );
 	
+	s_define( 'PITAYA_ADD_SUPPORTIVE_LIB', TRUE, TRUE, FALSE );
+	if ( PITAYA_ADD_SUPPORTIVE_LIB ) {
+		using( 'kernel.supportive.*' );
+	}
+	
 	
 	
 	require_once PITAYA_ROOT . "/kernel/env.cleanup.php";	
