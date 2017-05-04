@@ -135,11 +135,22 @@
 			PBLList::HEAD($this->_bootSequence);
 			do
 			{
-				$module  = PBModule(@$this->_bootSequence->data[ 'id' ]);
+				$processed = @$this->_bootSequence->data[ 'processed' ] ?: FALSE;
+				$module = PBModule(@$this->_bootSequence->data[ 'id' ]);
+				if ( !$processed ) {
+					$this->_bootSequence->data[ 'processed' ] = TRUE;
+					$prerequisites = $module->precondition();
+					if ( is_array($prerequisites) && count($prerequisites) > 0 ) {
+						$this->_prependBootSequence($prerequisites);
+						$module = PBModule(@$this->_bootSequence->data[ 'id' ]);
+					}
+				}
+				
+				
 				$request = @$this->_bootSequence->data[ 'request' ];
 				if ( !property_exists($module->data, "initData") )
 					$module->data->initData = $request;
-		
+				
 				$dataInput = $module->execute( $dataInput, $request );
 				$this->_appendBootSequence( $module->bootChain );
 			}
@@ -190,6 +201,35 @@
 			PBLinkedList::HEAD($this->_bootSequence);
 		}
 		
+		private function _prependBootSequence( $bootSequence ) {
+			if ( !is_array( $bootSequence )) return;
+	
+	
+			$bootSequence = array_reverse( $bootSequence );
+			foreach( $bootSequence as $illustrator ) {
+				if (is_a($illustrator, stdClass::class)) {
+					$illustrator = (array)$illustrator;
+				}
+	
+				if (!is_array($illustrator)) {
+					$illustrator = [ 'module' => $illustrator ];
+				}
+				
+				
+					
+				$moduleHandle = @$illustrator[ 'module' ];
+				if ( empty($moduleHandle) ) continue; // Skipping empty values
+	
+				$reuse = array_key_exists( 'reuse', $illustrator ) ? !empty($illustrator['reuse'] ) : TRUE;
+				$moduleId = PBModule( $moduleHandle, $reuse )->id;
+				
+	
+				PBLList::BEFORE( $this->_bootSequence,  [
+					'id' => $moduleId, 'request' => @$illustrator[ 'request' ]
+				], $moduleId );
+				PBLList::PREV($this->_bootSequence);
+			}
+		}
 		private function _appendBootSequence( $bootSequence ) {
 			if ( !is_array( $bootSequence )) return;
 	

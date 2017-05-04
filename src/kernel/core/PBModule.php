@@ -1,5 +1,6 @@
 <?php
 	abstract class PBModule extends PBObject {
+		public function precondition() { return []; }
 		public function execute( $chainData ) {
 			return $chainData;
 		}
