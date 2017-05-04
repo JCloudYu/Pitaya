@@ -1,7 +1,7 @@
 <?php
 	using( 'sys.db.ExtPDO' );
 
-	class PBMySQLSource extends PBIDataSource {
+	final class PBMySQLSource extends PBIDataSource {
 	
 		private $_pdoConnection = NULL;
 
@@ -32,7 +32,7 @@
 
 
 
-		public function get( $dataNS, $filter, &$additional = [] ) {
+		public function get( $dataNS, $filter, $additional = [] ) {
 			
 		}
 		public function insert( $dataNS, $insertData, $additional = [] ) {
@@ -58,7 +58,7 @@
 		public function count( $dataNS, $filter ) {
 
 		}
-		public function range( $dataNS, $filter, &$additional = [] ) {
+		public function range( $dataNS, $filter, $additional = [] ) {
 
 		}
 		
