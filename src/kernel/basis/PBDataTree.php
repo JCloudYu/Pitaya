@@ -31,10 +31,10 @@
 				return PBDataTree($this->_anchor->{$name});
 			}
 			
-			return $this->_anchor->{$name};
+			return @$this->_anchor->{$name};
 		}
 		public function __set($name, $value) {
-			$this->_anchor->{$name} = $value;
+			@$this->_anchor->{$name} = $value;
 		}
 		public function __unset($name) {
 			unset($this->_anchor->{$name});
