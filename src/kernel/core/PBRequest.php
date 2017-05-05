@@ -439,7 +439,7 @@
 			}
 
 			$func = is_callable($processor) ? $processor : 'PBRequest::DEFAULT_QUERY_PARSER';
-			$result = $func($this->_incomingRecord['request']['query']);
+			$result = call_user_func($func, $this->_incomingRecord['request']['query']);
 			$this->_parsedQuery = @$result['data'];
 			$this->_queryVariable = @$result['variable'];
 			$this->_queryFlag = @$result['flag'];
