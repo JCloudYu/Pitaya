@@ -1,5 +1,5 @@
 <?php
-	function _R( $route ) {
+	function _R( $route = NULL ) {
 		static $_singleton = NULL;
 		if ( $_singleton === NULL ) {
 			$_singleton = new PBDataTree();
