@@ -5,14 +5,10 @@
 			return $chainData;
 		}
 		public function __invoke() {
-			$arguments = func_get_args();
-		
-			$args = [
-				@array_shift($arguments),
-				@array_shift($arguments),
-			];
-			$args = array_merge($args, $arguments);
-			return call_user_func_array( [ $this, 'execute' ], $args );
+			$args = func_get_args();
+			return call_user_func_array(
+				[ $this, 'execute' ], @array_shift($args), ...$args
+			);
 		}
 		public function __toString() {
 			return "{$this( NULL, NULL )}";
