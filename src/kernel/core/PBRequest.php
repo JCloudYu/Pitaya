@@ -764,7 +764,7 @@
 			
 			return [ 'data' => $targetData, 'variable' => [], 'flag' => [] ];
 		}
-		public static function DATA_PARSER_JSON( $ref ) {
+		public static function DATA_PARSER_JSON( $ref, $typeOpt ) {
 			$stream		= fopen( "php://input", 'rb' );
 			$targetData = stream_get_contents($stream);
 			fclose($stream);
@@ -772,7 +772,7 @@
 			
 			
 			$depth		= intval(@$param['depth']);
-			$inconiming	= json_decode( $targetData, $forceAssocArray, ($depth <= 0) ? 512 : $depth );
+			$inconiming	= json_decode( $targetData, in_array( 'force-array', $typeOpt ), ($depth <= 0) ? 512 : $depth );
 			
 			return [ 'data' => $inconiming, 'variable' => $inconiming, 'flag' => [] ];
 		}
