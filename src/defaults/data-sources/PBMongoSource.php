@@ -273,7 +273,7 @@
 		
 		
 		const INTERNAL_GET_OPTIONS = [ "page", "pageSize", "pageAmt", "total", 'order' ];
-		private function getQuery( $dataNS, $filter, stdClass $additional ) {
+		private function& getQuery( $dataNS, $filter, stdClass $additional ) {
 			$dataNS = $this->CastName($dataNS);
 		
 			$queryOpt = [];
@@ -295,15 +295,9 @@
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
-			
-			if ( empty($additional->collect) ) {
-				return $cursor;
-			}
-			else {
-				return PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' );
-			}
+			return empty($additional->collect) ? $cursor : self::__COLLECT_DATA($cursor);
 		}
-		private function getAggregate( $dataNS, $baseQuery, stdClass $additional ) {
+		private function& getAggregate( $dataNS, $baseQuery, stdClass $additional ) {
 			$dataNS = $this->CastName($dataNS);
 			
 			$aggregation = $queryOpt = [];
@@ -339,12 +333,7 @@
 				'cursor'	=> (object)[]
 			]));
 			
-			if ( empty($additional->collect) ) {
-				return $cursor;
-			}
-			else {
-				return PBIDataSource::CollectData( $cursor, 'PBMongoSource::MongoCollect' );
-			}
+			return empty($additional->collect) ? $cursor : self::__COLLECT_DATA($cursor);
 		}
 		private function countAggregate( $dataNS, $baseAggregation ) {
 			$dataNS = $this->CastName($dataNS);
@@ -379,6 +368,14 @@
 		}
 		public static function ObjectID( $hexStr = NULL ){
 			return MongoID( $hexStr );
+		}
+		
+		private static function& __COLLECT_DATA( $iterator ) {
+			$data = [];
+			foreach( $iterator as $record ) {
+				$data[] = $record;
+			}
+			return $data;
 		}
 	}
 	

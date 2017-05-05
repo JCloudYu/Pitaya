@@ -99,26 +99,6 @@
 		abstract public function supportive();
 		abstract public function aggregate( $dataNS, $aggregations = [] );
 
-
-
-		// INFO: Supportive APIs
-		public static function CollectData( $anchor, $map = NULL ) {
-
-			$mapFunc = ( is_callable($map) ) ? $map : "PBIDataSource::NoProc";
-
-			$result	 = [];
-			foreach ( $anchor as $data )
-			{
-				$idx = NULL;
-				$newData = call_user_func_array( $mapFunc, [ &$data, &$idx ] );
-				if ( $idx === NULL )
-					$result[] = $newData;
-				else
-					$result[ $idx ] = $newData;
-			}
-
-			return $result;
-		}
 		public static function ParseURI( $sourceURI ) {
 
 			$URI = parse_url( $sourceURI );
@@ -136,5 +116,4 @@
 			);
 			return $URI;
 		}
-		public static function& NoProc( &$input, &$idx ) { $idx = NULL; return $input; }
 	}
