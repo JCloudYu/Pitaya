@@ -34,7 +34,7 @@
 			static $_initialized = FALSE;
 		
 		
-			if ( $_initialized ) return; $_initialized = TRUE;
+			if ( $_initialized ) return $this; $_initialized = TRUE;
 			if ( SYS_EXEC_ENV == EXEC_ENV_CLI) {
 				$this->_parsedQuery = $this->_parsedData = [];
 			}
@@ -42,15 +42,6 @@
 
 
 			
-
-
-			// read all contents from input stream
-			$inputCache = tmpfile();
-			$rawDataStream = fopen('php://input', "rb");
-			stream_copy_to_stream($rawDataStream, $inputCache);
-			fclose($rawDataStream);
-			$this->_incomingRecord['rawDataStream'] = $inputCache;
-
 
 			
 			// store all environmental configurations
@@ -82,6 +73,10 @@
 			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
 			unset($GLOBALS['attachPoint']);
+			
+			
+			
+			return $this;
 		}
 		// endregion
 
@@ -235,21 +230,6 @@
 		public function __get_rawQuery() {
 			return $this->_incomingRecord['rawQuery'];
 		}
-		public function __get_rawData() {
-			$stream = $this->rawDataStream;
-			$data = '';
-			while ( !feof($stream) )
-			{
-				$buff = fread($stream, 1024);
-				$data.= $buff;
-			}
-
-			return $data;
-		}
-		public function __get_rawDataStream() {
-			fseek($this->_incomingRecord['rawDataStream'], 0);
-			return $this->_incomingRecord['rawDataStream'];
-		}
 		public function __get_argv() {
 			return $this->_incomingRecord['command']['argv'];
 		}
@@ -389,104 +369,43 @@
 		// endregion
 
 		// region [ Data Preprocessing Methods ]
-		private $_parsedData = NULL, $_dataVariable = NULL, $_dataFlag = NULL;		 
-		public function parseData($type = 'cust', $param = NULL, Closure $dataFunction = NULL) {
-			static $parsers = NULL;
+		private $_parsedData = NULL, $_dataVariable = NULL, $_dataFlag = NULL;
 		
-			if ( $this->_parsedData !== NULL ) return $this;
-			if ( $parsers === NULL ) {
-			
-				$nativePost = $this->_incomingRecord[ 'request' ][ 'post' ];
-				$currMethod = strtoupper( "{$this->_incomingRecord['request']['method']}" );
-				
-				
-			
-				$parsers = [
-					'json' => function( $stream, $param, $typeOpt ) {
-						$forceAssocArray = in_array( 'force-array', $typeOpt );
-						
-						$targetData = stream_get_contents($stream);
-						$depth		= intval(@$param['depth']);
-						$inconiming	= json_decode( $targetData, $forceAssocArray, ($depth <= 0) ? 512 : $depth );
-						
-						return [ 'data' => $inconiming, 'variable' => $inconiming, 'flag' => [] ];
-					},
-					'no-cast' => function($stream) {
-						$targetData = stream_get_contents($stream);
-						return [ 'data' => $targetData, 'variable' => [], 'flag' => [] ];
-					},
-					'base64' => function($stream) {
-						$targetData = stream_get_contents($stream);
-						$data = @base64_decode( $targetData );
-						return [ 'data' => $data, 'variable' => [], 'flag' => [] ];
-					},
-					'urlencoded' => function($stream) {
-						$targetData = stream_get_contents($stream);
-						$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
-						return [ 'data' => $data, 'variable' => $data[ 'variable' ], 'flag' => $data[ 'flag' ] ];
-					},
-					'form-multipart' => function($stream) use($currMethod, $nativePost) {
-						if ( $currMethod === "POST" )
-							return [ 'data' => $nativePost, 'variable' => $nativePost, 'flag' => [] ];
-
-						return [ 'data' => [], 'variable' => [], 'flag' => [] ];
-					}
-				];
+		const DATA_PARSERS = [
+			'raw'			 => 'PBRequest::DATA_PARSER_NO_OP',
+			'json'			 => 'PBRequest::DATA_PARSER_JSON',
+			'base64'		 => 'PBRequest::DATA_PARSER_BASE64',
+			'base64url'		 => 'PBRequest::DATA_PARSER_BASE64URL',
+			'urlencoded'	 => 'PBRequest::DATA_PARSER_URLENCODED',
+			'form-multipart' => 'PBRequest::DATA_PARSER_FORM_MULTIPART',
+		];
+		const MIME_PARSERS = [
+			'application/x-www-form-urlencoded' => 'PBRequest::DATA_PARSER_URLENCODED',
+			'application/base64'				=> 'PBRequest::DATA_PARSER_BASE64',
+			'application/base64-url'			=> 'PBRequest::DATA_PARSER_BASE64URL',
+			'application/json'					=> 'PBRequest::DATA_PARSER_JSON',
+			'multipart/form-data'				=> 'PBRequest::DATA_PARSER_FORM_MULTIPART'
+		];
+		public function parseData( $type = NULL ) {
+			if ( IS_CLI_ENV || $this->_parsedData !== NULL ) {
+				return $this;
 			}
-
 			
-
-
+			
+			
 			$typeOpt = explode( ' ', strtolower("{$type}") );
-			$type = array_shift( $typeOpt );
+			$type	 = array_shift( $typeOpt );
+			$mime	 = strtolower( @"{$this->contentType[ 'type' ]}" );
 			
-			switch ( $type ) {
-			
-				case 'json':
-					$func = $parsers[ 'json' ];
-					break;
-
-				case 'raw':
-					$func = $parsers[ 'no-cast' ];
-					break;
-
-				default:
-					$func = $dataFunction;
-					break;
-			}
-			
-			if ( $func === NULL )
-			{
-				switch ( strtolower( @"{$this->contentType[ 'type' ]}" ) ) {
-				
-					case "application/x-www-form-urlencoded":
-						$func = $parsers[ 'urlencoded' ];
-						break;
-
-					case "application/base64":
-						$func = $parsers[ 'base64' ];
-						break;
-						
-					case "application/json":
-						$func = $parsers[ 'json' ];
-						break;
-
-					case "multipart/form-data":
-						$func = $parsers[ 'form-multipart' ];
-						break;
-
-					default:
-						$func = $parsers[ 'no-cast' ];
-						break;
-				}
-			}
+			$func	 = is_callable($type) ? $type : @self::DATA_PARSERS[$type];
+			$func	 = $func ?: @self::MIME_PARSERS[ $mime ] ?: self::DATA_PARSERS['raw'];
 			
 			
 			
 			
 			
 			
-			$result = @call_user_func( $func, $this->rawDataStream, $param , $typeOpt );
+			$result = @call_user_func( $func, $this, $typeOpt );
 			$this->_parsedData	 = @$result[ 'data' ];
 			$this->_dataVariable = @$result[ 'variable' ];
 			$this->_dataFlag	 = @$result[ 'flag' ];
@@ -514,15 +433,12 @@
 		}
 
 		private $_parsedQuery = NULL, $_queryVariable = NULL, $_queryFlag = NULL;
-		public function parseQuery(Closure $queryFunction = NULL) {
-		
-			if ($this->_parsedQuery !== NULL) return $this;
+		public function parseQuery($processor = NULL) {
+			if ( IS_CLI_ENV || $this->_parsedQuery !== NULL ) {
+				return $this;
+			}
 
-			$func = ($queryFunction === NULL) ? function($targetData) {
-				$data = PBRequest::ParseRequestQuery($targetData);
-				return array('data' => $data, 'variable' => $data['attribute']['variable'], 'flag' => $data['attribute']['flag']);
-			} : $queryFunction;
-
+			$func = is_callable($processor) ? $processor : 'PBRequest::DEFAULT_QUERY_PARSER';
 			$result = $func($this->_incomingRecord['request']['query']);
 			$this->_parsedQuery = @$result['data'];
 			$this->_queryVariable = @$result['variable'];
@@ -837,6 +753,77 @@
 			}
 			
 			return $_incomingHeaders;
+		}
+		
+		public static function DATA_PARSER_NO_OP( $ref ) {
+			$stream		= fopen( "php://input", 'rb' );
+			$targetData = stream_get_contents($stream);
+			fclose($stream);
+			
+			
+			
+			return [ 'data' => $targetData, 'variable' => [], 'flag' => [] ];
+		}
+		public static function DATA_PARSER_JSON( $ref ) {
+			$stream		= fopen( "php://input", 'rb' );
+			$targetData = stream_get_contents($stream);
+			fclose($stream);
+			
+			
+			
+			$depth		= intval(@$param['depth']);
+			$inconiming	= json_decode( $targetData, $forceAssocArray, ($depth <= 0) ? 512 : $depth );
+			
+			return [ 'data' => $inconiming, 'variable' => $inconiming, 'flag' => [] ];
+		}
+		public static function DATA_PARSER_BASE64( $ref ) {
+			$stream		= fopen( "php://input", 'rb' );
+			$targetData = stream_get_contents($stream);
+			fclose($stream);
+			
+			
+			
+			$data = @PBBase64::Decode( $targetData );
+			return [ 'data' => $data, 'variable' => [], 'flag' => [] ];
+		}
+		public static function DATA_PARSER_BASE64URL( $ref ) {
+			$stream		= fopen( "php://input", 'rb' );
+			$targetData = stream_get_contents($stream);
+			fclose($stream);
+			
+			
+			
+			$data = PBBase64::URLDecode( $targetData );
+			return [ 'data' => $data, 'variable' => [], 'flag' => [] ];
+		}
+		public static function DATA_PARSER_URLENCODED( $ref ) {
+			$stream		= fopen( "php://input", 'rb' );
+			$targetData = stream_get_contents($stream);
+			fclose($stream);
+			
+			
+			
+			$data = PBRequest::ParseQueryAttributes( $targetData, TRUE );
+			return [ 'data' => $data, 'variable' => $data[ 'variable' ], 'flag' => $data[ 'flag' ] ];
+		}
+		public static function DATA_PARSER_FORM_MULTIPART( $ref ) {
+			if ( REQUESTING_METHOD === "POST" ) {
+				return [
+					'data' => $ref->_incomingRecord[ 'request' ][ 'post' ],
+					'variable' => $ref->_incomingRecord[ 'request' ][ 'post' ],
+					'flag' => []
+				];
+			}
+
+			return [ 'data' => [], 'variable' => [], 'flag' => [] ];
+		}
+		public static function DEFAULT_QUERY_PARSER( $inputQuery ) {
+			$data = PBRequest::ParseRequestQuery($inputQuery);
+			return [
+				'data'		=> $data,
+				'variable'	=> $data['attribute']['variable'],
+				'flag'		=> $data['attribute']['flag']
+			];
 		}
 		// endregion
 		

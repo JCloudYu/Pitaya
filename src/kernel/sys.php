@@ -166,7 +166,8 @@
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService( $argv );
 			__PATH_RESOLVER::Purge();
-			PBRequest::Request()->__initialize();
+			PBRequest()->__initialize()->parseQuery(function_exists( 'default_query_parser' ) ? 'default_query_parser' : NULL);
+
 
 
 			// INFO: Define runtime constants
