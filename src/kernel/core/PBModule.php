@@ -11,7 +11,7 @@
 			);
 		}
 		public function __toString() {
-			return "{$this( NULL, NULL )}";
+			return "{$this( NULL )}";
 		}
 		
 
