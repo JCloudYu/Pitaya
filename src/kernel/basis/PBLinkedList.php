@@ -177,7 +177,7 @@
 			if(!is_a($list, 'PBLinkedList')) return FALSE;
 			if(!is_string($identifier) && !is_int($identifier)) $identifier = NULL;
 	
-			$item = &PBLinkedList::__genItem($data, $identifier);
+			$item = PBLinkedList::__genItem($data, $identifier);
 	
 			if($list->_head === NULL || $list->_tail === NULL || $list->_curr === NULL)
 			{
@@ -352,7 +352,7 @@
 		
 		private static function __genItem($data, $id) {
 	
-			$obj = (object)NULL;
+			$obj = stdClass();
 			$obj->_data = $data;
 			$obj->_id = $id;
 	
