@@ -48,7 +48,7 @@
 		}
 		
 		public function fetch($name) {
-			$value = $this->_source->get( $this->_ns, [ 'name' => $name ] );
+			$value = $this->_source->get( $this->_ns, [ 'name' => $name ], [ 'collect' => TRUE ] );
 			return (count($value) == 0) ? NULL : current($value)->value;
 		}
 		
