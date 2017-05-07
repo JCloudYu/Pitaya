@@ -1,14 +1,14 @@
 <?php
 	// region [ Core Path APIs ]
 	// region [ Core Path Resolver ]
-	final class __PATH_RESOLVER {
+	final class PBPathResolver {
 		private static $_path_cache = [];
+		private static $_kernel_cache = [];
 		public static function Initialize() {
-			if ( !is_array(@$GLOBALS['extPath']) ) $GLOBALS['extPath'] = [];
+			static $_initialized = FALSE;
+			if ( $_initialized ) return;
 			
-			// INFO: Attach custom packages
-			foreach( $GLOBALS['extPath'] as $identifier => $path )
-				self::$_path_cache[$identifier] = "{$path}";
+			
 
 			// INFO: Attach pitaya root packages
 			$list = scandir(PITAYA_ROOT);
@@ -16,50 +16,78 @@
 				$absPath = PITAYA_ROOT . "/{$dir}";
 				if ( !is_dir($absPath) ) continue;
 				
-				self::$_path_cache[strtolower($dir)] = $absPath;
+				self::$_kernel_cache[strtolower($dir)] = $absPath;
 			}
 
 			// INFO: Attach other keywords
-			self::$_path_cache[ 'root' ]	= ROOT;
-			self::$_path_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ? __LIB_PATH : '/Lib';
-			self::$_path_cache[ 'share' ]	= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
-			self::$_path_cache[ 'data' ]	= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
-			self::$_path_cache[ 'broot' ]	= self::$_path_cache[ 'srvroot' ] = defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';
-			self::$_path_cache[ 'basis' ]	= self::$_path_cache[ 'service' ] = self::$_path_cache[ 'broot' ];
-			self::$_path_cache[ 'working' ]	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? self::$_path_cache[ 'basis' ] : $GLOBALS['STANDALONE_EXEC']['cwd'];
+			self::$_kernel_cache[ 'root' ]	= ROOT;
+			self::$_kernel_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ? __LIB_PATH : '/Lib';
+			self::$_kernel_cache[ 'share' ]	= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
+			self::$_kernel_cache[ 'data' ]	= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
+			self::$_kernel_cache[ 'broot' ]	= self::$_kernel_cache[ 'srvroot' ] = defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';
+			self::$_kernel_cache[ 'basis' ]	= self::$_kernel_cache[ 'service' ] = self::$_kernel_cache[ 'broot' ];
+			self::$_kernel_cache[ 'working' ]	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? self::$_kernel_cache[ 'basis' ] : $GLOBALS['STANDALONE_EXEC']['cwd'];
 
 			// Resolve to real path if targeted directory is a lnk file
 			if ( IS_WIN_ENV ) {
-				foreach( self::$_path_cache as $key => $path )
+				foreach( self::$_kernel_cache as $key => $path )
 				{
 					$linkPath = "{$path}.lnk";
 					if ( is_dir( $path ) || !is_file( $linkPath ) ) continue;
 					
-					self::$_path_cache[ $key ] = resolveLnk( $linkPath );
+					self::$_kernel_cache[ $key ] = resolveLnk( $linkPath );
 				}
 			}
 
 
 
-			define( 'BASIS_ROOT',	self::$_path_cache[ 'broot' ] );
-			define( 'SHARE_ROOT',	self::$_path_cache[ 'share' ] );
-			define( 'DATA_ROOT',	self::$_path_cache[ 'data' ]  );
+			define( 'BASIS_ROOT',	self::$_kernel_cache[ 'broot' ] );
+			define( 'SHARE_ROOT',	self::$_kernel_cache[ 'share' ] );
+			define( 'DATA_ROOT',	self::$_kernel_cache[ 'data' ]  );
+			
+			
+			self::$_path_cache = self::$_kernel_cache;
+			$_initialized = TRUE;
 		}
 		public static function Purge() {
+			static $_purged = FALSE;
+			if ( $_purged ) return;
+		
 			if ( defined( 'WORKING_ROOT' ) ) {
 				self::$_path_cache[ 'basis' ] = self::$_path_cache[ 'service' ] = WORKING_ROOT;
+				$_purged = TRUE;
+			}
+		}
+		public static function Register( $map = [] ) {
+			if ( !is_array($map) ) return TRUE;
+			
+			foreach( $map as $key => $path ) {
+				if ( IS_WIN_ENV ) {
+					$linkPath = "{$path}.lnk";
+					if ( !is_dir( $path ) && is_file( $linkPath ) ) {
+						$path = resolveLnk( $linkPath );
+					}
+				}
+				
+				self::$_path_cache[ $key ] = $path;
+			}
+			
+			
+			
+			foreach( self::$_kernel_cache as $key => $path ) {
+				self::$_path_cache[ $key ] = $path;
 			}
 		}
 		public static function Resolve( $package ) {
 			return empty(self::$_path_cache[$package]) ? '' : self::$_path_cache[$package];
 		}
 	}
-	__PATH_RESOLVER::Initialize();
+	PBPathResolver::Initialize();
 	// endregion
 	
 	function path($referencingContext = '', $appendItem = '') {
 		$tokens = explode('.', $referencingContext);
-		$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+		$completePath = PBPathResolver::Resolve(array_shift($tokens));
 
 		foreach( $tokens as $token)
 			$completePath .= "/{$token}";
@@ -81,7 +109,7 @@
 		{
 			array_shift($tokens);
 			$tokens = array_reverse($tokens);
-			$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+			$completePath = PBPathResolver::Resolve(array_shift($tokens));
 
 
 			foreach( $tokens as $token)
@@ -118,7 +146,7 @@
 		else
 		{
 			$tokens = array_reverse($tokens);
-			$completePath = __PATH_RESOLVER::Resolve(array_shift($tokens));
+			$completePath = PBPathResolver::Resolve(array_shift($tokens));
 
 			foreach( $tokens as $token)
 				$completePath .= "/{$token}";

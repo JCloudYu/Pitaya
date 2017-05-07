@@ -148,7 +148,7 @@
 		private function __initialize( $argv = NULL ) {
 
 			// INFO: Preserve path of system container
-			// DANGER: Make sure that this line will be excuted before __judgeMainService ( "service" will be different )
+			// DANGER: Make sure that this line will be executed before __judgeMainService ( "service" will be different )
 			$preprocessEnvPaths = [
 				path( 'root',	 'boot.php' ),
 				path( 'service', 'boot.php' ),
@@ -165,7 +165,16 @@
 
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService( $argv );
-			__PATH_RESOLVER::Purge();
+			
+			
+			// region [ PBPathResolver Customize Initialization ]
+			$extendPath = @$GLOBALS[ 'extPath' ];
+			if ( defined( 'EXTENDED_PACKAGES' ) ) $extendPath = EXTENDED_PACKAGES;
+			PBPathResolver::Register( is_array($extendPath) ? $extendPath : [] );
+			PBPathResolver::Purge();
+			// endregion
+			
+			
 			PBRequest()->__initialize()->parseQuery(function_exists( 'default_query_parser' ) ? 'default_query_parser' : NULL);
 
 
