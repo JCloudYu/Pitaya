@@ -24,8 +24,8 @@
 			
 			
 			
-			$selected = !empty($option['selected']) ? 'selected' : '';
-			echo @"<option value='{$option['value']}' title='{$option['title']}' {$selected}>{$option['label']}</option>";
+			$selected = !empty($option->selected) ? 'selected' : '';
+			echo @"<option value='{$option->value}' title='{$option->title}' {$selected}>{$option->label}</option>";
 		}
 	?>
 </select>
