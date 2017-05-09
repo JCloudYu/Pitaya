@@ -32,8 +32,7 @@
 			if ( is_a(@$this->_anchor->{$name}, stdClass::class) ) {
 				$node = PBDataTree($this->_anchor->{$name});
 			}
-			else
-			if ( property_exists($this->_anchor, $name) ) {
+			else {
 				$node = &$this->_anchor->{$name};
 			}
 			

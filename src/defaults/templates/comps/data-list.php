@@ -8,7 +8,7 @@
 
 	$headers	= !is_array(@$headers) ? [] : $headers;
 	$data		= !is_array(@$data) ? [] : $data;
-	$emptyStr	= $emptyStr ?: '';
+	$emptyStr	= @$emptyStr ?: '';
 	
 	
 	
