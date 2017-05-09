@@ -1005,7 +1005,7 @@
 			
 			
 			
-			if ( in_array( $requestedMethod, [ 'OPTIONS', 'HEAD' ] ) ) {
+			if ( in_array( REQUESTING_METHOD, [ 'OPTIONS', 'HEAD' ] ) ) {
 				PBHTTP::ResponseStatus(PBHTTP::STATUS_200_OK);
 				if ( !$continue ) Termination::NORMALLY();
 			}
