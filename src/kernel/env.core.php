@@ -220,7 +220,7 @@
 
 			$out = '';
 			if($forHTML)
-				$out .= "<div class='debugOpt' style='background-color: #fefe00; z-index: 9999; border: solid red; margin-bottom: 10px; padding: 5px; word-break: break-all; width: {$width}px; position:relative;'>";
+				$out .= "<div class='debugOpt' style='background-color:#fefe00; z-index:9999; border:solid red; margin-bottom:10px; padding:5px; word-break:break-all; width:{$width}px; color:#000; position:relative;'>";
 
 			if(!is_array($args)) $args = array($args);
 
