@@ -6,9 +6,7 @@
 		}
 		public function __invoke() {
 			$args = func_get_args();
-			return call_user_func_array(
-				[ $this, 'execute' ], @array_shift($args), ...$args
-			);
+			return call_user_func( [ $this, 'execute' ], @array_shift($args), ...$args );
 		}
 		public function __toString() {
 			return "{$this( NULL )}";
