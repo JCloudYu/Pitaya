@@ -154,7 +154,8 @@
 				if ( !property_exists($module->data, "initData") )
 					$module->data->initData = $request;
 				
-				$dataInput = $module->execute( $dataInput, $request );
+				$moduleOutput = $module->execute( $dataInput, $request );
+				$dataInput = ($moduleOutput === NULL) ? $dataInput : $moduleOutput;
 				$this->_appendBootSequence( $module->bootChain );
 			}
 			while( PBLList::NEXT($this->_bootSequence) );
