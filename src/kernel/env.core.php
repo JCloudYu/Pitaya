@@ -189,10 +189,10 @@
 
 				$tmp = $info[$i];
 
-				$adjusted[$i-1]['file'] = $info[$i-1]['file'];
-				$adjusted[$i-1]['line'] = $info[$i-1]['line'];
+				@$adjusted[$i-1]['file'] = @$info[$i-1]['file'];
+				@$adjusted[$i-1]['line'] = @$info[$i-1]['line'];
 
-				$adjusted[$i-1]['function'] = $tmp['function'];
+				@$adjusted[$i-1]['function'] = @$tmp['function'];
 
 				if(array_key_exists('class',  $tmp)) $adjusted[$i-1]['class']  = $tmp['class'];
 				if(array_key_exists('object', $tmp)) $adjusted[$i-1]['object'] = $tmp['object'];
