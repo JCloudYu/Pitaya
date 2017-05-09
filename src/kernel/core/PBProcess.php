@@ -130,7 +130,10 @@
 		
 		
 		public function run() {
-			$dataInput = PBRequest()->query;
+			$queryInput = PBRequest()->query;
+			$dataInput  = IS_CLI_ENV ? $queryInput : @$queryInput['resource'];
+			$dataInput	= is_array($dataInput) ? $dataInput : [];
+	
 	
 			PBLList::HEAD($this->_bootSequence);
 			do
