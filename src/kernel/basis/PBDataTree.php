@@ -31,7 +31,13 @@
 				return PBDataTree($this->_anchor->{$name});
 			}
 			
-			return @$this->_anchor->{$name};
+			
+			
+			if ( property_exists($this->_anchor, $name) ) {
+				return $this->_anchor->{$name};
+			}
+			
+			return NULL;
 		}
 		public function __set($name, $value) {
 			@$this->_anchor->{$name} = $value;
