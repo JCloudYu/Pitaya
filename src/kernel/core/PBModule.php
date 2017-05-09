@@ -1,6 +1,9 @@
 <?php
 	abstract class PBModule extends PBObject {
-		public function precondition() { return []; }
+		const PRIOR_MODULES = [];
+		public function precondition() {
+			return static::PRIOR_MODULES;
+		}
 		public function execute( $chainData ) {
 			return $chainData;
 		}
