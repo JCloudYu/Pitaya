@@ -35,7 +35,14 @@
 			$this->_variables[ $name ] = $value;
 		}
 		public function &__get($name) {
-			return ($name == "tmplId") ? $this->_identity : $this->_variables[$name];
+			if ($name == "tmplId") {
+				$result = $this->_identity;
+			}
+			else {
+				$result = &$this->_variables[$name];
+			}
+			
+			return $result;
 		}
 		
 		private static function Render( $scriptPath, $variables = []) {

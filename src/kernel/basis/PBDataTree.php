@@ -10,7 +10,7 @@
 			$currObj = $this->_anchor;
 			while( !empty($comps) ) {
 				$item = array_shift($comps);
-				if ( !is_a($currObj->{$item}, stdClass::class) ) {
+				if ( !is_a(@$currObj->{$item}, stdClass::class) ) {
 					@$currObj->{$item} = stdClass();
 				}
 				
@@ -23,21 +23,21 @@
 		
 		
 		public function& __get($name) {
-			if ( $name === 'object' ) {
-				return $this->_anchor;
-			}
+			$node = NULL;
 		
-			if ( is_a($this->_anchor->{$name}, stdClass::class) ) {
-				return PBDataTree($this->_anchor->{$name});
+			if ( $name === 'object' ) {
+				$node = $this->_anchor;
 			}
-			
-			
-			
+			else
+			if ( is_a(@$this->_anchor->{$name}, stdClass::class) ) {
+				$node = PBDataTree($this->_anchor->{$name});
+			}
+			else
 			if ( property_exists($this->_anchor, $name) ) {
-				return $this->_anchor->{$name};
+				$node = &$this->_anchor->{$name};
 			}
 			
-			return NULL;
+			return $node;
 		}
 		public function __set($name, $value) {
 			@$this->_anchor->{$name} = $value;

@@ -102,9 +102,9 @@
 			$dataNS = $this->CastName($dataNS);
 			$additional = is_a($options, stdClass::class) ? (array)$options : $options;
 			
-			$custom		= (!!$additional[ 'customize' ] || !!$additional[ 'compound-update' ]);
-			$rawResult	= !!$additional[ 'raw-result' ];
-			$updateId	= !!$additional[ 'update-id' ];
+			$custom		= (!!@$additional[ 'customize' ] || !!@$additional[ 'compound-update' ]);
+			$rawResult	= !!@$additional[ 'raw-result' ];
+			$updateId	= !!@$additional[ 'update-id' ];
 
 			unset( $additional[ 'customize' ] );
 			unset( $additional[ 'compound-update' ] );
@@ -135,8 +135,8 @@
 			$dataNS = $this->CastName($dataNS);
 			$additional = is_a($options, stdClass::class) ? (array)$options : $options;
 			
-			$deleteOne	= !!$additional[ 'just-one' ];
-			$rawResult	= !!$additional[ 'raw-result' ];
+			$deleteOne	= !!@$additional[ 'just-one' ];
+			$rawResult	= !!@$additional[ 'raw-result' ];
 			
 			unset($additional[ 'just-one' ]);
 			unset($additional[ 'raw-result' ]);
@@ -295,7 +295,8 @@
 
 			// INFO: Query and collect results
 			$cursor = $this->_mongoConnection->executeQuery( $dataNS, new Query( (object)$filter, $queryOpt ) );
-			return empty($additional->collect) ? $cursor : self::__COLLECT_DATA($cursor);
+			$result = empty($additional->collect) ? $cursor : self::__COLLECT_DATA($cursor);
+			return $result;
 		}
 		private function& getAggregate( $dataNS, $baseQuery, stdClass $additional ) {
 			$dataNS = $this->CastName($dataNS);
