@@ -1,10 +1,20 @@
 <?php
-	/**
-	 * Input variables
-	 * @var $headers array
-	 * @var $data array
-	 * @var $emptyStr string
-	 */
+	/*
+		data-list = {
+			"tmplId":@uuid(ver:4),
+			"emptyStr":@string,
+			"headers":@array(ref:@data-header),
+			"data":[
+				@array(ref:@mixed)
+			]
+		}
+	
+		data-header = {
+			"type":@string,
+			"group":@string|null,
+			"title":@string
+		}
+	*/
 
 	$headers	= !is_array(@$headers) ? [] : $headers;
 	$data		= !is_array(@$data) ? [] : $data;
@@ -32,7 +42,7 @@
 			echo @"<div class='list-row clearfix'><div class='list-col expand'>{$emptyStr}</div></div>";
 		}
 		else {
-			foreach ($data as $dataSeq => $rowData) {
+			foreach ($data as $rowData) {
 				echo "<div class='list-row clearfix'>";
 				foreach ($columns as $idx => $meta) {
 					$value = CAST( @$rowData[$idx], $meta->type );
