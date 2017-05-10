@@ -42,8 +42,8 @@
 
 
 			$value 		= CAST( @$option->value, $dataType );
-			$disabled 	= CAST( $option->disabled, 'boolean' ) ? 'disabled': '';
-			$checked 	= CAST( $option->checked, 'boolean' ) ? 'checked' : '';
+			$disabled 	= CAST( @$option->disabled, 'boolean' ) ? 'disabled': '';
+			$checked 	= CAST( @$option->checked, 'boolean' ) ? 'checked' : '';
 
 
 			echo "<div style='{$columnStyle}'><input type='radio' {$group} value='{$value}' {$disabled} {$checked} rel='{$tmplId}' /><span style='margin-left:5px;'>{$option->label}</span></div>";
