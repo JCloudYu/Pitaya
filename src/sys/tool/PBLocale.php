@@ -71,9 +71,10 @@
 		public function offsetGet($offset) {
 			if ( $this->_curLocale === FALSE ) return $offset;
 			
-			if ( is_array($this->_storedLocales[$this->_curLocale][ $offset ]) )
+			if ( is_array(@$this->_storedLocales[$this->_curLocale][ $offset ]) )
 				return $this->_storedLocales[$this->_curLocale][ $offset ];
-			return @strtr($offset, $this->_storedLocales[$this->_curLocale] ?: []);
+			
+			return strtr($offset, @$this->_storedLocales[$this->_curLocale] ?: []);
 		}
 		
 		
