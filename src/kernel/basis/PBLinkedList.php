@@ -281,14 +281,9 @@
 			}
 	
 			$list->_counter--;
-	
-			// INFO: Prepare the returning data and unset the popped item
-	//		$rt = array('data' => $item->_data, 'id' => $item->_id);
-	//		unset($item);
-			return $rt;
+			return TRUE;
 		}
 		public static function DELETE(&$list) {
-	
 			return PBLinkedList::REMOVE($list);
 		}
 		public static function HEAD(&$list) {
