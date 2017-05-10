@@ -218,7 +218,6 @@
 				$moduleRequest = $resource;
 			}
 			else {
-			
 				$service = CAST( @array_shift($argv), 'string' );
 				$moduleRequest = $argv;
 			}

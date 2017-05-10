@@ -185,6 +185,9 @@
 		public function __get_query() {
 			return $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
 		}
+		public function __get_resource() {
+			return empty($this->_parsedQuery) ? [] : $this->_parsedQuery[ 'resource' ];
+		}
 		public function __get_data() {
 			return $this->_parsedData ?: $this->_incomingRecord['request']['data'];
 		}
@@ -434,11 +437,13 @@
 
 		private $_parsedQuery = NULL, $_queryVariable = NULL, $_queryFlag = NULL;
 		public function parseQuery($processor = NULL) {
-			if ( IS_CLI_ENV || $this->_parsedQuery !== NULL ) {
+			if ( $this->_parsedQuery !== NULL ) {
 				return $this;
 			}
 
-			$func = is_callable($processor) ? $processor : 'PBRequest::DEFAULT_QUERY_PARSER';
+
+
+			$func = (IS_CLI_ENV || !is_callable($processor)) ? 'PBRequest::DEFAULT_QUERY_PARSER' : $processor;
 			$result = call_user_func($func, $this->_incomingRecord['request']['query']);
 			$this->_parsedQuery = @$result['data'];
 			$this->_queryVariable = @$result['variable'];
@@ -818,7 +823,16 @@
 			return [ 'data' => [], 'variable' => [], 'flag' => [] ];
 		}
 		public static function DEFAULT_QUERY_PARSER( $inputQuery ) {
-			$data = PBRequest::ParseRequestQuery($inputQuery);
+			if ( IS_HTTP_ENV ) {
+				$data = PBRequest::ParseRequestQuery($inputQuery);
+			}
+			else {
+				$data = [
+					'resource'	=> is_array($inputQuery) ? $inputQuery : [],
+					'attribute'	=> [ 'variable' => [], 'flag' => [] ]
+				];
+			}
+			
 			return [
 				'data'		=> $data,
 				'variable'	=> $data['attribute']['variable'],
