@@ -1227,7 +1227,7 @@
 			$this->_attrs[ $name ] = $value;
 			$this->_dirty = TRUE;
 		}
-		public function &__get($name) {
+		public function __get($name) {
 			$this->_dirty = TRUE;
 			return @$this->_attrs[ $name ];
 		}
