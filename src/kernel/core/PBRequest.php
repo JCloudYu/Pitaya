@@ -1124,7 +1124,15 @@
 		}
 		
 		protected function _moveAnchor( $traceBack = 0 ) {
-			$this->_anchor += $traceBack;
+			if ( $traceBack === 'full' ) {
+				$this->_anchor = $this->_pathLen;
+			}
+			else {
+				$this->_anchor += $traceBack;
+			}
+			
+				
+				
 			if ( $this->_anchor < 0 ) {
 				$this->_anchor = 0;
 			}
