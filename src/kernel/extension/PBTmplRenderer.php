@@ -35,8 +35,12 @@
 			$this->_variables[ $name ] = $value;
 		}
 		public function &__get($name) {
-			if ($name == "tmplId") {
+			if ( $name == "tmplId" ) {
 				$result = $this->_identity;
+			}
+			else
+			if ( $name == "vars" ) {
+				$result = $this->_variables;
 			}
 			else {
 				$result = &$this->_variables[$name];

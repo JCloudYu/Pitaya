@@ -64,6 +64,26 @@
 			return $this->error;
 		}
 	}
+	abstract class PBTplModule extends PBModule {
+		private $_tplObj = NULL;
+	
+		public function __get_vars() {
+			return empty($this->_tplObj) ? NULL : $this->_tplObj->vars;
+		}
+		public function __invoke( $output = TRUE ) {
+			if ( empty($this->data->tmpl) ) {
+				return "";
+			}
+		
+			$this->_tplObj = $tplObj = PBTmplRenderer( $this->data->tmpl, @$this->data->tmplPath ?: NULL );
+			data_fuse( $tplObj, $this->data, FALSE );
+			
+			return $tplObj($output);
+		}
+		public function __toString() {
+			return $this( FALSE );
+		}
+	}
 	
 	/**
 	 * @param $moduleName
