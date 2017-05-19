@@ -43,4 +43,8 @@
 		if ( !defined('__LOG_EXCEPTION__') ) {
 			define( '__LOG_EXCEPTION__', TRUE );
 		}
+		
+		if ( !defined( 'FORCE_LOG_POSITION' ) ) {
+			define( 'FORCE_LOG_POSITION', FALSE );
+		}
 	});
