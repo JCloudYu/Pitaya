@@ -14,6 +14,18 @@
 				$stack = empty($stack) ? array() : explode( "{$seperator}", "{$stack}" );
 			$this->_scope_levels = $stack;
 		}
+		public function set( $breadcrumb = [], $glue = '#' ) {
+			if ( is_array($breadcrumb) ) {
+				$this->_scope_levels = array_values($breadcrumb);
+			}
+			else
+			if ( $breadcrumb == '' ) {
+				$this->_scope_levels = [];
+			}
+			else {
+				$this->_scope_levels = explode( "{$glue}", "{$breadcrumb}" );
+			}
+		}
 		public function push( $item ) {
 			$arguments = func_get_args();
 			if ( count($arguments) == 0 )
