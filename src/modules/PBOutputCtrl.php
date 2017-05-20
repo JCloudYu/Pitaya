@@ -1,7 +1,7 @@
 <?php
 	using( 'sys.tool.PBHTML' );
 
-	class PBHttpOutput extends PBModule {
+	class PBHttpOut extends PBModule {
 		protected static $_statusCode = NULL;
 		public static function StatusCode( $code ) {
 			self::$_statusCode = CAST( $code, 'int strict', NULL );
@@ -18,8 +18,14 @@
 		}
 		
 		protected static $_outputData = NULL;
-		public static function DataOut( $data ) {
-			self::$_outputData = $data;
+		public static function DataOut( ...$args ) {
+			if ( count($args) > 1 ) {
+				self::$_statusCode = CAST( $args[0], 'int strict', 200 );
+				self::$_outputData = $args[1];
+				return;
+			}
+			
+			self::$_outputData = $args[0];
 		}
 	
 	
@@ -43,19 +49,21 @@
 			
 			
 			$content = ( $param === NULL ) ? self::$_outputData : $param;
-			if ( !is_resource($content) )
-				echo $content;
-			else
-			{
+			if ( is_resource($content) ) {
 				$output = fopen( "php://output", "a+b" );
 				stream_copy_to_stream( $content, $output );
 				fclose($output);
+				return;
 			}
+			
+			
+			echo $content;
 		}
 	}
-	class_alias( 'PBHttpOutput', 'PBHttpOutputCtrl' );
+	class_alias( 'PBHttpOut', 'PBHttpOutputCtrl' );
+	class_alias( 'PBHttpOut', 'PBHttpOutput' );
 	
-	class PBHtmlOutput extends PBHttpOutput {
+	class PBHtmlOut extends PBHttpOut {
 		
 		public function execute( $chainData ) {
 		
@@ -374,7 +382,7 @@
 		}
 		// endregion
 	}
-	class PBAJAXOutput extends PBHttpOutput {
+	class PBAJAXOut extends PBHttpOut {
 	
 		const STATUS_WARNING	=  1;
 		const STATUS_NORMAL		=  0;
@@ -411,7 +419,7 @@
 			return $ajaxReturn;
 		}
 	}
-	class PBJSONOutput extends PBHttpOutput {
+	class PBJSONOut extends PBHttpOut {
 		public function execute( $chainData ) {
 			PBHttpOutput::ContentType( "application/json" );
 			parent::execute(json_encode(
@@ -419,7 +427,7 @@
 			));
 		}
 	}
-	class PBTemplateOutput extends PBHttpOutput {
+	class PBTemplateOut extends PBHttpOut {
 		public function execute( $chainData ) {
 			$template = PBTmplRenderer::Tpl( @$this->data->tmplName, @$this->data->tmplPath );
 			unset( $this->data->initData );
@@ -431,5 +439,72 @@
 			foreach( $tplData as $field => $value ) $template->{$field} = $value;
 			
 			parent::execute(NULL); $template(TRUE);
+		}
+	}
+	class PBAPIOut extends PBHttpOut {
+		public static function ErrorOut( $statusCode, $type, $code = 0, $message = "", $subcode = 0 ) {
+			if ( is_object($type) || is_array($type) ) {
+				$responseObj = $type;
+			}
+			else {
+				$responseObj = stdClass([
+					"type"		=> $type,
+					"code"		=> $code,
+					"subcode"	=> $subcode,
+					"message"	=> $message
+				]);
+				if ( func_num_args() < 5 ) {
+					unset($responseObj->subcode);
+				}
+			}
+			
+			
+			
+			PBHttpOut::DataOut($statusCode, stdClass([ "error" => $responseObj ]));
+		}
+	
+		public function execute( $chainData ) {
+			$result = self::__PROCESS_OUTPUT( self::$_outputData ?: $chainData );
+			self::ContentType( 'application/json' );
+			parent::execute( @json_encode($result) );
+		}
+		private static function __PROCESS_OUTPUT( $param ) {
+			$result = stdClass();
+			
+			if ( $param === NULL ) {
+				$param = stdClass();
+			}
+			else
+			if ( is_array($param) ) {
+				$param = stdClass($param);
+			}
+			else
+			if ( !is_object($param) ) {
+				$param = stdClass([
+					'data' => $param
+				]);
+			}
+			
+			
+			// Merging params
+			$param = clone $param;
+			$result->scope = PBScope()->breadcrumb();
+			if ( property_exists($param, 'data') ) {
+				$result->data = $param->data;
+				unset($param->data);
+			}
+			if ( property_exists($param, 'error') ) {
+				$result->error = $param->error;
+				unset($param->error);
+			}
+			if ( property_exists($param, 'paging') ) {
+				$result->paging = $param->paging;
+				unset($param->paging);
+			}
+			$result = data_set( $result, $param );
+
+
+
+			return $result;
 		}
 	}
