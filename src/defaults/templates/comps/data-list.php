@@ -45,8 +45,27 @@
 			foreach ($data as $rowData) {
 				echo "<div class='list-row clearfix'>";
 				foreach ($columns as $idx => $meta) {
-					$value = CAST( @$rowData[$idx], $meta->type );
+					$fieldData = @$rowData[$idx];
+				
+					if ( is_array($fieldData) )
+						$fieldData = stdClass($fieldData);
+						
+					if ( !is_object($fieldData) ) {
+						$title = NULL;
+						$value = $fieldData;
+					}
+					else {
+						$title = CAST( @$fieldData->title, 'string purge-html', '' );
+						$value = @$fieldData->value;
+					}
+					
+					$value = CAST( $value, $meta->type );
 					$group = empty($meta->group) ? '' : "data-list-group='{$meta->group}'";
+					
+					if ( $title !== NULL ) {
+						$value = "<span title='{$title}'>{$value}</span>";
+					}
+					
 					echo "<div class='list-col' {$group}>{$value}</div>";
 				}
 				echo "</div>";
