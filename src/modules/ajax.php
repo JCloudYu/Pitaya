@@ -1,3 +1,4 @@
 <?php
 	using( 'modules.PBOutputCtrl' );
-	class_alias( 'PBAJAXOutput', 'ajax' );
+	class_alias( 'PBAJAXOut', 'PBAJAXOutput' );
+	class_alias( 'PBAJAXOut', 'ajax' );

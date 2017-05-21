@@ -1,4 +1,5 @@
 <?php
 	using( 'modules.PBOutputCtrl' );
-	class_alias( 'PBTemplateOutput', 'tmpl' );
+	class_alias( 'PBTemplateOut', 'PBTemplateOutput' );
+	class_alias( 'PBTemplateOut', 'tmpl' );
 
