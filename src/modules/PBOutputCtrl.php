@@ -442,7 +442,7 @@
 		}
 	}
 	class PBAPIOut extends PBHttpOut {
-		public static function ErrorOut( $statusCode, $type, $code = 0, $message = "", $subcode = 0 ) {
+		public static function ErrorOut( $statusCode, $type, $code = 0, $message = "", $subcode = NULL, $detail = NULL ) {
 			if ( is_object($type) || is_array($type) ) {
 				$responseObj = $type;
 			}
@@ -451,16 +451,22 @@
 					"type"		=> $type,
 					"code"		=> $code,
 					"subcode"	=> $subcode,
-					"message"	=> $message
+					"message"	=> $message,
+					"detail"	=> $detail
 				]);
-				if ( func_num_args() < 5 ) {
+				
+				if ( $detail === NULL ) {
+					unset($responseObj->detail);
+				}
+				
+				if ( $subcode === NULL ) {
 					unset($responseObj->subcode);
 				}
 			}
 			
 			
 			
-			PBHttpOut::DataOut($statusCode, stdClass([ "error" => $responseObj ]));
+			PBHttpOut::DataOut( $statusCode, stdClass([ "error" => $responseObj ]) );
 		}
 	
 		public function execute( $chainData ) {
