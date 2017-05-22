@@ -35,10 +35,6 @@
 		
 		
 			if ( $_initialized ) return $this; $_initialized = TRUE;
-			if ( SYS_EXEC_ENV == EXEC_ENV_CLI) {
-				$this->_parsedQuery = $this->_parsedData = [];
-			}
-
 
 
 			
