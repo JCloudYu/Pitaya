@@ -1,5 +1,5 @@
 <?php
-	class PBDataTree implements ArrayAccess {
+	class PBDataTree implements ArrayAccess, JsonSerializable {
 		private $_anchor = NULL;
 		
 		public function __construct(stdClass $anchorObj = NULL) {
@@ -47,7 +47,9 @@
 		public function __isset($name) {
 			return property_exists($this->_anchor, $name);
 		}
-		
+		public function jsonSerialize() {
+			return $this->_anchor;
+		}
 		
 		
 		public function& offsetGet($offset) {
