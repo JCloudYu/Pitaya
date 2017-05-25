@@ -71,7 +71,7 @@
 
 			// INFO: Prepare write info
 			$bulkWrite = new BulkWrite();
-			$castId = (empty($additional['cast-object-id']) || empty($additional['cast-id']));
+			$castId = ( !!@$additional['cast-object-id'] || !!@$additional['cast-id'] );
 
 			if ( empty($additional['multiple']) )
 			{
@@ -88,7 +88,7 @@
 					$doc = (array)$doc;
 					unset( $doc['_id'] );
 					$id = $bulkWrite->insert( $doc );
-					$sessionId[] = (!$castId) ? $id : "{$id}";
+					$sessionId[] = $castId ? "{$id}" : $id;
 				}
 			}
 

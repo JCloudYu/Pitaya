@@ -26,6 +26,20 @@
 				$this->_scope_levels = explode( "{$glue}", "{$breadcrumb}" );
 			}
 		}
+		public function append( $breadcrumb = [], $glue = '#' ) {
+			if ( is_array($breadcrumb) ) {
+				$breadcrumb = array_values($breadcrumb);
+			}
+			else
+			if ( $breadcrumb == '' ) {
+				$breadcrumb = [];
+			}
+			else {
+				$breadcrumb = explode( "{$glue}", "{$breadcrumb}" );
+			}
+			
+			array_push( $this->_scope_levels, ...$breadcrumb );
+		}
 		public function push( $item ) {
 			$arguments = func_get_args();
 			if ( count($arguments) == 0 )

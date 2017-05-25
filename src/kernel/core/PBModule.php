@@ -2,7 +2,12 @@
 	abstract class PBModule extends PBObject {
 		const PRIOR_MODULES = [];
 		public function precondition() {
-			return static::PRIOR_MODULES;
+			$modules = [];
+			foreach( static::PRIOR_MODULES as $moduleName ) {
+				$modules[] = $module = PBModule( $moduleName );
+				data_fuse( $module->data, $this->data );
+			}
+			return $modules;
 		}
 		public function execute( $chainData ) {
 			return $chainData;

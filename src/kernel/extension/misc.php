@@ -369,12 +369,11 @@
 
 
 
-				if ( trim("{$value}") === "" ) return $defaultVal;
-
-
-
 				if ( is_array($value) )
 					$converted = $value;
+				else
+				if ( trim( @"{$value}" ) === "" )
+					return [];
 				else
 				if ( in_array( 'delimiter', $opt ) )
 					$converted = @explode( "{$filter}", "{$value}" );
