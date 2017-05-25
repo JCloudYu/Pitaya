@@ -58,7 +58,7 @@
 				function( $item ) { return (empty($item)) ? FALSE : $item; };
 		}
 
-		$collected = array();
+		$collected = [];
 		foreach ( $traversable as $idx => $item )
 		{
 			$result = $filter($item, $idx);
@@ -118,7 +118,7 @@
 	define( 'IN_ARY_MODE_STRICT', 		0x02 );
 	define( 'IN_ARY_MODE_NONE_STRICT', 	0x00 );
 	function in_ary($needle, $candidates, $mode = IN_ARY_MODE_OR) {
-		if (!is_array($needle)) $needle = array($needle);
+		if (!is_array($needle)) $needle = [ $needle ];
 
 
 		if (!is_int($mode)) $mode = 0;
@@ -138,7 +138,7 @@
 	}
 	
 	function ary_fill($size, $element, $startIndex = 0) {
-		$rtAry = array();
+		$rtAry = [];
 
 		for($i = 0; $i <$size; $i++, $startIndex++)
 			$rtAry[$startIndex] = $element;
@@ -146,7 +146,7 @@
 		return $rtAry;
 	}
 	function ary_exclude($src, $ref) {
-		if (!is_array($src)) return array();
+		if (!is_array($src)) return [];
 
 		$args = func_get_args();
 		array_shift($args);
@@ -158,7 +158,7 @@
 			if (!is_array($param)) continue;
 
 
-			$stayed = array();
+			$stayed = [];
 			foreach ($left as $src_content)
 			{
 				if (in_array($src_content, $param)) continue;
@@ -172,14 +172,14 @@
 	function ary_flag($ary, $flag, $matchCase = TRUE, $compareMode = IN_ARY_MODE_OR) {
 		
 	
-		if (!is_array($ary)) $ary = array();
-		if (!is_array($flag)) $flag = array($flag);
+		if (!is_array($ary)) $ary = [];
+		if (!is_array($flag)) $flag = [ $flag ];
 
 		if (!$matchCase)
 			foreach ($flag as $id => $content) $flag[$id] = trim(strtolower("{$content}"));
 
 
-		$candidates = array();
+		$candidates = [];
 		foreach ($ary as $idx => $item)
 		{
 			if (!preg_match('/^\d+$/', "{$idx}")) continue;
@@ -190,10 +190,10 @@
 	}
 	function ary_pick($ary, $indices) {
 		if (empty($indices) || (!is_array($indices) && !is_string($indices)))
-			return array();
+			return [];
 
 		$indices = (is_string($indices)) ? explode(',', $indices) : $indices;
-		$collected = array();
+		$collected = [];
 		foreach ($indices as $idx) { $collected[] = $ary[$idx]; }
 
 		return $collected;
@@ -359,13 +359,13 @@
 			 *	CAST( $value, 'array delimiter', $pattern, $default )	// SPLIT MODE
 			 */
 			case 'array':
-				$typingOptions	= array( 'delimiter', 'regex' );
+				$typingOptions	= [ 'delimiter', 'regex' ];
 				$typingMode		= (CAST( $typingOptions, 'range', $opt ) === NULL);
 
 				if ( $typingMode === NULL )	// INFO: TYPING MODE
-					$defaultVal = ($nArgs > 2) ? $filter : array();
+					$defaultVal = ($nArgs > 2) ? $filter : [];
 				else						// INFO: SPLIT MODE
-					$defaultVal = ($nArgs > 3) ? $filter : array();
+					$defaultVal = ($nArgs > 3) ? $filter : [];
 
 
 
@@ -464,7 +464,7 @@
 	}
 	function json_array( $input = NULL ) {
 		DEPRECATION_WARNING( "json_array api is marked as deprecated!" );
-		if ( func_num_args() == 0 ) return array();
+		if ( func_num_args() == 0 ) return [];
 
 		return ( !is_array($input) ) ? $input : array_values($input);
 	}
@@ -507,7 +507,7 @@
 			{
 				if (is_array($value))
 				{
-					if (!is_array($ary1[$key])) $ary1[$key] = array();
+					if (!is_array($ary1[$key])) $ary1[$key] = [];
 
 					ary_merge_recursive($ary1[$key], $value);
 				}
@@ -526,7 +526,7 @@
 		if (!is_array($ary1)) {
 			if ($forceKeep) {
 				if (!is_array($ary2))
-					return array($ary1, $ary2);
+					return [ $ary1, $ary2 ];
 				else {
 					$ary2[] = $ary1;
 
@@ -560,7 +560,7 @@
 	}
 	function ary_data($ary, $idx, $type = 'raw', $default = NULL) {
 		DEPRECATION_WARNING( "ary_data api is marked as deprecated and will be removed in the following versions!" );
-		if (!is_array($ary)) $ary = array();
+		if (!is_array($ary)) $ary = [];
 		if (preg_match('/^\d+$/', "{$idx}") || !isset($ary[$idx])) return $default;
 
 		return TO($ary[$idx], $type);
