@@ -130,7 +130,7 @@
 
 		try {
 			if ( empty($module) ) {
-				$module	  = PBSysKernel::SYS()->acquireModule( $moduleName );
+				$module	  = PBKernel::SYS()->acquireModule( $moduleName );
 				$moduleId = $module->id;
 				$_attachedModule[ $moduleId ] = $module;
 	

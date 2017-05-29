@@ -15,7 +15,7 @@
 		public static $_singleton = NULL;
 		public static function Process() { return self::$_singleton; }
 		
-		/** @var PBSysKernel */
+		/** @var PBKernel */
 		private $_system = NULL;
 		/** @var null|PBLinkedList */
 		private $_bootSequence	= NULL;

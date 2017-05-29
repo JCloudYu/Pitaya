@@ -1,6 +1,6 @@
 <?php
-	final class PBSysKernel extends PBObject {
-		/** @var PBSysKernelAccessor */
+	final class PBKernel extends PBObject {
+		/** @var PBKernelAccessor */
 		private static $_SYS_ACCESS_INTERFACE = NULL;
 		public static function SYS() {
 			return self::$_SYS_ACCESS_INTERFACE;
@@ -15,18 +15,18 @@
 
 			if($initialized) return;
 
-			PBSysKernel::$_cacheServicePath  = BASIS_ROOT;
-			PBSysKernel::$_cachedRuntimeAttr = array(
+			PBKernel::$_cacheServicePath  = BASIS_ROOT;
+			PBKernel::$_cachedRuntimeAttr = array(
 				'standalone' => @$GLOBALS['STANDALONE_EXEC']
 			);
 		}
 		
-		/** @var PBSysKernel */
+		/** @var PBKernel */
 		private static $_SYS_INSTANCE = NULL;
 		public static function boot( $argv = NULL ) {
 
 			// INFO: Avoid repeated initialization
-			if ( PBSysKernel::$_SYS_INSTANCE ) return;
+			if ( PBKernel::$_SYS_INSTANCE ) return;
 
 
 
@@ -46,11 +46,11 @@
 
 
 				// INFO: Keep booting
-				PBSysKernel::$_SYS_INSTANCE = new PBSysKernel();
-				PBSysKernel::$_SYS_ACCESS_INTERFACE = new PBSysKernelAccessor( PBSysKernel::$_SYS_INSTANCE );
+				PBKernel::$_SYS_INSTANCE = new PBKernel();
+				PBKernel::$_SYS_ACCESS_INTERFACE = new PBKernelAccessor( PBKernel::$_SYS_INSTANCE );
 				
-				PBSysKernel::$_SYS_INSTANCE->__initialize( $argv );
-				PBSysKernel::$_SYS_INSTANCE->_process->run();
+				PBKernel::$_SYS_INSTANCE->__initialize( $argv );
+				PBKernel::$_SYS_INSTANCE->_process->run();
 
 				Termination::NORMALLY();
 			}
@@ -98,7 +98,7 @@
 				{
 					try
 					{
-						$errProcObj = PBSysKernel::$_SYS_INSTANCE->acquireModule( ERROR_MODULE );
+						$errProcObj = PBKernel::$_SYS_INSTANCE->acquireModule( ERROR_MODULE );
 					}
 					catch( Exception $e )
 					{
@@ -270,6 +270,33 @@
 
 
 			// INFO: Customized service decision logics
+			if ( self::$_bootResolver !== NULL ) {
+				$resolver = self::$_bootResolver;
+				$result = call_user_func($resolver, $service, $moduleRequest, $attributes, $fragment);
+				if ( !empty($result) ) {
+					$result = object($result);
+				
+					$service		= @$result->basis ?: @$result->service ?: $service;
+					$moduleRequest	= @$result->resource ?: @$result->request ?: $moduleRequest;
+					$workingDir		= @$result->root ?: @$result->workingRoot ?: '';
+					
+					
+					
+					// INFO: Detect Main Service
+					$state = file_exists( path( "{$service}" ) . ".php" );
+					if ($state) {
+						$this->_entryBasis = $service;
+		
+						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
+						define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
+		
+						$GLOBALS['service'] = $service;
+						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+						return;
+					}
+				}
+			}
+			else
 			if ( defined( 'DEFAULT_BOOT_RESOLVER' ) ) {
 				try{
 					$module = $this->acquireModule( DEFAULT_BOOT_RESOLVER );
@@ -319,7 +346,7 @@
 			if ($state) {
 				$this->_entryBasis = $serviceName;
 
-				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryBasis}" );
+				define( 'WORKING_ROOT', PBKernel::$_cacheServicePath."/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 				$GLOBALS['service'] = $serviceName;
@@ -366,7 +393,7 @@
 			if ($state) {
 				$this->_entryBasis = $service;
 
-				define( 'WORKING_ROOT', PBSysKernel::$_cacheServicePath."/{$this->_entryBasis}" );
+				define( 'WORKING_ROOT', PBKernel::$_cacheServicePath."/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 
@@ -543,11 +570,12 @@
 		}
 		// endregion
 	}
+	class_alias( 'PBKernel', 'PBKernel' );
 
-	final class PBSysKernelAccessor {
-		/**@var PBSysKernel*/
+	final class PBKernelAccessor {
+		/**@var PBKernel*/
 		private $_relatedSys = NULL;
-		public function __construct( PBSysKernel $sysInst ) {
+		public function __construct( PBKernel $sysInst ) {
 			$this->_relatedSys = $sysInst;
 		}
 		

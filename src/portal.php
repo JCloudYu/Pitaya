@@ -2,4 +2,4 @@
 	require_once( dirname( __FILE__ ) . "/kernel/base.php" );
 
 	using('kernel.sys');
-	PBSysKernel::boot( $_SERVER['argv'] );
+	PBKernel::boot( $_SERVER['argv'] );

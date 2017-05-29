@@ -118,11 +118,10 @@
 			$this->data = $carriedData;
 		}
 		public function __invoke( $output = FALSE ) {
-			$outData = &$this->data;
+			$outData = $this->data;
 			if (is_a($outData, 'PBJSONContainer')) {
 				$outData = $outData->safe_cast();
 			}
-			
 			if ($output) {
 				echo json_encode($outData);
 				return;

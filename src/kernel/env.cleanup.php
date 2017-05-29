@@ -22,7 +22,7 @@
 
 
 
-	PBSysKernel::__imprint_constants();
+	PBKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
 	PBRuntime::__ImprintEnvironment();
 
