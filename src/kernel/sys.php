@@ -570,7 +570,7 @@
 		}
 		// endregion
 	}
-	class_alias( 'PBKernel', 'PBKernel' );
+	class_alias( 'PBKernel', 'PBSysKernel' );
 
 	final class PBKernelAccessor {
 		/**@var PBKernel*/
