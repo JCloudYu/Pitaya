@@ -516,9 +516,17 @@
 		return $query;
 	}
 	function MongoID( $hexStr = NULL ) {
-		try{
-			return new ObjectID( func_num_args() > 0 ? "{$hexStr}" : NULL );
-		} catch(Exception $e) {
+		try {
+			if ( func_num_args() > 0 ) {
+				$objId = new ObjectID("{$hexStr}");
+			}
+			else {
+				$objId = new ObjectID();
+			}
+			
+			return $objId;
+		}
+		catch(Exception $e) {
 			return NULL;
 		}
 	}
