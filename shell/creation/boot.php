@@ -118,23 +118,23 @@
 			
 			
 			case "--topology":
-				$options->refTopology = @realpath(@trim(@array_shift($ARGV)));
+				$options->refTopology = @trim(@array_shift($ARGV));
 				break;
 			
 			case "--share":
-				$options->refShare = @realpath(@trim(@array_shift($ARGV)));
+				$options->refShare = @trim(@array_shift($ARGV));
 				break;
 			
 			case "--basis":
-				$options->refBasis = @realpath(@trim(@array_shift($ARGV)));
+				$options->refBasis = @trim(@array_shift($ARGV));
 				break;
 			
 			case "--data":
-				$options->refData = @realpath(@trim(@array_shift($ARGV)));
+				$options->refData = @trim(@array_shift($ARGV));
 				break;
 			
 			case "--lib":
-				$options->refLib = @realpath(@trim(@array_shift($ARGV)));
+				$options->refLib = @trim(@array_shift($ARGV));
 				break;
 				
 			default:

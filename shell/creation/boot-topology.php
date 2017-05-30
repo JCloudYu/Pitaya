@@ -28,12 +28,19 @@
 	
 	
 	
-	chdir( $projPath );
-	define( 'SOURCE_PROJECT_PATH', $projPath = getcwd() );
-	
-	
+	define( 'SOURCE_PROJECT_PATH', @realpath($projPath) );
 	@require_once COMMAND_DIR . "/boot-process-operations.php";
 	
+	
+
+	$options->refShare = @realpath($options->refShare);
+	$options->refBasis = @realpath($options->refBasis);
+	$options->refData  = @realpath($options->refData);
+	$options->refLib   = @realpath($options->refLib);
+	
+	
+	
+	chdir( SOURCE_PROJECT_PATH );
 	if ( !empty($top->spaces) ) {
 		if ( !is_array($top->spaces) ) {
 			fwrite( STDERR,  "spaces field must be an array!" . PHP_EOL );
