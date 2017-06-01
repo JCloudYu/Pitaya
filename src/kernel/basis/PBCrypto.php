@@ -85,6 +85,9 @@
 	}
 	
 	final class PBJWT {
+		const ALG_NONE	= 'NONE';
+		const ALG_HS256 = 'HS256';
+	
 		public static function Encode( stdClass $payload, $alg = 'NONE', $secret = '' ) {
 			$payload = PBBase64::URLEncode(json_encode($payload));
 			

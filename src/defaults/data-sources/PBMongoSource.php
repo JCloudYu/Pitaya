@@ -515,7 +515,7 @@
 		
 		return $query;
 	}
-	function MongoID( $hexStr = NULL ) {
+	function PBMongoID( $hexStr = NULL ) {
 		try {
 			if ( func_num_args() > 0 ) {
 				$objId = new ObjectID("{$hexStr}");
@@ -529,6 +529,9 @@
 		catch(Exception $e) {
 			return NULL;
 		}
+	}
+	function MongoID( $hexStr = NULL ) {
+		return call_user_func_array( 'PBMongoID', func_get_args() );
 	}
 	function MongoRegex( $pattern, $flag = "" ) {
 		return new Regex( $pattern, $flag );

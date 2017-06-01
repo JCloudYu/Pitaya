@@ -1,5 +1,5 @@
 <?php
-	class PBProcess extends PBObject {
+	class PBProc extends PBObject {
 		public static function Module( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
 			return call_user_func( 'PBModule', $moduleName, $reusable, $noThrow );
 		}
@@ -13,7 +13,7 @@
 	
 		/** @var PBProcess */
 		public static $_singleton = NULL;
-		public static function Process() { return self::$_singleton; }
+		public static function Proc() { return self::$_singleton; }
 		
 		/** @var PBKernel */
 		private $_system = NULL;
@@ -259,11 +259,15 @@
 			}
 		}
 	}
+	class_alias( 'PBProc', 'PBProcess' );
 	
 	function PBProcess(){
+		return PBProc();
+	}
+	function PBProc() {
 		static $_singleton = NULL;
 		if ( $_singleton === NULL ) {
-			$_singleton = PBProcess::Process();
+			$_singleton = PBProcess::Proc();
 		}
 		
 		return $_singleton;
