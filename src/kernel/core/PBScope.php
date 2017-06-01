@@ -25,6 +25,10 @@
 			else {
 				$this->_scope_levels = explode( "{$glue}", "{$breadcrumb}" );
 			}
+			
+			
+			
+			return $this;
 		}
 		public function append( $breadcrumb = [], $glue = '#' ) {
 			if ( is_array($breadcrumb) ) {
@@ -39,7 +43,14 @@
 			}
 			
 			array_push( $this->_scope_levels, ...$breadcrumb );
+			
+			
+			
+			return $this;
 		}
+		
+		
+		
 		public function push( $item ) {
 			$arguments = func_get_args();
 			if ( count($arguments) == 0 )
