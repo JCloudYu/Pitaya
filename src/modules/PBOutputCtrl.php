@@ -1,6 +1,4 @@
 <?php
-	using( 'sys.tool.PBHTML' );
-
 	class PBHttpOut extends PBModule {
 		protected static $_statusCode = NULL;
 		public static function StatusCode( $code ) {
@@ -97,7 +95,7 @@
 				if ( !is_array( $fileDesc['attr'] ) )
 					$attributes = $fileDesc['attr'];
 				else
-					$attributes = PBHTML::GenAttribute($fileDesc['attr']);
+					$attributes = self::GenAttribute($fileDesc['attr']);
 				
 				$js['file prepend'] .= "<script type='application/javascript' src='{$fileDesc[ 'path' ]}' {$attributes}></script>";
 			}
@@ -110,7 +108,7 @@
 				if ( !is_array( $fileDesc['attr'] ) )
 					$attributes = $fileDesc['attr'];
 				else
-					$attributes = PBHTML::GenAttribute($fileDesc['attr']);
+					$attributes = self::GenAttribute($fileDesc['attr']);
 				
 				$js['file append'] .= "<script type='application/javascript' src='{$fileDesc[ 'path' ]}' {$attributes}></script>";
 			}
@@ -126,7 +124,7 @@
 				if ( !is_array( $fileDesc['attr'] ) )
 					$attributes = $fileDesc['attr'];
 				else
-					$attributes = PBHTML::GenAttribute($fileDesc['attr']);
+					$attributes = self::GenAttribute($fileDesc['attr']);
 				
 				$css['file'] .= "<link href='{$fileDesc[ 'path' ]}' type='text/css' rel='stylesheet' {$attributes} />";
 			}
@@ -135,7 +133,7 @@
 			// region [ Other Header Contents ]
 			$header	 = implode('', $this->_header);
 			$metaTag = implode('', ary_filter( $this->_meta, function( $meta, &$idx ) {
-				$attributes = PBHTML::GenAttribute($meta);
+				$attributes = self::GenAttribute($meta);
 				return "<meta {$attributes}/>";
 			}));
 			// endregion
@@ -143,15 +141,15 @@
 
 
 			// region [ Generate Body and Html Attributes ]
-			$bodyAttr = PBHTML::GenAttribute( @$this->_elm[ 'body' ] );
-			$htmlAttr = PBHTML::GenAttribute( @$this->_elm[ 'html' ] );
+			$bodyAttr = self::GenAttribute( @$this->_elm[ 'body' ] );
+			$htmlAttr = self::GenAttribute( @$this->_elm[ 'html' ] );
 			// endregion
 			// region [ Generate Body Content ]
 			$contentWrapper = call_user_func(function( $baseBody, $elm ) {
 				if ( empty($elm[ 'page' ]) || !is_array( $elm[ 'page' ] ) ) 
 					return $baseBody;
 
-				$attributes = PBHTML::GenAttribute( $elm[ 'page' ] );
+				$attributes = self::GenAttribute( $elm[ 'page' ] );
 				return empty( $attributes ) ? $baseBody : "<div {$attributes}>{$baseBody}</div>";
 			}, "{$outputCtnt}", $this->_elm);
 			// endregion
@@ -311,74 +309,35 @@
 					break;
 			}
 		}
-		// endregion
+		
+		public static function GenAttribute( $attrList ){
+			if ( is_a( $attrList, stdClass::class ) )
+				$attrList = (array)$attrList;
+				
+			if ( !is_array($attrList) ) return "";
 		
 		
-		// region [ Deprecated ]
-		public function property($name, $value) {
 		
-			DEPRECATION_WARNING( "PBHtmlOutput::property is marked as deprecated and will be removed in the following versions!" );
-			
-			
-			$name = strtolower($name);
-			switch ( $name )
-			{
-				case 'title':
-					$this->_header[] = "<title>{$value}</title>";
-					break;
-				case 'favicon':
-					$this->_header[] = "<link rel='shortcut icon' href='{$this->localResourcePath}{$value}' />";
-					break;
-				case 'charset':
-					$this->_meta[] = [ "charset" => $value ];
-//					$this->_meta[] = [ "http-equiv" => "Content-Type" "content" => "text/html; charset={$value}" ];
-					break;
-				case 'viewport':
-					$this->_meta[] = [ "name" => "viewport", "content" => $value ];
-					break;
-
-
-				case 'lang':
-					$this->_elm[ 'html' ][ 'lang' ] = "{$value}";
-					break;
-
-				case 'page':
-				case 'body':
-				case 'html':
-					$this->_elm[ $name ][ 'class' ] = "{$value}";
-
-				default:
-					$this->_prop[ $name ] = $value;
-					break;
+			$buff = [];
+			foreach( $attrList as $attr => $value ) {
+				if ( !is_string( $attr ) ) {
+					$attr  = $value;
+					$value = FALSE;
+				}
+				
+				$attr = str_replace( [ "\"", "'", "<", ">", "/", "=" ], "", $attr );
+				if ( $attr == "" ) continue;
+				
+				if ( $value === FALSE )
+					$buff[] = "{$attr}";
+				else
+				{
+					$value = htmlspecialchars( $value );
+					$buff[] = "{$attr}=\"{$value}\"";
+				}
 			}
-		}
-		public function __get_rcPath() {
-			DEPRECATION_WARNING( "PBhtmlOutput::rcPath is marked as deprecated and will be removed in the following versions!" );
-			return $this->localResourcePath; 
-		}
-		public function __set_rcPath($value) {
-			DEPRECATION_WARNING( "PBhtmlOutput::rcPath is marked as deprecated and will be removed in the following versions!" ); 
-			$this->localResourcePath = (is_string($value)) ? $value : ''; 
-		}
-		public function __set_jsFile($value) {
-			DEPRECATION_WARNING( "PBhtmlOutput::jsFile is marked as deprecated and will be removed in the following versions!" ); 
-			$this->addFile( $value, 'js' ); 
-		}
-		public function __set_cssFile($value) {
-			DEPRECATION_WARNING( "PBhtmlOutput::jsFile is marked as deprecated and will be removed in the following versions!" ); 
-			$this->addFile( $value, 'css' ); 
-		}
-		public function __get_jsFilesAppended() {
-			DEPRECATION_WARNING( "PBhtmlOutput::jsFilesAppended is marked as deprecated and will be removed in the following versions!" ); 
-			return $this->_jsFiles['append']; 
-		}
-		public function __get_jsFilesPrepended() {
-			DEPRECATION_WARNING( "PBhtmlOutput::jsFilesPrepended is marked as deprecated and will be removed in the following versions!" );  
-			return $this->_jsFiles['prepend'];
-		}
-		public function __set_jsEnd( $value ) {
-			DEPRECATION_WARNING( "PBhtmlOutput::jsEnd is marked as deprecated and will be removed in the following versions!" );  
-			$this->addJS($value, "LAST"); 
+			
+			return implode( " ", $buff );
 		}
 		// endregion
 	}
