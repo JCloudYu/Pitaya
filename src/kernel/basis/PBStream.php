@@ -8,7 +8,7 @@
 		
 		public function tee( $resource )
 		{
-			if ( $resource === NULL ) return;
+			if ( $resource === NULL ) return NULL;
 
 			// Other PBStream object is feed
 			if ( is_a( $resource, "PBStream" ) )
@@ -86,13 +86,11 @@
 			return $this;
 		}
 		
+		
 		public function __get_numBranches()
 		{
 			return count($this->_pipes);
 		}
-		
-		
-		
 		private function _attachStream( PBStream $resource )
 		{
 			foreach ( $resource->_pipes as $handle )
