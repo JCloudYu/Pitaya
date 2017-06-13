@@ -40,12 +40,10 @@
 
 	// INFO: Load system core libraries and prepare system constants
 	using( 'kernel.extension.*' );
-	using( 'kernel.experimental.extension.*' );
 	using( 'kernel.basis.PBObject' );
 	using( 'kernel.basis.*' );
 	using( 'kernel.core.*' );
 	using( 'kernel.sys' );
-	using( 'kernel.experimental.*' );
 	
 	s_define( 'PITAYA_ADD_SUPPORTIVE_LIB', TRUE, TRUE, FALSE );
 	if ( PITAYA_ADD_SUPPORTIVE_LIB ) {
