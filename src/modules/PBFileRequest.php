@@ -1,8 +1,5 @@
 <?php
-	using('sys.tool.PBStreaming');
-
-	class PBFileRequest extends PBModule
-	{
+	class PBFileRequest extends PBModule {
 		private $_targetPath	= '';
 		private static $_acceptableExt	= NULL;
 
@@ -145,7 +142,7 @@
 				header("Last-Modified: {$fileTime}");
 				header("ETag: \"{$fileETag}\"");
 
-				PBStreaming::ChunkStream($outStream, $fileStream, array('from' => 0, 'to' => $fileSize-1));
+				self::ChunkStream($outStream, $fileStream, array('from' => 0, 'to' => $fileSize-1));
 
 				fclose($fileStream);
 				fclose($outStream);
@@ -160,7 +157,6 @@
 
 			exit(0);
 		}
-
 		public function multiRanges($filePath, $ranges)
 		{
 			$fileSize = filesize($filePath);
@@ -230,7 +226,7 @@
 				echo "Content-Type: {$this->_mime}" . CRLF;
 				echo "Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}" . CRLF . CRLF;
 
-				PBStreaming::ChunkStream($outStream, $fileStream, $range);
+				self::ChunkStream($outStream, $fileStream, $range);
 
 			}
 			echo CRLF . "--{$boundaryToken}--" . CRLF;
@@ -238,7 +234,6 @@
 			fclose($fileStream);
 			fclose($outStream);
 		}
-
 		public function singleRange($filePath, $ranges)
 		{
 			$fileSize = filesize($filePath);
@@ -296,9 +291,25 @@
 			header("Content-Range: bytes {$range['from']}-{$range['to']}/{$fileSize}");
 
 
-			PBStreaming::ChunkStream($outStream, $fileStream, $range);
+			self::ChunkStream($outStream, $fileStream, $range);
 
 			fclose($fileStream);
 			fclose($outStream);
+		}
+		
+		public static function ChunkStream($oStream, $iStream, $range, $packageSize = 1024, $restrict = FALSE) {
+			$from = $range['from']; $to = $range['to'];
+			$length = ($to - $from) + 1;
+
+			fseek($iStream, $from);
+			set_time_limit(0);
+
+			while (!feof($iStream) && ($length > 0))
+			{
+				$readSize = min($length, $packageSize);
+				fwrite($oStream, fread($iStream, $readSize));
+				fflush($oStream);
+				$length -= $readSize;
+			}
 		}
 	}
