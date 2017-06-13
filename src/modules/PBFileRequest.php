@@ -48,10 +48,7 @@
 		public function __get_downloadName() { return $this->_downloadName; }
 
 
-		public function execute( $chainData )
-		{
-			$CONSTANT = PBConstant::Constant();
-			
+		public function execute( $chainData ) {
 			$initData = $this->data->initDate;
 			$this->_targetPath = (is_array($initData)) ? implode('/', $initData) : "{$initData}";
 		
@@ -83,7 +80,8 @@
 
 			// INFO: Path validation
 			$searchPath = $this->_relPath;
-			array_unshift( $searchPath, "{$CONSTANT['__WORKING_ROOT__']}" );
+			$workingRoot = __WORKING_ROOT__;
+			array_unshift( $searchPath, $workingRoot );
 
 			$filePath = NULL; $targetPath = $this->_targetPath;
 			ary_filter( $searchPath, function( $pathDir ) use( $targetPath, &$filePath ) {
