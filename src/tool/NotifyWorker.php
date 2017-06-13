@@ -4,10 +4,9 @@
 	 ** Created by JCloudYu on 2015/11/02 19:40
 	 **/
 	using( 'kernel.basis.PBObject' );
-	using( 'sys.net.NotifyKernel.INotifyKernel' );
+	using( 'tool.NotifyKernel.INotifyKernel' );
 
-	class NotifyWorker extends PBObject
-	{
+	class NotifyWorker extends PBObject {
 		/**
 		 * @var INotifyKernel Notification Kernel Interface
 		 */

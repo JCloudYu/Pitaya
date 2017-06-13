@@ -1,5 +1,5 @@
 <?php
-	using('sys.db.ExtPDO');
+	using('tool.ExtPDO');
 
 	final class PBDBCtrl {
 		public static function DB( $identifier = NULL, $conInfo = NULL, $options = array( 'CREATE_VAR' ) )

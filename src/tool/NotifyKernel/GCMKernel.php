@@ -1,5 +1,5 @@
 <?php
-	using( 'sys.net.NotifyKernel.INotifyKernel' );
+	using( 'tool.NotifyKernel.INotifyKernel' );
 	
 	class GCMKernel extends PBObject implements INotifyKernel
 	{

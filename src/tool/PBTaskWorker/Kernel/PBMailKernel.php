@@ -1,5 +1,5 @@
 <?php
-	using( 'sys.tool.PBTaskWorker.PBTaskKernel' );
+	using( 'tool.PBTaskWorker.PBTaskKernel' );
 	
 
 	class PBMailKernel extends PBTaskKernel
