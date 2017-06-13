@@ -269,8 +269,8 @@
 
 
 
-			// INFO: Customized service decision logics
-			if ( self::$_bootResolver !== NULL ) {
+			// INFO: Customized service decision logic
+			if ( is_callable(self::$_bootResolver) ) {
 				$resolver = self::$_bootResolver;
 				$result = call_user_func($resolver, $service, $moduleRequest, $attributes, $fragment);
 				if ( !empty($result) ) {
@@ -359,32 +359,6 @@
 
 
 
-			// INFO: Default basis chaining mode
-			// MARK: Developer customizable only
-			s_define( 'DEFAULT_BASIS_CHAIN_DESCRIPTOR',		'', TRUE );
-			s_define( 'DEFAULT_BASIS_CHAIN_WORKING_DIR',	'', TRUE );
-			
-			$basisChain = @json_decode( @file_get_contents( path( 'defaults', 'basis-chain.json' ) ), TRUE );
-			$basisChainPath	= DEFAULT_BASIS_CHAIN_DESCRIPTOR;
-			if ( !empty( $basisChainPath ) && is_file( $basisChainPath ) ) {
-				$custChain = @json_decode( @file_get_contents($basisChainPath), TRUE );
-				$basisChain = array_merge( $basisChain, $custChain );
-			}
-			if ( !empty($basisChain[ $service ]) ) {
-				$workingDir = DEFAULT_BASIS_CHAIN_WORKING_DIR;
-				$this->_entryBasis		= "PBSystem.PBExecCtrl#PBBasisChain";
-				$this->_entryBasisParam	= $basisChain[$service];
-
-				define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir() );
-				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-
-				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-				return;
-			}
-
-
-
 			$reqService = "{$service}";
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
@@ -401,21 +375,6 @@
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
-
-/*
-			$state = $state || file_exists( path( "modules.{$service}.{$service}" ) . ".php" );
-			if ($state) {
-				$this->_entryBasis = $service;
-
-				define( 'WORKING_ROOT', PITAYA_ROOT . "/modules/{$this->_entryBasis}" );
-				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-
-
-				$GLOBALS['service'] = $service;
-				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-				return;
-			}
-*/
 			// endregion
 
 			throw(new Exception("Cannot locate default basis ({$reqService})!"));
