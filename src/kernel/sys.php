@@ -190,8 +190,7 @@
 			$this->__forkProcess($this->_entryBasis);
 		}
 		
-		private $_entryBasis		= NULL;
-		private $_entryBasisParam	= NULL;
+		private $_entryBasis = NULL;
 		private function __judgeMainService( $argv = NULL ) {
 			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
@@ -382,17 +381,17 @@
 		// endregion
 
 		// region [ Process Control ]
-		/** @var PBProcess */
+		/** @var PBProc */
 		private $_process = NULL;
 		private function __forkProcess($service) {
 			if ( $this->_process ) return;
 			
 			
 			
-			$this->_process = new PBProcess( $this );
+			$this->_process = new PBProc( $this );
 
 			chdir( WORKING_ROOT );
-			$this->_process->attachMainService($service, $this->_entryBasisParam);
+			$this->_process->prepareQueue($service);
 		}
 		// endregion
 		
@@ -537,8 +536,13 @@
 		public function __construct( PBKernel $sysInst ) {
 			$this->_relatedSys = $sysInst;
 		}
-		
 		public function acquireModule($moduleName, $reuse = FALSE) {
 			return call_user_func_array([ $this->_relatedSys, "acquireModule" ], func_get_args());
+		}
+		public function addSearchPath( $package ) {
+			return $this->_relatedSys->addModuleSearchPath( $package );
+		}
+		public function removeSearchPath( $package ) {
+			return $this->_relatedSys->removeModuleSearchPath( $package );
 		}
 	}
