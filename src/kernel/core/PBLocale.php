@@ -1,6 +1,4 @@
 <?php
-	using( 'sys.tool.PBScriptCtrl' );
-
 	final class PBLocale extends PBObject implements ArrayAccess {
 		public static function Locale() {
 			/** @var PBLocale $__locale_singleton */
@@ -50,9 +48,8 @@
 			
 			
 			$this->_curLocale = $localeName;
-			$locale	= PBScriptCtrl::Imprint( $localePath );
-			$locale	= array_key_exists( 'locale', $locale ) ? $locale['locale'] : [];
-			$this->_storedLocales[$this->_curLocale] = $locale;
+			$locale	= self::Imprint( $localePath );
+			$this->_storedLocales[$this->_curLocale] = is_array($locale) ? $locale : [];
 		}
 
 
@@ -76,8 +73,13 @@
 			
 			return strtr($offset, @$this->_storedLocales[$this->_curLocale] ?: []);
 		}
+		
+		
+		
+		private static function Imprint($path) {
+			$locale = []; require $path; return @$locale;
+		}
 	}
-	
 	function PBLocale(){
 		static $_singleton = NULL;
 		if ( $_singleton === NULL ) {
