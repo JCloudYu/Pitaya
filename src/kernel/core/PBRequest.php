@@ -855,10 +855,6 @@
 			DEPRECATION_WARNING( "PBRequest::httpHost property is marked as deprecated and will be removed in the following versions soon!" );
 			return  @"{$this->server[ 'HTTP_HOST' ]}";
 		}
-		public function __get_remoteIP() {
-			DEPRECATION_WARNING( "PBRequest::remoteIP property is marked as deprecated and will be removed in the following versions soon!" );
-			return @$this->_incomingRecord['environment']['server']['REMOTE_ADDR'];
-		}
 		public function __get_nativeGet(){
 			DEPRECATION_WARNING( "PBRequest::nativeGet property is marked as deprecated and will be removed in the following versions soon!" );
 			return $this->_incomingRecord['request']['get'];
