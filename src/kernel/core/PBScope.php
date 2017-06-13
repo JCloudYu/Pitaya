@@ -1,13 +1,5 @@
 <?php
 	final class PBScope {
-		private static $_singleton = NULL;
-		public static function Scope() {
-			DEPRECATION_WARNING( "PBScope::Scope api is marked as deprecated! Please refer to PBScope() instead!" );
-			return PBScope();
-		}
-
-
-
 		private $_scope_levels;
 		public function __construct( $stack = '', $seperator = ' ' ) {
 			if ( !is_array($stack) )
@@ -76,7 +68,9 @@
 		}
 		public function __toString() { return $this->breadcrumb(); }
 	}
-	class_alias( 'PBScope', 'PBScopeTracer', FALSE );
+	
+	
+	
 	function PBScope() {
 		static $_singleton = NULL;
 		if ( $_singleton === NULL ) {
