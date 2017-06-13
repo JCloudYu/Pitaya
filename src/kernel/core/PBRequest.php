@@ -501,21 +501,6 @@
 
 
 			if ( !$CUSTOM_CAST ) return ($hasData) ? CAST( $value, $type, $default ) : $default;
-				
-				
-			
-			// INFO: Legacy Mode ( where type is an array )
-			if ( array_key_exists( 'options', $type ) ) 
-			{
-				$options = NULL;
-				if ( is_array($type) )
-				{
-					$options = @$type['options'];
-					$type	 = @$type['type'];
-				}
-				
-				return ( $hasData ) ? TO( $value, $type, $options ) : $default;
-			}
 			
 			
 			
