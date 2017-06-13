@@ -75,15 +75,10 @@
 			return NULL;
 		}
 	}
-	
 	function PBDataSource($identifier = '', $DSURI = '', $options = array(), $driverOpt = array(), $FORCE_CREATE = FALSE) {
 		return PBDataSource::Source( $identifier, $DSURI, $options, $driverOpt, $FORCE_CREATE );
 	}
-
-
-
-	abstract class PBIDataSource extends PBObject
-	{
+	abstract class PBIDataSource extends PBObject {
 		abstract public function __get_source();
 
 

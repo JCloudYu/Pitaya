@@ -1,8 +1,7 @@
 <?php
 	using('kernel.core.PBRequest');
 	
-	final class PBCORS extends PBObject
-	{
+	final class PBCORS extends PBObject {
 		private static $_reqInstance = NULL;
 		public static function CORS()
 		{

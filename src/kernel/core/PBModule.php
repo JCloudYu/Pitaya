@@ -89,15 +89,6 @@
 			return $this( FALSE );
 		}
 	}
-	
-	/**
-	 * @param $moduleName
-	 * @param bool $reusable
-	 * @param bool $noThrow
-	 * @return PBModule|null
-	 * @throws Exception
-	 * @throws PBException
-	 */
 	function PBModule( $moduleName, $reusable = TRUE, $noThrow = FALSE ) {
 		static $_attachedModule = [];
 		
