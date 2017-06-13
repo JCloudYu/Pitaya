@@ -20,10 +20,7 @@
 		
 		private $_curLocale 	= FALSE;
 		private $_storedLocales = [];
-		public function __construct() {
-			$this->_basePackage = self::$_sharedBasePackage;
-			$this->_localeLibPath = path($this->_basePackage);
-		}
+		public function __construct() { }
 
 
 
