@@ -26,7 +26,6 @@
    @include_once ROOT . "/common.php";
 	
 	require_once PITAYA_ROOT . '/kernel/env.core.php';
-	require_once PITAYA_ROOT . '/kernel/env.runtime.php';
 	
 	
 
