@@ -22,10 +22,10 @@
    @include_once ROOT . "/pitaya.env.php";
 	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? __PITAYA_PATH : ROOT . '/Pitaya';
 	if ( IS_WIN_ENV && !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) ) {
-		$pitayaRootPath = __resolve_lnk( "{$pitayaRootPath}.lnk" );
+		$pitayaRootPath = resolveLnk( "{$pitayaRootPath}.lnk" );
 	}
 	$pitayaRootPath = realpath($pitayaRootPath);
 	
-	define( 'PITAYA_ROOT', $pitayaRootPath );
-	define( '__ROOT__', PITAYA_ROOT ); // DEPRECATED: __ROOT__ will be removed in 2.5.0
-	require_once PITAYA_ROOT . "/portal.php";
+	define( '__PITAYA_ROOT', $pitayaRootPath );
+	define( '__ROOT__', __PITAYA_ROOT ); // DEPRECATED: __ROOT__ will be removed in 2.5.0
+	require_once __PITAYA_ROOT . "/portal.php";
