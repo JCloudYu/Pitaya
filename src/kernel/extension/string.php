@@ -2,6 +2,7 @@
 	// INFO: Data Structure Conversion
 	function xml2ary( $xmlString )
 	{
+		/** @var $ImprintFunc Callable */
 		static $ImprintFunc = NULL;
 		if ( $ImprintFunc === NULL ) {
 			$ImprintFunc = function( SimpleXMLElement $imprint ) use ( &$ImprintFunc )
