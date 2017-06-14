@@ -19,3 +19,5 @@
 		else
 			s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir(), TRUE );
 	});
+
+	define( 'CLEAR_SCREEN', chr(27)."[2J".chr(27)."[;H" );

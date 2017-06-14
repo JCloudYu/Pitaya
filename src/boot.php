@@ -17,7 +17,6 @@
 	
 	
 	require_once PITAYA_ROOT . "/kernel/env.version.php";
-	require_once PITAYA_ROOT . "/kernel/env.boot.php";
 	
 	// INFO: Runtime configurations
    @include_once ROOT . '/pitaya.php';
