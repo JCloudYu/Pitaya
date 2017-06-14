@@ -31,7 +31,7 @@
 	});
 
 	s_define( 'DEBUG_CONSOLE_WIDTH', 350 );
-	s_define( '__DEBUG_MODE__', FALSE );
-	s_define( '__THROW_EXCEPTION__', TRUE );
-	s_define( '__LOG_EXCEPTION__', TRUE );
+	s_define( 'DEBUG_MODE', FALSE );
+	s_define( 'THROWN_EXCEPTIONS', TRUE );
+	s_define( 'LOG_EXCEPTIONS', TRUE );
 	s_define( 'FORCE_LOG_POSITION', FALSE );

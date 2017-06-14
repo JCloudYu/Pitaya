@@ -163,8 +163,8 @@
 	// endregion
 	
 	final class DEBUG {
-		public static function IS_SILENT() { return (self::$_silent) || (__DEBUG_MODE__ !== TRUE); }
-		public static function IS_DEBUG_MODE() { return __DEBUG_MODE__ === TRUE; }
+		public static function IS_SILENT() { return (self::$_silent) || (DEBUG_MODE !== TRUE); }
+		public static function IS_DEBUG_MODE() { return DEBUG_MODE === TRUE; }
 	
 		private static $_silent = FALSE;
 		public static function Silent()	 { self::$_silent = TRUE; }

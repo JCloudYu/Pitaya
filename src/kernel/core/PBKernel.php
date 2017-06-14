@@ -67,7 +67,7 @@
 						$errMsg .= "\nData:\n" . print_r( $descriptor, TRUE );
 				}
 
-				if ( __LOG_EXCEPTION__ === TRUE )
+				if ( LOG_EXCEPTIONS === TRUE )
 				{
 					PBLog::SYSLog( print_r($e, TRUE), "system.exception.pblog" );
 					$extMsg = "See exception log for more information!";
@@ -112,12 +112,12 @@
 					$errProcObj->execute( $e );
 				}
 				else
-				if ( __THROW_EXCEPTION__ === TRUE )
+				if ( THROWN_EXCEPTIONS === TRUE )
 				{
 					throw( $e );
 				}
 				else
-				if ( IS_HTTP_ENV && __DEBUG_MODE__ )
+				if ( IS_HTTP_ENV && DEBUG_MODE )
 				{
 					if ( !headers_sent() )
 					{
