@@ -39,7 +39,7 @@
 			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_BASIS ) ? "[{$info['service']}]" : '';
 			$routeInfo	= ( $LOG_INFO & self::LOG_INFO_ROUTE) ? "[{$info['route']}]" : '';
 			$posInfo	= " ";
-			if ( FORCE_LOG_POSITION && DEBUG_BACKTRACE_ENABLED ) {
+			if ( DEBUG_BACKTRACE_ENABLED ) {
 				$backtrace = debug_backtrace();
 				$posInfo = " {$backtrace[2]['file']}:{$backtrace[2]['line']}\n";
 			}

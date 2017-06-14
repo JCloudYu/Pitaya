@@ -34,4 +34,3 @@
 	s_define( 'DEBUG_MODE', FALSE );
 	s_define( 'THROWN_EXCEPTIONS', TRUE );
 	s_define( 'LOG_EXCEPTIONS', TRUE );
-	s_define( 'FORCE_LOG_POSITION', FALSE );
