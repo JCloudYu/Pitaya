@@ -18,6 +18,7 @@
 	
 	
 	require_once PITAYA_ROOT . "/kernel/_env/env.const.php";
+	require_once PITAYA_ROOT . "/kernel/_env/env.standalone.php"; // For standalone exec mode only
 	
 	// INFO: Runtime configurations
    @include_once ROOT . '/pitaya.php';
@@ -37,5 +38,5 @@
 	
 	
 	
-	require_once PITAYA_ROOT . "/kernel/env.cleanup.php";
+	require_once PITAYA_ROOT . "/kernel/_env/env.cleanup.php";
 	pb_metric();
