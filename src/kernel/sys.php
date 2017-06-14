@@ -195,7 +195,7 @@
 			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
 			
-			if ( SYS_EXEC_ENV == EXEC_ENV_HTTP ) {
+			if ( IS_HTTP_ENV ) {
 			
 				$reqURI		= @"{$_SERVER['REQUEST_URI']}";
 				$request	= empty($reqURI) ? array() : explode('?', $reqURI);

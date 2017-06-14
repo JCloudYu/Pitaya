@@ -174,7 +174,7 @@
 		public static function Verbose() { self::$_silent = FALSE; }
 		
 		public static function VarDump(...$args) {
-			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP));
+			echo self::VDump($args, IS_HTTP_ENV);
 		}
 		public static function BackTrace($args = 0) {
 			if ( !DEBUG_BACKTRACE_ENABLED || self::IS_SILENT() ) return NULL;
@@ -311,7 +311,7 @@
 		}
 		public static function VarDumpParent(...$args) {
 			DEPRECATION_WARNING( "DEBUG::VarDumpParent api is marked as deprecated and will be removed within the following versions!" );
-			echo self::VDump($args, (SYS_EXEC_ENV == EXEC_ENV_HTTP), TRUE);
+			echo self::VDump($args, IS_HTTP_ENV, TRUE);
 		}
 		public static function VarDumpParentString(...$args) {
 			DEPRECATION_WARNING( "DEBUG::VarDumpParentString api is marked as deprecated and will be removed within the following versions!" );

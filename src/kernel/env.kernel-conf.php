@@ -9,10 +9,6 @@
 	define( 'CR',	"\r" );
 	define( 'CRLF',	"\r\n" );
 	define( 'BR',	'<br>' );
-	define( 'EXEC_ENV_CLI',	 'CLI' );
-	define( 'EXEC_ENV_HTTP', 'HTTP' );
-	
-	define( 'SYS_EXEC_ENV', IS_CLI_ENV ? EXEC_ENV_CLI : EXEC_ENV_HTTP );
 	// endregion
 	// region [ Environmental Initialization ]
 	call_user_func(function() {
