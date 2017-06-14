@@ -5,8 +5,8 @@
 
 	define( 'PITAYA_METRIC_BOOT_TIME',		microtime( TRUE ) );
 	define( 'PITAYA_METRIC_BOOT_MEMORY',	memory_get_usage() );
-	require_once __DIR__ . "/env.version.php";
-	require_once __DIR__ . "/env.boot.php";
+	require_once __DIR__ . "/kernel/env.version.php";
+	require_once __DIR__ . "/kernel/env.boot.php";
 
 	// Detect minimum PHP Version
 	if ( PHP_VERSION_ID < 50600 ) {
