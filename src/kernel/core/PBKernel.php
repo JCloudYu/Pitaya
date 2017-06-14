@@ -7,20 +7,6 @@
 		}
 	
 		// region [ Boot Related ]
-		private static $_cacheServicePath	= NULL;
-		private static $_cachedRuntimeAttr	= NULL;
-
-		public static function __imprint_constants() {
-			static $initialized = FALSE;
-
-			if($initialized) return;
-
-			PBKernel::$_cacheServicePath  = BASIS_ROOT;
-			PBKernel::$_cachedRuntimeAttr = array(
-				'standalone' => @$GLOBALS['STANDALONE_EXEC']
-			);
-		}
-		
 		/** @var PBKernel */
 		private static $_SYS_INSTANCE = NULL;
 		public static function boot( $argv = NULL ) {
@@ -244,19 +230,20 @@
 			// INFO: If cli and standalone script has been assigned
 			// MARK: Developer customizable only
 			if ( IS_CLI_ENV && PITAYA_STANDALONE_EXECUTION_MODE ) {
-				$scriptFilePath = self::$_cachedRuntimeAttr['standalone']['cwd'] . "/" . self::$_cachedRuntimeAttr['standalone']['script'];
+				$CWD	= PITAYA_STANDALINE_EXECUTION_DIR;
+				$SCRIPT = PITAYA_STANDALINE_EXECUTION_SCRIPT;
+				
+				$scriptFilePath = "{$CWD}/{$SCRIPT}";
 				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
 				{
 					if ( !empty($service) ) array_unshift( $moduleRequest, $service );
 	
-					$module = basename( self::$_cachedRuntimeAttr['standalone']['script'] );
+					$module = basename($SCRIPT);
 					$ext = substr( $module, -4 );
 					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
 					$this->_entryBasis = "PBSystem.PBExecCtrl#PBVectorChain";
 	
-					define( 'WORKING_ROOT', self::$_cachedRuntimeAttr['standalone']['cwd'] );
-					define( '__WORKING_ROOT__', WORKING_ROOT ); // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-					define( '__STANDALONE_MODULE__', $module );
+					define( 'WORKING_ROOT', $CWD );
 					
 					
 	
@@ -345,7 +332,7 @@
 			if ($state) {
 				$this->_entryBasis = $serviceName;
 
-				define( 'WORKING_ROOT', PBKernel::$_cacheServicePath."/{$this->_entryBasis}" );
+				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 				$GLOBALS['service'] = $serviceName;
@@ -366,7 +353,7 @@
 			if ($state) {
 				$this->_entryBasis = $service;
 
-				define( 'WORKING_ROOT', PBKernel::$_cacheServicePath."/{$this->_entryBasis}" );
+				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
 				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
 
 

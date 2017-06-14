@@ -26,7 +26,6 @@
 	$_SERVER['argc'] = count($_SERVER['argv']);
 
 
-	PBKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
 
 	// INFO: Clean up everything
