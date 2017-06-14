@@ -35,7 +35,7 @@
 					$linkPath = "{$path}.lnk";
 					if ( is_dir( $path ) || !is_file( $linkPath ) ) continue;
 					
-					self::$_kernel_cache[ $key ] = resolveLnk( $linkPath );
+					self::$_kernel_cache[ $key ] = __resolve_lnk( $linkPath );
 				}
 			}
 
@@ -65,7 +65,7 @@
 				if ( IS_WIN_ENV ) {
 					$linkPath = "{$path}.lnk";
 					if ( !is_dir( $path ) && is_file( $linkPath ) ) {
-						$path = resolveLnk( $linkPath );
+						$path = __resolve_lnk( $linkPath );
 					}
 				}
 				

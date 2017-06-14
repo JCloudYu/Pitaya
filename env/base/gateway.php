@@ -22,7 +22,7 @@
    @include_once ROOT . "/pitaya.env.php";
 	$pitayaRootPath = defined( '__PITAYA_PATH' ) ? __PITAYA_PATH : ROOT . '/Pitaya';
 	if ( IS_WIN_ENV && !is_dir( $pitayaRootPath ) && is_file( "{$pitayaRootPath}.lnk" ) ) {
-		$pitayaRootPath = resolveLnk( "{$pitayaRootPath}.lnk" );
+		$pitayaRootPath = __resolve_lnk( "{$pitayaRootPath}.lnk" );
 	}
 	$pitayaRootPath = realpath($pitayaRootPath);
 	
