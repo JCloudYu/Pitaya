@@ -8,26 +8,6 @@
 	s_define('PITAYA_VERSION_SHORT',	PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR, TRUE, TRUE);
 	s_define('PITAYA_VERSION',		PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR . '.' . PITAYA_VERSION_BUILD, TRUE, TRUE);
 	s_define('PITAYA_VERSION_DETAIL', PITAYA_VERSION . '-' . PITAYA_VERSION_PATCH, TRUE, TRUE);
-
-
-
-	call_user_func(function(){
-		if ( PITAYA_STANDALONE_EXECUTION_MODE && is_writable( path( $logPackage = 'working' )) )
-			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage = "{$logPackage}.plog", TRUE );
-		else
-		if ( is_writable( path( $logPackage = 'data' )) )
-			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage = "{$logPackage}.log", TRUE );
-		else
-		if ( is_writable( path( $logPackage = 'root' )) )
-			s_define( "DEFAULT_SYSTEM_LOG_PACKAGE", $logPackage, TRUE );
-		
-
-
-		if ( defined( 'DEFAULT_SYSTEM_LOG_PACKAGE' ) )
-			s_define( "DEFAULT_SYSTEM_LOG_DIR",	path( DEFAULT_SYSTEM_LOG_PACKAGE ), TRUE );
-		else
-			s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir(), TRUE );
-	});
 	
 	
 
