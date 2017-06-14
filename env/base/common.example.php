@@ -3,4 +3,4 @@
 //	define( "__DEBUG_MODE__",			TRUE );		// Default: FALSE
 //	define( "__THROW_EXCEPTION__",		FALSE );	// Default: TRUE
 //	define( "__LOG_EXCEPTION__",		FALSE );	// Default: TRUE
-//	define( "__DEBUG_CONSOLE_WIDTH__",	350 );		// Default: 350
+//	define( "DEBUG_CONSOLE_WIDTH",	350 );		// Default: 350
