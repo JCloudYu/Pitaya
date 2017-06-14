@@ -22,7 +22,7 @@
 				define( '__DEBUG_MODE__', FALSE );
 			}
 			else {
-				define( '__DEBUG_MODE__', IS_POSITIVE($value) );
+				define( '__DEBUG_MODE__', !!$value );
 			}
 		}
 
@@ -35,7 +35,7 @@
 				define( '__THROW_EXCEPTION__', TRUE );
 			}
 			else {
-				define( '__THROW_EXCEPTION__', IS_POSITIVE($value) );
+				define( '__THROW_EXCEPTION__', !!$value );
 			}
 		}
 
