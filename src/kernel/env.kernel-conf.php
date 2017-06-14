@@ -1,10 +1,4 @@
 <?php
-	// region [ Constant Definitions ]
-	define( 'LF',	"\n" );
-	define( 'CR',	"\r" );
-	define( 'CRLF',	"\r\n" );
-	define( 'BR',	'<br>' );
-	// endregion
 	// region [ Environmental Initialization ]
 	call_user_func(function() {
 		$GLOBALS[ 'RUNTIME_ENV' ] = [];
@@ -89,10 +83,3 @@
 		$GLOBALS['RUNTIME_CONF'] = $conf;
 	});
 	// endregion
-
-	
-
-
-
-	// DEPRECATED: __WEB_ROOT__ constant will be removed in 2.5.0
-	define( '__WEB_ROOT__', ROOT, FALSE ); 

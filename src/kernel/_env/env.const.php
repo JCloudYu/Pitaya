@@ -16,4 +16,9 @@
 	s_define( 'SYS_TIMEZONE', 'UTC', TRUE, TRUE );
 	date_default_timezone_set( SYS_TIMEZONE );
 	
-	s_define( 'CLEAR_SCREEN', chr(27)."[2J".chr(27)."[;H", TRUE );
+	
+	s_define( 'CLEAR_SCREEN', chr(27)."[2J".chr(27)."[;H" );
+	s_define( 'LF',	"\n" );
+	s_define( 'CR', "\r" );
+	s_define( 'CRLF', "\r\n" );
+	s_define( 'BR',	'<br>' );
