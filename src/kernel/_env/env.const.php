@@ -1,4 +1,18 @@
 <?php
+	// region [ Customizable Constants ]
+	s_define( 'DEBUG_CONSOLE_WIDTH', 350 );
+	s_define( 'DEBUG_MODE', FALSE );
+	s_define( 'THROWN_EXCEPTIONS', TRUE );
+	s_define( 'LOG_EXCEPTIONS', TRUE );
+	s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir() );
+	// endregion
+
+
+
+
+
+
+	// region [ Restricted Constants ]
 	s_define( 'IS_CLI_ENV', php_sapi_name() === "cli", TRUE, TRUE );
 	s_define( 'IS_HTTP_ENV', !IS_CLI_ENV, TRUE, TRUE );
 	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE, TRUE );
@@ -22,6 +36,7 @@
 	date_default_timezone_set( SYS_TIMEZONE );
 	
 	s_define( 'REQUESTING_METHOD', strtoupper(@"{$_SERVER['REQUEST_METHOD']}"), TRUE, TRUE );
+	// endregion
 	
 	
 	

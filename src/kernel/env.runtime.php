@@ -22,7 +22,4 @@
 		}
 	});
 
-	s_define( 'DEBUG_CONSOLE_WIDTH', 350 );
-	s_define( 'DEBUG_MODE', FALSE );
-	s_define( 'THROWN_EXCEPTIONS', TRUE );
-	s_define( 'LOG_EXCEPTIONS', TRUE );
+	
