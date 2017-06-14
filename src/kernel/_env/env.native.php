@@ -1,5 +1,17 @@
 <?php
-	define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ) );
+	function s_define($name, $value, $sensitive = TRUE, $throwException = FALSE) {
+		if ( !defined($name) ) {
+			define($name, $value, $sensitive === FALSE);
+			return;
+		}
+
+		if( $throwException )
+			throw(new Exception("Constant {$name} has been defined!"));
+	}
+
+
+
+	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE, TRUE );
 
 	function __resolve_lnk( $lnkPath ) {
 		$lnkPath  = realpath($lnkPath);
@@ -15,12 +27,4 @@
 			return preg_replace( '@^.*\00([A-Z]:)(?:[\00\\\\]|\\\\.*?\\\\\\\\.*?\00)([^\00]+?)\00.*$@s', '$1\\\\$2', $linkContent );
 		*/
 	}
-	function s_define($name, $value, $sensitive = TRUE, $throwException = FALSE) {
-		if ( !defined($name) ) {
-			define($name, $value, $sensitive === FALSE);
-			return;
-		}
-
-		if( $throwException )
-			throw(new Exception("Constant {$name} has been defined!"));
-	}
+	

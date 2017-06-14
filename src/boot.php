@@ -4,8 +4,8 @@
 
 
 	define( 'PITAYA_METRIC_BOOT_TIME', microtime(TRUE) );
-	define( 'PITAYA_ROOT', __DIR__ );
-	require_once PITAYA_ROOT . '/kernel/_env/env.native.php';
+	require_once __DIR__ . '/kernel/_env/env.native.php';
+	s_define( 'PITAYA_ROOT', __DIR__, TRUE, TRUE );
 	
 	
 	
