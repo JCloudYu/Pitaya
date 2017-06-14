@@ -1,7 +1,7 @@
 <?php
 	s_define( 'IS_CLI_ENV', php_sapi_name() === "cli", TRUE, TRUE );
 	s_define( 'IS_HTTP_ENV', !IS_CLI_ENV, TRUE, TRUE );
-	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE );
+	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE, TRUE );
 
 
 
@@ -21,18 +21,16 @@
 	s_define( 'SYS_TIMEZONE', 'UTC', TRUE, TRUE );
 	date_default_timezone_set( SYS_TIMEZONE );
 	
+	s_define( 'REQUESTING_METHOD', strtoupper(@"{$_SERVER['REQUEST_METHOD']}"), TRUE, TRUE );
+	
+	
+	
+	
+	
 	
 	s_define( 'CLEAR_SCREEN', chr(27)."[2J".chr(27)."[;H" );
 	s_define( 'LF',	"\n" );
 	s_define( 'CR', "\r" );
 	s_define( 'CRLF', "\r\n" );
 	s_define( 'BR',	'<br>' );
-	
-	if ( IS_CLI_ENV ) {
-		s_define( 'EOL', LF );
-		s_define( 'REQUESTING_METHOD', '' );
-	}
-	else {
-		s_define( 'EOL', BR );
-		s_define( 'REQUESTING_METHOD', strtoupper($_SERVER['REQUEST_METHOD']) );
-	}
+	s_define( 'EOL', IS_CLI_ENV ? LF : BR );
