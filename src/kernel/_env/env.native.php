@@ -11,10 +11,17 @@
 
 
 
-	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE, TRUE );
-
+	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE );
+	s_define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN'), TRUE );
+	s_define( 'IS_COM_LIB_AVAILABLE', !class_exists( 'COM' ), TRUE );
 	function __resolve_lnk( $lnkPath ) {
-		$lnkPath  = realpath($lnkPath);
+		$lnkPath = realpath($lnkPath);
+		if ( !IS_COM_LIB_AVAILABLE ) {
+			return $lnkPath;
+		}
+		
+		
+		
 		$shell = new COM('WScript.Shell');
 		$shortcut = $shell->createshortcut($lnkPath);
 		$targetPath = $shortcut->targetpath;
@@ -26,5 +33,14 @@
 			$linkContent = file_get_contents( $lnkPath );
 			return preg_replace( '@^.*\00([A-Z]:)(?:[\00\\\\]|\\\\.*?\\\\\\\\.*?\00)([^\00]+?)\00.*$@s', '$1\\\\$2', $linkContent );
 		*/
+	}
+	
+	
+	
+	
+	
+	
+	if ( IS_WIN_ENV && !IS_COM_LIB_AVAILABLE ) {
+		error_log( "COM extension ( php_com_dotnet.dll ) is not enabled! Some feature functions will not available!" );
 	}
 	

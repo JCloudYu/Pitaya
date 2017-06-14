@@ -2,31 +2,22 @@
 	if ( defined( 'PITAYA_BASE_CORE_EXECUTED' ) ) return
 	define( 'PITAYA_BASE_CORE_EXECUTED', TRUE );
 
+	// Detect minimum PHP Version
+	if ( PHP_VERSION_ID < 50600 ) {
+		die( "The system requires php 5.6.0 or higher!" );
+	}
+
+
 
 	define( 'PITAYA_METRIC_BOOT_TIME', microtime(TRUE) );
 	require_once __DIR__ . '/kernel/_env/env.native.php';
 	s_define( 'PITAYA_ROOT', __DIR__, TRUE, TRUE );
-	
+	s_define( 'ROOT', realpath(getcwd()), TRUE );
 	
 	
 	
 	require_once PITAYA_ROOT . "/kernel/env.version.php";
 	require_once PITAYA_ROOT . "/kernel/env.boot.php";
-
-	// Detect minimum PHP Version
-	if ( PHP_VERSION_ID < 50600 ) {
-		die( "The system requires php 5.6.0 or higher!" );
-	}
-		
-	if ( IS_WIN_ENV && !class_exists( 'COM' ) ) {
-		die( "COM extension is required in WindowsEnvironment! ( php_com_dotnet.dll )" );
-	}
-		
-		
-	if ( !defined( "ROOT" ) ) {
-		die( "Required system constants are missing ( ROOT, PITAYA_ROOT )!" );
-	}
-	
 	
 	// INFO: Runtime configurations
    @include_once ROOT . '/pitaya.php';
