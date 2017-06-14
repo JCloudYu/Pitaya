@@ -5,6 +5,8 @@
 	s_define( 'THROWN_EXCEPTIONS', TRUE );
 	s_define( 'LOG_EXCEPTIONS', TRUE );
 	s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir() );
+	s_define( 'SYS_TIMEZONE', 'UTC' );
+	date_default_timezone_set( SYS_TIMEZONE );
 	// endregion
 
 
@@ -32,8 +34,8 @@
 
 	s_define( 'PITAYA_BOOT_TIME', PITAYA_METRIC_BOOT_TIME|0, TRUE, TRUE );
 	s_define( 'PITAYA_ZONE_DIFF', date( 'Z' )|0, TRUE, TRUE );
-	s_define( 'SYS_TIMEZONE', 'UTC', TRUE, TRUE );
-	date_default_timezone_set( SYS_TIMEZONE );
+	
+	
 	
 	s_define( 'REQUESTING_METHOD', strtoupper(@"{$_SERVER['REQUEST_METHOD']}"), TRUE, TRUE );
 	// endregion
