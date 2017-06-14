@@ -22,6 +22,10 @@
 
 
 
+	$_SERVER['argv'] = @$_SERVER['argv'] ?: [];
+	$_SERVER['argc'] = count($_SERVER['argv']);
+
+
 	PBKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
 
