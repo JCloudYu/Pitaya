@@ -1,10 +1,5 @@
 <?php
 	// region [ Constant Definitions ]
-	define( 'EON',	"\n" );
-	define( 'EOR',	"\r" );
-	define( 'EORN',	"\r\n" );
-	define( 'EOB',	'<br>' );
-	
 	define( 'LF',	"\n" );
 	define( 'CR',	"\r" );
 	define( 'CRLF',	"\r\n" );

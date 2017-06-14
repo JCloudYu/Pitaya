@@ -122,7 +122,7 @@
 				}
 			}
 
-			if ( $debugOutput ) echo trim($lastResponse) . EON;
+			if ( $debugOutput ) echo trim($lastResponse) . LF;
 
 			$statusCode = CAST( @substr( $lastResponse, 0, 3 ), 'int', 0 );
 			if ( ($statusCode != $expectedCode) )
@@ -136,7 +136,7 @@
 			}
 		}
 		protected static function WriteContent( $socket, $content, $debugOutput = FALSE ) {
-			if ( $debugOutput ) echo trim($content) . EON;
+			if ( $debugOutput ) echo trim($content) . LF;
 
 			fwrite( $socket, "{$content}\r\n" );
 		}
