@@ -1,4 +1,7 @@
 <?php
+	$_SERVER['argv'] = @$_SERVER['argv'] ?: [];
+	$_SERVER['argc'] = count($_SERVER['argv']);
+
 	// region [ Core Path APIs ]
 	final class PBPathResolver {
 		private static $_path_cache = [];

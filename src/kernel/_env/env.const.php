@@ -3,7 +3,6 @@
 	s_define("PITAYA_VERSION_MINOR", 3, TRUE, TRUE);
 	s_define("PITAYA_VERSION_BUILD", 0, TRUE, TRUE);
 	s_define("PITAYA_VERSION_PATCH", 0, TRUE, TRUE);
-	
 	s_define("PITAYA_VERSION_ID",		PITAYA_VERSION_MAJOR * 10000 + PITAYA_VERSION_MINOR * 100 + PITAYA_VERSION_BUILD, TRUE, TRUE);
 	s_define('PITAYA_VERSION_SHORT',	PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR, TRUE, TRUE);
 	s_define('PITAYA_VERSION',		PITAYA_VERSION_MAJOR . '.' . PITAYA_VERSION_MINOR . '.' . PITAYA_VERSION_BUILD, TRUE, TRUE);
@@ -22,3 +21,12 @@
 	s_define( 'CR', "\r" );
 	s_define( 'CRLF', "\r\n" );
 	s_define( 'BR',	'<br>' );
+	
+	if ( IS_CLI_ENV ) {
+		s_define( 'EOL', LF );
+		s_define( 'REQUESTING_METHOD', '' );
+	}
+	else {
+		s_define( 'EOL', BR );
+		s_define( 'REQUESTING_METHOD', strtoupper($_SERVER['REQUEST_METHOD']) );
+	}
