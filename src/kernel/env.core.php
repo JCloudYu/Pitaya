@@ -377,7 +377,7 @@
 	
 	// region [ Performance Evaluation APIs ]
 	function pb_metric(){
-		static $_prevTime = 0;
+		static $_prevTime = 0, $_prevMem = 0;
 		
 		$now = microtime(TRUE);
 		$memoryUsage = memory_get_usage();
@@ -385,19 +385,19 @@
 			'memory' => (object)[
 				'current' => $memoryUsage,
 				'peak'	  => memory_get_peak_usage(),
-				'diff'	  => $memoryUsage - (defined( 'PITAYA_METRIC_KERNEL_MEMORY' ) ? PITAYA_METRIC_KERNEL_MEMORY : 0)
+				'diff'	  => $memoryUsage - $_prevMem
 			],
 			'time' => (object)[
 				'now' => $now,
-				'dur' => $now - (defined( 'PITAYA_METRIC_BOOT_TIME' ) ? PITAYA_METRIC_BOOT_TIME : 0)
+				'dur' => $now - PITAYA_METRIC_BOOT_TIME
 			],
 			'diff' => $now - $_prevTime
 		];
 		
-		$_prevTime = $now;
+		$_prevTime	= $now;
+		$_prevMem	= $memoryUsage;
 		return $result;
 	}
-	pb_metric();
 	// endregion
 	
 	// region [ Runtime Supportive APIs ]
