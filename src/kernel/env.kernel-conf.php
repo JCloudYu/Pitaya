@@ -1,20 +1,7 @@
 <?php
 	// region [ Environmental Initialization ]
-	call_user_func(function() {
-		$GLOBALS[ 'RUNTIME_ENV' ] = [];
-		$env = preg_split("/(\n)+|(\r\n)+/", shell_exec( IS_WIN_ENV ? 'set' : 'printenv') );
-		foreach ( $env as $envStatement ) {
-			if ( ($pos = strpos($envStatement, "=")) === FALSE ) continue;
-			
-			$var	 = substr( $envStatement, 0, $pos );
-			$content = substr( $envStatement, $pos + 1 );
-			$GLOBALS['RUNTIME_ENV'][$var] = $content;
-		}
-	});
-	
 	if ( IS_CLI_ENV ) {
 		define( 'REQUESTING_METHOD',	'' );
-		define( 'PITAYA_HOST',			@"{$GLOBALS['RUNTIME_ENV']['PITAYA_HOST']}" );
 		define( 'EOL',					"\n" );
 		
 		
@@ -35,7 +22,6 @@
 	}
 	else {
 		define('REQUESTING_METHOD',		strtoupper($_SERVER['REQUEST_METHOD']));
-		define('PITAYA_HOST',			"{$_SERVER['HTTP_HOST']}");
 		define('EOL',					'<br />');
 
 		$_SERVER['argv'] = []; $_SERVER['argc'] = 0;

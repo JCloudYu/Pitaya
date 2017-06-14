@@ -34,35 +34,8 @@
 
 	// INFO: Setting Environmental Constants
 	call_user_func(function() {
-		if ( !defined('__DEBUG_MODE__') ) {
-			$value = @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_DEBUG_MODE'];
-			if ( $value === NULL ) {
-				define( '__DEBUG_MODE__', FALSE );
-			}
-			else {
-				define( '__DEBUG_MODE__', !!$value );
-			}
-		}
-
-
-
-
-		if ( !defined('__THROW_EXCEPTION__') ) {
-			$value = @$GLOBALS['RUNTIME_ENV']['PITAYA_EXEC_THROW_EXCEPTION'];
-			if ( $value === NULL ) {
-				define( '__THROW_EXCEPTION__', TRUE );
-			}
-			else {
-				define( '__THROW_EXCEPTION__', !!$value );
-			}
-		}
-
-
-		if ( !defined('__LOG_EXCEPTION__') ) {
-			define( '__LOG_EXCEPTION__', TRUE );
-		}
-		
-		if ( !defined( 'FORCE_LOG_POSITION' ) ) {
-			define( 'FORCE_LOG_POSITION', FALSE );
-		}
+		s_define( '__DEBUG_MODE__', FALSE );
+		s_define( '__THROW_EXCEPTION__', TRUE );
+		s_define( '__LOG_EXCEPTION__', TRUE );
+		s_define( 'FORCE_LOG_POSITION', FALSE );
 	});
