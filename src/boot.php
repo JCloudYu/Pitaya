@@ -11,10 +11,15 @@
 
 	define( 'PITAYA_METRIC_BOOT_TIME', microtime(TRUE) );
 	require_once __DIR__ . '/kernel/_env/env.native.php';
+	
 	s_define( 'PITAYA_ROOT', __DIR__, TRUE, TRUE );
 	s_define( 'ROOT', realpath(getcwd()), TRUE );
 	
 	
+	s_define( 'PITAYA_BOOT_TIME', PITAYA_METRIC_BOOT_TIME|0, TRUE, TRUE );
+	s_define( 'PITAYA_ZONE_DIFF', date( 'Z' )|0, TRUE, TRUE );
+	s_define( 'SYS_TIMEZONE', 'UTC', TRUE, TRUE );
+	date_default_timezone_set( SYS_TIMEZONE );
 	
 	require_once PITAYA_ROOT . "/kernel/env.version.php";
 	
@@ -27,7 +32,6 @@
 	require_once PITAYA_ROOT . '/kernel/env.core.php';
 	
 	require_once PITAYA_ROOT . '/kernel/env.runtime.php';
-	require_once PITAYA_ROOT . '/kernel/env.time.php';
 	require_once PITAYA_ROOT . "/kernel/env.const.php";
 	
 	
