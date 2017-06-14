@@ -21,12 +21,6 @@
 	require_once PITAYA_ROOT . "/kernel/_env/env.standalone.php"; // For standalone exec mode only
 	require_once PITAYA_ROOT . '/kernel/_env/env.core.php';
 	
-	// INFO: Runtime configurations
-   @include_once ROOT . '/pitaya.php';
-   @include_once ROOT . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
-   @include_once ROOT . "/common.php";
-	
-	
 	
 
 	// INFO: Load system core libraries and prepare system constants

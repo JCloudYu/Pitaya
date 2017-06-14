@@ -31,3 +31,9 @@
 	define( '__PITAYA_ROOT', $pitayaRootPath );
 	define( '__ROOT__', __PITAYA_ROOT ); // DEPRECATED: __ROOT__ will be removed in 2.5.0
 	require_once __PITAYA_ROOT . "/portal.php";
+
+
+	// INFO: Runtime configurations
+   @include_once ROOT . '/pitaya.php';
+   @include_once ROOT . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
+   @include_once ROOT . "/common.php";
