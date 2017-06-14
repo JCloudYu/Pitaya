@@ -10,11 +10,9 @@
 	}
 
 
-	s_define( 'IS_CLI_ENV', php_sapi_name() === "cli", TRUE, TRUE );
-	s_define( 'IS_HTTP_ENV', !IS_CLI_ENV, TRUE, TRUE );
+	
 	s_define( 'IS_WIN_ENV', (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN'), TRUE );
 	s_define( 'IS_COM_LIB_AVAILABLE', !class_exists( 'COM' ), TRUE );
-	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE );
 	function __resolve_lnk( $lnkPath ) {
 		$lnkPath = realpath($lnkPath);
 		if ( !IS_COM_LIB_AVAILABLE ) {

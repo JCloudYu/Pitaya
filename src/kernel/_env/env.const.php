@@ -1,4 +1,10 @@
 <?php
+	s_define( 'IS_CLI_ENV', php_sapi_name() === "cli", TRUE, TRUE );
+	s_define( 'IS_HTTP_ENV', !IS_CLI_ENV, TRUE, TRUE );
+	s_define( 'DEBUG_BACKTRACE_ENABLED', function_exists( "debug_backtrace" ), TRUE );
+
+
+
 	s_define("PITAYA_VERSION_MAJOR", 2, TRUE, TRUE);
 	s_define("PITAYA_VERSION_MINOR", 3, TRUE, TRUE);
 	s_define("PITAYA_VERSION_BUILD", 0, TRUE, TRUE);
