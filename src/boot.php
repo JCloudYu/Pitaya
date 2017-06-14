@@ -24,7 +24,6 @@
    @include_once ROOT . ( IS_CLI_ENV ? "/cli.php" : "/config.php" );
    @include_once ROOT . "/common.php";
 	
-	require_once PITAYA_ROOT . '/kernel/env.native.php';
 	require_once PITAYA_ROOT . '/kernel/env.kernel-conf.php';
 	require_once PITAYA_ROOT . '/kernel/env.core.php';
 	
