@@ -24,7 +24,6 @@
 
 	PBKernel::__imprint_constants();
 	PBRequest::__imprint_constants();
-	PBRuntime::__ImprintEnvironment();
 
 	// INFO: Clean up everything
 	unset($GLOBALS[ 'extPath'] );
