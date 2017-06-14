@@ -30,12 +30,8 @@
 		}, E_WARNING );
 	});
 
-
-	// INFO: Setting Environmental Constants
-	call_user_func(function() {
-		s_define( '__DEBUG_MODE__', FALSE );
-		s_define( '__THROW_EXCEPTION__', TRUE );
-		s_define( '__LOG_EXCEPTION__', TRUE );
-		s_define( 'FORCE_LOG_POSITION', FALSE );
-	});
 	s_define( 'DEBUG_CONSOLE_WIDTH', 350 );
+	s_define( '__DEBUG_MODE__', FALSE );
+	s_define( '__THROW_EXCEPTION__', TRUE );
+	s_define( '__LOG_EXCEPTION__', TRUE );
+	s_define( 'FORCE_LOG_POSITION', FALSE );
