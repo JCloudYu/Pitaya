@@ -4,7 +4,7 @@
 	
 	
 	
-   @include_once ROOT . "/pitaya.env.php";
+   @include_once ROOT . "/pitaya.php";
 	call_user_func(function(){
 		$isWinEnv = (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN');
 	
@@ -21,16 +21,8 @@
 		
 		define( '__PITAYA_LIB_PATH', $pitayaRootPath );
 	});
-	
-	
-   
 
 
-	
-	// INFO: Runtime configurations
-   @include_once ROOT . '/pitaya.php';
-   @include_once ROOT . ( (php_sapi_name() == 'cli') ? "/cli.php" : "/config.php" );
-   @include_once ROOT . "/common.php";
    
 	if ( defined('PITAYA_ENVIRONMENTAL_ATTACH_LEVEL') && !defined('ENV_ATTACH_DEPTH') ) {
 		define( 'ENV_ATTACH_DEPTH', PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
