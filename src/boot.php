@@ -3,6 +3,8 @@
 	if ( PHP_VERSION_ID < 50600 ) {
 		die( "The system requires php 5.6.0 or higher!" );
 	}
+	
+	require_once __DIR__ . '/kernel/_env/env.independent.php';
 
 
 
