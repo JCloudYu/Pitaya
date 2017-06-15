@@ -277,43 +277,6 @@
 					}
 				}
 			}
-			else
-			if ( defined( 'DEFAULT_BOOT_RESOLVER' ) ) {
-				try{
-					$module = $this->acquireModule( DEFAULT_BOOT_RESOLVER );
-				}
-				catch( Exception $e ){
-					throw(new Exception( "Target default boot resolver is invalid!" ));
-				}
-
-				if ( !class_implements($module, FALSE) ) {
-					throw(new Exception( "Target boot resolver doesn't implements PBIBootResolver!" ));
-				}
-				
-				$result = $module->resolve( $service, $moduleRequest, $attributes, $fragment );
-				if ( !empty($result) ) {
-					$result = object($result);
-				
-					$service		= @$result->basis ?: @$result->service ?: $service;
-					$moduleRequest	= @$result->resource ?: @$result->request ?: $moduleRequest;
-					$workingDir		= @$result->root ?: @$result->workingRoot ?: '';
-					
-					
-					
-					// INFO: Detect Main Service
-					$state = file_exists( path( "{$service}" ) . ".php" );
-					if ($state) {
-						$this->_entryBasis = $service;
-		
-						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-						define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-		
-						$GLOBALS['service'] = $service;
-						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-						return;
-					}
-				}
-			}
 
 			
 
