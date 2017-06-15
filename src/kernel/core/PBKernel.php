@@ -114,16 +114,9 @@
 		// region [ Boot Control ]
 		private function __construct() {}
 		private function __initialize() {
-
-			// INFO: Preserve path of system container
-			// DANGER: Make sure that this line will be executed before __judgeMainService ( "service" will be different )
-			$preprocessEnvPaths = [
-				path( 'root',	'boot.php' ),
-				path( 'broot',	'boot.php' ),
-				path( 'share',	'boot.php' ),
-				PITAYA_STANDALONE_EXECUTION_MODE ? path( 'working', 'boot.php' ) : ''
-			];
-			foreach ( $preprocessEnvPaths as $path ) {
+			$G_CONF = PBStaticConf( 'pitaya-env' );
+			foreach( $G_CONF[ 'boot-scripts' ] as $script ) {
+				$path = path($script) . '.php';
 				if ( is_file($path) && is_readable($path) ) {
 					require_once $path;
 				}

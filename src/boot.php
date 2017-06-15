@@ -12,7 +12,6 @@
 	require_once __DIR__ . '/kernel/_env/env.native.php';
 	
 	s_define( 'PITAYA_ROOT', __DIR__, TRUE, TRUE );
-	s_define( 'ROOT', realpath(getcwd()), TRUE );
 	
 	
 	

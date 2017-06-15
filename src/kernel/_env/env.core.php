@@ -10,6 +10,7 @@
 			
 
 			// INFO: Attach pitaya root packages
+			$G_CONF = PBStaticConf( 'pitaya-env' );
 			$list = scandir(PITAYA_ROOT);
 			foreach ($list as $dir) {
 				$absPath = PITAYA_ROOT . "/{$dir}";
@@ -18,24 +19,33 @@
 				self::$_kernel_cache[strtolower($dir)] = $absPath;
 			}
 
-			// INFO: Attach other keywords
-			self::$_kernel_cache[ 'root' ]		= ROOT;
-			self::$_kernel_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ?   __LIB_PATH   : ROOT.'/Lib';
-			self::$_kernel_cache[ 'share' ]		= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT.'/Share';
-			self::$_kernel_cache[ 'data' ]		= defined( "__DATA_PATH" ) ?  __DATA_PATH  : ROOT.'/Data';
-			self::$_kernel_cache[ 'broot' ]		= defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT.'/Basis';
-			self::$_kernel_cache[ 'working' ]	= self::$_kernel_cache[ 'basis' ] = self::$_kernel_cache[ 'broot' ];
 
-			// Resolve to real path if targeted directory is a lnk file
-			if ( IS_WIN_ENV ) {
-				foreach( self::$_kernel_cache as $key => $path )
-				{
+
+			// INFO: Attach other keywords
+			foreach( $G_CONF[ 'packages' ] as $pkg => $path ) {
+				if ( IS_WIN_ENV ) {
 					$linkPath = "{$path}.lnk";
-					if ( is_dir( $path ) || !is_file( $linkPath ) ) continue;
-					
-					self::$_kernel_cache[ $key ] = __resolve_lnk( $linkPath );
+					if ( is_file( $linkPath ) ) {
+						$path = __resolve_lnk($linkPath);
+					}
 				}
+				
+				self::$_kernel_cache[ $pkg ] = $path;
 			}
+			
+			
+			
+			// INFO: Write default keywords
+			self::$_kernel_cache['root'] = $G_CONF[ 'space-root' ];
+			self::$_kernel_cache['working'] = getcwd();
+			if ( @self::$_kernel_cache[ 'broot' ] === NULL ) {
+				self::$_kernel_cache['broot'] = self::$_kernel_cache['working'];
+			}
+			self::$_kernel_cache[ 'basis' ] = self::$_kernel_cache[ 'broot' ];
+			
+			
+			
+			
 			
 			
 			self::$_path_cache = self::$_kernel_cache;

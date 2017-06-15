@@ -8,7 +8,7 @@
 			
 			s_define( 'PITAYA_STANDALONE_EXECUTION_MODE', TRUE );
 			s_define( 'PITAYA_STANDALINE_EXECUTION_SCRIPT', "{$_SERVER['argv'][0]}" );
-			s_define( 'PITAYA_STANDALINE_EXECUTION_DIR', ROOT );
+			s_define( 'PITAYA_STANDALINE_EXECUTION_DIR', getcwd() );
 		}
 	}
 	
