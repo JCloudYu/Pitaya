@@ -1,7 +1,4 @@
 <?php
-	if ( defined( 'PITAYA_BASE_CORE_EXECUTED' ) ) return
-	define( 'PITAYA_BASE_CORE_EXECUTED', TRUE );
-
 	// Detect minimum PHP Version
 	if ( PHP_VERSION_ID < 50600 ) {
 		die( "The system requires php 5.6.0 or higher!" );
