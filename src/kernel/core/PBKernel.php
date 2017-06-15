@@ -14,11 +14,6 @@
 
 
 			try {
-				s_define( 'DEFAULT_BASIS', IS_CLI_ENV ? 'cli' : 'index' );
-				s_define( 'ENV_ATTACH_DEPTH', 0 );
-
-
-
 				// INFO: Keep booting
 				PBKernel::$_SYS_INSTANCE = new PBKernel();
 				PBKernel::$_SYS_INSTANCE->__initialize();
@@ -161,6 +156,10 @@
 		
 		private $_entryBasis = NULL;
 		private function __judgeMainService() {
+			$G_CONF = PBStaticConf( 'pitaya-env' );
+		
+		
+		
 			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
 			
@@ -176,7 +175,7 @@
 				$resource	 = ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
 					return urldecode( $item );
 				});
-				$attachPoint = @array_splice( $resource, 0, ENV_ATTACH_DEPTH );
+				$attachPoint = @array_splice( $resource, 0, $G_CONF[ 'attach-depth' ] );
 				$GLOBALS[ 'attachPoint' ] = $attachPoint;
 				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
@@ -279,7 +278,7 @@
 			$reqService = "{$service}";
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
-			$service = DEFAULT_BASIS;
+			$service = $G_CONF[ 'default-basis' ];
 			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
 			if ($state) {
 				$this->_entryBasis = $service;

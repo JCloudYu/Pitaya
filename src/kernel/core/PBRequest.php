@@ -37,7 +37,7 @@
 			if ( $_initialized ) return $this; $_initialized = TRUE;
 
 
-			
+			$G_CONF = PBStaticConf( 'pitaya-env' );
 
 			
 			// store all environmental configurations
@@ -57,7 +57,7 @@
 			$this->_incomingRecord['environment']['env']		= $_ENV;
 			$this->_incomingRecord['environment']['server']		= $_SERVER;
 			$this->_incomingRecord['environment']['attachment']	= [
-				'level'  => ENV_ATTACH_DEPTH,
+				'level'  =>	$G_CONF[ 'attach-depth' ],
 				'anchor' => @$GLOBALS[ 'attachPoint' ] ?: []
 			];
 
