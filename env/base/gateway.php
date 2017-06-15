@@ -21,9 +21,13 @@
 		
 		define( '__PITAYA_LIB_PATH', $pitayaRootPath );
 	});
-
-
+	
+	
    
+
+
+	
+   @include_once ROOT . "/pitaya.config.php";
 	if ( defined('PITAYA_ENVIRONMENTAL_ATTACH_LEVEL') && !defined('ENV_ATTACH_DEPTH') ) {
 		define( 'ENV_ATTACH_DEPTH', PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
 	}
