@@ -345,21 +345,23 @@
 
 
 
+			// region [ Search path construction ]
+			$G_CONF = PBStaticConf( 'pitaya-env' );
 
-
-
-			// INFO: Search path construction
 			$moduleSearchPaths   = [];
-			$moduleSearchPaths[] = PITAYA_STANDALONE_EXECUTION_MODE ? "working." : "basis.";
 			$moduleSearchPaths[] = "modules.";
-			$moduleSearchPaths[] = "data.modules.";
-			$moduleSearchPaths[] = "share.modules.";
+			$moduleSearchPaths[] = PITAYA_STANDALONE_EXECUTION_MODE ? "working." : "basis.";
+			
+			
+			foreach ( $G_CONF[ 'module-packages' ] as $path ) {
+				$moduleSearchPaths[] = "{$path}.";
+			}
+			foreach ( $this->_moduleSearchPaths as $path ) {
+				$moduleSearchPaths[] = "{$path}.";
+			}
 			$moduleSearchPaths[] = ""; // Use global identifier
-
-			foreach ( $this->_moduleSearchPaths as $path ) $moduleSearchPaths[] = "{$path}.";
-
-
-
+			$moduleSearchPaths = array_unique($moduleSearchPaths);
+			// endregion
 
 
 

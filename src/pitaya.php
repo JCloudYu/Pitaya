@@ -4,10 +4,10 @@
 		$config = [
 			'default-basis' => @$initArgs[ 'default-basis' ] ?: 'main',
 			'attach-depth' => @$initArgs[ 'attach-depth' ] ?: 0,
+			'module-packages' => is_array(@$initArgs['module-packages']) ? $initArgs['module-packages'] : [],
 		
 		
 			'packages' => is_array(@$initArgs['packages']) ? $initArgs['packages'] : [],
-			'module-packages' => is_array(@$initArgs['module-packages']) ? $initArgs['packages'] : [],
 			'leading-modules' => is_array(@$initArgs['leading-modules']) ? $initArgs['leading-modules'] : [],
 			'tailing-modules' => is_array(@$initArgs['tailing-modules']) ? $initArgs['tailing-modules'] : [],
 			'debug-mode' => !!@$initArgs[ 'debug-mode' ],
