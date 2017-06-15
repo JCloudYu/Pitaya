@@ -34,4 +34,5 @@
 	
 	
 	
-	require_once __PITAYA_LIB_PATH . "/portal.php";
+	require_once __PITAYA_LIB_PATH . "/boot.php";
+	PBKernel::boot();
