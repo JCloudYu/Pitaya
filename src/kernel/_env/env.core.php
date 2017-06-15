@@ -19,13 +19,12 @@
 			}
 
 			// INFO: Attach other keywords
-			self::$_kernel_cache[ 'root' ]	= ROOT;
+			self::$_kernel_cache[ 'root' ]		= ROOT;
 			self::$_kernel_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ? __LIB_PATH : '/Lib';
-			self::$_kernel_cache[ 'share' ]	= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
-			self::$_kernel_cache[ 'data' ]	= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
-			self::$_kernel_cache[ 'broot' ]	= self::$_kernel_cache[ 'srvroot' ] = defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';
-			self::$_kernel_cache[ 'basis' ]	= self::$_kernel_cache[ 'service' ] = self::$_kernel_cache[ 'broot' ];
-			self::$_kernel_cache[ 'working' ]	= ( empty($GLOBALS['STANDALONE_EXEC']) ) ? self::$_kernel_cache[ 'basis' ] : $GLOBALS['STANDALONE_EXEC']['cwd'];
+			self::$_kernel_cache[ 'share' ]		= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
+			self::$_kernel_cache[ 'data' ]		= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
+			self::$_kernel_cache[ 'broot' ]		= defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';
+			self::$_kernel_cache[ 'working' ]	= self::$_kernel_cache[ 'basis' ] = self::$_kernel_cache[ 'broot' ];
 
 			// Resolve to real path if targeted directory is a lnk file
 			if ( IS_WIN_ENV ) {
@@ -37,12 +36,6 @@
 					self::$_kernel_cache[ $key ] = __resolve_lnk( $linkPath );
 				}
 			}
-
-
-
-			define( 'BASIS_ROOT',	self::$_kernel_cache[ 'broot' ] );
-			define( 'SHARE_ROOT',	self::$_kernel_cache[ 'share' ] );
-			define( 'DATA_ROOT',	self::$_kernel_cache[ 'data' ]  );
 			
 			
 			self::$_path_cache = self::$_kernel_cache;
@@ -53,7 +46,7 @@
 			if ( $_purged ) return;
 		
 			if ( defined( 'WORKING_ROOT' ) ) {
-				self::$_path_cache[ 'basis' ] = self::$_path_cache[ 'service' ] = WORKING_ROOT;
+				self::$_kernel_cache[ 'working' ] = self::$_path_cache[ 'basis' ] = WORKING_ROOT;
 				$_purged = TRUE;
 			}
 		}

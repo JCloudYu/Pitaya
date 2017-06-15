@@ -15,13 +15,6 @@
 
 			try
 			{
-				if ( is_dir($servicePath = path('service')) )
-				{
-					// INFO: Read global service configurations
-					$serviceConf = "{$servicePath}/config.php";
-					if ( file_exists($serviceConf) ) require_once $serviceConf;
-				}
-
 				s_define( '__DEFAULT_SERVICE_DEFINED__',		defined('DEFAULT_SERVICE'), TRUE, TRUE );
 				s_define( 'DEFAULT_SERVICE',					IS_CLI_ENV ? 'cli' : 'index',	TRUE );
 				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL',	0,								TRUE );
@@ -131,9 +124,9 @@
 			// INFO: Preserve path of system container
 			// DANGER: Make sure that this line will be executed before __judgeMainService ( "service" will be different )
 			$preprocessEnvPaths = [
-				path( 'root',	 'boot.php' ),
-				path( 'service', 'boot.php' ),
-				path( 'share',	 'boot.php' ),
+				path( 'root',	'boot.php' ),
+				path( 'broot',	'boot.php' ),
+				path( 'share',	'boot.php' ),
 				PITAYA_STANDALONE_EXECUTION_MODE ? path( 'working', 'boot.php' ) : ''
 			];
 			foreach ( $preprocessEnvPaths as $path ) {
@@ -232,7 +225,6 @@
 					$this->_entryBasis = "PBSystem.PBExecCtrl#PBVectorChain";
 	
 					define( 'WORKING_ROOT', $CWD );
-					$GLOBALS['service'] = $module;
 					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 					return;
 				}
@@ -247,9 +239,9 @@
 				if ( !empty($result) ) {
 					$result = object($result);
 				
-					$service		= @$result->basis ?: @$result->service ?: $service;
-					$moduleRequest	= @$result->resource ?: @$result->request ?: $moduleRequest;
-					$workingDir		= @$result->root ?: @$result->workingRoot ?: '';
+					$service		= @$result->basis ?: $service;
+					$moduleRequest	= @$result->resource ?: $moduleRequest;
+					$workingDir		= @$result->root ?: '';
 					
 					
 					
@@ -259,7 +251,6 @@
 						$this->_entryBasis = $service;
 		
 						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-						$GLOBALS['service'] = $service;
 						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 						return;
 					}
@@ -275,11 +266,11 @@
 			$serviceParts = @explode( '.', "{$service}" );
 			$serviceName = @array_pop( $serviceParts );
 			$state = file_exists( path( "broot.{$serviceName}.{$serviceName}" ) . ".php" );
+			
 			if ($state) {
 				$this->_entryBasis = $serviceName;
-
-				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
-				$GLOBALS['service'] = $serviceName;
+				$broot = path( 'broot' );
+				define( 'WORKING_ROOT', "{$broot}/{$this->_entryBasis}" );
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
@@ -296,9 +287,8 @@
 			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
 			if ($state) {
 				$this->_entryBasis = $service;
-
-				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
-				$GLOBALS['service'] = $service;
+				$broot = path( 'broot' );
+				define( 'WORKING_ROOT', "{$broot}/{$this->_entryBasis}" );
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
 			}
@@ -365,7 +355,7 @@
 
 			// INFO: Search path construction
 			$moduleSearchPaths   = [];
-			$moduleSearchPaths[] = PITAYA_STANDALONE_EXECUTION_MODE ? "working." : "service.";
+			$moduleSearchPaths[] = PITAYA_STANDALONE_EXECUTION_MODE ? "working." : "basis.";
 			$moduleSearchPaths[] = "modules.";
 			$moduleSearchPaths[] = "data.modules.";
 			$moduleSearchPaths[] = "share.modules.";

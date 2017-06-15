@@ -36,7 +36,7 @@
 			}
 			
 			$cateInfo	= ( $LOG_INFO & self::LOG_INFO_CATE ) ? "[{$info['cate']}]" : '';
-			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_BASIS ) ? "[{$info['service']}]" : '';
+			$basisInfo	= ( $LOG_INFO & self::LOG_INFO_BASIS ) ? "[{$info['basis']}]" : '';
 			$routeInfo	= ( $LOG_INFO & self::LOG_INFO_ROUTE) ? "[{$info['route']}]" : '';
 			$posInfo	= " ";
 			if ( DEBUG_BACKTRACE_ENABLED ) {
@@ -116,7 +116,7 @@
 				'cate'		=> (empty($logCate) || !is_string($logCate)) ? 'INFO' : "{$logCate}",
 				'time'		=> $curTime,
 				'timestamp' => date("Y-m-d G:i:s", $curTime),
-				'service'	=> (!defined('WORKING_BASIS') ? 'Pitaya' : WORKING_BASIS),
+				'basis'		=> (!defined('WORKING_BASIS') ? 'Pitaya' : WORKING_BASIS),
 				'route'		=> IS_CLI_ENV ? 'CLI' : 'NET'
 			];
 		}

@@ -48,7 +48,6 @@
 			$this->_incomingRecord['request']['method']			= REQUESTING_METHOD;
 			$this->_incomingRecord['request']['query']			= @$GLOBALS['request'];
 			$this->_incomingRecord['request']['data']			= NULL;
-			$this->_incomingRecord['request']['service']		= @$GLOBALS['service'];
 			$this->_incomingRecord['request']['files']			= @$_FILES;
 			$this->_incomingRecord['request']['post']			= $_POST;
 			$this->_incomingRecord['request']['get']			= $_GET;
@@ -66,7 +65,6 @@
 
 			// unset all global variables
 			unset($GLOBALS['rawRequest']);
-			unset($GLOBALS['service']);
 			unset($GLOBALS['request']);
 			unset($GLOBALS['attachPoint']);
 			
@@ -174,9 +172,6 @@
 			if ( $_headers !== NULL ) return $_headers;
 			
 			return ( $_headers = self::GetIncomingHeaders() );
-		}
-		public function __get_service() {
-			return $this->_incomingRecord['request']['service'];
 		}
 		public function __get_query() {
 			return $this->_parsedQuery ?: $this->_incomingRecord['request']['query'];
