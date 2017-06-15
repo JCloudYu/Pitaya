@@ -1,14 +1,11 @@
 <?php
 	final class PBKernel extends PBObject {
-		/** @var PBKernelAccessor */
-		private static $_SYS_ACCESS_INTERFACE = NULL;
-		public static function SYS() {
-			return self::$_SYS_ACCESS_INTERFACE;
-		}
-	
 		// region [ Boot Related ]
-		/** @var PBKernel */
+		/** @var $_SYS_INSTANCE PBKernel */
 		private static $_SYS_INSTANCE = NULL;
+		public static function Kernel() {
+			return self::$_SYS_INSTANCE;
+		}
 		public static function boot() {
 
 			// INFO: Avoid repeated initialization
@@ -33,8 +30,6 @@
 
 				// INFO: Keep booting
 				PBKernel::$_SYS_INSTANCE = new PBKernel();
-				PBKernel::$_SYS_ACCESS_INTERFACE = new PBKernelAccessor( PBKernel::$_SYS_INSTANCE );
-				
 				PBKernel::$_SYS_INSTANCE->__initialize();
 				PBKernel::$_SYS_INSTANCE->_process->run();
 
@@ -384,7 +379,7 @@
 		
 		// region [ Module Control ]
 		private $_moduleSearchPaths	= [];
-		public function addModuleSearchPath( $package = "" ) {
+		public function addSearchPath( $package = "" ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
@@ -395,7 +390,7 @@
 			$this->_moduleSearchPaths[$hash] = $path;
 			return TRUE;
 		}
-		public function removeModuleSearchPath( $package ) {
+		public function removeSearchPath( $package ) {
 			if ( empty( $package ) ) return FALSE;
 
 			$hash = md5( ($path = trim($package)) );
@@ -515,21 +510,6 @@
 		}
 		// endregion
 	}
-	class_alias( 'PBKernel', 'PBSysKernel' );
-
-	final class PBKernelAccessor {
-		/**@var PBKernel*/
-		private $_relatedSys = NULL;
-		public function __construct( PBKernel $sysInst ) {
-			$this->_relatedSys = $sysInst;
-		}
-		public function acquireModule($moduleName, $reuse = FALSE) {
-			return call_user_func_array([ $this->_relatedSys, "acquireModule" ], func_get_args());
-		}
-		public function addSearchPath( $package ) {
-			return $this->_relatedSys->addModuleSearchPath( $package );
-		}
-		public function removeSearchPath( $package ) {
-			return $this->_relatedSys->removeModuleSearchPath( $package );
-		}
+	function PBKernel() {
+		return PBKernel::Kernel();
 	}
