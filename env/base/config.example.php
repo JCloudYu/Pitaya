@@ -1,2 +1,2 @@
 <?php
-	//define( 'DEFAULT_SERVICE', 'index', FALSE );
+	//define( 'DEFAULT_BASIS', 'index', FALSE );

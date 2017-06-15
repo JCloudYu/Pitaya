@@ -14,8 +14,8 @@
 
 
 			try {
-				s_define( 'DEFAULT_SERVICE',	IS_CLI_ENV ? 'cli' : 'index',	TRUE );
-				s_define( 'ENV_ATTACH_DEPTH',	0,				TRUE );
+				s_define( 'DEFAULT_BASIS', IS_CLI_ENV ? 'cli' : 'index' );
+				s_define( 'ENV_ATTACH_DEPTH', 0 );
 
 
 
@@ -281,7 +281,7 @@
 			$reqService = "{$service}";
 			if ( !empty($service) ) array_unshift($moduleRequest, $service);
 
-			$service = DEFAULT_SERVICE;
+			$service = DEFAULT_BASIS;
 			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
 			if ($state) {
 				$this->_entryBasis = $service;

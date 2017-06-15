@@ -1,2 +1,2 @@
 <?php
-	//define( 'DEFAULT_SERVICE', 'cli', FALSE );
+	//define( 'DEFAULT_BASIS', 'cli', FALSE );
