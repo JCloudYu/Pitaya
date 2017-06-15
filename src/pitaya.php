@@ -9,13 +9,13 @@
 			'debug-console-width' => @$initArgs[ 'debug-console-width' ] ?: 350,
 			'throw-exceptions' => !!@$initArgs[ 'throw-exceptions' ],
 			'log-exceptions' => (@$initArgs[ 'log-exceptions' ] === NULL) ? TRUE : !!@$initArgs[ 'log-exceptions' ],
+			'system-timezone' => @$initArgs[ 'system-timezone' ] ?: 'UTC',
 		
 		
 		
 			'packages' => is_array(@$initArgs['packages']) ? $initArgs['packages'] : [],
 			'leading-modules' => is_array(@$initArgs['leading-modules']) ? $initArgs['leading-modules'] : [],
 			'tailing-modules' => is_array(@$initArgs['tailing-modules']) ? $initArgs['tailing-modules'] : [],
-			'system-timezone' => @$initArgs[ 'system-timezone' ] ?: 'UTC',
 			'log-dir' => @$initArgs[ 'log-dir' ] ?: sys_get_temp_dir()
 		];
 	

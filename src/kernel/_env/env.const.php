@@ -1,8 +1,7 @@
 <?php
 	// region [ Customizable Constants ]
 	s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir() );
-	s_define( 'SYS_TIMEZONE', 'UTC' );
-	date_default_timezone_set( SYS_TIMEZONE );
+	date_default_timezone_set( PBStaticConf( 'pitaya-env' )[ 'system-timezone' ] );
 	// endregion
 
 
