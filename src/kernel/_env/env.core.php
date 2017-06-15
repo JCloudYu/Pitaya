@@ -20,10 +20,10 @@
 
 			// INFO: Attach other keywords
 			self::$_kernel_cache[ 'root' ]		= ROOT;
-			self::$_kernel_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ? __LIB_PATH : '/Lib';
-			self::$_kernel_cache[ 'share' ]		= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT . '/Share';
-			self::$_kernel_cache[ 'data' ]		= defined( "__DATA_PATH" ) ? __DATA_PATH : ROOT . '/Data';
-			self::$_kernel_cache[ 'broot' ]		= defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT . '/Basis';
+			self::$_kernel_cache[ 'lib' ]		= defined( "__LIB_PATH" ) ?   __LIB_PATH   : ROOT.'/Lib';
+			self::$_kernel_cache[ 'share' ]		= defined( "__SHARE_PATH" ) ? __SHARE_PATH : ROOT.'/Share';
+			self::$_kernel_cache[ 'data' ]		= defined( "__DATA_PATH" ) ?  __DATA_PATH  : ROOT.'/Data';
+			self::$_kernel_cache[ 'broot' ]		= defined( "__BASIS_PATH" ) ? __BASIS_PATH : ROOT.'/Basis';
 			self::$_kernel_cache[ 'working' ]	= self::$_kernel_cache[ 'basis' ] = self::$_kernel_cache[ 'broot' ];
 
 			// Resolve to real path if targeted directory is a lnk file
