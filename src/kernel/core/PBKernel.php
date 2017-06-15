@@ -109,7 +109,7 @@
 		}
 		
 		private static $_bootResolver = NULL;
-		public static function SetResolver( $callable ){
+		public static function SetBasisResolver($callable ){
 			if ( !is_callable($callable) ) return;
 			self::$_bootResolver = $callable;
 		}
