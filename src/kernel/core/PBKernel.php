@@ -9,7 +9,7 @@
 		// region [ Boot Related ]
 		/** @var PBKernel */
 		private static $_SYS_INSTANCE = NULL;
-		public static function boot( $argv = NULL ) {
+		public static function boot() {
 
 			// INFO: Avoid repeated initialization
 			if ( PBKernel::$_SYS_INSTANCE ) return;
@@ -35,7 +35,7 @@
 				PBKernel::$_SYS_INSTANCE = new PBKernel();
 				PBKernel::$_SYS_ACCESS_INTERFACE = new PBKernelAccessor( PBKernel::$_SYS_INSTANCE );
 				
-				PBKernel::$_SYS_INSTANCE->__initialize( $argv );
+				PBKernel::$_SYS_INSTANCE->__initialize();
 				PBKernel::$_SYS_INSTANCE->_process->run();
 
 				Termination::NORMALLY();
@@ -131,7 +131,7 @@
 
 		// region [ Boot Control ]
 		private function __construct() {}
-		private function __initialize( $argv = NULL ) {
+		private function __initialize() {
 
 			// INFO: Preserve path of system container
 			// DANGER: Make sure that this line will be executed before __judgeMainService ( "service" will be different )
@@ -150,7 +150,7 @@
 
 
 			// INFO: Perform service decision and data initialization
-			$this->__judgeMainService( $argv );
+			$this->__judgeMainService();
 			
 			
 			// region [ PBPathResolver Customize Initialization ]
@@ -177,7 +177,7 @@
 		}
 		
 		private $_entryBasis = NULL;
-		private function __judgeMainService( $argv = NULL ) {
+		private function __judgeMainService() {
 			$service = $attributes = $fragment = '';
 			$moduleRequest = [];
 			
@@ -203,8 +203,8 @@
 				$moduleRequest = $resource;
 			}
 			else {
-				$service = CAST( @array_shift($argv), 'string' );
-				$moduleRequest = $argv;
+				$service = CAST( @array_shift($_SERVER['argv']), 'string' );
+				$moduleRequest = $_SERVER['argv'];
 			}
 
 
