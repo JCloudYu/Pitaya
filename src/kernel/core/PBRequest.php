@@ -57,7 +57,7 @@
 			$this->_incomingRecord['environment']['env']		= $_ENV;
 			$this->_incomingRecord['environment']['server']		= $_SERVER;
 			$this->_incomingRecord['environment']['attachment']	= [
-				'level'  => PITAYA_ENVIRONMENTAL_ATTACH_LEVEL,
+				'level'  => ENV_ATTACH_DEPTH,
 				'anchor' => @$GLOBALS[ 'attachPoint' ] ?: []
 			];
 

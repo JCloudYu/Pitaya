@@ -13,11 +13,9 @@
 
 
 
-			try
-			{
-				s_define( '__DEFAULT_SERVICE_DEFINED__',		defined('DEFAULT_SERVICE'), TRUE, TRUE );
-				s_define( 'DEFAULT_SERVICE',					IS_CLI_ENV ? 'cli' : 'index',	TRUE );
-				s_define( 'PITAYA_ENVIRONMENTAL_ATTACH_LEVEL',	0,								TRUE );
+			try {
+				s_define( 'DEFAULT_SERVICE',	IS_CLI_ENV ? 'cli' : 'index',	TRUE );
+				s_define( 'ENV_ATTACH_DEPTH',	0,				TRUE );
 
 
 
@@ -180,7 +178,7 @@
 				$resource	 = ary_filter( empty($resource) ? array() : explode( '/', $resource ), function( $item ) {
 					return urldecode( $item );
 				});
-				$attachPoint = @array_splice( $resource, 0, PITAYA_ENVIRONMENTAL_ATTACH_LEVEL );
+				$attachPoint = @array_splice( $resource, 0, ENV_ATTACH_DEPTH );
 				$GLOBALS[ 'attachPoint' ] = $attachPoint;
 				$GLOBALS[ 'rawRequest' ] = implode('/', $resource) . (empty($attributes) ? '' : "?{$attributes}");
 
