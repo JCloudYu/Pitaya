@@ -412,8 +412,7 @@
 		
 		
 		// region [ Supportive Functions ]
-		private static function ParseModuleIdentifier( $moduleIdentifier )
-		{
+		private static function ParseModuleIdentifier( $moduleIdentifier ) {
 			$moduleIdentifier = trim( "{$moduleIdentifier}" );
 			if ( empty($moduleIdentifier) ) return FALSE;
 
