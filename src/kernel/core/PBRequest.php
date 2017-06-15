@@ -334,7 +334,7 @@
 			$res = @$res[ 'resource' ];
 			if ( !is_array($res) ) $res = [];
 			
-			array_unshift($res, __BASIS__);
+			array_unshift($res, WORKING_BASIS);
 			array_unshift($anchor, '');
 			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
@@ -453,20 +453,6 @@
 		
 
 		public function data($name, $type = 'raw', $default = NULL, $varSrc = 'all') {
-			
-			$CUSTOM_CAST = FALSE;
-		
-			// INFO: Legacy Mode ( where type is an array )
-			// INFO: PBRequest::Request()->data( name, [ type, {{additional,} default} ], src );
-			if ( is_array( $type ) )
-			{
-				DEPRECATION_WARNING( "Legacy mode is invoked! Second argument will no longer accept arrays!" );
-				
-				$varSrc = $default;
-				$default = NULL;
-				$CUSTOM_CAST = TRUE;
-			}
-		
 			$hasData = FALSE; $value = NULL;
 			switch( strtolower($varSrc) )
 			{
@@ -495,18 +481,7 @@
 					break;
 			}
 
-
-
-
-
-
-			if ( !$CUSTOM_CAST ) return ($hasData) ? CAST( $value, $type, $default ) : $default;
-			
-			
-			
-			$args = array_values( $type );
-			array_unshift( $args, $value );
-			return call_user_func_array( 'CAST', $args );
+			return ($hasData) ? CAST( $value, $type, $default ) : $default;
 		}
 		private static function ___dataItr( $data, $path, &$hasData = TRUE ) {
 			$path = explode( '.', "{$path}" );
@@ -819,72 +794,6 @@
 				'variable'	=> $data['attribute']['variable'],
 				'flag'		=> $data['attribute']['flag']
 			];
-		}
-		// endregion
-		
-		// region [ Deprecated ]
-		public function __get_all() {
-			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord;
-		}
-		public function __get_method_upper(){
-			DEPRECATION_WARNING( "PBRequest::method_upper property is marked as deprecated and will be removed in the following versions soon!" );
-			return strtoupper( "{$this->_incomingRecord['request']['method']}" );
-		}
-		public function __get_method_lower(){
-			DEPRECATION_WARNING( "PBRequest::method_lower property is marked as deprecated and will be removed in the following versions soon!" );
-			return strtolower( "{$this->_incomingRecord['request']['method']}" );
-		}
-		public function __get_request() {
-			DEPRECATION_WARNING( "PBRequest::all property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['request'];
-		}
-		public function __get_cookie() {
-			DEPRECATION_WARNING( "PBRequest::cookie property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['environment']['cookie'];
-		}
-		public function __get_session() {
-			DEPRECATION_WARNING( "PBRequest::session property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['environment']['session'];
-		}
-		public function __get_argc() {
-			DEPRECATION_WARNING( "PBRequest::argc property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['command']['argc'];
-		}	
-		public function __get_httpHost() {
-			DEPRECATION_WARNING( "PBRequest::httpHost property is marked as deprecated and will be removed in the following versions soon!" );
-			return  @"{$this->server[ 'HTTP_HOST' ]}";
-		}
-		public function __get_nativeGet(){
-			DEPRECATION_WARNING( "PBRequest::nativeGet property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['request']['get'];
-		}
-		public function __get_nativePost(){
-			DEPRECATION_WARNING( "PBRequest::nativePost property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['request']['post'];
-		}
-		public function __get_nativeFiles(){
-			DEPRECATION_WARNING( "PBRequest::nativeFiles property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['request']['files'];
-		}
-		public function __get_nativeEnv(){
-			DEPRECATION_WARNING( "PBRequest::nativeEnv property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['environment']['env'];
-		}
-		public function __get_nativeServer(){
-			DEPRECATION_WARNING( "PBRequest::nativeServer property is marked as deprecated and will be removed in the following versions soon!" );
-			return $this->_incomingRecord['environment']['server'];
-		}
-		
-		public function post(...$args) {
-			DEPRECATION_WARNING( "PBRequest::post method is marked as deprecated and will be removed in the following versions soon!" );
-			$args[] = 'post';
-			return $this->data(...$args);
-		}
-		public function get(...$args) {
-			DEPRECATION_WARNING( "PBRequest::get method is marked as deprecated and will be removed in the following versions soon!" );
-			$args[] = 'get';
-			return $this->data(...$args);
 		}
 		// endregion
 	}

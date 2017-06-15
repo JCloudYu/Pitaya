@@ -290,35 +290,6 @@
 
 			return $out;
 		}
-		
-		
-		
-		
-		
-		
-		// region [ Deprecated ]
-		public static function JSLog($outStr) {
-			DEPRECATION_WARNING( "DEBUG::JSLog api is marked as deprecated and will be removed within the following versions!" );
-			if ( self::IS_SILENT() ) return;
-
-			if(!is_string($outStr))
-				throw(new Exception('Input variable must be a string'));
-
-			echo "<script language='javascript'>console.log(".json_encode($outStr).");</script>";
-		}
-		public static function VarDumpParent(...$args) {
-			DEPRECATION_WARNING( "DEBUG::VarDumpParent api is marked as deprecated and will be removed within the following versions!" );
-			echo self::VDump($args, IS_HTTP_ENV, TRUE);
-		}
-		public static function VarDumpParentString(...$args) {
-			DEPRECATION_WARNING( "DEBUG::VarDumpParentString api is marked as deprecated and will be removed within the following versions!" );
-			return self::VDump($args, FALSE, TRUE);
-		}
-		public static function VarDumpString(...$args) {
-			DEPRECATION_WARNING( "DEBUG::VarDumpString api is marked as deprecated and will be removed within the following versions!" );
-			return self::VDump($args, FALSE);
-		}
-		// endregion
 	}
 	final class Termination {
 		const STATUS_SUCCESS			= 0;

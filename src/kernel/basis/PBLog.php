@@ -116,7 +116,7 @@
 				'cate'		=> (empty($logCate) || !is_string($logCate)) ? 'INFO' : "{$logCate}",
 				'time'		=> $curTime,
 				'timestamp' => date("Y-m-d G:i:s", $curTime),
-				'service'	=> (!defined('__SERVICE__') ? 'Pitaya' : __SERVICE__),
+				'service'	=> (!defined('WORKING_BASIS') ? 'Pitaya' : WORKING_BASIS),
 				'route'		=> IS_CLI_ENV ? 'CLI' : 'NET'
 			];
 		}

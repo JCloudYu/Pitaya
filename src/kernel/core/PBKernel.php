@@ -161,8 +161,7 @@
 
 
 			// INFO: Define runtime constants
-			define( '__BASIS__', $this->_entryBasis );
-			define( '__SERVICE__', __BASIS__ );
+			define( 'WORKING_BASIS', $this->_entryBasis );
 			
 
 
@@ -233,9 +232,6 @@
 					$this->_entryBasis = "PBSystem.PBExecCtrl#PBVectorChain";
 	
 					define( 'WORKING_ROOT', $CWD );
-					
-					
-	
 					$GLOBALS['service'] = $module;
 					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 					return;
@@ -263,8 +259,6 @@
 						$this->_entryBasis = $service;
 		
 						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-						define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-		
 						$GLOBALS['service'] = $service;
 						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 						return;
@@ -285,8 +279,6 @@
 				$this->_entryBasis = $serviceName;
 
 				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
-				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-
 				$GLOBALS['service'] = $serviceName;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;
@@ -306,9 +298,6 @@
 				$this->_entryBasis = $service;
 
 				define( 'WORKING_ROOT', BASIS_ROOT . "/{$this->_entryBasis}" );
-				define( '__WORKING_ROOT__', WORKING_ROOT );  // DEPRECATED: __WORKING_ROOT__ will be deprecated in 2.5.0
-
-
 				$GLOBALS['service'] = $service;
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
 				return;

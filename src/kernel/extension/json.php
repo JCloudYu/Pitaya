@@ -80,10 +80,6 @@
 	}
 	
 	class PBJSONObject extends PBJSONContainer {
-		public static function JSONObject($data=NULL) {
-			DEPRECATION_WARNING( "PBJSONObject::JSONObject is marked as deprecated! Please refer to PBJSONObject() api instead!" );
-			return PBJSONObject($data);
-		}
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
@@ -96,10 +92,6 @@
 	}
 	
 	class PBJSONArray extends PBJSONContainer {
-		public static function JSONArray( $data = NULL ) {
-			DEPRECATION_WARNING( "PBJSONArray::JSONArray is marked as deprecated! Please refer to PBJSONArray() api instead!" );
-			return PBJSONObject($data);
-		}
 		public function safe_cast() {
 			foreach ( $this->_container as $key => $value )
 				$this->_container[$key] = PBJSONContainer::Flatten( $value );
