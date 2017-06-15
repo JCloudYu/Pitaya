@@ -10,6 +10,7 @@
 
 			// INFO: Avoid repeated initialization
 			if ( PBKernel::$_SYS_INSTANCE ) return;
+			$G_CONF = PBStaticConf( 'pitaya-env' );
 
 
 
@@ -34,7 +35,7 @@
 						$errMsg .= "\nData:\n" . print_r( $descriptor, TRUE );
 				}
 
-				if ( LOG_EXCEPTIONS === TRUE )
+				if ( $G_CONF[ 'log-exceptions' ] === TRUE )
 				{
 					PBLog::SYSLog( print_r($e, TRUE), "system.exception.pblog" );
 					$extMsg = "See exception log for more information!";
@@ -79,12 +80,12 @@
 					$errProcObj->execute( $e );
 				}
 				else
-				if ( THROW_EXCEPTIONS === TRUE )
+				if ( $G_CONF[ 'throw-exceptions' ] === TRUE )
 				{
 					throw( $e );
 				}
 				else
-				if ( IS_HTTP_ENV && DEBUG_MODE )
+				if ( IS_HTTP_ENV && $G_CONF[ 'debug-mode' ] )
 				{
 					if ( !headers_sent() )
 					{

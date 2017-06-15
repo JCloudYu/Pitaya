@@ -160,11 +160,12 @@
 			echo self::VDump($args, IS_HTTP_ENV);
 		}
 		public static function VDump($args = array(), $forHTML = TRUE) {
-			if ( !DEBUG_MODE ) return '';
+			$G_CONF = PBStaticConf( 'pitaya-env' );
+			
+			if ( !$G_CONF[ 'debug-mode' ] ) return '';
 
 
-
-			$width = intval(DEBUG_CONSOLE_WIDTH);
+			$width = intval($G_CONF[ 'debug-console-width' ]);
 
 			$out = '';
 			if($forHTML)
