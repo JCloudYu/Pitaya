@@ -13,11 +13,11 @@
 			'system-timezone' => @$initArgs[ 'system-timezone' ] ?: 'UTC',
 			'boot-scripts' => is_array(@$initArgs['boot-scripts']) ? $initArgs['boot-scripts'] : [],
 			'packages' => is_array(@$initArgs['packages']) ? $initArgs['packages'] : [],
-			
-			
-			
 			'leading-modules' => is_array(@$initArgs['leading-modules']) ? $initArgs['leading-modules'] : [],
 			'tailing-modules' => is_array(@$initArgs['tailing-modules']) ? $initArgs['tailing-modules'] : [],
+			
+			
+			
 			'log-dir' => @$initArgs[ 'log-dir' ] ?: sys_get_temp_dir()
 		];
 	
