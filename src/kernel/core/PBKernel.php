@@ -361,9 +361,6 @@
 			$moduleSearchPaths[] = "share.modules.";
 			$moduleSearchPaths[] = ""; // Use global identifier
 
-			if ( defined("MODULE_PATH") )
-				$moduleSearchPaths[] = MODULE_PATH . ".";
-
 			foreach ( $this->_moduleSearchPaths as $path ) $moduleSearchPaths[] = "{$path}.";
 
 
