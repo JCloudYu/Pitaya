@@ -4,7 +4,7 @@
 	define( 'LIB_PATH', $LIB_PATH = realpath(__DIR__ . '/../') );
 	define( 'WORKING_DIR', $WORKING_DIR = realpath(getcwd()) );
 	
-	$PORTAL_PATH = "{$LIB_PATH}/src/portal.php";
+	$PORTAL_PATH = "{$LIB_PATH}/src/boot.php";
 	if ( !is_file("{$PORTAL_PATH}") || !is_readable("{$PORTAL_PATH}") ) {
 		fwrite( STDERR, "Incompatible Execution Environment!" . PHP_EOL );
 		exit( 1 );
