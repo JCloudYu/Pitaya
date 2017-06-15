@@ -2,7 +2,7 @@
 //	define( 'ENV_ATTACH_DEPTH', 	0 );		// Default: 0
 //	define( "SYS_TIMEZONE",			"UTC" );	// Default: UTC
 //	define( "DEBUG_MODE",			TRUE );		// Default: FALSE
-//	define( "THROWN_EXCEPTIONS",	FALSE );	// Default: TRUE
+//	define( "THROW_EXCEPTIONS",	FALSE );	// Default: TRUE
 //	define( "LOG_EXCEPTIONS",		FALSE );	// Default: TRUE
 //	define( "DEBUG_CONSOLE_WIDTH",	350 );		// Default: 350
 	

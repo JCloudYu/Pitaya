@@ -84,7 +84,7 @@
 					$errProcObj->execute( $e );
 				}
 				else
-				if ( THROWN_EXCEPTIONS === TRUE )
+				if ( THROW_EXCEPTIONS === TRUE )
 				{
 					throw( $e );
 				}

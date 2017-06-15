@@ -2,7 +2,7 @@
 	// region [ Customizable Constants ]
 	s_define( 'DEBUG_CONSOLE_WIDTH', 350 );
 	s_define( 'DEBUG_MODE', FALSE );
-	s_define( 'THROWN_EXCEPTIONS', TRUE );
+	s_define( 'THROW_EXCEPTIONS', TRUE );
 	s_define( 'LOG_EXCEPTIONS', TRUE );
 	s_define( "DEFAULT_SYSTEM_LOG_DIR", sys_get_temp_dir() );
 	s_define( 'SYS_TIMEZONE', 'UTC' );

@@ -47,12 +47,13 @@
 			return $_DEFAULT_CONF;
 		}
 		
+		$identifier = "{$identifier}";
 		$CONFIG = @$_CONF_MAP[$identifier];
 		if ( func_num_args() == 1 ) {
 			return $CONFIG;
 		}
 		
-		if ( $CONFIG !== NULL || !is_array($conf) || !is_a($conf, stdClass::class) ) {
+		if ( $CONFIG !== NULL || ( !is_array($conf) && !is_a($conf, stdClass::class)) ) {
 			return FALSE;
 		}
 		
@@ -60,7 +61,6 @@
 		if ( $_DEFAULT_CONF === NULL ) {
 			$_DEFAULT_CONF = $CFG;
 		}
-		
 		
 		
 		return $CFG;
