@@ -126,10 +126,6 @@
 
 			// INFO: Perform service decision and data initialization
 			$this->__judgeMainService();
-			
-			
-			$extendPath = defined( 'EXTENDED_PACKAGES' ) ? EXTENDED_PACKAGES : [];
-			PBPathResolver::Register( is_array($extendPath) ? $extendPath : [] );
 			PBPathResolver::Purge();
 			
 			
