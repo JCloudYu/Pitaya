@@ -139,12 +139,10 @@
 			$this->__judgeMainService();
 			
 			
-			// region [ PBPathResolver Customize Initialization ]
-			$extendPath = @$GLOBALS[ 'extPath' ];
-			if ( defined( 'EXTENDED_PACKAGES' ) ) $extendPath = EXTENDED_PACKAGES;
+			$extendPath = defined( 'EXTENDED_PACKAGES' ) ? EXTENDED_PACKAGES : [];
 			PBPathResolver::Register( is_array($extendPath) ? $extendPath : [] );
 			PBPathResolver::Purge();
-			// endregion
+			
 			
 			
 			PBRequest()->__initialize()->parseQuery(function_exists( 'default_query_parser' ) ? 'default_query_parser' : NULL);
