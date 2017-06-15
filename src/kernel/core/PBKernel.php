@@ -203,12 +203,6 @@
 			}
 
 
-			if ( is_callable(self::$_bootResolver) ) {
-				// ISSUE: Merge boot resolvers after rewriting boot path decisition logics
-				//call_user_func( self::$_bootResolver, $service, $moduleRequest );
-			}
-
-
 
 			$processReq = function( $moduleRequest, $attributes ) {
 				if ( IS_CLI_ENV ) return $moduleRequest;
