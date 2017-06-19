@@ -18,8 +18,8 @@
 			
 			$posInfo = "";
 			if ( DEBUG_BACKTRACE_ENABLED ) {
-				$backtrace = debug_backtrace();
-				$posInfo = "{$backtrace[2]['file']}:{$backtrace[2]['line']}\n";
+				$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+				$posInfo = "{$backtrace[1]['file']}:{$backtrace[1]['line']}\n";
 			}
 			
 			

@@ -196,7 +196,7 @@
 
 
 			if ( DEBUG_BACKTRACE_ENABLED ) {
-				$info = self::BackTrace();
+				$info = self::BackTrace(DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS, 2);
 	
 				if((array_key_exists('class', $info[1]) && $info[1]['class'] == __CLASS__) && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
 					$locator = 2;
@@ -258,12 +258,12 @@
 		}
 		
 		
-		public static function BackTrace($args = 0) {
+		public static function BackTrace(...$args) {
 			if ( !DEBUG_BACKTRACE_ENABLED ) return NULL;
 
 
 
-			$info = debug_backtrace($args);
+			$info = debug_backtrace(...$args);
 			$depth = count($info);
 
 			$adjusted = array();
