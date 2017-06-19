@@ -14,7 +14,7 @@
 			throw new Exception( "Operation prohibited!" );
 		}
 		public function offsetExists($offset) {
-			return array_key_exists($this->_storage, $offset);
+			return @array_key_exists($offset, $this->_storage);
 		}
 		
 		public static function DeepCopy($data, $toObject=FALSE) {
