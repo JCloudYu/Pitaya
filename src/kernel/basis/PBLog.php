@@ -84,15 +84,12 @@
 		if ( $log !== NULL ) {
 			return $log;
 		}
-	
+		
 		if ( empty($_g_conf['log-dir']) ) {
 			$log = PBLog::NullLog();
 		}
 		else {
 			$logFilePath = "{$_g_conf[ 'log-dir' ]}/{$logFileName}";
-			if (!file_exists($logFilePath)) {
-				touch($logFilePath);
-			}
 			$log = new PBLog($logFilePath, $tagName);
 		}
 
