@@ -201,29 +201,24 @@
 	
 	final class DEBUG {
 		public static function VarDump(...$args) {
-			echo self::VDump($args, IS_HTTP_ENV);
-		}
-		public static function VDump($args = array(), $forHTML = TRUE) {
 			$G_CONF = PBStaticConf( 'pitaya-env' );
-			
+
+
 			if ( !$G_CONF[ 'debug-mode' ] ) return '';
 
 
 			$width = intval($G_CONF[ 'debug-console-width' ]);
 
 			$out = '';
-			if($forHTML)
+			if( IS_HTTP_ENV ) {
 				$out .= "<div class='debugOpt' style='background-color:#fefe00; z-index:9999; border:solid red; margin-bottom:10px; padding:5px; word-break:break-all; width:{$width}px; color:#000; position:relative;'>";
+			}
 
-			if(!is_array($args)) $args = array($args);
-
-			if(!$forHTML)
-			{
+			if ( IS_CLI_ENV ) {
 				$indentSpace = "\t";
 				$newLine = "\n";
 			}
-			else
-			{
+			else {
 				$indentSpace = "&nbsp;&nbsp;&nbsp;&nbsp;";
 				$newLine = "<br />";
 			}
@@ -231,7 +226,7 @@
 
 			if ( DEBUG_BACKTRACE_ENABLED ) {
 				$info = self::BackTrace(DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-				if((array_key_exists('class', $info[1]) && $info[1]['class'] == __CLASS__) && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
+				if ( @$info[1]['class'] == 'PBObject' && @$info[1]['function'] == '__get' )
 					$locator = 2;
 				else
 					$locator = 1;
@@ -244,9 +239,13 @@
 					$info['line'] = 'Unavailable';
 				}
 	
-				if($forHTML) $out .= '<div>';
+				if ( IS_HTTP_ENV ) {
+					$out .= '<div>';
+				}
 				$out .= "{$info['file']} : {$info['line']}";
-				if($forHTML) $out .= '</div>';
+				if ( IS_HTTP_ENV ) {
+					 $out .= '</div>';
+				}
 				$out .= $newLine;
 			}
 
@@ -285,9 +284,11 @@
 				}
 			}
 
-			if($forHTML) $out .= '</div>';
+			if ( IS_HTTP_ENV ) {
+				$out .= '</div>';
+			}
 
-			return $out;
+			echo $out;
 		}
 		
 		
