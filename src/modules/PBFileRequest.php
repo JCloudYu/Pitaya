@@ -77,7 +77,7 @@
 
 			// INFO: Path validation
 			$searchPath = $this->_relPath;
-			$workingRoot = WORKING_ROOT;
+			$workingRoot = path( 'basis' );
 			array_unshift( $searchPath, $workingRoot );
 
 			$filePath = NULL; $targetPath = $this->_targetPath;

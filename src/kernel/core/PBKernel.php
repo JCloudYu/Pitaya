@@ -93,8 +93,7 @@
 					{
 						header( "HTTP/1.1 500 Internal Server Error" );
 						header( "Status: 500 Internal Server Error" );
-						header( "Content-Type: text/plain; charset=utf8" );
-						header( "Content-Length: " . strlen($errMsg) );
+						header( "Content-Type: text/html; charset=utf8" );
 					}
 
 					echo $errMsg;

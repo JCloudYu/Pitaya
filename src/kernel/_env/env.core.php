@@ -179,7 +179,7 @@
 				
 				$scriptName	= substr($entry, 0, -4);
 				$pkgId		= sha1("{$pkgPath}.{$scriptName}");
-				if ( $_path_cache[$pkgId] ) continue;
+				if ( @$_path_cache[$pkgId] ) continue;
 				
 				
 
@@ -230,8 +230,7 @@
 
 
 			if ( DEBUG_BACKTRACE_ENABLED ) {
-				$info = self::BackTrace(DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-	
+				$info = self::BackTrace(DEBUG_BACKTRACE_PROVIDE_OBJECT|DEBUG_BACKTRACE_IGNORE_ARGS, 3);
 				if((array_key_exists('class', $info[1]) && $info[1]['class'] == __CLASS__) && (preg_match('/^VarDump.*/', $info[1]['function']) > 0))
 					$locator = 2;
 				else
