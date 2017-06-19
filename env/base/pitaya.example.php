@@ -6,8 +6,8 @@
 //	define( "LOG_EXCEPTIONS",		FALSE );	// Default: TRUE
 //	define( "DEBUG_CONSOLE_WIDTH",	350 );		// Default: 350
 	
-//	define( '__PITAYA_PATH', ROOT.'/Pitaya'	);
-//	define( '__BASIS_PATH',	 ROOT.'/Basis'	);
-//	define( '__SHARE_PATH',	 ROOT.'/Share'	);
-//	define( '__DATA_PATH',	 ROOT.'/Data'	);
-//	define( '__LIB_PATH',	 ROOT.'/Lib'	);
+//	define( '__PITAYA_PATH', __ROOT.'/Pitaya'	);
+//	define( '__BASIS_PATH',	 __ROOT.'/Basis'	);
+//	define( '__SHARE_PATH',	 __ROOT.'/Share'	);
+//	define( '__DATA_PATH',	 __ROOT.'/Data'	);
+//	define( '__LIB_PATH',	 __ROOT.'/Lib'	);
