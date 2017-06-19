@@ -6,7 +6,7 @@
 		$scopeInfo = $trace[1];
 		$message = "{$message} @{$scopeInfo['file']}:{$scopeInfo['line']}";
 		
-		PBLog::ERRLog( $message, 'deprecated.pblog' );
+		PBLog( 'error' )->log( $message );
 		if ( $forceOutput ) echo $message . EOL;
 	}
 	function DEBUG_WARNING( $message, $forceOutput = FALSE ) {
@@ -16,7 +16,7 @@
 		$scopeInfo = $trace[1];
 		$message = "{$message} @{$scopeInfo['file']}:{$scopeInfo['line']}";
 		
-		PBLog::ERRLog( $message, 'debug-warning.pblog' );
+		PBLog( 'error' )->log( $message );
 		if ( $forceOutput ) echo $message . EOL;
 	}
 

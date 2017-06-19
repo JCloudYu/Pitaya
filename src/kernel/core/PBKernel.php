@@ -37,12 +37,14 @@
 
 				if ( $G_CONF[ 'log-exceptions' ] === TRUE )
 				{
-					PBLog::SYSLog( print_r($e, TRUE), "system.exception.pblog" );
+					PBLog( 'exception' )->log(print_r($e, TRUE));
 					$extMsg = "See exception log for more information!";
 				}
 
-				PBLog::ERRLog( $errMsg );
-				if (!empty($extMsg)) PBLog::ERRLog( $extMsg );
+				PBLog( 'error' )->log( $errMsg );
+				if (!empty($extMsg)) {
+					PBLog( 'error' )->log( $extMsg );
+				}
 
 
 
