@@ -11,11 +11,12 @@
 
 			// INFO: Attach pitaya root packages
 			$G_CONF = PBStaticConf( 'pitaya-env' );
-			$list = scandir(PITAYA_ROOT);
-			foreach ($list as $dir) {
+			$list	= scandir(PITAYA_ROOT);
+			foreach( $list as $dir ) {
+				if ( $dir == "." || $dir == ".." ) continue;
+				
 				$absPath = PITAYA_ROOT . "/{$dir}";
 				if ( !is_dir($absPath) ) continue;
-				
 				self::$_kernel_cache[strtolower($dir)] = $absPath;
 			}
 
@@ -60,8 +61,10 @@
 				$_purged = TRUE;
 			}
 		}
-		public static function Register( $map = [] ) {
-			if ( !is_array($map) ) return TRUE;
+		public static function Register($map=[]) {
+			if ( !is_array($map) ) return;
+			
+			
 			
 			foreach( $map as $key => $path ) {
 				if ( IS_WIN_ENV ) {
@@ -80,88 +83,124 @@
 				self::$_path_cache[ $key ] = $path;
 			}
 		}
-		public static function Resolve( $package ) {
-			return empty(self::$_path_cache[$package]) ? '' : self::$_path_cache[$package];
+		public static function Resolve($package) {
+			return @self::$_path_cache[$package];
 		}
 	}
 	PBPathResolver::Initialize();
 	
-	function path($referencingContext = '', $appendItem = '') {
-		$tokens = explode('.', $referencingContext);
-		$completePath = PBPathResolver::Resolve(array_shift($tokens));
-
-		foreach( $tokens as $token)
-			$completePath .= "/{$token}";
-
-		$appendItem = trim($appendItem);
-		return $completePath . (empty($appendItem) ? '' : "/{$appendItem}");
+	function path($referencingContext = '', $appendItem=NULL) {
+		$tokens	 = explode('.', $referencingContext);
+		$pkg	 = array_shift($tokens);
+		$pkgRoot = PBPathResolver::Resolve($pkg);
+		if ( $pkgRoot === NULL ) {
+			return FALSE;
+		}
+		
+		array_unshift($tokens, $pkgRoot);
+		if ( !empty($appendItem) ) {
+			array_push($tokens, $appendItem);
+		}
+		return implode( '/', $tokens );
 	}
 	function using($referencingContext = '', $important = TRUE) {
-		static $registeredInclusions = array();
-		if ( func_num_args() == 1 && $referencingContext === TRUE ) return $registeredInclusions;
+		static $_path_cache = [];
+		
+		
+		
+		$pkgId = sha1($referencingContext);
+		if ( @$_path_cache[$pkgId] ) {
+			return TRUE;
+		}
+		
+		
+		
+		
+		$tokens	 = explode('.', $referencingContext);
+		$lastCmp = array_pop($tokens);
+		$pkg	 = array_shift($tokens);
+		
+		// Check package root
+		$pkgRoot = PBPathResolver::Resolve($pkg);
+		if ( $pkgRoot === NULL ) {
+			if ( $important ) {
+				throw new Exception( "Target package `{$referencingContext}` doesn't exist!" );
+			}
+			
+			return FALSE;
+		}
+		
+		// Check package dir
+		$pkgDir = $pkgRoot . '/' . implode( '/', $tokens );
+		if ( !is_dir($pkgDir) ) {
+			if ( $important ) {
+				throw new Exception( "Target package `{$referencingContext}` doesn't exist!" );
+			}
+			
+			return FALSE;
+		}
 
-		$tokens = explode('.', $referencingContext);
-		$tokens = array_reverse($tokens);
-
-		if ( isset($registeredInclusions[($referencingContext)]) )
-			return $registeredInclusions[($referencingContext)];
-
-		if($tokens[0] == '*')
-		{
-			array_shift($tokens);
-			$tokens = array_reverse($tokens);
-			$completePath = PBPathResolver::Resolve(array_shift($tokens));
+		
 
 
-			foreach( $tokens as $token)
-				$completePath .= "/{$token}";
-			$completePath .= '/';
 
-			$dirHandle = file_exists($completePath) ? opendir($completePath) : NULL;
 
-			if($dirHandle === NULL && $important)
-				throw(new Exception("Cannot locate package: {$completePath}"));
-
-			if($dirHandle !== NULL)
-			while(($entry = readdir($dirHandle)) !== FALSE)
-			{
-				if($entry == '.' || $entry == '..') continue;
-				if(preg_match('/.*php$/', $entry) === 1)
-				{
-					$givenContainer = substr($referencingContext, 0, -2);
-					$validEntry = substr($entry, 0, -4);
-
-					if(isset($registeredInclusions[("$givenContainer.$validEntry")])) continue;
-
-					$targetPath = "$completePath/$entry";
-
-					$registeredInclusions[("$givenContainer.$validEntry")] = TRUE;
-
-					if($important) require($targetPath);
-					else include($targetPath);
+		if ( $lastCmp != '*' ) {
+			$scriptPath = "{$pkgDir}/{$lastCmp}.php";
+			if ( !is_file($scriptPath) ) {
+				return FALSE;
+			}
+			
+			
+			
+			$_path_cache[$pkgId] = TRUE;
+			if ( $important ) {
+				require_once $scriptPath;
+			}
+			else {
+				@include_once $scriptPath;
+			}
+		}
+		else {
+			$dirHandle = @opendir($pkgDir) ?: NULL;
+			if ( empty($dirHandle) ) {
+				if ( $important ) {
+					throw new Exception("Package `{$referencingContext}` is not accessible!");
 				}
+				
+				return FALSE;
 			}
 
-			$registeredInclusions[($referencingContext)] = $dirHandle !== NULL;
+
+			
+			$pkgPath = $tokens; array_unshift($pkgPath, $pkg);
+			$pkgPath = implode('.', $tokens);
+			while( ($entry = readdir($dirHandle)) !== FALSE ) {
+				if ( substr($entry, -4) != '.php' ) {
+					continue;
+				}
+				
+				
+				
+				$scriptName	= substr($entry, 0, -4);
+				$pkgId		= sha1("{$pkgPath}.{$scriptName}");
+				if ( $_path_cache[$pkgId] ) continue;
+				
+				
+
+				$_path_cache[$pkgId] = TRUE;
+				$targetPath = "{$pkgDir}/{$entry}";
+
+				if ( $important ) {
+					require_once $targetPath;
+				}
+				else {
+					@include_once $targetPath;
+				}
+			}
 		}
-		else
-		{
-			$tokens = array_reverse($tokens);
-			$completePath = PBPathResolver::Resolve(array_shift($tokens));
 
-			foreach( $tokens as $token)
-				$completePath .= "/{$token}";
-
-			$completePath .= '.php';
-
-			if(file_exists($completePath)) $registeredInclusions[($referencingContext)] = TRUE;
-			else $registeredInclusions[($referencingContext)] = FALSE;
-
-			if($important) require($completePath);
-			else @include($completePath);
-		}
-
-		return $registeredInclusions[($referencingContext)];
+		return TRUE;
 	}
 	// endregion
 	
