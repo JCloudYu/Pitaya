@@ -96,7 +96,7 @@
 		return ($_cachedLog[$id] = $log);
 	}
 		
-	PBLog( 'info',		'share.pblog',		'INF' );
+	PBLog( 'info',		'info.pblog',		'INF' );
 	PBLog( 'sys',		'system.pblog',		'SYS' );
 	PBLog( 'error',		'error.pblog',		'ERR' );
 	PBLog( 'exception',	'exception.pblog',	'ERR' );
