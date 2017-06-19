@@ -1,5 +1,4 @@
 <?php
-	error_reporting( E_ALL & ~E_NOTICE );
 	define( '__ROOT', realpath(dirname("{$_SERVER['SCRIPT_FILENAME']}")) );
 	
 	

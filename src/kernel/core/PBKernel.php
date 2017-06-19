@@ -68,7 +68,7 @@
 				{
 					try
 					{
-						$errProcObj = PBKernel::$_SYS_INSTANCE->acquireModule( ERROR_MODULE );
+						$errProcObj = PBModule(ERROR_MODULE);
 					}
 					catch( Exception $e )
 					{
@@ -127,26 +127,21 @@
 
 
 			// INFO: Perform service decision and data initialization
-			$this->__judgeMainService();
+			$module = $this->__judgeMainService();
 			PBPathResolver::Purge();
 			
 			
 			
 			PBRequest()->__initialize()->parseQuery(function_exists( 'default_query_parser' ) ? 'default_query_parser' : NULL);
-
-
-
-			// INFO: Define runtime constants
-			define( 'WORKING_BASIS', $this->_entryBasis );
 			
 
 
 
 			// INFO: Bring up the main process
-			$this->__forkProcess($this->_entryBasis);
+			$this->__forkProcess($module);
 		}
 		
-		private $_entryBasis = NULL;
+
 		private function __judgeMainService() {
 			$G_CONF = PBStaticConf( 'pitaya-env' );
 		
@@ -193,32 +188,6 @@
 
 
 
-
-			// region [ Find the default basis ]
-			// INFO: If cli and standalone script has been assigned
-			// MARK: Developer customizable only
-			if ( IS_CLI_ENV && PITAYA_STANDALONE_EXECUTION_MODE ) {
-				$CWD	= PITAYA_STANDALINE_EXECUTION_DIR;
-				$SCRIPT = PITAYA_STANDALINE_EXECUTION_SCRIPT;
-				
-				$scriptFilePath = "{$CWD}/{$SCRIPT}";
-				if ( is_readable($scriptFilePath) && is_file($scriptFilePath) )
-				{
-					if ( !empty($service) ) array_unshift( $moduleRequest, $service );
-	
-					$module = basename($SCRIPT);
-					$ext = substr( $module, -4 );
-					if ( in_array( $ext, array( '.php' ) ) ) $module = substr( $module, 0, -4 );
-					$this->_entryBasis = "PBSystem.PBExecCtrl#PBVectorChain";
-	
-					define( 'WORKING_ROOT', $CWD );
-					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-					return;
-				}
-			}
-
-
-
 			// INFO: Customized service decision logic
 			if ( is_callable(self::$_bootResolver) ) {
 				$resolver = self::$_bootResolver;
@@ -228,38 +197,23 @@
 				
 					$service		= @$result->basis ?: $service;
 					$moduleRequest	= @$result->resource ?: $moduleRequest;
-					$workingDir		= @$result->root ?: '';
-					
-					
-					
-					// INFO: Detect Main Service
-					$state = file_exists( path( "{$service}" ) . ".php" );
-					if ($state) {
-						$this->_entryBasis = $service;
-		
-						define( 'WORKING_ROOT', is_dir($workingDir) ? $workingDir : sys_get_temp_dir());
-						$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-						return;
-					}
 				}
 			}
-
-			
-
 
 
 
 			// INFO: Detect Main Service
-			$serviceParts = @explode( '.', "{$service}" );
-			$serviceName = @array_pop( $serviceParts );
-			$state = file_exists( path( "broot.{$serviceName}.{$serviceName}" ) . ".php" );
-			
+			$pos = strpos($service, '.');
+			$moduleName = ( $pos === FALSE ) ? $service : substr($service, 0, $pos);
+			$state = file_exists(path("broot.{$moduleName}", "{$moduleName}.php" ));
 			if ($state) {
-				$this->_entryBasis = $serviceName;
-				$broot = path( 'broot' );
-				define( 'WORKING_ROOT', "{$broot}/{$this->_entryBasis}" );
+				$entryModule = PBModule( "broot.{$moduleName}.{$moduleName}" );
+				PBPathResolver::Register([
+					'basis' => ($basisDir=path("broot.{$moduleName}"))
+				]);
+				chdir($basisDir);
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-				return;
+				return $entryModule;
 			}
 
 
@@ -268,16 +222,19 @@
 
 
 			$reqService = "{$service}";
-			if ( !empty($service) ) array_unshift($moduleRequest, $service);
-
-			$service = $G_CONF[ 'default-basis' ];
-			$state = $state || file_exists( path( "broot.{$service}.{$service}" ) . ".php" );
+			if ( !empty($service) ) {
+				array_unshift($moduleRequest, $service);
+			}
+			$moduleName = $G_CONF[ 'default-basis' ];
+			$state = $state || file_exists( path( "broot.{$moduleName}.{$moduleName}" ) . ".php" );
 			if ($state) {
-				$this->_entryBasis = $service;
-				$broot = path( 'broot' );
-				define( 'WORKING_ROOT', "{$broot}/{$this->_entryBasis}" );
+				$entryModule = PBModule( "broot.{$moduleName}.{$moduleName}" );
+				PBPathResolver::Register([
+					'basis' => ($basisDir=path("broot.{$moduleName}"))
+				]);
+				chdir( $basisDir );
 				$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
-				return;
+				return $entryModule;
 			}
 			// endregion
 
@@ -288,15 +245,11 @@
 		// region [ Process Control ]
 		/** @var PBProc */
 		private $_process = NULL;
-		private function __forkProcess($service) {
+		private function __forkProcess($module) {
 			if ( $this->_process ) return;
 			
-			
-			
-			$this->_process = new PBProc( $this );
-
-			chdir( WORKING_ROOT );
-			$this->_process->prepareQueue($service);
+			$this->_process = PBProc($this);
+			$this->_process->prepareQueue($module);
 		}
 		// endregion
 	}

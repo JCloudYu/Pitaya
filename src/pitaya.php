@@ -2,7 +2,7 @@
 	require_once __DIR__ . '/kernel/_env/env.independent.php';
 	function Pitaya($initArgs=[]) {
 		$config = [
-			'space-root' => @$initArgs[ 'space-root' ] ?: getcwd(),
+			'space-root' => @$initArgs[ 'space-root' ],
 			'default-basis' => @$initArgs[ 'default-basis' ] ?: 'main',
 			'attach-depth' => @$initArgs[ 'attach-depth' ] ?: 0,
 			'module-packages' => is_array(@$initArgs['module-packages']) ? $initArgs['module-packages'] : [],

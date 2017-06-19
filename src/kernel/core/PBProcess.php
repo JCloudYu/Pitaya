@@ -14,6 +14,9 @@
 		public function __construct( $sysInst ) {
 			$this->_system = $sysInst;
 		}
+		public function __get_entryModule() {
+			return $this->_entryModule;
+		}
 	
 	
 		
@@ -66,7 +69,7 @@
 	
 	
 			// NOTE: Service Entry Module
-			$this->_entryModule = PBModule( $entryModule, TRUE );
+			$this->_entryModule = PBModule($entryModule);
 			$this->_mainModuleId = $this->_entryModule->id;
 			$this->_bootSequence[] = stdClass([
 				'id'	=> $this->_mainModuleId,

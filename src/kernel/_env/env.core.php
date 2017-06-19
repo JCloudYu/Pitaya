@@ -36,13 +36,11 @@
 			
 			
 			
-			// INFO: Write default keywords
-			self::$_kernel_cache['root'] = $G_CONF[ 'space-root' ];
-			self::$_kernel_cache['working'] = getcwd();
+			// Default packages
+			self::$_kernel_cache['root'] = $G_CONF[ 'space-root' ] ?: getcwd();
 			if ( @self::$_kernel_cache[ 'broot' ] === NULL ) {
-				self::$_kernel_cache['broot'] = self::$_kernel_cache['working'];
+				self::$_kernel_cache['broot'] = self::$_kernel_cache['root'];
 			}
-			self::$_kernel_cache[ 'basis' ] = self::$_kernel_cache[ 'broot' ];
 			
 			
 			
@@ -55,11 +53,8 @@
 		public static function Purge() {
 			static $_purged = FALSE;
 			if ( $_purged ) return;
-		
-			if ( defined( 'WORKING_ROOT' ) ) {
-				self::$_kernel_cache[ 'working' ] = self::$_path_cache[ 'basis' ] = WORKING_ROOT;
-				$_purged = TRUE;
-			}
+			
+			self::$_kernel_cache['basis'] = self::$_path_cache['basis'] ?: getcwd();
 		}
 		public static function Register($map=[]) {
 			if ( !is_array($map) ) return;

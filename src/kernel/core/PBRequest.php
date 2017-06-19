@@ -329,7 +329,7 @@
 			$res = @$res[ 'resource' ];
 			if ( !is_array($res) ) $res = [];
 			
-			array_unshift($res, WORKING_BASIS);
+			array_unshift($res, PBProc()->entryModule->class);
 			array_unshift($anchor, '');
 			return (new ____pitaya_base_object__path_mapper_tracable( array_merge($anchor, $res), count($anchor)-1 ))->trace( $trace );
 		}
