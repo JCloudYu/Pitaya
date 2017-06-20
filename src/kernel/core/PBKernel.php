@@ -186,6 +186,20 @@
 			};
 
 
+	
+			if ( !empty($G_CONF[ 'entry-module' ]) ) {
+				$entryModule = PBModule($G_CONF[ 'entry-module' ], TRUE, TRUE);
+				if (!empty($entryModule)) {
+					PBPathResolver::Register([ 'basis' => getcwd() ]);
+					$GLOBALS['request'] = $processReq( $moduleRequest, $attributes );
+					return $entryModule;
+				}
+			}
+
+
+
+
+
 
 			// INFO: Customized service decision logic
 			if ( is_callable(self::$_bootResolver) ) {

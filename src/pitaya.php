@@ -4,6 +4,7 @@
 		$config = [
 			'space-root' => @$initArgs[ 'space-root' ],
 			'default-basis' => @$initArgs[ 'default-basis' ] ?: 'main',
+			'entry-module' => @$initArgs[ 'entry-module' ] ?: NULL,
 			'attach-depth' => @$initArgs[ 'attach-depth' ] ?: 0,
 			'module-packages' => is_array(@$initArgs['module-packages']) ? $initArgs['module-packages'] : [],
 			'debug-mode' => !!@$initArgs[ 'debug-mode' ],
