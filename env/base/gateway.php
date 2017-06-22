@@ -1,5 +1,5 @@
 <?php
-	define( '__ROOT', realpath(dirname("{$_SERVER['SCRIPT_FILENAME']}")) );
+	@define( '__ROOT', realpath(dirname("{$_SERVER['SCRIPT_FILENAME']}")) );
 	
 	
 	
