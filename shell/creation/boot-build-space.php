@@ -1,5 +1,5 @@
 <?php
-	$path = "{$targetPath}/Pitaya";
+	$path = "{$targetPath}/pitaya";
     if ( !IsValidPath($path) ) {
       CreateLink( LIB_PATH . '/src', $path );
     }
@@ -12,14 +12,14 @@
 		}
 		
 		$src  = @realpath($structure->basis);
-		$path = "{$targetPath}/Basis";
+		$path = "{$targetPath}/basis";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
 		}
 	}
 	else
 	if ( !$options->noBasis ) {
-		$path = "{$targetPath}/Basis";
+		$path = "{$targetPath}/basis";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
 		}
@@ -34,14 +34,14 @@
 		}
 		
 		$src  = @realpath($structure->share);
-		$path = "{$targetPath}/Share";
+		$path = "{$targetPath}/share";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
 		}
 	}
 	else
 	if ( $options->createShare ) {
-		$path = "{$targetPath}/Share";
+		$path = "{$targetPath}/share";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
 		}
@@ -55,14 +55,14 @@
 		}
 		
 		$src  = @realpath($structure->data);
-		$path = "{$targetPath}/Data";
+		$path = "{$targetPath}/data";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
 		}
 	}
 	else
 	if ( $options->createData ) {
-		$path = "{$targetPath}/Data";
+		$path = "{$targetPath}/data";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
 		}
@@ -77,14 +77,14 @@
 		}
 		
 		$src  = @realpath($structure->lib);
-		$path = "{$targetPath}/Lib";
+		$path = "{$targetPath}/lib";
 		if ( !IsValidPath($path) ) {
 			CreateLink($src, $path);
 		}
 	}
 	else
 	if ( $options->createLib ) {
-		$path = "{$targetPath}/Lib";
+		$path = "{$targetPath}/lib";
 		if ( !IsValidPath($path) ) {
 			@mkdir( $path, 0755, TRUE );
 		}
