@@ -2,10 +2,10 @@
 	Pitaya([
 		'space-root' => __ROOT,
 		'packages' => [
-			'broot'		=> @constant( '__BASIS_PATH' ) ?: __ROOT.'/basis',
-			'share' 	=> @constant( '__SHARE_PATH' ) ?: __ROOT.'/share',
-			'data'		=> @constant( '__DATA_PATH' ) ?: __ROOT.'/data',
-			'lib'		=> @constant( '__LIB_PATH' )  ?: __ROOT.'/lib'
+			'broot'		=> @constant( 'BASIS_PATH' ) ?: __ROOT.'/basis',
+			'share' 	=> @constant( 'SHARE_PATH' ) ?: __ROOT.'/share',
+			'data'		=> @constant( 'DATA_PATH' ) ?: __ROOT.'/data',
+			'lib'		=> @constant( 'LIB_PATH' )  ?: __ROOT.'/lib'
 		],
 		'module-packages' => [
 			'data.modules', 'share.modules'
