@@ -65,21 +65,6 @@
 			require COMMAND_DIR . '/boot-build-space.php';
 		}
 	}
-	else
-	if ( !empty($top->structure) ) {
-		ReadStructure($top->structure, SOURCE_PROJECT_PATH);
-	
-		$structure = (object)[];
-		$structure->basis	= @$top->structure->basis	?: $options->refBasis;
-		$structure->share	= @$top->structure->share	?: $options->refShare;
-		$structure->data	= @$top->structure->data	?: $options->refData;
-		$structure->lib		= @$top->structure->lib		?: $options->refLib;
-		
-		$targetPath = ESTABLISHED_PATH;
-		require COMMAND_DIR . '/boot-build-space.php';
-	}
-	
-	
 	
 	
 	
