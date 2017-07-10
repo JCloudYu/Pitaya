@@ -33,10 +33,10 @@
 	
 	
 
-	$options->refShare = @realpath($options->refShare);
-	$options->refBasis = @realpath($options->refBasis);
-	$options->refData  = @realpath($options->refData);
-	$options->refLib   = @realpath($options->refLib);
+	$options->refShare = empty($options->refShare) ? FALSE : @realpath($options->refShare);
+	$options->refBasis = empty($options->refBasis) ? FALSE : @realpath($options->refBasis);
+	$options->refData  = empty($options->refData)  ? FALSE : @realpath($options->refData);
+	$options->refLib   = empty($options->refLib)   ? FALSE : @realpath($options->refLib);
 	
 	
 	
