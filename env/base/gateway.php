@@ -7,7 +7,7 @@
 	call_user_func(function(){
 		$isWinEnv = (strtoupper(substr( PHP_OS, 0, 3 )) === 'WIN');
 	
-		$pitayaRootPath = @constant( '__PITAYA_PATH' ) ?: __ROOT.'/pitaya';
+		$pitayaRootPath = @constant( 'PITAYA_PATH' ) ?: __ROOT.'/pitaya';
 		if ( $isWinEnv ) {
 			if ( is_file("{$pitayaRootPath}.lnk") ) {
 				$lnkPath  = realpath("{$pitayaRootPath}.lnk");
